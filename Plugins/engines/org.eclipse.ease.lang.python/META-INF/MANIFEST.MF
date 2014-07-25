@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Python Language
+Bundle-SymbolicName: org.eclipse.ease.lang.python;singleton:=true
+Bundle-Version: 0.1.1.qualifier
+Bundle-Vendor: Eclipse
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.ease,
+ org.eclipse.ease.storedscript,
+ com.google.guava;bundle-version="11.0.2",
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.ui;bundle-version="3.7.0",
+ org.eclipse.emf.ecore;bundle-version="2.7.0"
+Bundle-Activator: org.eclipse.ease.lang.python.Activator
+Bundle-ActivationPolicy: lazy
+Eclipse-BuddyPolicy: global
+Export-Package: org.eclipse.ease.lang.python,
+ org.eclipse.ease.lang.python.debug,
+ org.eclipse.ease.lang.python.preferences
+Bundle-ClassPath: .

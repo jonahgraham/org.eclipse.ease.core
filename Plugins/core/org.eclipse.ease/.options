@@ -1,0 +1,3 @@
+org.eclipse.ease/debug=true
+org.eclipse.ease/debug/moduleWrapper=true
+org.eclipse.ease/debug/EnvironementmoduleWrapper=true

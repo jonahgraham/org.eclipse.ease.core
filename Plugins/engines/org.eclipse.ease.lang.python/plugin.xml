@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            default-charset="ISO-8859-1"
+            file-extensions="py"
+            id="org.eclipse.ease.engine.python.content-type"
+            name="Python Source File"
+            priority="low">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ease.scriptType">
+      <scriptType
+            defaultExtension="py"
+            headerParser="org.eclipse.ease.lang.python.PythonHeaderParser"
+            name="Python">
+         <binding
+               contentType="org.python.pydev.pythonfile">
+         </binding>
+         <binding
+               contentType="org.eclipse.ease.engine.python.content-type">
+         </binding>
+      </scriptType>
+   </extension>
+
+</plugin>

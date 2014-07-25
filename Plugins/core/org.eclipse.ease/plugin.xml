@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="language" name="Language" schema="schema/language.exsd"/>
+   <extension-point id="modules" name="Modules" schema="schema/modules.exsd"/>
+   <extension-point id="scriptType" name="ScriptType" schema="schema/scriptType.exsd"/>
+   <extension point="org.eclipse.ui.services">
+      <serviceFactory factoryClass="org.eclipse.ease.service.ScriptServiceFactory">
+         <service serviceClass="org.eclipse.ease.service.IScriptService"/>
+      </serviceFactory>
+   </extension>
+   <extension point="org.eclipse.core.runtime.adapters">
+      <factory adaptableType="org.eclipse.core.resources.IFile" class="org.eclipse.ease.adapters.ScriptableAdapter">
+         <adapter type="org.eclipse.ease.IScriptable">
+         </adapter>
+      </factory>
+      <factory adaptableType="java.io.File" class="org.eclipse.ease.adapters.ScriptableAdapter">
+         <adapter type="org.eclipse.ease.IScriptable">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="java.net.URL"
+            class="org.eclipse.ease.adapters.ScriptableAdapter">
+         <adapter
+               type="org.eclipse.ease.IScriptable">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="java.net.URI"
+            class="org.eclipse.ease.adapters.ScriptableAdapter">
+         <adapter
+               type="org.eclipse.ease.IScriptable">
+         </adapter>
+      </factory>
+   </extension>
+   <extension point="org.eclipse.ecf.filetransfer.urlStreamHandlerService">
+      <urlStreamHandlerService protocol="workspace" serviceClass="org.eclipse.ease.urlhandler.WorkspaceURLStreamHandlerService">
+      </urlStreamHandlerService>
+   </extension>
+   <extension point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator class="org.eclipse.ease.debugging.ScriptSourceLocator" id="org.eclipse.ease.sourceLocator.generic" name="Generic Script Source Locator">
+      </sourceLocator>
+   </extension>
+   <extension point="org.eclipse.ease.modules">
+      <module
+            category="org.eclipse.ease.category.system"
+            class="org.eclipse.ease.modules.EnvironmentModule"
+            id="org.eclipse.ease.module.environment"
+            name="Environment"
+            visible="false">
+      </module>
+      <category
+            id="org.eclipse.ease.category.system"
+            name="System">
+      </category>
+   </extension>
+   <extension point="org.eclipse.help.toc">
+      <toc file="help/scripting_book.xml" primary="true">
+      </toc>
+   </extension>
+
+<extension
+      point="org.eclipse.ease.language">
+   <engine
+         class="org.eclipse.ease.engine.JavaEngine"
+         id="org.eclipse.ease.engine.native"
+         name="Native"
+         priority="0">
+   </engine>
+</extension>
+<extension
+      id="runScript"
+      name="runScript"
+      point="org.eclipse.core.runtime.applications">
+   <application
+         cardinality="singleton-global"
+         thread="main"
+         visible="true">
+      <run
+            class="org.eclipse.ease.applications.RunHeadlessScript">
+      </run>
+   </application>
+</extension>
+<extension
+      id="listEngines"
+      name="listEngines"
+      point="org.eclipse.core.runtime.applications">
+   <application
+         cardinality="singleton-global"
+         thread="main"
+         visible="true">
+      <run
+            class="org.eclipse.ease.applications.ListEngines">
+      </run>
+   </application>
+</extension>
+</plugin>

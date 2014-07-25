@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.ease.integration.modeling,org.eclipse.ease
+ .integration.modeling.selector
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ease.module.platform,
+ org.eclipse.emf.ecore;bundle-version="2.7.0",
+ org.eclipse.gmf.runtime.diagram.ui;bundle-version="1.5.0",
+ org.eclipse.ease,
+ com.google.guava;bundle-version="11.0.2",
+ org.eclipse.ui.ide;bundle-version="3.7.0",
+ org.eclipse.emf.ecore.editor;bundle-version="2.7.0",
+ org.eclipse.ease.modules.incubation;bundle-version="0.0.1"
+Bundle-ActivationPolicy: lazy
+Bundle-Version: 0.1.1.qualifier
+Bundle-Name: Modeling
+Bundle-Activator: org.eclipse.ease.integration.modeling.Activator
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.ease.integration.modeling;singleton:=
+ true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

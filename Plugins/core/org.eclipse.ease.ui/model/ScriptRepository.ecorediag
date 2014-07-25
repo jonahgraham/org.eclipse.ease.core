@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_useu4JAyEeOmU8KEFBYynA" type="EcoreTools" name="ScriptRepository.ecorediag" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_us5loJAyEeOmU8KEFBYynA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_utKEUJAyEeOmU8KEFBYynA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_utLScJAyEeOmU8KEFBYynA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_utXfsJAyEeOmU8KEFBYynA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="ScriptRepository.ecore#//Script/timestamp"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_utXfsZAyEeOmU8KEFBYynA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utLScZAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utLScpAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utLSc5AyEeOmU8KEFBYynA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_utLSdJAyEeOmU8KEFBYynA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utLSdZAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utLSdpAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utLSd5AyEeOmU8KEFBYynA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_us5loZAyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="ScriptRepository.ecore#//Script"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_us5lopAyEeOmU8KEFBYynA" x="160" y="305"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_utZU4JAyEeOmU8KEFBYynA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_utZU45AyEeOmU8KEFBYynA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_utZU5JAyEeOmU8KEFBYynA" type="5001">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utZU5ZAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utZU5pAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utZU55AyEeOmU8KEFBYynA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_utZ78JAyEeOmU8KEFBYynA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utZ78ZAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utZ78pAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utZ785AyEeOmU8KEFBYynA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_utZU4ZAyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="ScriptRepository.ecore#//Location"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_utZU4pAyEeOmU8KEFBYynA" x="168"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_utZ79pAyEeOmU8KEFBYynA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_utajAJAyEeOmU8KEFBYynA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_utajAZAyEeOmU8KEFBYynA" type="5001">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utajApAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utajA5AyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utajBJAyEeOmU8KEFBYynA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_utajBZAyEeOmU8KEFBYynA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utajBpAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utajB5AyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utajCJAyEeOmU8KEFBYynA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_utZ795AyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="ScriptRepository.ecore#//Repository"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_utZ7-JAyEeOmU8KEFBYynA" x="435" y="460"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_utajCZAyEeOmU8KEFBYynA" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_utbKEJAyEeOmU8KEFBYynA" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_utbKEZAyEeOmU8KEFBYynA" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_utbxIJAyEeOmU8KEFBYynA" type="2001">
+        <element xmi:type="ecore:EAttribute" href="ScriptRepository.ecore#//Entry/recursive"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_utbxIZAyEeOmU8KEFBYynA"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utbKEpAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utbKE5AyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utbKFJAyEeOmU8KEFBYynA"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_utbKFZAyEeOmU8KEFBYynA" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_utbKFpAyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_utbKF5AyEeOmU8KEFBYynA"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_utbKGJAyEeOmU8KEFBYynA"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_utajCpAyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="ScriptRepository.ecore#//Entry"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_utajC5AyEeOmU8KEFBYynA" x="415" y="130"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_useu4ZAyEeOmU8KEFBYynA"/>
+  <element xmi:type="ecore:EPackage" href="ScriptRepository.ecore#/"/>
+  <edges xmi:type="notation:Edge" xmi:id="_utgpoJAyEeOmU8KEFBYynA" type="3002" source="_us5loJAyEeOmU8KEFBYynA" target="_utajCZAyEeOmU8KEFBYynA">
+    <children xmi:type="notation:Node" xmi:id="_utgppJAyEeOmU8KEFBYynA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_utgppZAyEeOmU8KEFBYynA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_utgpppAyEeOmU8KEFBYynA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_utgpp5AyEeOmU8KEFBYynA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_utgpoZAyEeOmU8KEFBYynA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_utgpopAyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="ScriptRepository.ecore#//Script/entry"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_utgpo5AyEeOmU8KEFBYynA" points="[0, 0, -71, 76]$[71, -76, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwpdMJAyEeOmU8KEFBYynA" id="(0.8026315789473685,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwpdMZAyEeOmU8KEFBYynA" id="(0.33540372670807456,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_uthQsJAyEeOmU8KEFBYynA" type="3003" source="_us5loJAyEeOmU8KEFBYynA" target="_utZU4JAyEeOmU8KEFBYynA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_uthQsZAyEeOmU8KEFBYynA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_uthQspAyEeOmU8KEFBYynA" fontName="Sans"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_uthQs5AyEeOmU8KEFBYynA" points="[0, 0, 0, 201]$[0, -201, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwpdMpAyEeOmU8KEFBYynA" id="(0.6118421052631579,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwqEQJAyEeOmU8KEFBYynA" id="(0.49523809523809526,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_uthQtJAyEeOmU8KEFBYynA" type="3002" source="_utZ79pAyEeOmU8KEFBYynA" target="_utajCZAyEeOmU8KEFBYynA">
+    <children xmi:type="notation:Node" xmi:id="_uth3wJAyEeOmU8KEFBYynA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_uth3wZAyEeOmU8KEFBYynA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_uth3wpAyEeOmU8KEFBYynA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_uth3w5AyEeOmU8KEFBYynA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_uthQtZAyEeOmU8KEFBYynA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_uthQtpAyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="ScriptRepository.ecore#//Repository/entries"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_uthQt5AyEeOmU8KEFBYynA" points="[0, 0, 0, 185]$[0, -185, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwqEQZAyEeOmU8KEFBYynA" id="(0.49019607843137253,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwqEQpAyEeOmU8KEFBYynA" id="(0.6708074534161491,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_uth3xJAyEeOmU8KEFBYynA" type="3002" source="_utZ79pAyEeOmU8KEFBYynA" target="_us5loJAyEeOmU8KEFBYynA">
+    <children xmi:type="notation:Node" xmi:id="_uth3yJAyEeOmU8KEFBYynA" type="4011">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_uth3yZAyEeOmU8KEFBYynA" x="-10" y="-10"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_uth3ypAyEeOmU8KEFBYynA" type="4012">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_uth3y5AyEeOmU8KEFBYynA" x="10" y="10"/>
+    </children>
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_uth3xZAyEeOmU8KEFBYynA" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_uth3xpAyEeOmU8KEFBYynA" fontColor="4210752" fontName="Sans" fontHeight="10"/>
+    <element xmi:type="ecore:EReference" href="ScriptRepository.ecore#//Repository/scripts"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_uth3x5AyEeOmU8KEFBYynA" points="[0, 0, 146, 60]$[-146, -60, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwnoAJAyEeOmU8KEFBYynA" id="(0.24509803921568626,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwnoAZAyEeOmU8KEFBYynA" id="(0.5,1.0)"/>
+  </edges>
+  <edges xmi:type="notation:Edge" xmi:id="_utie0JAyEeOmU8KEFBYynA" type="3003" source="_utajCZAyEeOmU8KEFBYynA" target="_utZU4JAyEeOmU8KEFBYynA">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_utie0ZAyEeOmU8KEFBYynA" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_utie0pAyEeOmU8KEFBYynA" fontName="Sans"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_utie05AyEeOmU8KEFBYynA" points="[0, 0, 100, 60]$[0, -30, 100, 30]$[-100, -30, 0, 30]$[-100, -60, 0, 0]"/>
+    <sourceAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwoPEJAyEeOmU8KEFBYynA" id="(0.4968944099378882,0.0)"/>
+    <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_uwoPEZAyEeOmU8KEFBYynA" id="(0.7428571428571429,1.0)"/>
+  </edges>
+</notation:Diagram>

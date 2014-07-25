@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ease.language">
+      <engine
+            class="org.eclipse.ease.engine.javascript.rhino.RhinoScriptEngine"
+            debugger="false"
+            id="org.eclipse.ease.javascript.rhino"
+            name="JavaScript (Rhino)"
+            priority="10">
+         <binding
+               scriptType="JavaScript">
+         </binding>
+      </engine>
+      <moduleWrapper
+            class="org.eclipse.ease.engine.javascript.rhino.RhinoModuleWrapper"
+            engineID="org.eclipse.ease.javascript.rhino">
+      </moduleWrapper>
+      <launchExtension
+            class="org.eclipse.ease.modules.BootStrapper"
+            engineID="org.eclipse.ease.javascript.rhino">
+      </launchExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ease.ui.completionProcessor">
+      <completionProcessor
+            class="org.eclipse.ease.engine.javascript.rhino.completion.RhinoCompletionProvider"
+            engineID="org.eclipse.ease.javascript.rhino">
+      </completionProcessor>
+   </extension>
+
+</plugin>
+

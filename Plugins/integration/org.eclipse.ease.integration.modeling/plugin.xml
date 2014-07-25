@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension point="org.eclipse.ease.module.platform.Selector">
+      <Selector id="GMFSemanticSeletor" impl="org.eclipse.ease.integration.modeling.selector.GMFSemanticSeletor" priority="50">
+      </Selector>
+      <Selector id="GMFNotationSelector" impl="org.eclipse.ease.integration.modeling.selector.GMFNotationSelector" priority="45">
+      </Selector>
+   </extension>
+   <extension point="org.eclipse.ease.modules">
+      <module
+            category="org.eclipse.ease.modules.category.modeling"
+            class="org.eclipse.ease.integration.modeling.EcoreModule"
+            id="org.eclipse.ease.integration.modeling.ecore"
+            name="EcoreModule"
+            visible="true">
+         <dependency
+               module="org.eclipse.ease.module.platform.ui">
+         </dependency>
+      </module>
+      <module
+            category="org.eclipse.ease.modules.category.modeling"
+            class="org.eclipse.ease.integration.modeling.NotationModule"
+            id="org.eclipse.ease.integration.modeling.notation"
+            name="NotationModule"
+            visible="true">
+         <dependency
+               module="org.eclipse.ease.module.platform.ui">
+         </dependency>
+      </module>
+      <category
+            id="org.eclipse.ease.modules.category.modeling"
+            name="Modeling">
+      </category>
+   </extension>
+
+</plugin>

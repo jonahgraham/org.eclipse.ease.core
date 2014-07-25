@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<toc label="Scripting Guide">  
+     <topic href="help/modules_index.html" label="Loadable modules reference">
+        <anchor id="modules_anchor"/>  
+     </topic>  
+</toc>  

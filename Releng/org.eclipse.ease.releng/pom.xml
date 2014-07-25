@@ -1,0 +1,223 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.eclipse.ease</groupId>
+	<artifactId>org.eclipse.ease.releng</artifactId>
+	<version>0.1.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.eclipse.e4.releng</groupId>
+		<artifactId>eclipse-parent</artifactId>
+		<version>0.15.0-SNAPSHOT</version>
+	</parent>
+
+
+	<repositories>
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>eclipse-hosted</id>
+			<url>https://repo.eclipse.org/content/repositories/eclipse/</url>
+		</repository>
+	</repositories>
+
+
+	<modules>
+		<!-- PLugins -->
+		<module>
+			../org.eclipse.ease.releng.target
+		</module>
+		<!-- Core -->
+		<module>
+			../../Plugins/core/org.eclipse.ease
+		</module>
+
+		<module>
+			../../Plugins/core/org.eclipse.ease.storedscript
+		</module>
+
+		<!-- UI -->
+		<module>
+				../../Plugins/core/org.eclipse.ease.ui
+			</module>
+		<module>
+				../../Plugins/core/org.eclipse.ease.ui.e4
+			</module>
+
+		<module>
+				../../Plugins/core/org.eclipse.ease.ui.expression
+			</module>
+		<module>
+				../../Plugins/core/org.eclipse.ease.ui.expression.xtext
+			</module>
+		<module>
+				../../Plugins/core/org.eclipse.ease.ui.expression.xtext.ui
+			</module>
+
+		<!-- Lang -->
+		<!-- Python -->
+		<module>
+			../../Plugins/engines/org.eclipse.ease.lang.python
+		</module>
+		<module>
+			../../Plugins/engines/org.eclipse.ease.lang.python.examples
+		</module>
+
+		<!-- Javascript -->
+		<module>
+			../../Plugins/engines/org.eclipse.ease.engine.javascript.rhino
+		</module>
+		<module>
+			../../Plugins/engines/org.eclipse.ease.lang.javascript.examples
+		</module>
+		<module>
+			../../Plugins/engines/org.eclipse.ease.engine.javascript.rhino.debugger
+		</module>
+
+
+
+		<!-- Modules -->
+		<module>
+			../../Plugins/modules/org.eclipse.ease.module.platform
+		</module>
+		<module>
+			../../Plugins/modules/org.eclipse.ease.modules.incubation
+		</module>
+
+
+		<!-- Integration -->
+		<module>
+			../../Plugins/integration/org.eclipse.ease.integration.modeling
+		</module>
+		<module>
+			../../Plugins/integration/org.eclipse.ease.integration.modeling.examples
+		</module>
+		<module>
+			../../Plugins/integration/org.eclipse.ease.integration.modeling.papyrus
+		</module>
+		<module>
+			../../Plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples
+		</module>
+		<module>
+			../../Plugins/integration/org.eclipse.ease.integration.modeling.uml
+		</module>
+		<module>
+			../../Plugins/integration/org.eclipse.ease.integration.modeling.uml.examples
+		</module>
+
+
+
+
+
+
+		<!-- Features -->
+		<module>
+			../../Features/org.eclipse.ease.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.ui.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.integration.modeling.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.integration.modeling.papyrus.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.integration.modeling.uml.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.javascript.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.modules.feature
+		</module>
+		<module>
+			../../Features/org.eclipse.ease.python.feature
+		</module>
+
+		<!-- Update site -->
+		<module>
+			../org.eclipse.ease.releng.p2
+		</module>
+
+		<module>
+			../../Plugins/engines/org.eclipse.ease.engine.javascript
+		</module>
+		<module>
+			../../Plugins/engines/org.eclipse.ease.lang.javascript.ui
+		</module>
+	</modules>
+	<profiles>
+		<profile>
+			<id>local</id>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.5.1</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+						</configuration>
+					</plugin>
+
+					<!-- No documentation built -->
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>cbi</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.5.1</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+						</configuration>
+					</plugin>
+
+					<!-- Enable module documentation builder -->
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<groupId>org.apache.maven.plugins</groupId>
+						<version>2.9.1</version>
+						<configuration>
+							<outputDirectory>${project.build.directory}/../mydocs</outputDirectory>
+							<doclet>org.eclipse.ease.helpgenerator.ModuleDoclet</doclet>
+							<docletPath>../../../../../../developers/tools/org.eclipse.ease.helpgenerator/bin</docletPath>
+							<additionalparam>-root ${project.build.directory}/..</additionalparam>
+							<useStandardDocletOptions>false</useStandardDocletOptions>
+						</configuration>
+						<executions>
+							<execution>
+								<id>build-docs</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>javadoc</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+</project>  

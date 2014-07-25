@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JavaScript Core
+Bundle-SymbolicName: org.eclipse.ease.engine.javascript;singleton:=true
+Bundle-Version: 0.1.1.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.eclipse.ease

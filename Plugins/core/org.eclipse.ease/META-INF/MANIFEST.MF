@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.ease;singleton:=true
+Bundle-Version: 0.1.1.qualifier
+Bundle-Vendor: Eclipse.org - E4
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0";visibility:=reexport,
+ org.eclipse.ui;bundle-version="3.7.0",
+ org.eclipse.debug.core;bundle-version="3.7.1",
+ org.eclipse.ui.ide;bundle-version="3.7.0",
+ com.google.guava;bundle-version="[10.0.1,13.0.0)",
+ org.eclipse.help,
+ org.eclipse.ecf.filetransfer;bundle-version="5.0.0"
+Export-Package: org.eclipse.ease,
+ org.eclipse.ease.debug,
+ org.eclipse.ease.debugging,
+ org.eclipse.ease.debugging.events,
+ org.eclipse.ease.engine,
+ org.eclipse.ease.modules,
+ org.eclipse.ease.service,
+ org.eclipse.ease.tools
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.eclipse.ease.Activator
+Bundle-Name: EASE Core (Incubation)
