@@ -1,0 +1,7 @@
+This project requires tools.jar from a Java JDK in its build path. Due to licensing issues we do not deliver this.
+
+How to fix:
+
+	1) Right click the project and select Properties
+	2) switch to Java Build Path/Libraries
+	3) Add External JARs... and select <your JDK folder>/lib/tools.jar
