@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="Selector" name="Selector" schema="schema/Selector.exsd"/>
    <extension point="org.eclipse.ease.modules">
       <module
             category="org.eclipse.ease.category.system"

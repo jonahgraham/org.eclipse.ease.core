@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-  	<relativePath>../../Releng/org.eclipse.ease.releng</relativePath>
+  	<relativePath>../../releng/org.eclipse.ease.releng</relativePath>
   	<groupId>org.eclipse.ease</groupId>
   	<artifactId>org.eclipse.ease.releng</artifactId>
   	<version>0.1.1-SNAPSHOT</version>

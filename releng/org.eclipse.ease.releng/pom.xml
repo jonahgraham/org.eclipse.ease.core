@@ -6,182 +6,106 @@
 	<version>0.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<parent>
-		<groupId>org.eclipse.e4.releng</groupId>
-		<artifactId>eclipse-parent</artifactId>
-		<version>0.15.0-SNAPSHOT</version>
-	</parent>
+	<properties>
+		<tycho-version>0.21.0</tycho-version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 
 	<repositories>
 		<repository>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<id>eclipse-hosted</id>
-			<url>https://repo.eclipse.org/content/repositories/eclipse/</url>
+			<id>kepler</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/kepler</url>
 		</repository>
 	</repositories>
 
-
 	<modules>
-		<!-- PLugins -->
-		<module>
-			../org.eclipse.ease.releng.target
-		</module>
-		<!-- Core -->
-		<module>
-			../../Plugins/core/org.eclipse.ease
-		</module>
 
-		<module>
-			../../Plugins/core/org.eclipse.ease.storedscript
-		</module>
-
-		<!-- UI -->
-		<module>
-				../../Plugins/core/org.eclipse.ease.ui
-			</module>
-		<module>
-				../../Plugins/core/org.eclipse.ease.ui.e4
-			</module>
-
-		<module>
-				../../Plugins/core/org.eclipse.ease.ui.expression
-			</module>
-		<module>
-				../../Plugins/core/org.eclipse.ease.ui.expression.xtext
-			</module>
-		<module>
-				../../Plugins/core/org.eclipse.ease.ui.expression.xtext.ui
-			</module>
-
-		<!-- Lang -->
-		<!-- Python -->
-		<module>
-			../../Plugins/engines/org.eclipse.ease.lang.python
-		</module>
-		<module>
-			../../Plugins/engines/org.eclipse.ease.lang.python.examples
-		</module>
+		<!-- core -->
+		<module>../../plugins/core/org.eclipse.ease</module>
+		<module>../../plugins/core/org.eclipse.ease.ui</module>
 
 		<!-- Javascript -->
-		<module>
-			../../Plugins/engines/org.eclipse.ease.engine.javascript.rhino
-		</module>
-		<module>
-			../../Plugins/engines/org.eclipse.ease.lang.javascript.examples
-		</module>
-		<module>
-			../../Plugins/engines/org.eclipse.ease.engine.javascript.rhino.debugger
-		</module>
+		<module>../../plugins/engines/org.eclipse.ease.engine.javascript</module>
+		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.ui</module>
+		<module>../../plugins/engines/org.eclipse.ease.engine.javascript.rhino</module>
+		<module>../../plugins/engines/org.eclipse.ease.engine.javascript.rhino.debugger</module>
 
-
+		<!-- Python -->
+		<module>../../plugins/engines/org.eclipse.ease.lang.python</module>
 
 		<!-- Modules -->
-		<module>
-			../../Plugins/modules/org.eclipse.ease.module.platform
-		</module>
-		<module>
-			../../Plugins/modules/org.eclipse.ease.modules.incubation
-		</module>
+		<module>../../plugins/modules/org.eclipse.ease.module.platform</module>
+		<module>../../plugins/modules/org.eclipse.ease.modules.incubation</module>
 
+		<!-- features -->
+		<module>../../features/org.eclipse.ease.feature</module>
+		<module>../../features/org.eclipse.ease.ui.feature</module>
+		<module>../../features/org.eclipse.ease.javascript.feature</module>
+		<module>../../features/org.eclipse.ease.modules.feature</module>
+		<module>../../features/org.eclipse.ease.python.feature</module>
 
-		<!-- Integration -->
-		<module>
-			../../Plugins/integration/org.eclipse.ease.integration.modeling
-		</module>
-		<module>
-			../../Plugins/integration/org.eclipse.ease.integration.modeling.examples
-		</module>
-		<module>
-			../../Plugins/integration/org.eclipse.ease.integration.modeling.papyrus
-		</module>
-		<module>
-			../../Plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples
-		</module>
-		<module>
-			../../Plugins/integration/org.eclipse.ease.integration.modeling.uml
-		</module>
-		<module>
-			../../Plugins/integration/org.eclipse.ease.integration.modeling.uml.examples
-		</module>
+		<!-- releng -->
+		<module>../org.eclipse.ease.releng.target</module>
+		<module>../org.eclipse.ease.releng.p2</module>
+		
+<!-- 
+		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.examples</module>
+		<module>../../plugins/engines/org.eclipse.ease.lang.python.examples</module>
 
+		<module>../../plugins/core/org.eclipse.ease.ui.e4</module>
+		<module>../../plugins/core/org.eclipse.ease.ui.expression</module>
+		<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext	</module>
+		<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext.ui</module>
 
+		<module>../../features/org.eclipse.ease.integration.modeling.feature</module>
+		<module>../../features/org.eclipse.ease.integration.modeling.papyrus.feature</module>
+		<module>../../features/org.eclipse.ease.integration.modeling.uml.feature</module>
+		<module>../../plugins/core/org.eclipse.ease.storedscript</module>
 
-
-
-
-		<!-- Features -->
-		<module>
-			../../Features/org.eclipse.ease.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.ui.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.integration.modeling.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.integration.modeling.papyrus.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.integration.modeling.uml.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.javascript.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.modules.feature
-		</module>
-		<module>
-			../../Features/org.eclipse.ease.python.feature
-		</module>
-
-		<!-- Update site -->
-		<module>
-			../org.eclipse.ease.releng.p2
-		</module>
-
-		<module>
-			../../Plugins/engines/org.eclipse.ease.engine.javascript
-		</module>
-		<module>
-			../../Plugins/engines/org.eclipse.ease.lang.javascript.ui
-		</module>
+		<module>../../plugins/integration/org.eclipse.ease.integration.modeling</module>
+		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.examples</module>
+		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus</module>
+		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples</module>
+		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml</module>
+		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml.examples</module>
+ -->
 	</modules>
+	
+	
 	<profiles>
 		<profile>
 			<id>local</id>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>2.5.1</version>
-						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
-						</configuration>
-					</plugin>
-
-					<!-- No documentation built -->
-				</plugins>
-			</build>
 		</profile>
 
 		<profile>
 			<id>cbi</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 
 			<build>
 				<plugins>
+					<!-- set compiler compliance level -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
@@ -192,7 +116,7 @@
 						</configuration>
 					</plugin>
 
-					<!-- Enable module documentation builder -->
+					<!-- enable module documentation builder -->
 					<plugin>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<groupId>org.apache.maven.plugins</groupId>

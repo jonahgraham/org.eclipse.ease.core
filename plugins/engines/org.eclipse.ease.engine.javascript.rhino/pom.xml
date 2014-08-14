@@ -5,7 +5,7 @@
   	<groupId>org.eclipse.ease</groupId>
   	<artifactId>org.eclipse.ease.releng</artifactId>
   	<version>0.1.1-SNAPSHOT</version>
-  	<relativePath>../../../Releng/org.eclipse.ease.releng</relativePath>
+  	<relativePath>../../../releng/org.eclipse.ease.releng</relativePath>
   </parent>
   <artifactId>org.eclipse.ease.engine.javascript.rhino</artifactId>
 </project>
