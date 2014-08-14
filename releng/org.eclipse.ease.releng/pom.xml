@@ -51,26 +51,24 @@
 		<module>../../plugins/core/org.eclipse.ease</module>
 		<module>../../plugins/core/org.eclipse.ease.ui</module>
 		<module>../../plugins/core/org.eclipse.ease.storedscript</module>
+		<module>../../features/org.eclipse.ease.feature</module>
+		<module>../../features/org.eclipse.ease.ui.feature</module>
 
 		<!-- Javascript -->
-		<module>../../plugins/engines/org.eclipse.ease.engine.javascript</module>
+		<module>../../plugins/engines/org.eclipse.ease.lang.javascript</module>
 		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.ui</module>
-		<module>../../plugins/engines/org.eclipse.ease.engine.javascript.rhino</module>
-		<module>../../plugins/engines/org.eclipse.ease.engine.javascript.rhino.debugger</module>
+		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.rhino</module>
+		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.rhino.debugger</module>
+		<module>../../features/org.eclipse.ease.javascript.feature</module>
 
 		<!-- Python -->
 		<module>../../plugins/engines/org.eclipse.ease.lang.python</module>
+		<module>../../features/org.eclipse.ease.python.feature</module>
 
 		<!-- Modules -->
 		<module>../../plugins/modules/org.eclipse.ease.module.platform</module>
 		<module>../../plugins/modules/org.eclipse.ease.modules.incubation</module>
-
-		<!-- features -->
-		<module>../../features/org.eclipse.ease.feature</module>
-		<module>../../features/org.eclipse.ease.ui.feature</module>
-		<module>../../features/org.eclipse.ease.javascript.feature</module>
 		<module>../../features/org.eclipse.ease.modules.feature</module>
-		<module>../../features/org.eclipse.ease.python.feature</module>
 
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>

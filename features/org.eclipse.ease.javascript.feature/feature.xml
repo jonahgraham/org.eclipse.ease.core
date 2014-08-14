@@ -26,24 +26,35 @@ Contributors:
    </license>
 
    <plugin
-         id="org.eclipse.ease.engine.javascript.rhino.debugger"
+         id="org.eclipse.ease.lang.javascript"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.ease.lang.javascript.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ease.engine.javascript.rhino"
+         id="org.eclipse.ease.lang.javascript.examples"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ease.engine.javascript"
+         id="org.eclipse.ease.lang.javascript.rhino"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.ease.lang.javascript.rhino.debugger"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

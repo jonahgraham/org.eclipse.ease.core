@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.eclipse.ease.engine.javascript.rhino</name>
+	<name>org.eclipse.ease.lang.javascript</name>
 	<comment></comment>
 	<projects>
 	</projects>
