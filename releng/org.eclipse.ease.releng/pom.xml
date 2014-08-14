@@ -6,10 +6,21 @@
 	<version>0.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+
 	<properties>
 		<tycho-version>0.21.0</tycho-version>
 	</properties>
 
+
+	<repositories>
+		<repository>
+			<id>kepler</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/kepler</url>
+		</repository>
+	</repositories>
+
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -20,6 +31,7 @@
 				<extensions>true</extensions>
 			</plugin>
 
+			<!-- set compiler compliance level -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -32,14 +44,6 @@
 		</plugins>
 	</build>
 
-
-	<repositories>
-		<repository>
-			<id>kepler</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/kepler</url>
-		</repository>
-	</repositories>
 
 	<modules>
 
@@ -70,51 +74,34 @@
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
-		
-<!-- 
-		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.examples</module>
-		<module>../../plugins/engines/org.eclipse.ease.lang.python.examples</module>
 
-		<module>../../plugins/core/org.eclipse.ease.ui.e4</module>
-		<module>../../plugins/core/org.eclipse.ease.ui.expression</module>
-		<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext	</module>
-		<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext.ui</module>
-
-		<module>../../features/org.eclipse.ease.integration.modeling.feature</module>
-		<module>../../features/org.eclipse.ease.integration.modeling.papyrus.feature</module>
-		<module>../../features/org.eclipse.ease.integration.modeling.uml.feature</module>
-		<module>../../plugins/core/org.eclipse.ease.storedscript</module>
-
-		<module>../../plugins/integration/org.eclipse.ease.integration.modeling</module>
-		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.examples</module>
-		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus</module>
-		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples</module>
-		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml</module>
-		<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml.examples</module>
- -->
+		<!-- <module>../../plugins/engines/org.eclipse.ease.lang.javascript.examples</module> 
+			<module>../../plugins/engines/org.eclipse.ease.lang.python.examples</module> 
+			<module>../../plugins/core/org.eclipse.ease.ui.e4</module> <module>../../plugins/core/org.eclipse.ease.ui.expression</module> 
+			<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext </module> 
+			<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext.ui</module> 
+			<module>../../features/org.eclipse.ease.integration.modeling.feature</module> 
+			<module>../../features/org.eclipse.ease.integration.modeling.papyrus.feature</module> 
+			<module>../../features/org.eclipse.ease.integration.modeling.uml.feature</module> 
+			<module>../../plugins/core/org.eclipse.ease.storedscript</module> <module>../../plugins/integration/org.eclipse.ease.integration.modeling</module> 
+			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.examples</module> 
+			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus</module> 
+			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples</module> 
+			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml</module> 
+			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml.examples</module> -->
 	</modules>
-	
-	
+
+
 	<profiles>
 		<profile>
 			<id>local</id>
 		</profile>
 
 		<profile>
-			<id>cbi</id>
+			<id>docs</id>
 
 			<build>
 				<plugins>
-					<!-- set compiler compliance level -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>2.5.1</version>
-						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
-						</configuration>
-					</plugin>
 
 					<!-- enable module documentation builder -->
 					<plugin>
