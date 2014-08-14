@@ -15,17 +15,7 @@
    <feature url="features/org.eclipse.ease.modules.feature_0.1.1.qualifier.jar" id="org.eclipse.ease.modules.feature" version="0.1.1.qualifier">
       <category name="Modules"/>
    </feature>
-   <feature url="features/org.eclipse.ease.integration.modeling.feature_0.1.1.qualifier.jar" id="org.eclipse.ease.integration.modeling.feature" version="0.1.1.qualifier">
-      <category name="Integration"/>
-   </feature>
-   <feature url="features/org.eclipse.ease.integration.modeling.papyrus.feature_0.1.1.qualifier.jar" id="org.eclipse.ease.integration.modeling.papyrus.feature" version="0.1.1.qualifier">
-      <category name="Integration"/>
-   </feature>
-   <feature url="features/org.eclipse.ease.integration.modeling.uml.feature_0.1.1.qualifier.jar" id="org.eclipse.ease.integration.modeling.uml.feature" version="0.1.1.qualifier">
-      <category name="Integration"/>
-   </feature>
    <category-def name="Core" label="Core"/>
    <category-def name="Lang" label="Lang"/>
    <category-def name="Modules" label="Modules"/>
-   <category-def name="Integration" label="Integration"/>
 </site>
