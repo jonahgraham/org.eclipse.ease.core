@@ -20,7 +20,7 @@
 		</repository>
 	</repositories>
 
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -76,9 +76,7 @@
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
 
-		<!-- <module>../../plugins/engines/org.eclipse.ease.lang.javascript.examples</module> 
-			<module>../../plugins/engines/org.eclipse.ease.lang.python.examples</module> 
-			<module>../../plugins/core/org.eclipse.ease.ui.e4</module> <module>../../plugins/core/org.eclipse.ease.ui.expression</module> 
+		<!-- <module>../../plugins/core/org.eclipse.ease.ui.e4</module> <module>../../plugins/core/org.eclipse.ease.ui.expression</module> 
 			<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext </module> 
 			<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext.ui</module> 
 			<module>../../features/org.eclipse.ease.integration.modeling.feature</module> 
