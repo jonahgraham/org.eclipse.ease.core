@@ -50,6 +50,7 @@
 		<!-- core -->
 		<module>../../plugins/core/org.eclipse.ease</module>
 		<module>../../plugins/core/org.eclipse.ease.ui</module>
+		<module>../../plugins/core/org.eclipse.ease.storedscript</module>
 
 		<!-- Javascript -->
 		<module>../../plugins/engines/org.eclipse.ease.engine.javascript</module>
@@ -83,7 +84,7 @@
 			<module>../../features/org.eclipse.ease.integration.modeling.feature</module> 
 			<module>../../features/org.eclipse.ease.integration.modeling.papyrus.feature</module> 
 			<module>../../features/org.eclipse.ease.integration.modeling.uml.feature</module> 
-			<module>../../plugins/core/org.eclipse.ease.storedscript</module> <module>../../plugins/integration/org.eclipse.ease.integration.modeling</module> 
+			<module>../../plugins/integration/org.eclipse.ease.integration.modeling</module> 
 			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.examples</module> 
 			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus</module> 
 			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples</module> 
