@@ -57,7 +57,7 @@
 			</plugin>
 
 			<!-- set target platform for build -->
-			<!-- -->
+			<!-- 
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
@@ -72,6 +72,7 @@
 					</target>
 				</configuration>
 			</plugin>
+			-->
 
 			<!-- set compiler options -->
 			<plugin>
