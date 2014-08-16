@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Storedscript
 Bundle-SymbolicName: org.eclipse.ease.storedscript;singleton:=true
-Bundle-Version: 0.1.1.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-Activator: org.eclipse.ease.storedscript.Activator

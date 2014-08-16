@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: E4 Ui
 Bundle-SymbolicName: org.eclipse.ease.ui.e4;singleton:=true
-Bundle-Version: 0.1.1.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: org.eclipse.ease.ui.e4.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -18,6 +18,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.expressions;bundle-version="3.4.500",
  org.eclipse.debug.ui,
  org.eclipse.ease.ui.expression.xtext,
- org.eclipse.ease;bundle-version="0.1.1"
+ org.eclipse.ease;bundle-version="0.1.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.ease.ui.expression.xtext.ui
 Bundle-Vendor: My Company
-Bundle-Version: 0.1.1.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-SymbolicName: org.eclipse.ease.ui.expression.xtext.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.ease.ui.expression.xtext;visibility:=reexport,
