@@ -7,7 +7,7 @@
             base-type="org.eclipse.core.runtime.text"
             default-charset="ISO-8859-1"
             file-extensions="js"
-            id="org.eclipse.ease.engine.javascript.content-type"
+            id="org.eclipse.ease.lang.javascript.content-type"
             name="JavaScript Source File"
             priority="low">
       </content-type>
@@ -16,13 +16,13 @@
          point="org.eclipse.ease.scriptType">
       <scriptType
             defaultExtension="js"
-            headerParser="org.eclipse.ease.engine.javascript.JavaScriptHeaderParser"
+            headerParser="org.eclipse.ease.lang.javascript.JavaScriptHeaderParser"
             name="JavaScript">
          <binding
                contentType="org.eclipse.wst.jsdt.core.jsSource">
          </binding>
          <binding
-               contentType="org.eclipse.ease.engine.javascript.content-type">
+               contentType="org.eclipse.ease.lang.javascript.content-type">
          </binding>
       </scriptType>
    </extension>

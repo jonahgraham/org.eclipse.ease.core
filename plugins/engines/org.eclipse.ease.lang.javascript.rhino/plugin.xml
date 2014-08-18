@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ease.language">
       <engine
-            class="org.eclipse.ease.engine.javascript.rhino.RhinoScriptEngine"
+            class="org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine"
             debugger="false"
             id="org.eclipse.ease.javascript.rhino"
             name="JavaScript (Rhino)"
@@ -14,7 +14,7 @@
          </binding>
       </engine>
       <moduleWrapper
-            class="org.eclipse.ease.engine.javascript.rhino.RhinoModuleWrapper"
+            class="org.eclipse.ease.lang.javascript.JavaScriptModuleWrapper"
             engineID="org.eclipse.ease.javascript.rhino">
       </moduleWrapper>
       <launchExtension
@@ -25,7 +25,7 @@
    <extension
          point="org.eclipse.ease.ui.completionProcessor">
       <completionProcessor
-            class="org.eclipse.ease.engine.javascript.rhino.completion.RhinoCompletionProvider"
+            class="org.eclipse.ease.lang.javascript.rhino.completion.RhinoCompletionProvider"
             engineID="org.eclipse.ease.javascript.rhino">
       </completionProcessor>
    </extension>

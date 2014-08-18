@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ease.language">
+      <engine
+            class="org.eclipse.ease.lang.javascript.nashorn.NashornScriptEngine"
+            debugger="false"
+            id="org.eclipse.ease.javascript.nashorn"
+            name="JavaScript (Nashorn)"
+            priority="20">
+         <binding
+               scriptType="JavaScript">
+         </binding>
+      </engine>
+      <moduleWrapper
+            class="org.eclipse.ease.lang.javascript.JavaScriptModuleWrapper"
+            engineID="org.eclipse.ease.javascript.nashorn">
+      </moduleWrapper>
+      <launchExtension
+            class="org.eclipse.ease.modules.BootStrapper"
+            engineID="org.eclipse.ease.javascript.nashorn">
+      </launchExtension>
+   </extension>
+
+</plugin>
