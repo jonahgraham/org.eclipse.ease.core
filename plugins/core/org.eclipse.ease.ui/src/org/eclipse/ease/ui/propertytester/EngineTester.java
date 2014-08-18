@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.propertytester;
+ *******************************************************************************/
+package org.eclipse.ease.ui.propertytester;
 
 import java.util.Collection;
 
@@ -28,7 +29,7 @@ public class EngineTester extends PropertyTester {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
+	public boolean test(Object receiver, final String property, final Object[] args, final Object expectedValue) {
 		if (receiver instanceof Collection)
 			receiver = ((Collection) receiver).iterator().next();
 
@@ -37,15 +38,18 @@ public class EngineTester extends PropertyTester {
 
 		if (receiver instanceof IFile) {
 			ScriptType scriptType = ResourceTools.getScriptType((IFile) receiver);
-			Collection<EngineDescription> engines = scriptType.getEngines();
+			if (scriptType != null) {
 
-			if (HAS_ENGINE.equals(property))
-				return !engines.isEmpty();
+				Collection<EngineDescription> engines = scriptType.getEngines();
 
-			if (HAS_DEBUG_ENGINE.equals(property)) {
-				for (EngineDescription description : engines) {
-					if (description.supportsDebugging())
-						return true;
+				if (HAS_ENGINE.equals(property))
+					return !engines.isEmpty();
+
+				if (HAS_DEBUG_ENGINE.equals(property)) {
+					for (EngineDescription description : engines) {
+						if (description.supportsDebugging())
+							return true;
+					}
 				}
 			}
 		}
