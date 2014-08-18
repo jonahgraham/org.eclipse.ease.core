@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino.debugger.actions;
+package org.eclipse.ease.lang.javascript.rhino.debugger.actions;
 
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.ease.debugging.ScriptDebugVariable;

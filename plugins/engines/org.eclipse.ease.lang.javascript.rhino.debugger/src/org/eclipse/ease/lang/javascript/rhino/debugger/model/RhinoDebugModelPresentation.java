@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino.debugger.model;
+package org.eclipse.ease.lang.javascript.rhino.debugger.model;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.debug.core.model.IValue;

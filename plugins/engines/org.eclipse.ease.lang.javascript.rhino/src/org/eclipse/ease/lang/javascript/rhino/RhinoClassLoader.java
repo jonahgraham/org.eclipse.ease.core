@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino;
+package org.eclipse.ease.lang.javascript.rhino;
 
 import java.net.URL;
 import java.net.URLClassLoader;

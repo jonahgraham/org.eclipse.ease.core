@@ -9,13 +9,13 @@
  *     Christian Pontesegger - initial API and implementation
  *     Mathieu Velten - Bug correction
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino.debugger;
+package org.eclipse.ease.lang.javascript.rhino.debugger;
 
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.debugging.EventDispatchJob;
-import org.eclipse.ease.engine.javascript.rhino.RhinoScriptEngine;
-import org.eclipse.ease.engine.javascript.rhino.debugger.model.RhinoDebugTarget;
+import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
+import org.eclipse.ease.lang.javascript.rhino.debugger.model.RhinoDebugTarget;
 
 /**
  * A script engine to execute/debug JavaScript code on a Rhino interpreter.

@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.engine.javascript;
+ *******************************************************************************/package org.eclipse.ease.lang.javascript;
 
 import org.eclipse.ease.AbstractHeaderParser;
 

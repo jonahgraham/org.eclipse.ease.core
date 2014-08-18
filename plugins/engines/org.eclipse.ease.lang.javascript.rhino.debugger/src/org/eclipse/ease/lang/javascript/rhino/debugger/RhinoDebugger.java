@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino.debugger;
+package org.eclipse.ease.lang.javascript.rhino.debugger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import org.eclipse.ease.debugging.events.ScriptStartRequest;
 import org.eclipse.ease.debugging.events.StackFramesEvent;
 import org.eclipse.ease.debugging.events.SuspendedEvent;
 import org.eclipse.ease.debugging.events.TerminateRequest;
-import org.eclipse.ease.engine.javascript.rhino.RhinoScriptEngine;
+import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.debug.DebugFrame;

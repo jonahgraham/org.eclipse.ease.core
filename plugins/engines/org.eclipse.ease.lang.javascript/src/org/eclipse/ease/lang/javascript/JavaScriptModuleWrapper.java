@@ -9,7 +9,7 @@
  *     Christian Pontesegger - initial API and implementation
  *     Arthur Daussy - Allow optional parameter
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino;
+package org.eclipse.ease.lang.javascript;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,11 +18,12 @@ import java.util.List;
 
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.lang.javascript.JavaScriptHelper;
 import org.eclipse.ease.modules.AbstractModuleWrapper;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
 
-public class RhinoModuleWrapper extends AbstractModuleWrapper {
+public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 
 	public static List<String> RESERVED_KEYWORDS = new ArrayList<String>();
 
@@ -34,7 +35,7 @@ public class RhinoModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	private static boolean isValidMethodName(final String methodName) {
-		return RhinoScriptEngine.isSaveName(methodName) && !RESERVED_KEYWORDS.contains(methodName);
+		return JavaScriptHelper.isSaveName(methodName) && !RESERVED_KEYWORDS.contains(methodName);
 	}
 
 	@Override
@@ -107,7 +108,7 @@ public class RhinoModuleWrapper extends AbstractModuleWrapper {
 
 	@Override
 	public String createStaticFieldWrapper(final IEnvironment environment, final Field field) {
-		return "const " + RhinoScriptEngine.getSaveName(field.getName()) + " = Packages." + field.getDeclaringClass().getName() + "." + field.getName() + ";\n";
+		return "const " + JavaScriptHelper.getSaveName(field.getName()) + " = Packages." + field.getDeclaringClass().getName() + "." + field.getName() + ";\n";
 	}
 
 	@Override
@@ -117,7 +118,7 @@ public class RhinoModuleWrapper extends AbstractModuleWrapper {
 
 	@Override
 	public String getSaveVariableName(final String variableName) {
-		return RhinoScriptEngine.getSaveName(variableName);
+		return JavaScriptHelper.getSaveName(variableName);
 	}
 
 	private StringBuilder verifyParameters(final List<Parameter> parameters) {

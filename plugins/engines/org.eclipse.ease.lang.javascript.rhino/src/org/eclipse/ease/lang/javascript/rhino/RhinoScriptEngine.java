@@ -9,7 +9,7 @@
  *     Christian Pontesegger - initial API and implementation
  *     Mathieu Velten - Bug correction
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino;
+package org.eclipse.ease.lang.javascript.rhino;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,13 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.FileTrace;
 import org.eclipse.ease.Script;
-import org.eclipse.ease.engine.javascript.rhino.debugger.LineNumberDebugger;
-import org.eclipse.ease.engine.javascript.rhino.debugger.LineNumberDebugger.LineNumberDebugFrame;
+import org.eclipse.ease.lang.javascript.JavaScriptHelper;
+import org.eclipse.ease.lang.javascript.rhino.debugger.LineNumberDebugger;
+import org.eclipse.ease.lang.javascript.rhino.debugger.LineNumberDebugger.LineNumberDebugFrame;
 import org.eclipse.ease.tools.RunnableWithResult;
 import org.eclipse.swt.widgets.Display;
 import org.mozilla.javascript.Context;
@@ -83,7 +83,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	/**
 	 * Creates a new Rhino interpreter.
-	 * 
+	 *
 	 * @param name
 	 *            name of interpreter (used for the jobs name)
 	 */
@@ -278,7 +278,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	public void setVariable(final String name, final Object content) {
-		if (!isSaveName(name))
+		if (!JavaScriptHelper.isSaveName(name))
 			throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
 
 		final Scriptable scope = getScope();
@@ -387,38 +387,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	public String getSaveVariableName(final String name) {
-		return getSaveName(name);
-	}
-
-	static String getSaveName(final String identifier) {
-		// check if name is already valid
-		if (isSaveName(identifier))
-			return identifier;
-
-		// not valid, convert string to valid format
-		final StringBuilder buffer = new StringBuilder(identifier.replaceAll("[^a-zA-Z0-9]", "_"));
-
-		// remove '_' at the beginning
-		while ((buffer.length() > 0) && (buffer.charAt(0) == '_'))
-			buffer.deleteCharAt(0);
-
-		// remove trailing '_'
-		while ((buffer.length() > 0) && (buffer.charAt(buffer.length() - 1) == '_'))
-			buffer.deleteCharAt(buffer.length() - 1);
-
-		// check for valid first character
-		if (buffer.length() > 0) {
-			final char start = buffer.charAt(0);
-			if ((start < 65) || ((start > 90) && (start < 97)) || (start > 122))
-				buffer.insert(0, '_');
-		} else
-			// buffer is empty
-			buffer.insert(0, '_');
-
-		return buffer.toString();
-	}
-
-	static boolean isSaveName(final String identifier) {
-		return Pattern.matches("[a-zA-Z_$][a-zA-Z0-9_$]*", identifier);
+		return JavaScriptHelper.getSaveName(name);
 	}
 }

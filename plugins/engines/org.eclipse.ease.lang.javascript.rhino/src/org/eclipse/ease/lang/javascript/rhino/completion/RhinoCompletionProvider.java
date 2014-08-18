@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.engine.javascript.rhino.completion;
+ *******************************************************************************/package org.eclipse.ease.lang.javascript.rhino.completion;
 
 import java.util.Collection;
 import java.util.HashSet;

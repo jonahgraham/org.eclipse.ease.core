@@ -4,7 +4,7 @@
  * 
  * Eclipse-BuddyPolicy: global
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino;
+package org.eclipse.ease.lang.javascript.rhino;
 
 import java.io.IOException;
 import java.net.URL;

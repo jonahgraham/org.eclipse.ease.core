@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.engine.javascript.rhino.debugger;
+package org.eclipse.ease.lang.javascript.rhino.debugger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

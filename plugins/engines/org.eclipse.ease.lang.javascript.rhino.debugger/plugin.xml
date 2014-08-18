@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ease.language">
       <engine
-            class="org.eclipse.ease.engine.javascript.rhino.debugger.RhinoDebuggerEngine"
+            class="org.eclipse.ease.lang.javascript.rhino.debugger.RhinoDebuggerEngine"
             debugger="true"
             id="org.eclipse.ease.javascript.rhinoDebugger"
             name="JavaScript (Rhino Debugger)"
@@ -14,7 +14,7 @@
          </binding>
       </engine>
       <moduleWrapper
-            class="org.eclipse.ease.engine.javascript.rhino.RhinoModuleWrapper"
+            class="org.eclipse.ease.lang.javascript.JavaScriptModuleWrapper"
             engineID="org.eclipse.ease.javascript.rhinoDebugger">
       </moduleWrapper>
       <launchExtension
@@ -25,7 +25,7 @@
    <extension
          point="org.eclipse.debug.ui.debugModelPresentations">
       <debugModelPresentation
-            class="org.eclipse.ease.engine.javascript.rhino.debugger.model.RhinoDebugModelPresentation"
+            class="org.eclipse.ease.lang.javascript.rhino.debugger.model.RhinoDebugModelPresentation"
             id="org.eclipse.ease.debugModelPresentation.rhino">
       </debugModelPresentation>
    </extension>
@@ -42,7 +42,7 @@
             </groupMarker>
          </menu>
          <action
-               class="org.eclipse.ease.engine.javascript.rhino.debugger.actions.FunctionFilterAction"
+               class="org.eclipse.ease.lang.javascript.rhino.debugger.actions.FunctionFilterAction"
                helpContextId="show_functions_variable_help_context"
                id="org.eclipse.ease.ui.variableview.show.functions"
                label="Show functions"
@@ -51,7 +51,7 @@
                tooltip="Tooltip text">
          </action>
          <action
-               class="org.eclipse.ease.engine.javascript.rhino.debugger.actions.ModuleFilterAction"
+               class="org.eclipse.ease.lang.javascript.rhino.debugger.actions.ModuleFilterAction"
                helpContextId="show_functions_variable_help_context"
                id="org.eclipse.ease.ui.variableview.show.modules"
                label="Show modules"
