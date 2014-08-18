@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nashorn
+Bundle-SymbolicName: org.eclipse.ease.lang.javascript.nashorn;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Eclipse-BuddyPolicy: global
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.eclipse.ease,
+ org.eclipse.ease.lang.javascript;bundle-version="0.1.0"

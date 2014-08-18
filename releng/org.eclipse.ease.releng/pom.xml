@@ -130,6 +130,7 @@
 		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.ui</module>
 		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.rhino</module>
 		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.rhino.debugger</module>
+		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.nashorn</module>
 		<module>../../features/org.eclipse.ease.javascript.feature</module>
 
 		<!-- Python -->
