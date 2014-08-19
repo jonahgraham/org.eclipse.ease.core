@@ -17,8 +17,8 @@ import org.eclipse.core.commands.IHandler;
 
 public class RenameScript extends AbstractHandler implements IHandler {
 
-	public static final String COMMAND_ID = "org.eclipse.ease.commands.macro.rename";
-	public static final String PARAMETER_NAME = "org.eclipse.ease.commands.macro.rename.name";
+	public static final String COMMAND_ID = "org.eclipse.ease.commands.script.rename";
+	public static final String PARAMETER_NAME = "org.eclipse.ease.commands.script.rename.name";
 
 	@Override
 	public final Object execute(final ExecutionEvent event) throws ExecutionException {
