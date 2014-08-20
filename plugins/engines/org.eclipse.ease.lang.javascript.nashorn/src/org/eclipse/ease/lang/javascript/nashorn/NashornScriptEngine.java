@@ -73,7 +73,7 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 	@Override
 	protected boolean setupEngine() {
 		ScriptEngineManager engineManager = new ScriptEngineManager();
-		ScriptEngine fEngine = engineManager.getEngineByName("nashorn");
+		fEngine = engineManager.getEngineByName("nashorn");
 
 		return fEngine != null;
 	}
