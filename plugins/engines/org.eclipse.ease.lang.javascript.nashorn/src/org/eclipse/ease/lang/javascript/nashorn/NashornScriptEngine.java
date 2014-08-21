@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import javax.script.Bindings;
 import javax.script.ScriptContext;
@@ -14,10 +13,13 @@ import javax.script.ScriptEngineManager;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.lang.javascript.JavaScriptHelper;
 
 public class NashornScriptEngine extends AbstractScriptEngine implements IScriptEngine {
 
 	private ScriptEngine fEngine;
+
+	private final Map<String, Object> fBufferedVariables = new HashMap<String, Object>();
 
 	public NashornScriptEngine() {
 		super("Nashorn");
@@ -31,37 +33,57 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 
 	@Override
 	public void setVariable(final String name, final Object content) {
-		fEngine.put(name, content);
+		if (!JavaScriptHelper.isSaveName(name))
+			throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
+
+		if (fEngine != null)
+			fEngine.put(name, content);
+
+		else
+			fBufferedVariables.put(name, content);
 	}
 
 	@Override
 	public Object getVariable(final String name) {
-		return fEngine.get(name);
+		if (fEngine != null)
+			return fEngine.get(name);
+
+		throw new RuntimeException("Cannot retrieve variable, engine not initialized");
 	}
 
 	@Override
 	public boolean hasVariable(final String name) {
-		return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name);
+		if (fEngine != null)
+			return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name);
+
+		throw new RuntimeException("Cannot query variable, engine not initialized");
 	}
 
 	@Override
 	public String getSaveVariableName(final String name) {
-		return getSaveName(name);
+		return JavaScriptHelper.getSaveName(name);
 	}
 
 	@Override
 	public Object removeVariable(final String name) {
-		return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
+		if (fEngine != null)
+			return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
+
+		throw new RuntimeException("Cannot remove variable, engine not initialized");
 	}
 
 	@Override
 	public Map<String, Object> getVariables() {
-		Map<String, Object> variables = new HashMap<String, Object>();
-		Bindings bindings = fEngine.getBindings(ScriptContext.ENGINE_SCOPE);
-		for (Entry<String, Object> entry : bindings.entrySet())
-			variables.put(entry.getKey(), entry.getValue());
+		if (fEngine != null) {
+			Map<String, Object> variables = new HashMap<String, Object>();
+			Bindings bindings = fEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+			for (Entry<String, Object> entry : bindings.entrySet())
+				variables.put(entry.getKey(), entry.getValue());
 
-		return variables;
+			return variables;
+		}
+
+		throw new RuntimeException("Cannot retrieve variables, engine not initialized");
 	}
 
 	@Override
@@ -75,48 +97,26 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 		ScriptEngineManager engineManager = new ScriptEngineManager();
 		fEngine = engineManager.getEngineByName("nashorn");
 
+		if (fEngine != null) {
+			// engine is initialized, set buffered variables
+			for (final Entry<String, Object> entry : fBufferedVariables.entrySet())
+				setVariable(entry.getKey(), entry.getValue());
+
+			fBufferedVariables.clear();
+		}
+
 		return fEngine != null;
 	}
 
 	@Override
 	protected boolean teardownEngine() {
+		fEngine = null;
+
 		return true;
 	}
 
 	@Override
 	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Exception {
 		return fEngine.eval(script.getCode());
-	}
-
-	private static String getSaveName(final String identifier) {
-		// check if name is already valid
-		if (isSaveName(identifier))
-			return identifier;
-
-		// not valid, convert string to valid format
-		final StringBuilder buffer = new StringBuilder(identifier.replaceAll("[^a-zA-Z0-9]", "_"));
-
-		// remove '_' at the beginning
-		while ((buffer.length() > 0) && (buffer.charAt(0) == '_'))
-			buffer.deleteCharAt(0);
-
-		// remove trailing '_'
-		while ((buffer.length() > 0) && (buffer.charAt(buffer.length() - 1) == '_'))
-			buffer.deleteCharAt(buffer.length() - 1);
-
-		// check for valid first character
-		if (buffer.length() > 0) {
-			final char start = buffer.charAt(0);
-			if ((start < 65) || ((start > 90) && (start < 97)) || (start > 122))
-				buffer.insert(0, '_');
-		} else
-			// buffer is empty
-			buffer.insert(0, '_');
-
-		return buffer.toString();
-	}
-
-	private static boolean isSaveName(final String identifier) {
-		return Pattern.matches("[a-zA-Z_$][a-zA-Z0-9_$]*", identifier);
 	}
 }
