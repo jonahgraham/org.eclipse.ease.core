@@ -15,7 +15,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -55,9 +57,14 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	private EngineDescription fDescription;
 
+	private boolean fSetupDone = false;
+
+	/** Variables tried to set before engine was started. */
+	private final Map<String, Object> fBufferedVariables = new HashMap<String, Object>();
+
 	/**
 	 * Constructor. Contains a name for the underlying job and an indicator for the presence of online help.
-	 * 
+	 *
 	 * @param name
 	 *            name of script engine job
 	 * @param helpAvailable
@@ -144,7 +151,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	/**
 	 * Inject script code to the script engine. Injected code is processed synchronous by the current thread unless <i>uiThread</i> is set to <code>true</code>.
 	 * Nevertheless this is a blocking call.
-	 * 
+	 *
 	 * @param script
 	 *            script to be executed
 	 * @param notifyListeners
@@ -197,6 +204,15 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 		if (setupEngine()) {
+			fSetupDone = true;
+
+			// engine is initialized, set buffered variables
+			for (final String name : fBufferedVariables.keySet())
+				setVariable(name, fBufferedVariables.get(name));
+
+			fBufferedVariables.clear();
+
+			// setup new trace
 			fFileTrace = new FileTrace();
 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_START);
@@ -291,7 +307,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	/**
 	 * Get termination status of the interpreter. A terminated interpreter cannot be restarted.
-	 * 
+	 *
 	 * @return true if interpreter is terminated.
 	 */
 	private boolean isTerminated() {
@@ -300,7 +316,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	/**
 	 * Get idle status of the interpreter. The interpreter is IDLE if there are no pending execution requests and the interpreter is not terminated.
-	 * 
+	 *
 	 * @return true if interpreter is IDLE
 	 */
 	@Override
@@ -369,24 +385,90 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		fDescription = description;
 	}
 
+	@Override
+	public void setVariable(final String name, final Object content) {
+		if (fSetupDone)
+			internalSetVariable(name, content);
+
+		else
+			fBufferedVariables.put(name, content);
+	}
+
+	@Override
+	public Object getVariable(final String name) {
+		if (fSetupDone)
+			return internalGetVariable(name);
+
+		throw new RuntimeException("Cannot retrieve variable, engine not initialized");
+	}
+
+	@Override
+	public boolean hasVariable(final String name) {
+		if (fSetupDone)
+			return internalHasVariable(name);
+
+		return fBufferedVariables.containsKey(name);
+	}
+
+	@Override
+	public Object removeVariable(final String name) {
+		if (fSetupDone)
+			return internalRemoveVariable(name);
+
+		return fBufferedVariables.remove(name);
+	}
+
+	@Override
+	public Map<String, Object> getVariables() {
+		if (fSetupDone)
+			return internalGetVariables();
+
+		return Collections.unmodifiableMap(fBufferedVariables);
+	}
+
+	/**
+	 * Internal version of {@link #getVariable(String)}. Only called after script engine was initialized successfully.
+	 */
+	protected abstract Object internalGetVariable(String name);
+
+	/**
+	 * Internal version of {@link #getVariables()}. Only called after script engine was initialized successfully.
+	 */
+	protected abstract Map<String, Object> internalGetVariables();
+
+	/**
+	 * Internal version of {@link #hasVariable(String)}. Only called after script engine was initialized successfully.
+	 */
+	protected abstract boolean internalHasVariable(String name);
+
+	/**
+	 * Internal version of {@link #setVariable(String, Object)}. Only called after script engine was initialized successfully.
+	 */
+	protected abstract void internalSetVariable(String name, Object content);
+
+	/**
+	 * Internal version of {@link #removeVariable(String)}. Only called after script engine was initialized successfully.
+	 */
+	protected abstract Object internalRemoveVariable(String name);
+
 	/**
 	 * Setup method for script engine. Run directly after the engine is activated. Needs to return <code>true</code>. Otherwise the engine will terminate
 	 * instantly.
-	 * 
+	 *
 	 * @return <code>true</code> when setup succeeds
 	 */
 	protected abstract boolean setupEngine();
 
 	/**
 	 * Teardown engine. Called immediately before the engine terminates. This method is not called when {@link #setupEngine()} fails.
-	 * 
+	 *
 	 * @return teardown result
 	 */
 	protected abstract boolean teardownEngine();
 
 	/**
 	 * Execute script code.
-	 * 
+	 *
 	 * @param fileName
 	 *            name of file executed
 	 * @param uiThread

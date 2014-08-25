@@ -19,8 +19,6 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 
 	private ScriptEngine fEngine;
 
-	private final Map<String, Object> fBufferedVariables = new HashMap<String, Object>();
-
 	public NashornScriptEngine() {
 		super("Nashorn");
 	}
@@ -28,35 +26,39 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 	@Override
 	public void terminateCurrent() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
-	public void setVariable(final String name, final Object content) {
+	protected Object internalGetVariable(final String name) {
+		return fEngine.get(name);
+	}
+
+	@Override
+	protected Map<String, Object> internalGetVariables() {
+		Map<String, Object> variables = new HashMap<String, Object>();
+		Bindings bindings = fEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+		for (Entry<String, Object> entry : bindings.entrySet())
+			variables.put(entry.getKey(), entry.getValue());
+
+		return variables;
+	}
+
+	@Override
+	protected boolean internalHasVariable(final String name) {
+		return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name);
+	}
+
+	@Override
+	protected void internalSetVariable(final String name, final Object content) {
 		if (!JavaScriptHelper.isSaveName(name))
 			throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
 
-		if (fEngine != null)
-			fEngine.put(name, content);
-
-		else
-			fBufferedVariables.put(name, content);
+		fEngine.put(name, content);
 	}
 
 	@Override
-	public Object getVariable(final String name) {
-		if (fEngine != null)
-			return fEngine.get(name);
-
-		throw new RuntimeException("Cannot retrieve variable, engine not initialized");
-	}
-
-	@Override
-	public boolean hasVariable(final String name) {
-		if (fEngine != null)
-			return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).containsKey(name);
-
-		throw new RuntimeException("Cannot query variable, engine not initialized");
+	protected Object internalRemoveVariable(final String name) {
+		return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
 	}
 
 	@Override
@@ -65,45 +67,14 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 	}
 
 	@Override
-	public Object removeVariable(final String name) {
-		if (fEngine != null)
-			return fEngine.getBindings(ScriptContext.ENGINE_SCOPE).remove(name);
-
-		throw new RuntimeException("Cannot remove variable, engine not initialized");
-	}
-
-	@Override
-	public Map<String, Object> getVariables() {
-		if (fEngine != null) {
-			Map<String, Object> variables = new HashMap<String, Object>();
-			Bindings bindings = fEngine.getBindings(ScriptContext.ENGINE_SCOPE);
-			for (Entry<String, Object> entry : bindings.entrySet())
-				variables.put(entry.getKey(), entry.getValue());
-
-			return variables;
-		}
-
-		throw new RuntimeException("Cannot retrieve variables, engine not initialized");
-	}
-
-	@Override
 	public void registerJar(final URL url) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	protected boolean setupEngine() {
 		ScriptEngineManager engineManager = new ScriptEngineManager();
 		fEngine = engineManager.getEngineByName("nashorn");
-
-		if (fEngine != null) {
-			// engine is initialized, set buffered variables
-			for (final Entry<String, Object> entry : fBufferedVariables.entrySet())
-				setVariable(entry.getKey(), entry.getValue());
-
-			fBufferedVariables.clear();
-		}
 
 		return fEngine != null;
 	}

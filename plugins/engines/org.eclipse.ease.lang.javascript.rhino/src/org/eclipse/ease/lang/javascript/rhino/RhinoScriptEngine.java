@@ -72,8 +72,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	private boolean mCreateLineNumberInformation = false;
 
-	private final Map<String, Object> mBufferedVariables = new HashMap<String, Object>();
-
 	/**
 	 * Creates a new Rhino interpreter.
 	 */
@@ -118,12 +116,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		}
 
 		mScope = mContext.initStandardObjects();
-
-		// scope is initialized, set buffered variables
-		for (final String name : mBufferedVariables.keySet())
-			setVariable(name, mBufferedVariables.get(name));
-
-		mBufferedVariables.clear();
 
 		// enable script termination support
 		mContext.setGenerateObserverCount(true);
@@ -277,59 +269,49 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	public void setVariable(final String name, final Object content) {
+	protected Object internalGetVariable(final String name) {
+		final Object value = getScope().get(name, getScope());
+		if (value instanceof NativeJavaObject)
+			return ((NativeJavaObject) value).unwrap();
+
+		return value;
+	}
+
+	@Override
+	protected Map<String, Object> internalGetVariables() {
+		final Map<String, Object> result = new HashMap<String, Object>();
+
+		for (final Object key : getScope().getIds()) {
+			if (key instanceof String)
+				result.put((String) key, getVariable((String) key));
+		}
+
+		return result;
+	}
+
+	@Override
+	protected boolean internalHasVariable(final String name) {
+		final Object value = getScope().get(name, getScope());
+		return !Scriptable.NOT_FOUND.equals(value);
+	}
+
+	@Override
+	protected void internalSetVariable(final String name, final Object content) {
 		if (!JavaScriptHelper.isSaveName(name))
 			throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
 
 		final Scriptable scope = getScope();
-		if (scope != null) {
 
-			final Object jsOut = internaljavaToJS(content, scope);
-			scope.put(name, scope, jsOut);
-		} else
-			mBufferedVariables.put(name, content);
+		final Object jsOut = internaljavaToJS(content, scope);
+		scope.put(name, scope, jsOut);
 	}
 
 	@Override
-	public Object getVariable(final String name) {
-		if (getScope() != null) {
-			final Object value = getScope().get(name, getScope());
-			if (value instanceof NativeJavaObject)
-				return ((NativeJavaObject) value).unwrap();
+	protected Object internalRemoveVariable(final String name) {
+		final Object result = getVariable(name);
+		getScope().delete(name);
 
-			return value;
-		}
-
-		throw new RuntimeException("Cannot retrieve variable, Scope not initialized");
-	}
-
-	@Override
-	public Object removeVariable(final String name) {
-		if (getScope() != null) {
-			final Object result = getVariable(name);
-			getScope().delete(name);
-
-			return result;
-		}
-
-		// scope not initialized, no variables exist yet
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> getVariables() {
-		if (getScope() != null) {
-			final Map<String, Object> result = new HashMap<String, Object>();
-
-			for (final Object key : getScope().getIds()) {
-				if (key instanceof String)
-					result.put((String) key, getVariable((String) key));
-			}
-
-			return result;
-		}
-
-		throw new RuntimeException("Cannot retrieve variable, Scope not initialized");
+		return result;
 	}
 
 	private Object internaljavaToJS(final Object value, final Scriptable scope) {
@@ -373,16 +355,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		}
 
 		return super.getFileTrace();
-	}
-
-	@Override
-	public boolean hasVariable(final String name) {
-		if (getScope() != null) {
-			final Object value = getScope().get(name, getScope());
-			return !Scriptable.NOT_FOUND.equals(value);
-		}
-
-		throw new RuntimeException("Cannot query variable, Scope not initialized");
 	}
 
 	@Override
