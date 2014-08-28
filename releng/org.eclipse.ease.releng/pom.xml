@@ -107,22 +107,22 @@
 	<modules>
 
 		<!-- core -->
-		<module>../../plugins/core/org.eclipse.ease</module>
-		<module>../../plugins/core/org.eclipse.ease.ui</module>
-		<module>../../plugins/core/org.eclipse.ease.storedscript</module>
+		<module>../../plugins/org.eclipse.ease</module>
+		<module>../../plugins/org.eclipse.ease.ui</module>
+		<module>../../plugins/org.eclipse.ease.storedscript</module>
 		<module>../../features/org.eclipse.ease.feature</module>
 		<module>../../features/org.eclipse.ease.ui.feature</module>
 
 		<!-- Javascript -->
-		<module>../../plugins/engines/org.eclipse.ease.lang.javascript</module>
-		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.ui</module>
-		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.rhino</module>
-		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.rhino.debugger</module>
-		<module>../../plugins/engines/org.eclipse.ease.lang.javascript.nashorn</module>
+		<module>../../plugins/org.eclipse.ease.lang.javascript</module>
+		<module>../../plugins/org.eclipse.ease.lang.javascript.ui</module>
+		<module>../../plugins/org.eclipse.ease.lang.javascript.rhino</module>
+		<module>../../plugins/org.eclipse.ease.lang.javascript.rhino.debugger</module>
+		<module>../../plugins/org.eclipse.ease.lang.javascript.nashorn</module>
 		<module>../../features/org.eclipse.ease.javascript.feature</module>
 
 		<!-- Python -->
-		<module>../../plugins/engines/org.eclipse.ease.lang.python</module>
+		<module>../../plugins/org.eclipse.ease.lang.python</module>
 		<module>../../features/org.eclipse.ease.python.feature</module>
 
 		<!-- releng -->
@@ -163,7 +163,7 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}/../mydocs</outputDirectory>
 							<doclet>org.eclipse.ease.helpgenerator.ModuleDoclet</doclet>
-							<docletPath>../../../../../../developers/org.eclipse.ease.helpgenerator/bin</docletPath>
+							<docletPath>../../../../../developers/org.eclipse.ease.helpgenerator/bin</docletPath>
 							<additionalparam>-root ${basedir}</additionalparam>
 							<useStandardDocletOptions>false</useStandardDocletOptions>
 						</configuration>
