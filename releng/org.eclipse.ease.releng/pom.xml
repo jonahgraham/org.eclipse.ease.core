@@ -57,22 +57,10 @@
 			</plugin>
 
 			<!-- set target platform for build -->
-			<!-- 
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>target-platform-configuration</artifactId>
-				<version>${tycho.version}</version>
-				<configuration>
-					<target>
-						<artifact>
-							<groupId>org.eclipse.ease</groupId>
-							<artifactId>org.eclipse.ease.releng.target</artifactId>
-							<version>0.1.0</version>
-						</artifact>
-					</target>
-				</configuration>
-			</plugin>
-			-->
+			<!-- <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>target-platform-configuration</artifactId> 
+				<version>${tycho.version}</version> <configuration> <target> <artifact> <groupId>org.eclipse.ease</groupId> 
+				<artifactId>org.eclipse.ease.releng.target</artifactId> <version>0.1.0</version> 
+				</artifact> </target> </configuration> </plugin> -->
 
 			<!-- set compiler options -->
 			<plugin>
@@ -195,6 +183,13 @@
 
 		<profile>
 			<id>api-docs</id>
+		</profile>
+
+		<profile>
+			<id>test</id>
+			<modules>
+				<module>../../tests/org.eclipse.ease.test</module>
+			</modules>
 		</profile>
 
 		<profile>
