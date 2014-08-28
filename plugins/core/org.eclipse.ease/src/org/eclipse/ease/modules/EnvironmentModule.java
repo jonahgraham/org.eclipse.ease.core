@@ -26,6 +26,7 @@ import org.eclipse.ease.Script;
 import org.eclipse.ease.debug.ITracingConstant;
 import org.eclipse.ease.debug.Tracer;
 import org.eclipse.ease.service.ScriptService;
+import org.eclipse.ease.tools.ResourceTools;
 
 /**
  * The Environment provides base functions for all script interpreters. It is automatically loaded by any interpreter upon startup.
@@ -42,7 +43,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	/**
 	 * Creates wrapper functions for a given java instance. Searches for members and methods annotated with {@link WrapToScript} and creates wrapping code in
 	 * the target script language. A method named &lt;instance&gt;.myMethod() will be made available by calling myMethod().
-	 * 
+	 *
 	 * @param toBeWrapped
 	 *            instance to be wrapped
 	 */
@@ -78,7 +79,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 * Create JavaScript wrapper functions for autoload methods. Adds code of following style: <code>function {name} (a, b, c, ...) {
 	 * __module.{name}(a, b, c, ...);
 	 * }</code>
-	 * 
+	 *
 	 * @param instance
 	 *            module instance to create wrappers for
 	 * @param reload
@@ -135,7 +136,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 	/**
 	 * Execute script code. This method executes script code directly in the running interpreter. Execution is done in the same thread as the caller thread.
-	 * 
+	 *
 	 * @param data
 	 *            code to be interpreted
 	 * @return result of code execution
@@ -147,7 +148,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 	/**
 	 * Terminates script execution immediately. Code following this command will not be executed anymore.
-	 * 
+	 *
 	 * @param value
 	 *            return code
 	 */
@@ -161,7 +162,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 * "workspace://" opens a file relative to the workspace root, "project://" opens a file relative to the current project, "file://" opens a file from the
 	 * file system. All other types of URIs are supported too (like http:// ...). You may also use absolute and relative paths as defined by your local file
 	 * system.
-	 * 
+	 *
 	 * @param filename
 	 *            name of file to be included
 	 * @return result of include operation
@@ -169,7 +170,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 */
 	@WrapToScript
 	public final Object include(final String filename) {
-		Object file = resolveFile(filename);
+		Object file = ResourceTools.resolveFile(filename, getScriptEngine().getExecutedFile(), true);
 		if (file != null)
 			return getScriptEngine().inject(file);
 
@@ -207,7 +208,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 	/**
 	 * Get the generic script wrapper registered for this script engine.
-	 * 
+	 *
 	 * @return script wrapper
 	 */
 	private IModuleWrapper getWrapper() {
@@ -219,7 +220,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	public void registerJar(Object location) throws MalformedURLException {
 		if (!(location instanceof URL)) {
 			// try to resolve workspace URIs
-			Object file = resolveFile(location.toString());
+			Object file = ResourceTools.resolveFile(location.toString(), getScriptEngine().getExecutedFile(), true);
 
 			if (file instanceof IFile)
 				file = ((IFile) file).getFullPath().toFile();
@@ -231,7 +232,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 				location = new URL(location.toString());
 		}
 
-		if (location != null)
+		if (location instanceof URL)
 			getScriptEngine().registerJar((URL) location);
 	}
 }

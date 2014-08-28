@@ -9,6 +9,8 @@ Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ui.console;bundle-version="[3.5.100,4.0.0)",
  org.eclipse.ui.ide;bundle-version="3.7.0",
+ org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.emf.ecore.xmi;visibility:=reexport,
  org.eclipse.ui.editors;bundle-version="3.7.0",
  org.eclipse.emf.edit.ui;bundle-version="2.7.0",
@@ -37,5 +39,4 @@ Export-Package: org.eclipse.ease.ui,
  org.eclipse.ease.ui.scriptuigraph.provider,
  org.eclipse.ease.ui.scriptuigraph.util,
  org.eclipse.ease.ui.utils,
- org.eclipse.ease.ui.view,
- org.eclipse.wb.swt
+ org.eclipse.ease.ui.view

@@ -1,5 +1,5 @@
-/*******************************************************************************
- * Copyright (c) 2014 Christian Pontesegger and others.
+/**
+ * Copyright (c) 2013 Christian Pontesegger and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,6 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************//**
  */
 package org.eclipse.ease.ui.repository.impl;
 
@@ -15,7 +14,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.ease.tools.ResourceTools;
-import org.eclipse.ease.ui.repository.ILocation;
+import org.eclipse.ease.ui.repository.IRawLocation;
 import org.eclipse.ease.ui.repository.IRepositoryPackage;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
@@ -24,18 +23,18 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '<em><b>Location</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Raw Location</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.ease.ui.repository.impl.LocationImpl#getLocation <em>Location</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.repository.impl.LocationImpl#isUpdatePending <em>Update Pending</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.impl.RawLocationImpl#getLocation <em>Location</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.impl.RawLocationImpl#isUpdatePending <em>Update Pending</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class LocationImpl extends MinimalEObjectImpl.Container implements ILocation {
+public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRawLocation {
 	/**
 	 * The default value of the '{@link #getLocation() <em>Location</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -56,8 +55,7 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 
 	/**
 	 * The default value of the '{@link #isUpdatePending() <em>Update Pending</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #isUpdatePending()
 	 * @generated
 	 * @ordered
@@ -66,8 +64,7 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 
 	/**
 	 * The cached value of the '{@link #isUpdatePending() <em>Update Pending</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #isUpdatePending()
 	 * @generated
 	 * @ordered
@@ -78,7 +75,7 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected LocationImpl() {
+	protected RawLocationImpl() {
 		super();
 	}
 
@@ -88,7 +85,7 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return IRepositoryPackage.Literals.LOCATION;
+		return IRepositoryPackage.Literals.RAW_LOCATION;
 	}
 
 	/**
@@ -109,43 +106,43 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 		String oldLocation = location;
 		location = newLocation;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.LOCATION__LOCATION, oldLocation, location));
+			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.RAW_LOCATION__LOCATION, oldLocation, location));
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public boolean isUpdatePending() {
 		return updatePending;
 	}
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setUpdatePending(boolean newUpdatePending) {
 		boolean oldUpdatePending = updatePending;
 		updatePending = newUpdatePending;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.LOCATION__UPDATE_PENDING, oldUpdatePending, updatePending));
+			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING, oldUpdatePending, updatePending));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated NOT
 	 */
 	@Override
-	public Object getContent() {
-		return ResourceTools.getContent(getLocation());
+	public Object getResource() {
+		return ResourceTools.getResource(getLocation());
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated NOT
 	 */
 	@Override
@@ -160,9 +157,9 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case IRepositoryPackage.LOCATION__LOCATION:
+			case IRepositoryPackage.RAW_LOCATION__LOCATION:
 				return getLocation();
-			case IRepositoryPackage.LOCATION__UPDATE_PENDING:
+			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
 				return isUpdatePending();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -175,10 +172,10 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case IRepositoryPackage.LOCATION__LOCATION:
+			case IRepositoryPackage.RAW_LOCATION__LOCATION:
 				setLocation((String)newValue);
 				return;
-			case IRepositoryPackage.LOCATION__UPDATE_PENDING:
+			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
 				setUpdatePending((Boolean)newValue);
 				return;
 		}
@@ -192,10 +189,10 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.LOCATION__LOCATION:
+			case IRepositoryPackage.RAW_LOCATION__LOCATION:
 				setLocation(LOCATION_EDEFAULT);
 				return;
-			case IRepositoryPackage.LOCATION__UPDATE_PENDING:
+			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
 				setUpdatePending(UPDATE_PENDING_EDEFAULT);
 				return;
 		}
@@ -209,9 +206,9 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.LOCATION__LOCATION:
+			case IRepositoryPackage.RAW_LOCATION__LOCATION:
 				return LOCATION_EDEFAULT == null ? location != null : !LOCATION_EDEFAULT.equals(location);
-			case IRepositoryPackage.LOCATION__UPDATE_PENDING:
+			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
 				return updatePending != UPDATE_PENDING_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
@@ -224,9 +221,9 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-			case IRepositoryPackage.LOCATION___GET_CONTENT:
-				return getContent();
-			case IRepositoryPackage.LOCATION___GET_INPUT_STREAM:
+			case IRepositoryPackage.RAW_LOCATION___GET_RESOURCE:
+				return getResource();
+			case IRepositoryPackage.RAW_LOCATION___GET_INPUT_STREAM:
 				return getInputStream();
 		}
 		return super.eInvoke(operationID, arguments);
@@ -249,4 +246,4 @@ public class LocationImpl extends MinimalEObjectImpl.Container implements ILocat
 		return result.toString();
 	}
 
-} // LocationImpl
+} // RawLocationImpl

@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository.impl;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.util.Map;
 
@@ -19,17 +20,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.tools.ResourceTools;
-import org.eclipse.ease.ui.repository.IEntry;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.repository.IScript;
+import org.eclipse.ease.ui.repository.IScriptLocation;
 
 public class WorkspaceParser extends InputStreamParser {
 
-	public WorkspaceParser(RepositoryService repositoryService) {
+	public WorkspaceParser(final RepositoryService repositoryService) {
 		super(repositoryService);
 	}
 
-	public void parse(final IResource resource, final IEntry entry) {
+	public void parse(final IResource resource, final IScriptLocation entry) {
 		if (resource instanceof IContainer) {
 			// containment, parse children
 			try {

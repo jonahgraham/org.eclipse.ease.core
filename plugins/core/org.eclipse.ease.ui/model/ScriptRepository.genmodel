@@ -19,19 +19,19 @@
       <genOperations ecoreOperation="ScriptRepository.ecore#//Script/getName"/>
       <genOperations ecoreOperation="ScriptRepository.ecore#//Script/getPath"/>
     </genClasses>
-    <genClasses ecoreClass="ScriptRepository.ecore#//Location">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//Location/location"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//Location/updatePending"/>
-      <genOperations ecoreOperation="ScriptRepository.ecore#//Location/getContent"/>
-      <genOperations ecoreOperation="ScriptRepository.ecore#//Location/getInputStream"/>
+    <genClasses ecoreClass="ScriptRepository.ecore#//RawLocation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//RawLocation/location"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//RawLocation/updatePending"/>
+      <genOperations ecoreOperation="ScriptRepository.ecore#//RawLocation/getResource"/>
+      <genOperations ecoreOperation="ScriptRepository.ecore#//RawLocation/getInputStream"/>
     </genClasses>
-    <genClasses ecoreClass="ScriptRepository.ecore#//Repository">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScriptRepository.ecore#//Repository/entries"/>
+    <genClasses ecoreClass="ScriptRepository.ecore#//Storage">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScriptRepository.ecore#//Storage/entries"/>
     </genClasses>
-    <genClasses ecoreClass="ScriptRepository.ecore#//Entry">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//Entry/recursive"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//Entry/default"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScriptRepository.ecore#//Entry/scripts"/>
+    <genClasses ecoreClass="ScriptRepository.ecore#//ScriptLocation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//ScriptLocation/recursive"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//ScriptLocation/default"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference ScriptRepository.ecore#//ScriptLocation/scripts"/>
     </genClasses>
     <genClasses ecoreClass="ScriptRepository.ecore#//ParameterMap">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute ScriptRepository.ecore#//ParameterMap/key"/>

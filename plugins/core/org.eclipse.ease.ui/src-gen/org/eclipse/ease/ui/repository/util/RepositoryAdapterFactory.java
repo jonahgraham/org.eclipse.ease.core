@@ -83,16 +83,16 @@ public class RepositoryAdapterFactory extends AdapterFactoryImpl {
 				return createScriptAdapter();
 			}
 			@Override
-			public Adapter caseLocation(ILocation object) {
-				return createLocationAdapter();
+			public Adapter caseRawLocation(IRawLocation object) {
+				return createRawLocationAdapter();
 			}
 			@Override
-			public Adapter caseRepository(IRepository object) {
-				return createRepositoryAdapter();
+			public Adapter caseStorage(IStorage object) {
+				return createStorageAdapter();
 			}
 			@Override
-			public Adapter caseEntry(IEntry object) {
-				return createEntryAdapter();
+			public Adapter caseScriptLocation(IScriptLocation object) {
+				return createScriptLocationAdapter();
 			}
 			@Override
 			public Adapter caseParameterMap(Map.Entry<String, String> object) {
@@ -133,44 +133,44 @@ public class RepositoryAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.ease.ui.repository.ILocation <em>Location</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.ease.ui.repository.IRawLocation <em>Raw Location</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.ease.ui.repository.ILocation
+	 * @see org.eclipse.ease.ui.repository.IRawLocation
 	 * @generated
 	 */
-	public Adapter createLocationAdapter() {
+	public Adapter createRawLocationAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.ease.ui.repository.IRepository <em>Repository</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.ease.ui.repository.IStorage <em>Storage</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.ease.ui.repository.IRepository
+	 * @see org.eclipse.ease.ui.repository.IStorage
 	 * @generated
 	 */
-	public Adapter createRepositoryAdapter() {
+	public Adapter createStorageAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.ease.ui.repository.IEntry <em>Entry</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.ease.ui.repository.IScriptLocation <em>Script Location</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.ease.ui.repository.IEntry
+	 * @see org.eclipse.ease.ui.repository.IScriptLocation
 	 * @generated
 	 */
-	public Adapter createEntryAdapter() {
+	public Adapter createScriptLocationAdapter() {
 		return null;
 	}
 

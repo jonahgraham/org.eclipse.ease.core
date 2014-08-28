@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository.impl;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,12 +29,11 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
-import org.eclipse.ease.ui.repository.IEntry;
-import org.eclipse.ease.ui.repository.IRepository;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.repository.IScript;
+import org.eclipse.ease.ui.repository.IScriptLocation;
+import org.eclipse.ease.ui.repository.IStorage;
 import org.eclipse.ease.ui.repository.impl.RepositoryFactoryImpl;
-import org.eclipse.ease.ui.scripts.ScriptStorage;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptListener;
 import org.eclipse.emf.common.util.URI;
@@ -59,7 +59,7 @@ public class RepositoryService implements IRepositoryService {
 
 	/**
 	 * Get the repository service singleton.
-	 * 
+	 *
 	 * @return repository service
 	 */
 	public static RepositoryService getInstance() {
@@ -69,7 +69,7 @@ public class RepositoryService implements IRepositoryService {
 		return fInstance;
 	}
 
-	private IRepository fRepository = null;
+	private IStorage fRepository = null;
 
 	private final UpdateRepositoryJob fUpdateJob;
 	private final Job fSaveJob = new Job("Save Script Repositories") {
@@ -111,7 +111,7 @@ public class RepositoryService implements IRepositoryService {
 			Resource resource = resourceSet.createResource(URI.createURI(file.toURI().toString()));
 			try {
 				resource.load(null);
-				fRepository = (IRepository) resource.getContents().get(0);
+				fRepository = (IStorage) resource.getContents().get(0);
 
 			} catch (IOException e) {
 				// we could not load an existing model, but we will refresh it in a second
@@ -122,14 +122,7 @@ public class RepositoryService implements IRepositoryService {
 		long updateDelay = 0;
 		if (fRepository == null) {
 			// create an empty repository to start with
-			fRepository = IRepositoryFactory.eINSTANCE.createRepository();
-
-			// add default location for stored scripts
-			IEntry entry = IRepositoryFactory.eINSTANCE.createEntry();
-			entry.setLocation(ScriptStorage.createStorage().getLocation());
-			entry.setRecursive(true);
-			entry.setDefault(true);
-			fRepository.getEntries().add(entry);
+			fRepository = IRepositoryFactory.eINSTANCE.createStorage();
 
 		} else {
 			// wait for the workspace to be loaded before updating, we have cached data anyway
@@ -159,7 +152,7 @@ public class RepositoryService implements IRepositoryService {
 	@Override
 	public void updateLocations() {
 		// update locations from preferences
-		for (IEntry entry : getLocations())
+		for (IScriptLocation entry : getLocations())
 			entry.setUpdatePending(true);
 
 		final IEclipsePreferences rootNode = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
@@ -175,7 +168,7 @@ public class RepositoryService implements IRepositoryService {
 						String location = node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, "");
 
 						boolean found = false;
-						for (IEntry entry : getLocations()) {
+						for (IScriptLocation entry : getLocations()) {
 							if (entry.getLocation().equals(location)) {
 								entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
 								entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false));
@@ -187,7 +180,7 @@ public class RepositoryService implements IRepositoryService {
 						}
 
 						if (!found) {
-							IEntry entry = IRepositoryFactory.eINSTANCE.createEntry();
+							IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
 							entry.setLocation(location);
 							entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
 							entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false));
@@ -201,7 +194,7 @@ public class RepositoryService implements IRepositoryService {
 			});
 
 			// remove all repositories where update is pending as they are not stored in the preferences
-			for (IEntry entry : new HashSet<IEntry>(getLocations())) {
+			for (IScriptLocation entry : new HashSet<IScriptLocation>(getLocations())) {
 				if (entry.isUpdatePending())
 					fRepository.getEntries().remove(entry);
 			}
@@ -214,7 +207,7 @@ public class RepositoryService implements IRepositoryService {
 		}
 	}
 
-	IRepository getRepository() {
+	IStorage getRepository() {
 		return fRepository;
 	}
 
@@ -257,7 +250,7 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	@Override
-	public Collection<IEntry> getLocations() {
+	public Collection<IScriptLocation> getLocations() {
 		return Collections.unmodifiableCollection(fRepository.getEntries());
 	}
 
@@ -312,8 +305,8 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	@Override
-	public IEntry getDefaultLocation() {
-		for (IEntry entry : getLocations())
+	public IScriptLocation getDefaultLocation() {
+		for (IScriptLocation entry : getLocations())
 			if (entry.isDefault())
 				return entry;
 

@@ -7,74 +7,75 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository.impl;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Map;
+ import java.io.File;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.util.Map;
 
-import org.eclipse.ease.Logger;
-import org.eclipse.ease.service.ScriptType;
-import org.eclipse.ease.tools.ResourceTools;
-import org.eclipse.ease.ui.repository.IEntry;
-import org.eclipse.ease.ui.repository.IRepositoryFactory;
-import org.eclipse.ease.ui.repository.IScript;
+ import org.eclipse.ease.Logger;
+ import org.eclipse.ease.service.ScriptType;
+ import org.eclipse.ease.tools.ResourceTools;
+ import org.eclipse.ease.ui.repository.IRepositoryFactory;
+ import org.eclipse.ease.ui.repository.IScript;
+ import org.eclipse.ease.ui.repository.IScriptLocation;
 
-public class FileSystemParser extends InputStreamParser {
+ public class FileSystemParser extends InputStreamParser {
 
-	public FileSystemParser(RepositoryService repositoryService) {
-		super(repositoryService);
-	}
+	 public FileSystemParser(final RepositoryService repositoryService) {
+		 super(repositoryService);
+	 }
 
-	public void parse(final File file, final IEntry entry) {
-		if (file.isDirectory()) {
-			// containment, parse children
-			for (File child : file.listFiles()) {
-				if ((child.isFile()) || (entry.isRecursive()))
-					parse(child, entry);
-			}
+	 public void parse(final File file, final IScriptLocation entry) {
+		 if (file.isDirectory()) {
+			 // containment, parse children
+			 for (File child : file.listFiles()) {
+				 if ((child.isFile()) || (entry.isRecursive()))
+					 parse(child, entry);
+			 }
 
-		} else {
-			// try to locate registered script
-			String location = file.toURI().toString();
-			IScript script = getScriptByLocation(location);
+		 } else {
+			 // try to locate registered script
+			 String location = file.toURI().toString();
+			 IScript script = getScriptByLocation(location);
 
-			try {
-				if (script == null) {
-					// new script detected
-					ScriptType scriptType = ResourceTools.getScriptType(file);
-					if (scriptType != null) {
-						script = IRepositoryFactory.eINSTANCE.createScript();
-						script.setEntry(entry);
-						script.setLocation(location);
+			 try {
+				 if (script == null) {
+					 // new script detected
+					 ScriptType scriptType = ResourceTools.getScriptType(file);
+					 if (scriptType != null) {
+						 script = IRepositoryFactory.eINSTANCE.createScript();
+						 script.setEntry(entry);
+						 script.setLocation(location);
 
-						Map<String, String> parameters = extractParameters(scriptType, new FileInputStream(file));
-						script.getScriptParameters().clear();
-						script.getScriptParameters().putAll(parameters);
+						 Map<String, String> parameters = extractParameters(scriptType, new FileInputStream(file));
+						 script.getScriptParameters().clear();
+						 script.getScriptParameters().putAll(parameters);
 
-						script.setTimestamp(file.lastModified());
+						 script.setTimestamp(file.lastModified());
 
-						getRepositoryService().addScript(script);
-					}
+						 getRepositoryService().addScript(script);
+					 }
 
-				} else if (script.getTimestamp() != file.lastModified()) {
-					// script needs updating
-					ScriptType scriptType = ResourceTools.getScriptType(file);
-					Map<String, String> parameters = extractParameters(scriptType, new FileInputStream(file));
+				 } else if (script.getTimestamp() != file.lastModified()) {
+					 // script needs updating
+					 ScriptType scriptType = ResourceTools.getScriptType(file);
+					 Map<String, String> parameters = extractParameters(scriptType, new FileInputStream(file));
 
-					script.setTimestamp(file.lastModified());
+					 script.setTimestamp(file.lastModified());
 
-					getRepositoryService().updateScript(script, parameters);
+					 getRepositoryService().updateScript(script, parameters);
 
-				} else
-					// script is up to date
-					script.setUpdatePending(false);
+				 } else
+					 // script is up to date
+					 script.setUpdatePending(false);
 
-			} catch (FileNotFoundException e) {
-				// cannot find file
-				Logger.logError("Cannot locate script file: " + file, e);
-			}
-		}
-	}
-}
+			 } catch (FileNotFoundException e) {
+				 // cannot find file
+				 Logger.logError("Cannot locate script file: " + file, e);
+			 }
+		 }
+	 }
+ }

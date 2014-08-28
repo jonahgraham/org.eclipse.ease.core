@@ -1,37 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 2014 Christian Pontesegger and others.
+/**
+ * Copyright (c) 2013 Christian Pontesegger and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************//**
  */
 package org.eclipse.ease.ui.repository;
 
 import java.io.InputStream;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Location</b></em>'.
+ * A representation of the model object '<em><b>Raw Location</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.ease.ui.repository.ILocation#getLocation <em>Location</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.repository.ILocation#isUpdatePending <em>Update Pending</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.IRawLocation#getLocation <em>Location</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.IRawLocation#isUpdatePending <em>Update Pending</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getLocation()
+ * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getRawLocation()
  * @model
  * @generated
  */
-public interface ILocation extends EObject {
+public interface IRawLocation extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Location</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -42,14 +42,14 @@ public interface ILocation extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Location</em>' attribute.
 	 * @see #setLocation(String)
-	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getLocation_Location()
+	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getRawLocation_Location()
 	 * @model required="true"
 	 * @generated
 	 */
 	String getLocation();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.ILocation#getLocation <em>Location</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IRawLocation#getLocation <em>Location</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Location</em>' attribute.
@@ -69,14 +69,14 @@ public interface ILocation extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Update Pending</em>' attribute.
 	 * @see #setUpdatePending(boolean)
-	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getLocation_UpdatePending()
+	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getRawLocation_UpdatePending()
 	 * @model default="false" required="true" transient="true"
 	 * @generated
 	 */
 	boolean isUpdatePending();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.ILocation#isUpdatePending <em>Update Pending</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IRawLocation#isUpdatePending <em>Update Pending</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Update Pending</em>' attribute.
@@ -91,7 +91,7 @@ public interface ILocation extends EObject {
 	 * @model kind="operation"
 	 * @generated
 	 */
-	Object getContent();
+	Object getResource();
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -101,4 +101,4 @@ public interface ILocation extends EObject {
 	 */
 	InputStream getInputStream();
 
-} // ILocation
+} // IRawLocation

@@ -7,20 +7,21 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui;
+ *******************************************************************************/
+package org.eclipse.ease.ui;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
+ import java.io.File;
+ import java.io.InputStream;
 
-import org.eclipse.core.resources.IStorage;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.ease.ui.repository.IScript;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IPersistableElement;
-import org.eclipse.ui.IStorageEditorInput;
+ import org.eclipse.core.resources.IStorage;
+ import org.eclipse.core.runtime.CoreException;
+ import org.eclipse.core.runtime.IPath;
+ import org.eclipse.core.runtime.Path;
+ import org.eclipse.ease.ui.repository.IScript;
+ import org.eclipse.jface.resource.ImageDescriptor;
+ import org.eclipse.ui.IPersistableElement;
+ import org.eclipse.ui.IStorageEditorInput;
 
 public class ScriptEditorInput implements IStorageEditorInput {
 
@@ -81,7 +82,7 @@ public class ScriptEditorInput implements IStorageEditorInput {
 			@Override
 			public IPath getFullPath() {
 				if (fScript != null) {
-					Object content = fScript.getContent();
+					Object content = fScript.getResource();
 					if (content instanceof File)
 						return new Path(((File) content).getPath());
 				}

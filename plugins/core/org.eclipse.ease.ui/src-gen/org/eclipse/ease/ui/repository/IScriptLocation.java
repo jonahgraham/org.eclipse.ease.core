@@ -1,38 +1,36 @@
-/*******************************************************************************
- * Copyright (c) 2014 Christian Pontesegger and others.
+/**
+ * Copyright (c) 2013 Christian Pontesegger and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************//**
  */
 package org.eclipse.ease.ui.repository;
 
 import org.eclipse.emf.common.util.EList;
 
-
 /**
  * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Entry</b></em>'.
+ * A representation of the model object '<em><b>Script Location</b></em>'.
  * <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.ease.ui.repository.IEntry#isRecursive <em>Recursive</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.repository.IEntry#isDefault <em>Default</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.repository.IEntry#getScripts <em>Scripts</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.IScriptLocation#isRecursive <em>Recursive</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.IScriptLocation#isDefault <em>Default</em>}</li>
+ *   <li>{@link org.eclipse.ease.ui.repository.IScriptLocation#getScripts <em>Scripts</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getEntry()
+ * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getScriptLocation()
  * @model
  * @generated
  */
-public interface IEntry extends ILocation {
+public interface IScriptLocation extends IRawLocation {
 	/**
 	 * Returns the value of the '<em><b>Recursive</b></em>' attribute.
 	 * The default value is <code>"false"</code>.
@@ -44,14 +42,14 @@ public interface IEntry extends ILocation {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Recursive</em>' attribute.
 	 * @see #setRecursive(boolean)
-	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getEntry_Recursive()
+	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getScriptLocation_Recursive()
 	 * @model default="false" required="true"
 	 * @generated
 	 */
 	boolean isRecursive();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IEntry#isRecursive <em>Recursive</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IScriptLocation#isRecursive <em>Recursive</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Recursive</em>' attribute.
@@ -71,14 +69,14 @@ public interface IEntry extends ILocation {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Default</em>' attribute.
 	 * @see #setDefault(boolean)
-	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getEntry_Default()
+	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getScriptLocation_Default()
 	 * @model default="false" required="true"
 	 * @generated
 	 */
 	boolean isDefault();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IEntry#isDefault <em>Default</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IScriptLocation#isDefault <em>Default</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Default</em>' attribute.
@@ -98,11 +96,11 @@ public interface IEntry extends ILocation {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Scripts</em>' containment reference list.
-	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getEntry_Scripts()
+	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getScriptLocation_Scripts()
 	 * @see org.eclipse.ease.ui.repository.IScript#getEntry
 	 * @model opposite="entry" containment="true"
 	 * @generated
 	 */
 	EList<IScript> getScripts();
 
-} // IEntry
+} // IScriptLocation

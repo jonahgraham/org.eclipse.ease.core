@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.preferences;
+ *******************************************************************************/
+package org.eclipse.ease.ui.preferences;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,9 +16,10 @@ import java.util.HashSet;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferenceNodeVisitor;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.repository.IEntry;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
+import org.eclipse.ease.ui.repository.IScriptLocation;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -35,7 +37,7 @@ public final class PreferencesHelper {
 	/**
 	 * Get the default location to store recorded/imported scripts to. If no path was defined by the user, a default path within the .metadata workspace folder
 	 * is returned. As the user might change the default path also invalid entries might be returned.
-	 * 
+	 *
 	 * @return path to default script storage location
 	 */
 	public static String getScriptStorageLocation() {
@@ -48,7 +50,7 @@ public final class PreferencesHelper {
 
 	/**
 	 * Get the storage location for recorded/imported scripts as set by the user. If the user did not explicitely set a location, <code>null</code> is returned
-	 * 
+	 *
 	 * @return user provided storage location or <code>null</code>
 	 */
 	public static String getUserScriptStorageLocation() {
@@ -82,20 +84,20 @@ public final class PreferencesHelper {
 
 	/**
 	 * Get the default location to store recorded/imported scripts to. Returns the hard-coded default location within the workspace/.metadata folder.
-	 * 
+	 *
 	 * @return path to default script storage location
 	 */
 	public static String getDefaultScriptStorageLocation() {
-		return "file:///" + Activator.getDefault().getStateLocation().append("recordedScripts").toString();
+		return ResourceTools.toURI(Activator.getDefault().getStateLocation().append("recordedScripts")).toASCIIString();
 	}
 
 	/**
 	 * Returns a collection of script locations as stored in the preferences. Converts preference data to {@link IEntry} elements.
-	 * 
+	 *
 	 * @return all configured script locations
 	 */
-	public static Collection<IEntry> getLocations() {
-		final Collection<IEntry> locations = new HashSet<IEntry>();
+	public static Collection<IScriptLocation> getLocations() {
+		final Collection<IScriptLocation> locations = new HashSet<IScriptLocation>();
 
 		final IEclipsePreferences rootNode = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
 
@@ -108,12 +110,14 @@ public final class PreferencesHelper {
 						return true;
 
 					else {
-						IEntry entry = IRepositoryFactory.eINSTANCE.createEntry();
-						entry.setLocation(node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, ""));
-						entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
-						entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, true));
-
-						locations.add(entry);
+						String location = node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, "");
+						if (!location.isEmpty()) {
+							IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
+							entry.setLocation(location);
+							entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
+							entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, true));
+							locations.add(entry);
+						}
 
 						return false;
 					}
@@ -128,11 +132,11 @@ public final class PreferencesHelper {
 
 	/**
 	 * Add a script storage location to the preferences.
-	 * 
+	 *
 	 * @param entry
 	 *            location to add
 	 */
-	public static void addLocation(final IEntry entry) {
+	public static void addLocation(final IScriptLocation entry) {
 		String path = entry.getLocation().replace('/', '|');
 		IEclipsePreferences node = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID + "/" + path);
 		node.put(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, entry.getLocation());
@@ -142,7 +146,7 @@ public final class PreferencesHelper {
 
 	/**
 	 * Add a script storage location to the preferences.
-	 * 
+	 *
 	 * @param location
 	 *            location of storage
 	 * @param defaultLocation
@@ -151,7 +155,7 @@ public final class PreferencesHelper {
 	 *            if location should be parsed recursively
 	 */
 	public static void addLocation(final String location, final boolean defaultLocation, final boolean recursive) {
-		IEntry entry = IRepositoryFactory.eINSTANCE.createEntry();
+		IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
 		entry.setLocation(location);
 		entry.setRecursive(recursive);
 		entry.setDefault(defaultLocation);
@@ -162,7 +166,7 @@ public final class PreferencesHelper {
 
 	/**
 	 * Remove all script locations from the preferences.
-	 * 
+	 *
 	 * @throws BackingStoreException
 	 *             on invalid preferences access
 	 */

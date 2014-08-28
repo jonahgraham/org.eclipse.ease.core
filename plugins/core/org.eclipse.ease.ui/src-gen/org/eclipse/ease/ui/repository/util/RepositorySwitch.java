@@ -80,26 +80,26 @@ public class RepositorySwitch<T> extends Switch<T> {
 			case IRepositoryPackage.SCRIPT: {
 				IScript script = (IScript)theEObject;
 				T result = caseScript(script);
-				if (result == null) result = caseLocation(script);
+				if (result == null) result = caseRawLocation(script);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case IRepositoryPackage.LOCATION: {
-				ILocation location = (ILocation)theEObject;
-				T result = caseLocation(location);
+			case IRepositoryPackage.RAW_LOCATION: {
+				IRawLocation rawLocation = (IRawLocation)theEObject;
+				T result = caseRawLocation(rawLocation);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case IRepositoryPackage.REPOSITORY: {
-				IRepository repository = (IRepository)theEObject;
-				T result = caseRepository(repository);
+			case IRepositoryPackage.STORAGE: {
+				IStorage storage = (IStorage)theEObject;
+				T result = caseStorage(storage);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case IRepositoryPackage.ENTRY: {
-				IEntry entry = (IEntry)theEObject;
-				T result = caseEntry(entry);
-				if (result == null) result = caseLocation(entry);
+			case IRepositoryPackage.SCRIPT_LOCATION: {
+				IScriptLocation scriptLocation = (IScriptLocation)theEObject;
+				T result = caseScriptLocation(scriptLocation);
+				if (result == null) result = caseRawLocation(scriptLocation);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -129,47 +129,47 @@ public class RepositorySwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Location</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Raw Location</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Location</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Raw Location</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseLocation(ILocation object) {
+	public T caseRawLocation(IRawLocation object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Repository</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Storage</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Repository</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Storage</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseRepository(IRepository object) {
+	public T caseStorage(IStorage object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Entry</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Script Location</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Entry</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Script Location</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseEntry(IEntry object) {
+	public T caseScriptLocation(IScriptLocation object) {
 		return null;
 	}
 

@@ -34,6 +34,7 @@ import org.eclipse.ease.ui.ScriptEditorInput;
 import org.eclipse.ease.ui.dialogs.SelectScriptStorageDialog;
 import org.eclipse.ease.ui.preferences.PreferencesHelper;
 import org.eclipse.ease.ui.scripts.ScriptStorage;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.tools.StringTools;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -87,14 +88,14 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 							final InputDialog dialog = new InputDialog(HandlerUtil.getActiveShell(event), "Save Script",
 									"Enter a unique name for your script (use '/' as path delimiter)", "", new IInputValidator() {
 
-										@Override
-										public String isValid(final String name) {
-											if (storage.exists(name))
-												return "Script name <" + name + "> is already in use. Choose a different one.";
+								@Override
+								public String isValid(final String name) {
+									if (storage.exists(name))
+										return "Script name <" + name + "> is already in use. Choose a different one.";
 
-											return null;
-										}
-									});
+									return null;
+								}
+							});
 
 							if (dialog.open() == Window.OK)
 								name = dialog.getValue();
@@ -121,6 +122,8 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 							if (!storage.store(fileName, buffer.toString()))
 								// could not store script
 								MessageDialog.openError(HandlerUtil.getActiveShell(event), "Save error", "Could not store script data");
+
+							// TODO update script repository
 
 						} else {
 							// we do not have a storage, open script in editor and let user decide, what to do
@@ -150,8 +153,13 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 
 			// user did not select a storage yet, ask for location
 			SelectScriptStorageDialog dialog = new SelectScriptStorageDialog(Display.getDefault().getActiveShell());
-			if (dialog.open() == Window.OK)
+			if (dialog.open() == Window.OK) {
 				PreferencesHelper.addLocation(dialog.getLocation(), true, true);
+
+				// update repository service
+				final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+				repositoryService.updateLocations();
+			}
 
 			else
 				return null;

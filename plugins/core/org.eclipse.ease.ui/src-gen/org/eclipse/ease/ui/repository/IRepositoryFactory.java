@@ -40,31 +40,31 @@ public interface IRepositoryFactory extends EFactory {
 	IScript createScript();
 
 	/**
-	 * Returns a new object of class '<em>Location</em>'.
+	 * Returns a new object of class '<em>Raw Location</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Location</em>'.
+	 * @return a new object of class '<em>Raw Location</em>'.
 	 * @generated
 	 */
-	ILocation createLocation();
+	IRawLocation createRawLocation();
 
 	/**
-	 * Returns a new object of class '<em>Repository</em>'.
+	 * Returns a new object of class '<em>Storage</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Repository</em>'.
+	 * @return a new object of class '<em>Storage</em>'.
 	 * @generated
 	 */
-	IRepository createRepository();
+	IStorage createStorage();
 
 	/**
-	 * Returns a new object of class '<em>Entry</em>'.
+	 * Returns a new object of class '<em>Script Location</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Entry</em>'.
+	 * @return a new object of class '<em>Script Location</em>'.
 	 * @generated
 	 */
-	IEntry createEntry();
+	IScriptLocation createScriptLocation();
 
 	/**
 	 * Returns the package supported by this factory.

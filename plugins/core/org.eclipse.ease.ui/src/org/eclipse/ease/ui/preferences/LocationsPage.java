@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.preferences;
+ *******************************************************************************/
+package org.eclipse.ease.ui.preferences;
 
 import java.io.File;
 import java.util.Collection;
@@ -18,9 +19,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.repository.IEntry;
-import org.eclipse.ease.ui.repository.ILocation;
+import org.eclipse.ease.ui.repository.IRawLocation;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
+import org.eclipse.ease.ui.repository.IScriptLocation;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -60,7 +61,7 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public class LocationsPage extends PreferencePage implements IWorkbenchPreferencePage {
 	private TableViewer tableViewer;
-	private final Set<IEntry> fEntries = new HashSet<IEntry>();;
+	private final Set<IScriptLocation> fScriptLocations = new HashSet<IScriptLocation>();;
 
 	public LocationsPage() {
 	}
@@ -104,16 +105,16 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 						@Override
 						protected Object getValue(final Object element) {
-							if (element instanceof IEntry)
-								return ((IEntry) element).getLocation();
+							if (element instanceof IScriptLocation)
+								return ((IScriptLocation) element).getLocation();
 
 							return "";
 						}
 
 						@Override
 						protected void setValue(final Object element, final Object value) {
-							if (element instanceof IEntry) {
-								((IEntry) element).setLocation(value.toString());
+							if (element instanceof IScriptLocation) {
+								((IScriptLocation) element).setLocation(value.toString());
 								tableViewer.update(element, null);
 							}
 						}
@@ -124,11 +125,11 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 					tableViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 						@Override
 						public String getText(final Object element) {
-							if (element instanceof IEntry) {
-								if (((IEntry) element).isDefault())
-									return ((IEntry) element).getLocation() + " (default)";
+							if (element instanceof IScriptLocation) {
+								if (((IScriptLocation) element).isDefault())
+									return ((IScriptLocation) element).getLocation() + " (default)";
 								else
-									return ((IEntry) element).getLocation();
+									return ((IScriptLocation) element).getLocation();
 							}
 
 							return super.getText(element);
@@ -136,8 +137,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 						@Override
 						public Font getFont(final Object element) {
-							if (element instanceof IEntry) {
-								if (((IEntry) element).isDefault())
+							if (element instanceof IScriptLocation) {
+								if (((IScriptLocation) element).isDefault())
 									return JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 							}
 
@@ -160,16 +161,16 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 						@Override
 						protected Object getValue(final Object element) {
-							if (element instanceof IEntry)
-								return ((IEntry) element).isRecursive();
+							if (element instanceof IScriptLocation)
+								return ((IScriptLocation) element).isRecursive();
 
 							return false;
 						}
 
 						@Override
 						protected void setValue(final Object element, final Object value) {
-							if (element instanceof IEntry) {
-								((IEntry) element).setRecursive((Boolean) value);
+							if (element instanceof IScriptLocation) {
+								((IScriptLocation) element).setRecursive((Boolean) value);
 								tableViewer.update(element, null);
 							}
 						}
@@ -180,8 +181,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 					tableViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 						@Override
 						public String getText(final Object element) {
-							if (element instanceof IEntry)
-								return ((IEntry) element).isRecursive() ? "true" : "false";
+							if (element instanceof IScriptLocation)
+								return ((IScriptLocation) element).isRecursive() ? "true" : "false";
 
 							return super.getText(element);
 						}
@@ -192,14 +193,14 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 				tableViewer.setComparator(new ViewerComparator() {
 					@Override
 					public int compare(final Viewer viewer, final Object e1, final Object e2) {
-						if ((e1 instanceof ILocation) && (e2 instanceof ILocation))
-							return (((ILocation) e1).getLocation()).compareTo(((ILocation) e2).getLocation());
+						if ((e1 instanceof IRawLocation) && (e2 instanceof IRawLocation))
+							return (((IRawLocation) e1).getLocation()).compareTo(((IRawLocation) e2).getLocation());
 
 						return super.compare(viewer, e1, e2);
 					}
 				});
 
-				tableViewer.setInput(fEntries);
+				tableViewer.setInput(fScriptLocations);
 			}
 		}
 		{
@@ -256,8 +257,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 				public void widgetSelected(final SelectionEvent e) {
 					IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 					if (!selection.isEmpty()) {
-						Collection<IEntry> entries = (Collection<IEntry>) tableViewer.getInput();
-						for (IEntry entry : entries)
+						Collection<IScriptLocation> entries = (Collection<IScriptLocation>) tableViewer.getInput();
+						for (IScriptLocation entry : entries)
 							entry.setDefault(entry.equals(selection.getFirstElement()));
 					}
 
@@ -275,15 +276,15 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 					IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 					if (!selection.isEmpty()) {
 						for (Object location : selection.toList())
-							fEntries.remove(location);
+							fScriptLocations.remove(location);
 
 						// verify that we have a default entry
 						boolean hasDefault = false;
-						for (IEntry entry : fEntries)
+						for (IScriptLocation entry : fScriptLocations)
 							hasDefault |= entry.isDefault();
 
-						if ((!hasDefault) && (!fEntries.isEmpty()))
-							fEntries.iterator().next().setDefault(true);
+						if ((!hasDefault) && (!fScriptLocations.isEmpty()))
+							fScriptLocations.iterator().next().setDefault(true);
 
 						// refresh UI
 						tableViewer.refresh();
@@ -301,13 +302,13 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 	private void addEntry(final String location) {
 
-		IEntry entry = IRepositoryFactory.eINSTANCE.createEntry();
+		IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
 		entry.setLocation(location);
 		entry.setRecursive(true);
 		// first entry is also the default entry
-		entry.setDefault(fEntries.isEmpty());
+		entry.setDefault(fScriptLocations.isEmpty());
 
-		fEntries.add(entry);
+		fScriptLocations.add(entry);
 
 		tableViewer.refresh();
 	}
@@ -315,8 +316,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 	@Override
 	protected void performDefaults() {
 
-		fEntries.clear();
-		fEntries.addAll(PreferencesHelper.getLocations());
+		fScriptLocations.clear();
+		fScriptLocations.addAll(PreferencesHelper.getLocations());
 
 		// update UI
 		if (tableViewer != null)
@@ -337,7 +338,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 		}
 
 		// add entries
-		for (IEntry entry : fEntries)
+		for (IScriptLocation entry : fScriptLocations)
 			PreferencesHelper.addLocation(entry);
 
 		// update repository

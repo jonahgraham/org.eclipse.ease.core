@@ -68,14 +68,14 @@ public interface IRepositoryPackage extends EPackage {
 	IRepositoryPackage eINSTANCE = org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.LocationImpl <em>Location</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.RawLocationImpl <em>Raw Location</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.ease.ui.repository.impl.LocationImpl
-	 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getLocation()
+	 * @see org.eclipse.ease.ui.repository.impl.RawLocationImpl
+	 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getRawLocation()
 	 * @generated
 	 */
-	int LOCATION = 1;
+	int RAW_LOCATION = 1;
 
 	/**
 	 * The feature id for the '<em><b>Location</b></em>' attribute.
@@ -84,7 +84,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int LOCATION__LOCATION = 0;
+	int RAW_LOCATION__LOCATION = 0;
 
 	/**
 	 * The feature id for the '<em><b>Update Pending</b></em>' attribute.
@@ -93,25 +93,25 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int LOCATION__UPDATE_PENDING = 1;
+	int RAW_LOCATION__UPDATE_PENDING = 1;
 
 	/**
-	 * The number of structural features of the '<em>Location</em>' class.
+	 * The number of structural features of the '<em>Raw Location</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LOCATION_FEATURE_COUNT = 2;
+	int RAW_LOCATION_FEATURE_COUNT = 2;
 
 	/**
-	 * The operation id for the '<em>Get Content</em>' operation.
+	 * The operation id for the '<em>Get Resource</em>' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LOCATION___GET_CONTENT = 0;
+	int RAW_LOCATION___GET_RESOURCE = 0;
 
 	/**
 	 * The operation id for the '<em>Get Input Stream</em>' operation.
@@ -120,16 +120,16 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int LOCATION___GET_INPUT_STREAM = 1;
+	int RAW_LOCATION___GET_INPUT_STREAM = 1;
 
 	/**
-	 * The number of operations of the '<em>Location</em>' class.
+	 * The number of operations of the '<em>Raw Location</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int LOCATION_OPERATION_COUNT = 2;
+	int RAW_LOCATION_OPERATION_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.ScriptImpl <em>Script</em>}' class.
@@ -148,7 +148,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT__LOCATION = LOCATION__LOCATION;
+	int SCRIPT__LOCATION = RAW_LOCATION__LOCATION;
 
 	/**
 	 * The feature id for the '<em><b>Update Pending</b></em>' attribute.
@@ -157,7 +157,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT__UPDATE_PENDING = LOCATION__UPDATE_PENDING;
+	int SCRIPT__UPDATE_PENDING = RAW_LOCATION__UPDATE_PENDING;
 
 	/**
 	 * The feature id for the '<em><b>Timestamp</b></em>' attribute.
@@ -166,7 +166,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT__TIMESTAMP = LOCATION_FEATURE_COUNT + 0;
+	int SCRIPT__TIMESTAMP = RAW_LOCATION_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Entry</b></em>' container reference.
@@ -175,7 +175,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT__ENTRY = LOCATION_FEATURE_COUNT + 1;
+	int SCRIPT__ENTRY = RAW_LOCATION_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Script Parameters</b></em>' map.
@@ -184,7 +184,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT__SCRIPT_PARAMETERS = LOCATION_FEATURE_COUNT + 2;
+	int SCRIPT__SCRIPT_PARAMETERS = RAW_LOCATION_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>User Parameters</b></em>' map.
@@ -193,7 +193,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT__USER_PARAMETERS = LOCATION_FEATURE_COUNT + 3;
+	int SCRIPT__USER_PARAMETERS = RAW_LOCATION_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>Script</em>' class.
@@ -202,16 +202,16 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT_FEATURE_COUNT = LOCATION_FEATURE_COUNT + 4;
+	int SCRIPT_FEATURE_COUNT = RAW_LOCATION_FEATURE_COUNT + 4;
 
 	/**
-	 * The operation id for the '<em>Get Content</em>' operation.
+	 * The operation id for the '<em>Get Resource</em>' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT___GET_CONTENT = LOCATION___GET_CONTENT;
+	int SCRIPT___GET_RESOURCE = RAW_LOCATION___GET_RESOURCE;
 
 	/**
 	 * The operation id for the '<em>Get Input Stream</em>' operation.
@@ -220,7 +220,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT___GET_INPUT_STREAM = LOCATION___GET_INPUT_STREAM;
+	int SCRIPT___GET_INPUT_STREAM = RAW_LOCATION___GET_INPUT_STREAM;
 
 	/**
 	 * The operation id for the '<em>Run</em>' operation.
@@ -229,7 +229,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT___RUN = LOCATION_OPERATION_COUNT + 0;
+	int SCRIPT___RUN = RAW_LOCATION_OPERATION_COUNT + 0;
 
 	/**
 	 * The operation id for the '<em>Get Name</em>' operation.
@@ -238,7 +238,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT___GET_NAME = LOCATION_OPERATION_COUNT + 1;
+	int SCRIPT___GET_NAME = RAW_LOCATION_OPERATION_COUNT + 1;
 
 	/**
 	 * The operation id for the '<em>Get Path</em>' operation.
@@ -247,7 +247,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT___GET_PATH = LOCATION_OPERATION_COUNT + 2;
+	int SCRIPT___GET_PATH = RAW_LOCATION_OPERATION_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>Script</em>' class.
@@ -256,17 +256,17 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int SCRIPT_OPERATION_COUNT = LOCATION_OPERATION_COUNT + 3;
+	int SCRIPT_OPERATION_COUNT = RAW_LOCATION_OPERATION_COUNT + 3;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.RepositoryImpl <em>Repository</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.StorageImpl <em>Storage</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.ease.ui.repository.impl.RepositoryImpl
-	 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getRepository()
+	 * @see org.eclipse.ease.ui.repository.impl.StorageImpl
+	 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getStorage()
 	 * @generated
 	 */
-	int REPOSITORY = 2;
+	int STORAGE = 2;
 
 	/**
 	 * The feature id for the '<em><b>Entries</b></em>' containment reference list.
@@ -275,35 +275,35 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int REPOSITORY__ENTRIES = 0;
+	int STORAGE__ENTRIES = 0;
 
 	/**
-	 * The number of structural features of the '<em>Repository</em>' class.
+	 * The number of structural features of the '<em>Storage</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REPOSITORY_FEATURE_COUNT = 1;
+	int STORAGE_FEATURE_COUNT = 1;
 
 	/**
-	 * The number of operations of the '<em>Repository</em>' class.
+	 * The number of operations of the '<em>Storage</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REPOSITORY_OPERATION_COUNT = 0;
+	int STORAGE_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.EntryImpl <em>Entry</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl <em>Script Location</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.ease.ui.repository.impl.EntryImpl
-	 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getEntry()
+	 * @see org.eclipse.ease.ui.repository.impl.ScriptLocationImpl
+	 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getScriptLocation()
 	 * @generated
 	 */
-	int ENTRY = 3;
+	int SCRIPT_LOCATION = 3;
 
 	/**
 	 * The feature id for the '<em><b>Location</b></em>' attribute.
@@ -312,7 +312,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY__LOCATION = LOCATION__LOCATION;
+	int SCRIPT_LOCATION__LOCATION = RAW_LOCATION__LOCATION;
 
 	/**
 	 * The feature id for the '<em><b>Update Pending</b></em>' attribute.
@@ -321,7 +321,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY__UPDATE_PENDING = LOCATION__UPDATE_PENDING;
+	int SCRIPT_LOCATION__UPDATE_PENDING = RAW_LOCATION__UPDATE_PENDING;
 
 	/**
 	 * The feature id for the '<em><b>Recursive</b></em>' attribute.
@@ -330,7 +330,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY__RECURSIVE = LOCATION_FEATURE_COUNT + 0;
+	int SCRIPT_LOCATION__RECURSIVE = RAW_LOCATION_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Default</b></em>' attribute.
@@ -339,7 +339,7 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY__DEFAULT = LOCATION_FEATURE_COUNT + 1;
+	int SCRIPT_LOCATION__DEFAULT = RAW_LOCATION_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Scripts</b></em>' containment reference list.
@@ -348,25 +348,25 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY__SCRIPTS = LOCATION_FEATURE_COUNT + 2;
+	int SCRIPT_LOCATION__SCRIPTS = RAW_LOCATION_FEATURE_COUNT + 2;
 
 	/**
-	 * The number of structural features of the '<em>Entry</em>' class.
+	 * The number of structural features of the '<em>Script Location</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY_FEATURE_COUNT = LOCATION_FEATURE_COUNT + 3;
+	int SCRIPT_LOCATION_FEATURE_COUNT = RAW_LOCATION_FEATURE_COUNT + 3;
 
 	/**
-	 * The operation id for the '<em>Get Content</em>' operation.
+	 * The operation id for the '<em>Get Resource</em>' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY___GET_CONTENT = LOCATION___GET_CONTENT;
+	int SCRIPT_LOCATION___GET_RESOURCE = RAW_LOCATION___GET_RESOURCE;
 
 	/**
 	 * The operation id for the '<em>Get Input Stream</em>' operation.
@@ -375,16 +375,16 @@ public interface IRepositoryPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY___GET_INPUT_STREAM = LOCATION___GET_INPUT_STREAM;
+	int SCRIPT_LOCATION___GET_INPUT_STREAM = RAW_LOCATION___GET_INPUT_STREAM;
 
 	/**
-	 * The number of operations of the '<em>Entry</em>' class.
+	 * The number of operations of the '<em>Script Location</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ENTRY_OPERATION_COUNT = LOCATION_OPERATION_COUNT + 0;
+	int SCRIPT_LOCATION_OPERATION_COUNT = RAW_LOCATION_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.ease.ui.repository.impl.ParameterMapImpl <em>Parameter Map</em>}' class.
@@ -540,120 +540,120 @@ public interface IRepositoryPackage extends EPackage {
 	EOperation getScript__GetPath();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.ease.ui.repository.ILocation <em>Location</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.ease.ui.repository.IRawLocation <em>Raw Location</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Location</em>'.
-	 * @see org.eclipse.ease.ui.repository.ILocation
+	 * @return the meta object for class '<em>Raw Location</em>'.
+	 * @see org.eclipse.ease.ui.repository.IRawLocation
 	 * @generated
 	 */
-	EClass getLocation();
+	EClass getRawLocation();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.ILocation#getLocation <em>Location</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.IRawLocation#getLocation <em>Location</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Location</em>'.
-	 * @see org.eclipse.ease.ui.repository.ILocation#getLocation()
-	 * @see #getLocation()
+	 * @see org.eclipse.ease.ui.repository.IRawLocation#getLocation()
+	 * @see #getRawLocation()
 	 * @generated
 	 */
-	EAttribute getLocation_Location();
+	EAttribute getRawLocation_Location();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.ILocation#isUpdatePending <em>Update Pending</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.IRawLocation#isUpdatePending <em>Update Pending</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Update Pending</em>'.
-	 * @see org.eclipse.ease.ui.repository.ILocation#isUpdatePending()
-	 * @see #getLocation()
+	 * @see org.eclipse.ease.ui.repository.IRawLocation#isUpdatePending()
+	 * @see #getRawLocation()
 	 * @generated
 	 */
-	EAttribute getLocation_UpdatePending();
+	EAttribute getRawLocation_UpdatePending();
 
 	/**
-	 * Returns the meta object for the '{@link org.eclipse.ease.ui.repository.ILocation#getContent() <em>Get Content</em>}' operation.
+	 * Returns the meta object for the '{@link org.eclipse.ease.ui.repository.IRawLocation#getResource() <em>Get Resource</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the '<em>Get Content</em>' operation.
-	 * @see org.eclipse.ease.ui.repository.ILocation#getContent()
+	 * @return the meta object for the '<em>Get Resource</em>' operation.
+	 * @see org.eclipse.ease.ui.repository.IRawLocation#getResource()
 	 * @generated
 	 */
-	EOperation getLocation__GetContent();
+	EOperation getRawLocation__GetResource();
 
 	/**
-	 * Returns the meta object for the '{@link org.eclipse.ease.ui.repository.ILocation#getInputStream() <em>Get Input Stream</em>}' operation.
+	 * Returns the meta object for the '{@link org.eclipse.ease.ui.repository.IRawLocation#getInputStream() <em>Get Input Stream</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the '<em>Get Input Stream</em>' operation.
-	 * @see org.eclipse.ease.ui.repository.ILocation#getInputStream()
+	 * @see org.eclipse.ease.ui.repository.IRawLocation#getInputStream()
 	 * @generated
 	 */
-	EOperation getLocation__GetInputStream();
+	EOperation getRawLocation__GetInputStream();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.ease.ui.repository.IRepository <em>Repository</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.ease.ui.repository.IStorage <em>Storage</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Repository</em>'.
-	 * @see org.eclipse.ease.ui.repository.IRepository
+	 * @return the meta object for class '<em>Storage</em>'.
+	 * @see org.eclipse.ease.ui.repository.IStorage
 	 * @generated
 	 */
-	EClass getRepository();
+	EClass getStorage();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.ease.ui.repository.IRepository#getEntries <em>Entries</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.ease.ui.repository.IStorage#getEntries <em>Entries</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Entries</em>'.
-	 * @see org.eclipse.ease.ui.repository.IRepository#getEntries()
-	 * @see #getRepository()
+	 * @see org.eclipse.ease.ui.repository.IStorage#getEntries()
+	 * @see #getStorage()
 	 * @generated
 	 */
-	EReference getRepository_Entries();
+	EReference getStorage_Entries();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.ease.ui.repository.IEntry <em>Entry</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.ease.ui.repository.IScriptLocation <em>Script Location</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Entry</em>'.
-	 * @see org.eclipse.ease.ui.repository.IEntry
+	 * @return the meta object for class '<em>Script Location</em>'.
+	 * @see org.eclipse.ease.ui.repository.IScriptLocation
 	 * @generated
 	 */
-	EClass getEntry();
+	EClass getScriptLocation();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.IEntry#isRecursive <em>Recursive</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.IScriptLocation#isRecursive <em>Recursive</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Recursive</em>'.
-	 * @see org.eclipse.ease.ui.repository.IEntry#isRecursive()
-	 * @see #getEntry()
+	 * @see org.eclipse.ease.ui.repository.IScriptLocation#isRecursive()
+	 * @see #getScriptLocation()
 	 * @generated
 	 */
-	EAttribute getEntry_Recursive();
+	EAttribute getScriptLocation_Recursive();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.IEntry#isDefault <em>Default</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.ease.ui.repository.IScriptLocation#isDefault <em>Default</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Default</em>'.
-	 * @see org.eclipse.ease.ui.repository.IEntry#isDefault()
-	 * @see #getEntry()
+	 * @see org.eclipse.ease.ui.repository.IScriptLocation#isDefault()
+	 * @see #getScriptLocation()
 	 * @generated
 	 */
-	EAttribute getEntry_Default();
+	EAttribute getScriptLocation_Default();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.ease.ui.repository.IEntry#getScripts <em>Scripts</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.ease.ui.repository.IScriptLocation#getScripts <em>Scripts</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Scripts</em>'.
-	 * @see org.eclipse.ease.ui.repository.IEntry#getScripts()
-	 * @see #getEntry()
+	 * @see org.eclipse.ease.ui.repository.IScriptLocation#getScripts()
+	 * @see #getScriptLocation()
 	 * @generated
 	 */
-	EReference getEntry_Scripts();
+	EReference getScriptLocation_Scripts();
 
 	/**
 	 * Returns the meta object for class '{@link java.util.Map.Entry <em>Parameter Map</em>}'.
@@ -801,14 +801,14 @@ public interface IRepositoryPackage extends EPackage {
 		EOperation SCRIPT___GET_PATH = eINSTANCE.getScript__GetPath();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.LocationImpl <em>Location</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.RawLocationImpl <em>Raw Location</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.eclipse.ease.ui.repository.impl.LocationImpl
-		 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getLocation()
+		 * @see org.eclipse.ease.ui.repository.impl.RawLocationImpl
+		 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getRawLocation()
 		 * @generated
 		 */
-		EClass LOCATION = eINSTANCE.getLocation();
+		EClass RAW_LOCATION = eINSTANCE.getRawLocation();
 
 		/**
 		 * The meta object literal for the '<em><b>Location</b></em>' attribute feature.
@@ -816,7 +816,7 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute LOCATION__LOCATION = eINSTANCE.getLocation_Location();
+		EAttribute RAW_LOCATION__LOCATION = eINSTANCE.getRawLocation_Location();
 
 		/**
 		 * The meta object literal for the '<em><b>Update Pending</b></em>' attribute feature.
@@ -824,15 +824,15 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute LOCATION__UPDATE_PENDING = eINSTANCE.getLocation_UpdatePending();
+		EAttribute RAW_LOCATION__UPDATE_PENDING = eINSTANCE.getRawLocation_UpdatePending();
 
 		/**
-		 * The meta object literal for the '<em><b>Get Content</b></em>' operation.
+		 * The meta object literal for the '<em><b>Get Resource</b></em>' operation.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EOperation LOCATION___GET_CONTENT = eINSTANCE.getLocation__GetContent();
+		EOperation RAW_LOCATION___GET_RESOURCE = eINSTANCE.getRawLocation__GetResource();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Input Stream</b></em>' operation.
@@ -840,17 +840,17 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EOperation LOCATION___GET_INPUT_STREAM = eINSTANCE.getLocation__GetInputStream();
+		EOperation RAW_LOCATION___GET_INPUT_STREAM = eINSTANCE.getRawLocation__GetInputStream();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.RepositoryImpl <em>Repository</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.StorageImpl <em>Storage</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.eclipse.ease.ui.repository.impl.RepositoryImpl
-		 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getRepository()
+		 * @see org.eclipse.ease.ui.repository.impl.StorageImpl
+		 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getStorage()
 		 * @generated
 		 */
-		EClass REPOSITORY = eINSTANCE.getRepository();
+		EClass STORAGE = eINSTANCE.getStorage();
 
 		/**
 		 * The meta object literal for the '<em><b>Entries</b></em>' containment reference list feature.
@@ -858,17 +858,17 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference REPOSITORY__ENTRIES = eINSTANCE.getRepository_Entries();
+		EReference STORAGE__ENTRIES = eINSTANCE.getStorage_Entries();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.EntryImpl <em>Entry</em>}' class.
+		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl <em>Script Location</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.eclipse.ease.ui.repository.impl.EntryImpl
-		 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getEntry()
+		 * @see org.eclipse.ease.ui.repository.impl.ScriptLocationImpl
+		 * @see org.eclipse.ease.ui.repository.impl.RepositoryPackageImpl#getScriptLocation()
 		 * @generated
 		 */
-		EClass ENTRY = eINSTANCE.getEntry();
+		EClass SCRIPT_LOCATION = eINSTANCE.getScriptLocation();
 
 		/**
 		 * The meta object literal for the '<em><b>Recursive</b></em>' attribute feature.
@@ -876,7 +876,7 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute ENTRY__RECURSIVE = eINSTANCE.getEntry_Recursive();
+		EAttribute SCRIPT_LOCATION__RECURSIVE = eINSTANCE.getScriptLocation_Recursive();
 
 		/**
 		 * The meta object literal for the '<em><b>Default</b></em>' attribute feature.
@@ -884,7 +884,7 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute ENTRY__DEFAULT = eINSTANCE.getEntry_Default();
+		EAttribute SCRIPT_LOCATION__DEFAULT = eINSTANCE.getScriptLocation_Default();
 
 		/**
 		 * The meta object literal for the '<em><b>Scripts</b></em>' containment reference list feature.
@@ -892,7 +892,7 @@ public interface IRepositoryPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference ENTRY__SCRIPTS = eINSTANCE.getEntry_Scripts();
+		EReference SCRIPT_LOCATION__SCRIPTS = eINSTANCE.getScriptLocation_Scripts();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.ease.ui.repository.impl.ParameterMapImpl <em>Parameter Map</em>}' class.

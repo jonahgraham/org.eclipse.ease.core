@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.modules;
+ *******************************************************************************/
+package org.eclipse.ease.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +38,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	 * Load a module. Loading a module generally enhances the script environment with new functions and variables. If a module was already loaded before, it
 	 * gets refreshed and moved to the top of the module stack. When a module is loaded, all its dependencies are loaded too. So loading one module might change
 	 * the whole module stack.
-	 * 
+	 *
 	 * @param name
 	 *            name of module to load
 	 * @return loaded module instance
@@ -103,7 +104,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 
 	/**
 	 * List all available (visible) modules. Returns a list of visible modules. Loaded modules are indicated.
-	 * 
+	 *
 	 * @return string containing module information
 	 */
 	@WrapToScript
@@ -139,7 +140,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 
 	/**
 	 * Resolves a loaded module and returns the Java instance. Will only query previously loaded modules.
-	 * 
+	 *
 	 * @param name
 	 *            name of the module to resolve
 	 * @return resolved module instance or <code>null</code>
@@ -152,7 +153,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 
 	/**
 	 * Resolves a loaded module by its class.
-	 * 
+	 *
 	 * @param clazz
 	 *            module class to look resolve
 	 * @return resolved module instance or <code>null</code>
@@ -194,8 +195,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 			((IModuleListener) listener).notifyModule(module, type);
 	}
 
-	@Override
-	public final Object resolveFile(final String filename) {
-		return ResourceTools.resolveFile(filename, getScriptEngine().getExecutedFile());
+	private Object resolveFile(final String filename) {
+		return ResourceTools.resolveFile(filename, getScriptEngine().getExecutedFile(), true);
 	}
 }

@@ -7,8 +7,8 @@
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0" operationReflection="true"
     importOrganizing="true">
   <foreignModel>StoredScript.ecore</foreignModel>
-  <genPackages prefix="Storedscript" basePackage="org.eclipse.ease.storedscript"
-      disposableProviderFactory="true" ecorePackage="StoredScript.ecore#/">
+  <genPackages prefix="Storedscript" basePackage="org.eclipse.ease.storedscript" disposableProviderFactory="true"
+      ecorePackage="StoredScript.ecore#/">
     <genClasses ecoreClass="StoredScript.ecore#//StoredScriptRegistry">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StoredScript.ecore#//StoredScriptRegistry/scripts"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StoredScript.ecore#//StoredScriptRegistry/scriptTypes"/>

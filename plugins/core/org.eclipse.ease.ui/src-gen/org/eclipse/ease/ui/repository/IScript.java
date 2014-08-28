@@ -34,7 +34,7 @@ import org.eclipse.emf.common.util.EMap;
  * @model
  * @generated
  */
-public interface IScript extends ILocation {
+public interface IScript extends IRawLocation {
 	/**
 	 * Returns the value of the '<em><b>Timestamp</b></em>' attribute.
 	 * The default value is <code>"-1"</code>.
@@ -63,29 +63,30 @@ public interface IScript extends ILocation {
 
 	/**
 	 * Returns the value of the '<em><b>Entry</b></em>' container reference.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.ease.ui.repository.IEntry#getScripts <em>Scripts</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.ease.ui.repository.IScriptLocation#getScripts <em>Scripts</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Entry</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Entry</em>' container reference.
-	 * @see #setEntry(IEntry)
+	 * @see #setEntry(IScriptLocation)
 	 * @see org.eclipse.ease.ui.repository.IRepositoryPackage#getScript_Entry()
-	 * @see org.eclipse.ease.ui.repository.IEntry#getScripts
+	 * @see org.eclipse.ease.ui.repository.IScriptLocation#getScripts
 	 * @model opposite="scripts" required="true" transient="false"
 	 * @generated
 	 */
-	IEntry getEntry();
+	IScriptLocation getEntry();
 
 	/**
 	 * Sets the value of the '{@link org.eclipse.ease.ui.repository.IScript#getEntry <em>Entry</em>}' container reference.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Entry</em>' container reference.
 	 * @see #getEntry()
 	 * @generated
 	 */
-	void setEntry(IEntry value);
+	void setEntry(IScriptLocation value);
 
 	/**
 	 * Returns the value of the '<em><b>Script Parameters</b></em>' map.

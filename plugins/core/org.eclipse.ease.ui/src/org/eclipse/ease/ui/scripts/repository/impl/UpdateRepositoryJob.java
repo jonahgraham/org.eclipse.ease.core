@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository.impl;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
 import java.io.InputStream;
@@ -27,8 +28,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ease.ui.repository.IEntry;
 import org.eclipse.ease.ui.repository.IScript;
+import org.eclipse.ease.ui.repository.IScriptLocation;
 
 public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 // , IScriptListener
@@ -36,7 +37,7 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 
 	private final RepositoryService fRepositoryService;
 
-	private final Collection<IEntry> fEntriesforUpdate = new HashSet<IEntry>();
+	private final Collection<IScriptLocation> fEntriesforUpdate = new HashSet<IScriptLocation>();
 
 	private final Map<String, ScriptContributionFactory> fContributionFactories = new HashMap<String, ScriptContributionFactory>();
 
@@ -55,7 +56,7 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 			script.setUpdatePending(true);
 
 		// get locations to be updated
-		Collection<IEntry> entries = new HashSet<IEntry>();
+		Collection<IScriptLocation> entries = new HashSet<IScriptLocation>();
 		synchronized (fEntriesforUpdate) {
 			if (fEntriesforUpdate.isEmpty())
 				entries.addAll(fRepositoryService.getRepository().getEntries());
@@ -66,9 +67,9 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 		}
 
 		// update locations
-		for (IEntry entry : entries) {
+		for (IScriptLocation entry : entries) {
 
-			Object content = entry.getContent();
+			Object content = entry.getResource();
 			if ((content instanceof IResource) && (((IResource) content).exists())) {
 				// this is a valid workspace resource
 				new WorkspaceParser(fRepositoryService).parse((IResource) content, entry);
@@ -79,6 +80,7 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 				new FileSystemParser(fRepositoryService).parse((File) content, entry);
 
 			} else if (content instanceof InputStream) {
+				// FIXME can never happen call entry.getInputStream() instead
 				// new InputStreamParser(fRepositoryService).parse(stream, entry);
 				// entry.setTimestamp(System.currentTimeMillis());
 			}
@@ -104,22 +106,22 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 		schedule(delay);
 	}
 
-	private synchronized void update(IEntry entry) {
+	private synchronized void update(final IScriptLocation entry) {
 		fEntriesforUpdate.add(entry);
 		scheduleUpdate(0);
 	}
 
 	@Override
-	public void resourceChanged(IResourceChangeEvent event) {
+	public void resourceChanged(final IResourceChangeEvent event) {
 		// TODO handle resource changes
 		try {
 			event.getDelta().accept(new IResourceDeltaVisitor() {
 
 				@Override
-				public boolean visit(IResourceDelta delta) throws CoreException {
+				public boolean visit(final IResourceDelta delta) throws CoreException {
 					IResource resource = delta.getResource();
 					String location = "workspace:/" + resource.getFullPath();
-					for (IEntry entry : fRepositoryService.getLocations()) {
+					for (IScriptLocation entry : fRepositoryService.getLocations()) {
 						if (entry.getLocation().equals(location)) {
 							update(entry);
 							return false;

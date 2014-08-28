@@ -71,9 +71,9 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case IRepositoryPackage.SCRIPT: return createScript();
-			case IRepositoryPackage.LOCATION: return createLocation();
-			case IRepositoryPackage.REPOSITORY: return createRepository();
-			case IRepositoryPackage.ENTRY: return createEntry();
+			case IRepositoryPackage.RAW_LOCATION: return createRawLocation();
+			case IRepositoryPackage.STORAGE: return createStorage();
+			case IRepositoryPackage.SCRIPT_LOCATION: return createScriptLocation();
 			case IRepositoryPackage.PARAMETER_MAP: return (EObject)createParameterMap();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
@@ -129,9 +129,9 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ILocation createLocation() {
-		LocationImpl location = new LocationImpl();
-		return location;
+	public IRawLocation createRawLocation() {
+		RawLocationImpl rawLocation = new RawLocationImpl();
+		return rawLocation;
 	}
 
 	/**
@@ -139,9 +139,9 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IRepository createRepository() {
-		RepositoryImpl repository = new RepositoryImpl();
-		return repository;
+	public IStorage createStorage() {
+		StorageImpl storage = new StorageImpl();
+		return storage;
 	}
 
 	/**
@@ -149,9 +149,9 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IEntry createEntry() {
-		EntryImpl entry = new EntryImpl();
-		return entry;
+	public IScriptLocation createScriptLocation() {
+		ScriptLocationImpl scriptLocation = new ScriptLocationImpl();
+		return scriptLocation;
 	}
 
 	/**

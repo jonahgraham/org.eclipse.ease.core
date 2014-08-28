@@ -7,14 +7,14 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.dialogs;
+ *******************************************************************************/
+package org.eclipse.ease.ui.dialogs;
 
 import java.io.File;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.ui.preferences.PreferencesHelper;
-import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 public class SelectScriptStorageDialog extends Dialog {
@@ -44,7 +43,7 @@ public class SelectScriptStorageDialog extends Dialog {
 
 	/**
 	 * Create the dialog.
-	 * 
+	 *
 	 * @param parentShell
 	 */
 	public SelectScriptStorageDialog(final Shell parentShell) {
@@ -53,7 +52,7 @@ public class SelectScriptStorageDialog extends Dialog {
 
 	/**
 	 * Create contents of the dialog.
-	 * 
+	 *
 	 * @param parent
 	 */
 	@Override
@@ -127,7 +126,7 @@ public class SelectScriptStorageDialog extends Dialog {
 
 	/**
 	 * Create contents of the button bar.
-	 * 
+	 *
 	 * @param parent
 	 */
 	@Override
@@ -159,13 +158,6 @@ public class SelectScriptStorageDialog extends Dialog {
 		else if (btnStoreOnFileSystem.getSelection())
 			// FIXME change user input to URI syntax
 			fLocation = txtFileSystem.getText();
-
-		// store location to preferences
-		PreferencesHelper.addLocation(fLocation, true, true);
-
-		// update repository service
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-		repositoryService.updateLocations();
 
 		super.okPressed();
 	}

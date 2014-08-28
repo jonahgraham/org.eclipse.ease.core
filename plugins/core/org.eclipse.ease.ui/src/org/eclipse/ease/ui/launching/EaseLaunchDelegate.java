@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.launching;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,27 +48,6 @@ import org.eclipse.ui.part.FileEditorInput;
 public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, ILaunchConfigurationDelegate {
 
 	private static final String LAUNCH_CONFIGURATION_ID = "org.eclipse.ease.launchConfigurationType";
-
-	/**
-	 * Retrieve the source file from an {@link ILaunchConfiguration}.
-	 * 
-	 * @param configuration
-	 *            configuration to use
-	 * @return resource containing script source or <code>null</code>
-	 * @throws CoreException
-	 */
-	public static Object getSource(final ILaunchConfiguration configuration) throws CoreException {
-		String uri = configuration.getAttribute(LaunchConstants.FILE_LOCATION, "");
-		IResource resource = ResourceTools.getResource(uri);
-		if ((resource instanceof IFile) && (resource.exists()))
-			return resource;
-
-		File file = ResourceTools.getFile(uri);
-		if ((file != null) && (file.isFile()) && (file.exists()))
-			return file;
-
-		return ResourceTools.getInputStream(uri);
-	}
 
 	// **********************************************************************
 	// ILaunchShortcut
@@ -126,7 +104,8 @@ public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, IL
 
 	@Override
 	public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch, final IProgressMonitor monitor) throws CoreException {
-		Object resource = getSource(configuration);
+		Object resource = ResourceTools.getResource(configuration.getAttribute(LaunchConstants.FILE_LOCATION, ""));
+		;
 		if (resource != null) {
 			// we have a valid script, lets feed it to the script engine
 			launch(resource, configuration, mode, launch, monitor);
@@ -139,7 +118,7 @@ public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, IL
 
 	/**
 	 * Get all launch configurations that target a dedicated resource file.
-	 * 
+	 *
 	 * @param resource
 	 *            root file to execute
 	 * @param mode
@@ -183,7 +162,7 @@ public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, IL
 
 	/**
 	 * Launch a resource. Try to launch using a launch configuration. Used for contextual launches
-	 * 
+	 *
 	 * @param file
 	 *            source file
 	 * @param mode
@@ -232,7 +211,7 @@ public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, IL
 
 	/**
 	 * Execute script code from an {@link IFile}.
-	 * 
+	 *
 	 * @param resource
 	 *            resource to execute
 	 * @param configuration
