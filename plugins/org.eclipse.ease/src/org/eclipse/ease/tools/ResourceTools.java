@@ -152,9 +152,14 @@ public final class ResourceTools {
 
 		} else if (reference.startsWith(WorkspaceURLConnection.SCHEME)) {
 			// workspace absolute link
-			if (isFolder)
-				return ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3)));
-			else
+			if (isFolder) {
+				Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3));
+				if (path.segmentCount() > 1)
+					return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
+				else
+					return ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
+
+			} else
 				return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3)));
 
 		} else {
