@@ -30,28 +30,25 @@ public class ModulesTools {
 	}
 
 	/**
-	 * Generates the signature of the method. If a parameter is annotated as
-	 * optional (Scriptparameter) it is enclosed with [].
-	 * 
+	 * Generates the signature of the method. If a parameter is annotated as optional (Scriptparameter) it is enclosed with [].
+	 *
 	 * @param method
 	 *            inspected method
 	 * @return Signature of Method.
 	 */
-	public static String getSignature(Method method) {
+	public static String getSignature(final Method method) {
 		return getSignature(method, false);
 	}
 
 	/**
-	 * Generates the signature of the method. If a parameter is annotated as
-	 * optional (Scriptparameter) it is enclose with []. If showDefault is true
-	 * the given default value is added. E.g.
-	 * "foo(type1 [,type2 = defaultValue])".
-	 * 
+	 * Generates the signature of the method. If a parameter is annotated as optional (Scriptparameter) it is enclose with []. If showDefault is true the given
+	 * default value is added. E.g. "foo(type1 [,type2 = defaultValue])".
+	 *
 	 * @param method
 	 *            inspected method
 	 * @return Signature of Method.
 	 */
-	public static String getSignature(Method method, boolean showDefault) {
+	public static String getSignature(final Method method, final boolean showDefault) {
 
 		Class<?>[] parameters = method.getParameterTypes();
 		List<Boolean> optional = new ArrayList<Boolean>();
@@ -62,9 +59,8 @@ public class ModulesTools {
 			String defaultValueFlag = "";
 			for (Annotation annotation : list) {
 				if (annotation.annotationType().equals(ScriptParameter.class)) {
-					optionalFlag = ((ScriptParameter) annotation).optional();
-					defaultValueFlag = ((ScriptParameter) annotation)
-							.defaultValue();
+					optionalFlag = ScriptParameter.Helper.isOptional((ScriptParameter) annotation);
+					defaultValueFlag = ((ScriptParameter) annotation).defaultValue();
 					if (parameters[i].equals(String.class)) {
 						defaultValueFlag = "\"" + defaultValueFlag + "\"";
 					}
@@ -114,17 +110,15 @@ public class ModulesTools {
 
 	/**
 	 * Get the module owning the method provided.
-	 * 
+	 *
 	 * @param method
 	 *            inspected method
 	 * @return module containing the method or null.
 	 */
-	public static ModuleDefinition getDeclaringModule(Method method) {
+	public static ModuleDefinition getDeclaringModule(final Method method) {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI
-				.getWorkbench().getService(IScriptService.class);
-		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(
-				scriptService.getAvailableModules().values());
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
 		for (ModuleDefinition module : modules) {
 			if (module.getModuleClass().equals(method.getDeclaringClass()))
@@ -137,17 +131,15 @@ public class ModulesTools {
 
 	/**
 	 * Get the module owning the field provided.
-	 * 
+	 *
 	 * @param field
 	 *            inspected field
 	 * @return module containing the field or null.
 	 */
-	public static ModuleDefinition getDeclaringModule(Field field) {
+	public static ModuleDefinition getDeclaringModule(final Field field) {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI
-				.getWorkbench().getService(IScriptService.class);
-		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(
-				scriptService.getAvailableModules().values());
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
 		for (ModuleDefinition module : modules) {
 			if (module.getModuleClass().equals(field.getDeclaringClass()))

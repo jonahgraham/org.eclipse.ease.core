@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.modules;
+ *******************************************************************************/
+package org.eclipse.ease.modules;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,19 +22,17 @@ import java.lang.reflect.Method;
 @Documented
 public @interface ScriptParameter {
 
-	public static final String NULL = "[null]";
+	public static final String NULL = "org.eclipse.ease.modules.ScriptParameter.null";
 
-	public static final String UNDEFINED = "_-_-_undefined_-_-_";
+	public static final String UNDEFINED = "org.eclipse.ease.modules.ScriptParameter.undefined";
 
 	String name() default "";
 
 	String defaultValue() default UNDEFINED;
 
-	boolean optional() default false;
-
 	public static class OptionalParameterHelper {
 
-		protected static String getDefaultValue(ScriptParameter in) {
+		protected static String getDefaultValue(final ScriptParameter in) {
 			String defaultValue = in.defaultValue();
 			if (defaultValue == null) {
 				try {
@@ -51,7 +50,7 @@ public @interface ScriptParameter {
 			return defaultValue;
 		}
 
-		public static Object getDefaultValue(ScriptParameter in, Class<?> type) {
+		public static Object getDefaultValue(final ScriptParameter in, final Class<?> type) {
 			String defaultValue = getDefaultValue(in);
 			if ((defaultValue == null) || UNDEFINED.equals(defaultValue)) {
 				return null;
@@ -64,6 +63,12 @@ public @interface ScriptParameter {
 				return Boolean.getBoolean(defaultValue);
 			}
 			return null;
+		}
+	}
+
+	public static class Helper {
+		public static boolean isOptional(final ScriptParameter parameter) {
+			return !parameter.defaultValue().equals(ScriptParameter.UNDEFINED);
 		}
 	}
 }

@@ -65,7 +65,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 
 	/**
 	 * Get the parameter name from a annotation. Use for engine which can have named variable
-	 * 
+	 *
 	 * @param parameterAnnotations
 	 * @return
 	 */
@@ -89,7 +89,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 			ScriptParameter annotation = getParameterAnnotation(method.getParameterAnnotations()[index]);
 			if (annotation != null) {
 				parameter.setName(annotation.name());
-				parameter.setOptional(annotation.optional());
+				parameter.setOptional(ScriptParameter.Helper.isOptional(annotation));
 				parameter.setDefault(annotation.defaultValue());
 			}
 			parameters.add(parameter);
@@ -115,7 +115,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 
 	/**
 	 * Find a unique name that is not used yet.
-	 * 
+	 *
 	 * @param parameters
 	 *            list of available parameters
 	 * @return unique unused parameter name

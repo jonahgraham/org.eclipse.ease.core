@@ -153,7 +153,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 *            return code
 	 */
 	@WrapToScript
-	public final void exit(final @ScriptParameter(optional = true, defaultValue = ScriptParameter.NULL) Object value) {
+	public final void exit(final @ScriptParameter(defaultValue = ScriptParameter.NULL) Object value) {
 		throw new ExitException(value);
 	}
 
