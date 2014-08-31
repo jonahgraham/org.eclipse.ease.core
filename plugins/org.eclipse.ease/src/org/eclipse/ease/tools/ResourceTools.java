@@ -405,4 +405,19 @@ public final class ResourceTools {
 		}
 		return result.toString();
 	}
+
+	/**
+	 * Convert a location to a path in the workspace.
+	 * 
+	 * @param location
+	 *            location to convert (workspace://...)
+	 * @return
+	 */
+	public static IPath toPath(final String location) {
+		Object resource = resolveAbsolute(location, null, true);
+		if (resource == null)
+			resource = resolveAbsolute(location, null, false);
+
+		return (resource instanceof IResource) ? ((IResource) resource).getFullPath() : null;
+	}
 }
