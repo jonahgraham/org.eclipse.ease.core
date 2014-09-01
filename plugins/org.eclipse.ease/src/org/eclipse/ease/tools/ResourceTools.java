@@ -123,7 +123,11 @@ public final class ResourceTools {
 
 		if (location instanceof String) {
 			// try to convert to an URI
-			location = URI.create((String) location);
+			try {
+				location = URI.create((String) location);
+			} catch (IllegalArgumentException e) {
+				// throw on invalid URIs, ignore and continue with location as-is
+			}
 		}
 
 		if (location instanceof URI) {
@@ -408,7 +412,7 @@ public final class ResourceTools {
 
 	/**
 	 * Convert a location to a path in the workspace.
-	 * 
+	 *
 	 * @param location
 	 *            location to convert (workspace://...)
 	 * @return
