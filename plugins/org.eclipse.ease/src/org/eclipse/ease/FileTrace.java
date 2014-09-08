@@ -32,13 +32,13 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 	public final class Trace {
 
 		/** Line number currently executed. */
-		private int mLineNumber = 0;
+		private int fLineNumber = 0;
 
 		/** File URL. */
-		private String mUrl = null;
+		private String fUrl = null;
 
 		/** Optionally execution content (for dynamically generated code). */
-		private String mContent = "";
+		private String fContent = "";
 
 		/**
 		 * Constructor.
@@ -51,20 +51,20 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 		 *        script content in case that URL is <code>null</code>
 		 */
 		private Trace(final String url, final int lineNumber, final String content) {
-			mUrl = url;
-			mLineNumber = lineNumber;
-			mContent = content;
+			fUrl = url;
+			fLineNumber = lineNumber;
+			fContent = content;
 		}
 
 		public Trace(final Object reference) {
 			if(reference instanceof IFile)
-				mUrl = ((IFile)reference).getFullPath().toPortableString();
+				fUrl = ((IFile)reference).getFullPath().toPortableString();
 
 			else if(reference instanceof File)
-				mUrl = ((File)reference).getAbsolutePath();
+				fUrl = ((File)reference).getAbsolutePath();
 
 			else if(reference != null)
-				mContent = reference.toString();
+				fContent = reference.toString();
 		}
 
 		/**
@@ -73,7 +73,7 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 		 * @return line number
 		 */
 		public int getLineNumber() {
-			return mLineNumber;
+			return fLineNumber;
 		}
 
 		/**
@@ -82,10 +82,10 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 		 * @return executed file
 		 */
 		public Object getFile() {
-			if(mUrl != null) {
+			if(fUrl != null) {
 				// first try to resolve the file in workspace
 				try {
-					IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(mUrl));
+					IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fUrl));
 					if(file.exists())
 						return file;
 
@@ -93,7 +93,7 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 				}
 
 				// didn't work, resolve from system
-				File file = new File(mUrl);
+				File file = new File(fUrl);
 				if(file.exists())
 					return file;
 			}
@@ -103,30 +103,30 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 
 		public String getFileName() {
 			// if (mUrl != null)
-			return mUrl;
+			return fUrl;
 
 			// return "";
 		}
 
 		public void setLineNumber(final int lineNumber) {
-			mLineNumber = lineNumber;
+			fLineNumber = lineNumber;
 		}
 
 		public String getContent() {
-			return mContent;
+			return fContent;
 		}
 	}
 
 	/** Trace stack. */
-	private final List<FileTrace.Trace> mTrace = new ArrayList<FileTrace.Trace>();
+	private final List<FileTrace.Trace> fTrace = new ArrayList<FileTrace.Trace>();
 
 	public final void push(final String url, final int lineNumber, final String content) {
-		mTrace.add(0, new Trace(url, lineNumber, content));
+		fTrace.add(0, new Trace(url, lineNumber, content));
 	}
 
 	@Override
 	public final Iterator<FileTrace.Trace> iterator() {
-		return mTrace.iterator();
+		return fTrace.iterator();
 	}
 
 	/**
@@ -135,27 +135,27 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
 	 * @return trace stack
 	 */
 	public final List<Trace> getTrace() {
-		return mTrace;
+		return fTrace;
 	}
 
 	public void push(final Object reference) {
 		if(reference instanceof Trace)
-			mTrace.add(0, (Trace)reference);
+			fTrace.add(0, (Trace)reference);
 
 		else
-			mTrace.add(0, new Trace(reference));
+			fTrace.add(0, new Trace(reference));
 	}
 
 	public Trace pop() {
-		if(!mTrace.isEmpty())
-			return mTrace.remove(0);
+		if(!fTrace.isEmpty())
+			return fTrace.remove(0);
 
 		return null;
 	}
 
 	public Trace peek() {
-		if(!mTrace.isEmpty())
-			return mTrace.get(0);
+		if(!fTrace.isEmpty())
+			return fTrace.get(0);
 
 		return null;
 	}

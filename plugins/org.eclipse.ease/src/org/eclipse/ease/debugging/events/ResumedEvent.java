@@ -12,20 +12,20 @@ package org.eclipse.ease.debugging.events;
 
 public class ResumedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final Thread mThread;
+	private final Thread fThread;
 
-	private final int mType;
+	private final int fType;
 
 	public ResumedEvent(final Thread thread, final int type) {
-		mThread = thread;
-		mType = type;
+		fThread = thread;
+		fType = type;
 	}
 
 	public Thread getThread() {
-		return mThread;
+		return fThread;
 	}
 
 	public int getType() {
-		return mType;
+		return fType;
 	}
 }

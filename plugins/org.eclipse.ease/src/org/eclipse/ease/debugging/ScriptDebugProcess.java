@@ -19,7 +19,7 @@ import org.eclipse.debug.core.model.IStreamsProxy;
 
 public class ScriptDebugProcess extends ScriptDebugElement implements IProcess {
 
-	private final Map<String, String> mAttributes = new HashMap<String, String>();
+	private final Map<String, String> fAttributes = new HashMap<String, String>();
 
 	public ScriptDebugProcess(final ScriptDebugTarget target) {
 		super(target);
@@ -37,12 +37,12 @@ public class ScriptDebugProcess extends ScriptDebugElement implements IProcess {
 
 	@Override
 	public void setAttribute(final String key, final String value) {
-		mAttributes.put(key, value);
+		fAttributes.put(key, value);
 	}
 
 	@Override
 	public String getAttribute(final String key) {
-		return mAttributes.get(key);
+		return fAttributes.get(key);
 	}
 
 	@Override

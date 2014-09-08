@@ -15,20 +15,20 @@ import org.eclipse.ease.Script;
 
 public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 
-	private final Script mScript;
+	private final Script fScript;
 
-	private final IBreakpoint mBreakpoint;
+	private final IBreakpoint fBreakpoint;
 
 	public BreakpointRequest(final Script script, final IBreakpoint breakpoint) {
-		mScript = script;
-		mBreakpoint = breakpoint;
+		fScript = script;
+		fBreakpoint = breakpoint;
 	}
 
 	public Script getScript() {
-		return mScript;
+		return fScript;
 	}
 
 	public IBreakpoint getBreakpoint() {
-		return mBreakpoint;
+		return fBreakpoint;
 	}
 }

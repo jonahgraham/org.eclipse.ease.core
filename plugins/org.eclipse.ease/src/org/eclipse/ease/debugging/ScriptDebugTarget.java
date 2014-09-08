@@ -38,24 +38,24 @@ import org.eclipse.ease.debugging.events.TerminateRequest;
 
 public abstract class ScriptDebugTarget extends ScriptDebugElement implements IDebugTarget, IEventProcessor {
 
-	private EventDispatchJob mDispatcher;
+	private EventDispatchJob fDispatcher;
 
-	private ScriptDebugProcess mProcess = null;
+	private ScriptDebugProcess fProcess = null;
 
-	private final List<ScriptDebugThread> mThreads = new ArrayList<ScriptDebugThread>();
+	private final List<ScriptDebugThread> fThreads = new ArrayList<ScriptDebugThread>();
 
-	private final ILaunch mLaunch;
+	private final ILaunch fLaunch;
 
-	private State mState = State.NOT_STARTED;
+	private State fState = State.NOT_STARTED;
 
-	private final boolean mSuspendOnStartup;
+	private final boolean fSuspendOnStartup;
 
 	private final boolean fSuspendOnScriptLoad;
 
 	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad) {
 		super(null);
-		mLaunch = launch;
-		mSuspendOnStartup = suspendOnStartup;
+		fLaunch = launch;
+		fSuspendOnStartup = suspendOnStartup;
 		fSuspendOnScriptLoad = suspendOnScriptLoad;
 
 		fireCreationEvent();
@@ -73,22 +73,22 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	@Override
 	public ILaunch getLaunch() {
-		return mLaunch;
+		return fLaunch;
 	}
 
 	@Override
 	public IProcess getProcess() {
-		return mProcess;
+		return fProcess;
 	}
 
 	@Override
 	public ScriptDebugThread[] getThreads() {
-		return mThreads.toArray(new ScriptDebugThread[mThreads.size()]);
+		return fThreads.toArray(new ScriptDebugThread[fThreads.size()]);
 	}
 
 	@Override
 	public boolean hasThreads() throws DebugException {
-		return !mThreads.isEmpty();
+		return !fThreads.isEmpty();
 	}
 
 	@Override
@@ -98,11 +98,11 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	}
 
 	public void setDispatcher(final EventDispatchJob dispatcher) {
-		mDispatcher = dispatcher;
+		fDispatcher = dispatcher;
 	}
 
 	protected void fireDispatchEvent(final IDebugEvent event) {
-		mDispatcher.addEvent(event);
+		fDispatcher.addEvent(event);
 	}
 
 	// ************************************************************
@@ -112,8 +112,8 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	@Override
 	public void handleEvent(final IDebugEvent event) {
 		if (event instanceof EngineStartedEvent) {
-			mProcess = new ScriptDebugProcess(this);
-			mProcess.fireCreationEvent();
+			fProcess = new ScriptDebugProcess(this);
+			fProcess.fireCreationEvent();
 
 		} else if (event instanceof ScriptReadyEvent) {
 			// find existing DebugThread
@@ -122,7 +122,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			if (debugThread == null) {
 				// thread does not exist, create new one
 				debugThread = new ScriptDebugThread(getDebugTarget(), ((ScriptReadyEvent) event).getThread());
-				mThreads.add(debugThread);
+				fThreads.add(debugThread);
 
 				debugThread.fireCreationEvent();
 			}
@@ -141,7 +141,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 				// suspend on any script load event
 				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_INTO, debugThread.getThread()));
 
-			else if ((((ScriptReadyEvent) event).isRoot()) && (mSuspendOnStartup))
+			else if ((((ScriptReadyEvent) event).isRoot()) && (fSuspendOnStartup))
 				// suspend on script startup event
 				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_INTO, debugThread.getThread()));
 
@@ -164,7 +164,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			debugThread.setSuspended(((SuspendedEvent) event).getType());
 
 		} else if (event instanceof EngineTerminatedEvent) {
-			mState = State.TERMINATED;
+			fState = State.TERMINATED;
 			fireTerminateEvent();
 			for (final ScriptDebugThread thread : getThreads())
 				thread.setTerminated();
@@ -243,7 +243,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	@Override
 	public boolean isTerminated() {
-		return State.TERMINATED == mState;
+		return State.TERMINATED == fState;
 	}
 
 	// ************************************************************
@@ -275,7 +275,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 		// TODO remove all breakpoints
 
 		fireDispatchEvent(new ResumeRequest(DebugEvent.CLIENT_REQUEST, null));
-		mState = State.TERMINATED;
+		fState = State.TERMINATED;
 		fireTerminateEvent();
 	}
 

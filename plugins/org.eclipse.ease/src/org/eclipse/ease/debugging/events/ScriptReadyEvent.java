@@ -14,27 +14,27 @@ import org.eclipse.ease.Script;
 
 public class ScriptReadyEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final Script mScript;
+	private final Script fScript;
 
-	private final Thread mThread;
+	private final Thread fThread;
 
-	private final boolean mRoot;
+	private final boolean fRoot;
 
 	public ScriptReadyEvent(final Script script, final Thread thread, final boolean root) {
-		mScript = script;
-		mThread = thread;
-		mRoot = root;
+		fScript = script;
+		fThread = thread;
+		fRoot = root;
 	}
 
 	public Script getScript() {
-		return mScript;
+		return fScript;
 	}
 
 	public Thread getThread() {
-		return mThread;
+		return fThread;
 	}
 
 	public boolean isRoot() {
-		return mRoot;
+		return fRoot;
 	}
 }

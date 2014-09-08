@@ -15,7 +15,7 @@ import org.eclipse.debug.core.DebugEvent;
 public class ResumeRequest extends AbstractEvent implements IModelRequest {
 
 	/** See {@link DebugEvent}. */
-	private final int mType;
+	private final int fType;
 
 	/**
 	 * Constructor.
@@ -26,10 +26,10 @@ public class ResumeRequest extends AbstractEvent implements IModelRequest {
 	 *            thread to resume
 	 */
 	public ResumeRequest(final int type, final Thread thread) {
-		mType = type;
+		fType = type;
 	}
 
 	public int getType() {
-		return mType;
+		return fType;
 	}
 }

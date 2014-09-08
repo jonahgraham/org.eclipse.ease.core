@@ -23,44 +23,44 @@ import org.eclipse.ease.Script;
 
 public class ScriptDebugStackFrame extends ScriptDebugElement implements IStackFrame {
 
-	private final ScriptDebugThread mThread;
+	private final ScriptDebugThread fThread;
 
-	private final IScriptDebugFrame mDebugFrame;
+	private final IScriptDebugFrame fDebugFrame;
 
-	private final List<ScriptDebugVariable> mVariables = new ArrayList<ScriptDebugVariable>();
+	private final List<ScriptDebugVariable> fVariables = new ArrayList<ScriptDebugVariable>();
 
-	private boolean mDirty = true;
+	private boolean fDirty = true;
 
 	public ScriptDebugStackFrame(final ScriptDebugThread thread, final IScriptDebugFrame debugFrame) {
 		super(thread.getDebugTarget());
-		mThread = thread;
+		fThread = thread;
 
-		mDebugFrame = debugFrame;
+		fDebugFrame = debugFrame;
 	}
 
 	@Override
 	public IThread getThread() {
-		return mThread;
+		return fThread;
 	}
 
 	@Override
 	public IVariable[] getVariables() throws DebugException {
-		if(mDirty) {
+		if(fDirty) {
 			// TODO do not clear old variables, try to update them
-			mVariables.clear();
+			fVariables.clear();
 
 			Map<String, Object> variables = getDebugFrame().getVariables();
 			for(String name : variables.keySet()) {
 				if(variables.get(name) != null) {
 					ScriptDebugVariable variable = new ScriptDebugVariable(this, name, variables.get(name));
-					mVariables.add(variable);
+					fVariables.add(variable);
 				}
 			}
 
-			mDirty = false;
+			fDirty = false;
 		}
 
-		return mVariables.toArray(new IVariable[mVariables.size()]);
+		return fVariables.toArray(new IVariable[fVariables.size()]);
 	}
 
 	@Override
@@ -119,10 +119,10 @@ public class ScriptDebugStackFrame extends ScriptDebugElement implements IStackF
 	}
 
 	public IScriptDebugFrame getDebugFrame() {
-		return mDebugFrame;
+		return fDebugFrame;
 	}
 
 	public void setDirty() {
-		mDirty = true;
+		fDirty = true;
 	}
 }

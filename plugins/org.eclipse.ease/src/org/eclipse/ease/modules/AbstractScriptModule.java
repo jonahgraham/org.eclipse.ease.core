@@ -18,15 +18,15 @@ import org.eclipse.ease.IScriptEngine;
 public abstract class AbstractScriptModule implements IScriptModule {
 
 	/** Script engine instance. */
-	private IScriptEngine mEngine = null;
+	private IScriptEngine fEngine = null;
 
 	/** Environment module instance. */
-	private IEnvironment mEnvironment = null;
+	private IEnvironment fEnvironment = null;
 
 	@Override
 	public void initialize(final IScriptEngine engine, final IEnvironment environment) {
-		mEngine = engine;
-		mEnvironment = environment;
+		fEngine = engine;
+		fEnvironment = environment;
 	}
 
 	/**
@@ -35,7 +35,7 @@ public abstract class AbstractScriptModule implements IScriptModule {
 	 * @return script engine
 	 */
 	public IScriptEngine getScriptEngine() {
-		return mEngine;
+		return fEngine;
 	}
 
 	/**
@@ -44,6 +44,6 @@ public abstract class AbstractScriptModule implements IScriptModule {
 	 * @return environment module
 	 */
 	protected IEnvironment getEnvironment() {
-		return mEnvironment;
+		return fEnvironment;
 	}
 }

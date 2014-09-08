@@ -23,26 +23,26 @@ import org.eclipse.ease.debugging.events.IModelRequest;
 
 public class EventDispatchJob extends Job {
 
-	private final List<IDebugEvent> mEvents = new ArrayList<IDebugEvent>();
+	private final List<IDebugEvent> fEvents = new ArrayList<IDebugEvent>();
 
-	private boolean mTerminated = false;
+	private boolean fTerminated = false;
 
-	private final IEventProcessor mHost;
+	private final IEventProcessor fHost;
 
-	private final IEventProcessor mDebugger;
+	private final IEventProcessor fDebugger;
 
 	public EventDispatchJob(final IEventProcessor host, final IEventProcessor debugger) {
 		super(debugger + " event dispatcher");
 
-		mHost = host;
-		mDebugger = debugger;
+		fHost = host;
+		fDebugger = debugger;
 
 		setSystem(true);
 	}
 
 	public void addEvent(final IDebugEvent event) {
-		synchronized (mEvents) {
-			if (!mEvents.contains(event)) {
+		synchronized (fEvents) {
+			if (!fEvents.contains(event)) {
 				// TODO use tracing for these sysouts
 				// DEBUG print events
 				if (event instanceof IDebuggerEvent)
@@ -52,8 +52,8 @@ public class EventDispatchJob extends Job {
 					System.out.println("Target   ---> " + event);
 				// end DEBUG
 
-				mEvents.add(event);
-				mEvents.notifyAll();
+				fEvents.add(event);
+				fEvents.notifyAll();
 			}
 		}
 	}
@@ -61,14 +61,14 @@ public class EventDispatchJob extends Job {
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
-		while (!mTerminated) {
+		while (!fTerminated) {
 			// handle event
 			if (!monitor.isCanceled()) {
 
 				IDebugEvent event = null;
-				synchronized (mEvents) {
-					if (!mEvents.isEmpty())
-						event = mEvents.remove(0);
+				synchronized (fEvents) {
+					if (!fEvents.isEmpty())
+						event = fEvents.remove(0);
 				}
 
 				if (event != null)
@@ -79,10 +79,10 @@ public class EventDispatchJob extends Job {
 
 			// wait for new events
 			// do this after handling events as we might get terminated during wait()
-			synchronized (mEvents) {
-				if (mEvents.isEmpty()) {
+			synchronized (fEvents) {
+				if (fEvents.isEmpty()) {
 					try {
-						mEvents.wait();
+						fEvents.wait();
 					} catch (final InterruptedException e) {
 					}
 				}
@@ -105,17 +105,17 @@ public class EventDispatchJob extends Job {
 
 		// forward event handling to target
 		if (event instanceof IDebuggerEvent)
-			mHost.handleEvent(event);
+			fHost.handleEvent(event);
 
 		else if (event instanceof IModelRequest)
-			mDebugger.handleEvent(event);
+			fDebugger.handleEvent(event);
 
 		else
 			throw new RuntimeException("Unknown event detected: " + event);
 	}
 
 	public void terminate() {
-		mTerminated = true;
+		fTerminated = true;
 
 		// wake up job
 		synchronized (this) {

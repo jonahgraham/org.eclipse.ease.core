@@ -16,27 +16,27 @@ import org.eclipse.ease.debugging.IScriptDebugFrame;
 
 public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final int mType;
+	private final int fType;
 
-	private final Thread mThread;
+	private final Thread fThread;
 
-	private final List<IScriptDebugFrame> mDebugFrames;
+	private final List<IScriptDebugFrame> fDebugFrames;
 
 	public SuspendedEvent(final int type, final Thread thread, final List<IScriptDebugFrame> debugFrames) {
-		mType = type;
-		mThread = thread;
-		mDebugFrames = debugFrames;
+		fType = type;
+		fThread = thread;
+		fDebugFrames = debugFrames;
 	}
 
 	public int getType() {
-		return mType;
+		return fType;
 	}
 
 	public Thread getThread() {
-		return mThread;
+		return fThread;
 	}
 
 	public List<IScriptDebugFrame> getDebugFrames() {
-		return mDebugFrames;
+		return fDebugFrames;
 	}
 }

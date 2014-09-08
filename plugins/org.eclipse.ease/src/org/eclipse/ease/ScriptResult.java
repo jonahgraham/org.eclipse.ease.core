@@ -18,12 +18,12 @@ package org.eclipse.ease;
 public class ScriptResult {
 
 	/** script execution result. */
-	private Object mResult = null;
+	private Object fResult = null;
 
 	/** script execution exception. */
-	private Throwable mException = null;
+	private Throwable fException = null;
 
-	private boolean mIsDone = false;
+	private boolean fIsDone = false;
 
 	/**
 	 * Constructor of a pending execution.
@@ -38,7 +38,7 @@ public class ScriptResult {
 	 *        result of execution
 	 */
 	public ScriptResult(final Object result) {
-		mResult = result;
+		fResult = result;
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class ScriptResult {
 	 * @return true when processing is done
 	 */
 	public final synchronized boolean isReady() {
-		return mIsDone;
+		return fIsDone;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ScriptResult {
 	 * @return result value
 	 */
 	public final synchronized Object getResult() {
-		return mResult;
+		return fResult;
 	}
 
 	/**
@@ -66,8 +66,8 @@ public class ScriptResult {
 	 *        object to be stored
 	 */
 	final synchronized void setResult(final Object result) {
-		mResult = result;
-		mIsDone = true;
+		fResult = result;
+		fIsDone = true;
 		notifyAll();
 	}
 
@@ -78,8 +78,8 @@ public class ScriptResult {
 	 *        exception to be stored
 	 */
 	final synchronized void setException(final Throwable e) {
-		mException = e;
-		mIsDone = true;
+		fException = e;
+		fIsDone = true;
 		notifyAll();
 	}
 
@@ -89,15 +89,15 @@ public class ScriptResult {
 	 * @return stored exception or null
 	 */
 	public final synchronized Throwable getException() {
-		return mException;
+		return fException;
 	}
 
 	@Override
 	public final String toString() {
-		if(mException != null)
-			return "Exception: " + mException.getLocalizedMessage();
+		if(fException != null)
+			return "Exception: " + fException.getLocalizedMessage();
 
-		return ((mResult != null) ? mResult.toString() : "[null]");
+		return ((fResult != null) ? fResult.toString() : "[null]");
 	}
 
 	/**
@@ -106,6 +106,6 @@ public class ScriptResult {
 	 * @return true when this result contains an exception
 	 */
 	public final boolean hasException() {
-		return (mException != null);
+		return (fException != null);
 	}
 }

@@ -25,7 +25,7 @@ import org.eclipse.ui.IStorageEditorInput;
  */
 public class DynamicContentEditorInput implements IStorageEditorInput {
 
-	private final Script mScript;
+	private final Script fScript;
 
 	/**
 	 * Constructor. Takes text from a script.
@@ -34,14 +34,14 @@ public class DynamicContentEditorInput implements IStorageEditorInput {
 	 *        script to extract text from
 	 */
 	public DynamicContentEditorInput(final Script script) {
-		mScript = script;
+		fScript = script;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((mScript == null) ? 0 : mScript.hashCode());
+		result = (prime * result) + ((fScript == null) ? 0 : fScript.hashCode());
 		return result;
 	}
 
@@ -54,10 +54,10 @@ public class DynamicContentEditorInput implements IStorageEditorInput {
 		if(getClass() != obj.getClass())
 			return false;
 		final DynamicContentEditorInput other = (DynamicContentEditorInput)obj;
-		if(mScript == null) {
-			if(other.mScript != null)
+		if(fScript == null) {
+			if(other.fScript != null)
 				return false;
-		} else if(!mScript.equals(other.mScript))
+		} else if(!fScript.equals(other.fScript))
 			return false;
 		return true;
 	}
@@ -104,7 +104,7 @@ public class DynamicContentEditorInput implements IStorageEditorInput {
 			@Override
 			public InputStream getContents() throws CoreException {
 				try {
-					return mScript.getCodeStream();
+					return fScript.getCodeStream();
 				} catch (final Exception e) {
 					// FIXME implement error handling
 					throw new RuntimeException("not handled right now", e);
@@ -120,7 +120,7 @@ public class DynamicContentEditorInput implements IStorageEditorInput {
 
 	@Override
 	public final String getName() {
-		return (mScript.getTitle() != null) ? mScript.getTitle() : "(dynamic script content)";
+		return (fScript.getTitle() != null) ? fScript.getTitle() : "(dynamic script content)";
 	}
 
 	@Override

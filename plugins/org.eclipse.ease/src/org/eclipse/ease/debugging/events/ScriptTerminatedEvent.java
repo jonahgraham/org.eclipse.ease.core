@@ -14,20 +14,20 @@ import org.eclipse.ease.Script;
 
 public class ScriptTerminatedEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final Script mScript;
+	private final Script fScript;
 
-	private final Thread mThread;
+	private final Thread fThread;
 
 	public ScriptTerminatedEvent(final Script script, final Thread thread) {
-		mScript = script;
-		mThread = thread;
+		fScript = script;
+		fThread = thread;
 	}
 
 	public Script getScript() {
-		return mScript;
+		return fScript;
 	}
 
 	public Thread getThread() {
-		return mThread;
+		return fThread;
 	}
 }

@@ -22,26 +22,26 @@ import org.eclipse.ease.debugging.events.ResumeRequest;
 
 public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 
-	private final Thread mThread;
+	private final Thread fThread;
 
-	private State mState = State.NOT_STARTED;
+	private State fState = State.NOT_STARTED;
 
-	private List<ScriptDebugStackFrame> mStackFrames = new ArrayList<ScriptDebugStackFrame>();
+	private List<ScriptDebugStackFrame> fStackFrames = new ArrayList<ScriptDebugStackFrame>();
 
 	public ScriptDebugThread(final ScriptDebugTarget target, final Thread thread) {
 		super(target);
 
-		mThread = thread;
+		fThread = thread;
 	}
 
 	@Override
 	public String getName() throws DebugException {
-		return "Thread: " + mThread.getName();
+		return "Thread: " + fThread.getName();
 	}
 
 	@Override
 	public synchronized IStackFrame[] getStackFrames() {
-		return mStackFrames.toArray(new IStackFrame[mStackFrames.size()]);
+		return fStackFrames.toArray(new IStackFrame[fStackFrames.size()]);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 	@Override
 	public synchronized ScriptDebugStackFrame getTopStackFrame() {
 		if(hasStackFrames())
-			return mStackFrames.get(0);
+			return fStackFrames.get(0);
 
 		return null;
 	}
@@ -68,36 +68,36 @@ public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 	}
 
 	public Thread getThread() {
-		return mThread;
+		return fThread;
 	}
 
 	@Override
 	public boolean isTerminated() {
-		return State.TERMINATED == mState;
+		return State.TERMINATED == fState;
 	}
 
 	@Override
 	public boolean isSuspended() {
-		return State.SUSPENDED == mState;
+		return State.SUSPENDED == fState;
 	}
 
 	@Override
 	public boolean isStepping() {
-		return State.STEPPING == mState;
+		return State.STEPPING == fState;
 	}
 
 	protected void setTerminated() {
-		mState = State.TERMINATED;
+		fState = State.TERMINATED;
 		fireTerminateEvent();
 	}
 
 	protected void setSuspended(final int type) {
-		mState = State.SUSPENDED;
+		fState = State.SUSPENDED;
 		fireSuspendEvent(type);
 	}
 
 	protected void setResumed(final int type) {
-		mState = State.RESUMED;
+		fState = State.RESUMED;
 		fireResumeEvent(type);
 	}
 
@@ -107,7 +107,7 @@ public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 		for(final IScriptDebugFrame debugFrame : debugFrames) {
 			// find existing StackFrame
 			ScriptDebugStackFrame stackFrame = null;
-			for(final ScriptDebugStackFrame oldStackFrame : mStackFrames) {
+			for(final ScriptDebugStackFrame oldStackFrame : fStackFrames) {
 				if(debugFrame.equals(oldStackFrame.getDebugFrame())) {
 					stackFrame = oldStackFrame;
 					stackFrame.setDirty();
@@ -121,7 +121,7 @@ public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 			newStackFrames.add(stackFrame);
 		}
 
-		mStackFrames = newStackFrames;
+		fStackFrames = newStackFrames;
 		fireChangeEvent(DebugEvent.CHANGE);
 	}
 

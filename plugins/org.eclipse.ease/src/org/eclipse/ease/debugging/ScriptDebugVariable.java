@@ -16,18 +16,18 @@ import org.eclipse.debug.core.model.IVariable;
 
 public class ScriptDebugVariable extends ScriptDebugElement implements IVariable {
 
-	private final ScriptDebugStackFrame mStackFrame;
+	private final ScriptDebugStackFrame fStackFrame;
 
-	private final String mName;
+	private final String fName;
 
-	private final Object mValue;
+	private final Object fValue;
 
 	public ScriptDebugVariable(final ScriptDebugStackFrame stackFrame, final String name, final Object value) {
 		super(stackFrame.getDebugTarget());
 
-		mStackFrame = stackFrame;
-		mName = name;
-		mValue = value;
+		fStackFrame = stackFrame;
+		fName = name;
+		fValue = value;
 	}
 
 	@Override
@@ -55,32 +55,32 @@ public class ScriptDebugVariable extends ScriptDebugElement implements IVariable
 
 	@Override
 	public boolean isTerminated() {
-		return mStackFrame.isTerminated();
+		return fStackFrame.isTerminated();
 	}
 
 	@Override
 	public boolean isSuspended() {
-		return mStackFrame.isSuspended();
+		return fStackFrame.isSuspended();
 	}
 
 	@Override
 	public boolean isStepping() {
-		return mStackFrame.isStepping();
+		return fStackFrame.isStepping();
 	}
 
 	@Override
 	public ScriptDebugValue getValue() throws DebugException {
-		return new ScriptDebugValue(mStackFrame, mValue);
+		return new ScriptDebugValue(fStackFrame, fValue);
 	}
 
 	@Override
 	public String getName() throws DebugException {
-		return mName;
+		return fName;
 	}
 
 	@Override
 	public String getReferenceTypeName() throws DebugException {
-		return (mValue != null) ? mValue.getClass().getSimpleName() : "";
+		return (fValue != null) ? fValue.getClass().getSimpleName() : "";
 	}
 
 	@Override

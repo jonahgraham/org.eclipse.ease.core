@@ -21,8 +21,8 @@ public abstract class AbstractEvent implements IDebugEvent {
 			result.append("), ");
 		}
 
-		if (getClass().getFields().length > 0)
-			result.delete(result.length() - 2, result.length());
+		if (getClass().getFields().length > 3)
+			result.delete(result.length() - 3, result.length());
 
 		return result.toString();
 	}

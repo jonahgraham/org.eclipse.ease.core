@@ -16,20 +16,20 @@ import org.eclipse.ease.debugging.IScriptDebugFrame;
 
 public class StackFramesEvent extends AbstractEvent implements IDebuggerEvent {
 
-	private final List<IScriptDebugFrame> mDebugFrames;
+	private final List<IScriptDebugFrame> fDebugFrames;
 
-	private final Thread mThread;
+	private final Thread fThread;
 
 	public StackFramesEvent(final List<IScriptDebugFrame> debugFrames, final Thread thread) {
-		mDebugFrames = debugFrames;
-		mThread = thread;
+		fDebugFrames = debugFrames;
+		fThread = thread;
 	}
 
 	public List<IScriptDebugFrame> getDebugFrames() {
-		return mDebugFrames;
+		return fDebugFrames;
 	}
 
 	public Thread getThread() {
-		return mThread;
+		return fThread;
 	}
 }

@@ -21,104 +21,104 @@ import org.eclipse.debug.core.model.IVariable;
 
 public class ScriptDebugValue extends ScriptDebugElement implements IValue {
 
-	private final ScriptDebugStackFrame mStackFrame;
+	private final ScriptDebugStackFrame fStackFrame;
 
-	private final Object mValue;
+	private final Object fValue;
 
 	public ScriptDebugValue(final ScriptDebugStackFrame stackFrame, final Object value) {
 		super(stackFrame.getDebugTarget());
 
-		mStackFrame = stackFrame;
-		mValue = value;
+		fStackFrame = stackFrame;
+		fValue = value;
 	}
 
 	@Override
 	public boolean isTerminated() {
-		return mStackFrame.isTerminated();
+		return fStackFrame.isTerminated();
 	}
 
 	@Override
 	public boolean isSuspended() {
-		return mStackFrame.isSuspended();
+		return fStackFrame.isSuspended();
 	}
 
 	@Override
 	public boolean isStepping() {
-		return mStackFrame.isStepping();
+		return fStackFrame.isStepping();
 	}
 
 	@Override
 	public String getReferenceTypeName() throws DebugException {
-		return (mValue != null) ? mValue.getClass().getSimpleName() : "";
+		return (fValue != null) ? fValue.getClass().getSimpleName() : "";
 	}
 
 	@Override
 	public String getValueString() throws DebugException {
-		if(isSimpleType(mValue))
-			return mValue + " (" + mValue.getClass().getSimpleName().toLowerCase() + ")";
+		if(isSimpleType(fValue))
+			return fValue + " (" + fValue.getClass().getSimpleName().toLowerCase() + ")";
 
-		return (mValue != null) ? mValue.getClass().getSimpleName() : "null";
+		return (fValue != null) ? fValue.getClass().getSimpleName() : "null";
 	}
 
 	@Override
 	public boolean isAllocated() throws DebugException {
-		return mValue != null;
+		return fValue != null;
 	}
 
 	@Override
 	public IVariable[] getVariables() throws DebugException {
 		List<IVariable> variables = new ArrayList<IVariable>();
 
-		if((mValue != null) && (!isSimpleType(mValue))) {
-			if(mValue.getClass().isArray()) {
+		if((fValue != null) && (!isSimpleType(fValue))) {
+			if(fValue.getClass().isArray()) {
 				// handle arrays
 
-				if(mValue instanceof Object[]) {
-					for(int index = 0; index < ((Object[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((Object[])mValue)[index]));
+				if(fValue instanceof Object[]) {
+					for(int index = 0; index < ((Object[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((Object[])fValue)[index]));
 
-				} else if(mValue instanceof char[]) {
-					for(int index = 0; index < ((char[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((char[])mValue)[index]));
+				} else if(fValue instanceof char[]) {
+					for(int index = 0; index < ((char[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((char[])fValue)[index]));
 
-				} else if(mValue instanceof byte[]) {
-					for(int index = 0; index < ((byte[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((byte[])mValue)[index]));
+				} else if(fValue instanceof byte[]) {
+					for(int index = 0; index < ((byte[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((byte[])fValue)[index]));
 
-				} else if(mValue instanceof boolean[]) {
-					for(int index = 0; index < ((boolean[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((boolean[])mValue)[index]));
+				} else if(fValue instanceof boolean[]) {
+					for(int index = 0; index < ((boolean[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((boolean[])fValue)[index]));
 
-				} else if(mValue instanceof short[]) {
-					for(int index = 0; index < ((short[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((short[])mValue)[index]));
+				} else if(fValue instanceof short[]) {
+					for(int index = 0; index < ((short[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((short[])fValue)[index]));
 
-				} else if(mValue instanceof int[]) {
-					for(int index = 0; index < ((int[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((int[])mValue)[index]));
+				} else if(fValue instanceof int[]) {
+					for(int index = 0; index < ((int[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((int[])fValue)[index]));
 
-				} else if(mValue instanceof long[]) {
-					for(int index = 0; index < ((long[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((long[])mValue)[index]));
+				} else if(fValue instanceof long[]) {
+					for(int index = 0; index < ((long[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((long[])fValue)[index]));
 
-				} else if(mValue instanceof double[]) {
-					for(int index = 0; index < ((double[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((double[])mValue)[index]));
+				} else if(fValue instanceof double[]) {
+					for(int index = 0; index < ((double[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((double[])fValue)[index]));
 
-				} else if(mValue instanceof float[]) {
-					for(int index = 0; index < ((float[])mValue).length; index++)
-						variables.add(new ScriptDebugVariable(mStackFrame, "[" + index + "]", ((float[])mValue)[index]));
+				} else if(fValue instanceof float[]) {
+					for(int index = 0; index < ((float[])fValue).length; index++)
+						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((float[])fValue)[index]));
 				}
 
 			} else {
 				// handle java objects
-				for(Field field : mValue.getClass().getDeclaredFields()) {
+				for(Field field : fValue.getClass().getDeclaredFields()) {
 					try {
 						if(!Modifier.isStatic(field.getModifiers())) {
 							if(!field.isAccessible())
 								field.setAccessible(true);
 
-							variables.add(new ScriptDebugVariable(mStackFrame, field.getName(), field.get(mValue)));
+							variables.add(new ScriptDebugVariable(fStackFrame, field.getName(), field.get(fValue)));
 						}
 					} catch (Exception e) {
 					}
@@ -137,13 +137,13 @@ public class ScriptDebugValue extends ScriptDebugElement implements IValue {
 	@Override
 	public Object getAdapter(final Class adapter) {
 		if(String.class.equals(adapter))
-			return (mValue != null) ? mValue.toString() : "";
+			return (fValue != null) ? fValue.toString() : "";
 
 		return super.getAdapter(adapter);
 	}
 
 	public Object getValue() {
-		return mValue;
+		return fValue;
 	}
 
 	private static boolean isSimpleType(final Object value) {

@@ -36,12 +36,12 @@ public class EngineDescription {
 
 	private static final String DEBUGGING = "debugger";
 
-	private final IConfigurationElement mConfigurationElement;
+	private final IConfigurationElement fConfigurationElement;
 
-	private List<ScriptType> types = null;
+	private List<ScriptType> fTypes = null;
 
 	public EngineDescription(final IConfigurationElement configurationElement) {
-		mConfigurationElement = configurationElement;
+		fConfigurationElement = configurationElement;
 	}
 
 	// public Collection<String> getSupportedScriptTypesNames() {
@@ -49,11 +49,11 @@ public class EngineDescription {
 	// }
 	//
 	public List<ScriptType> getSupportedScriptTypes() {
-		if (types == null) {
-			types = new ArrayList<ScriptType>();
+		if (fTypes == null) {
+			fTypes = new ArrayList<ScriptType>();
 			IScriptService scriptService = ScriptService.getService();
 
-			for (final IConfigurationElement child : mConfigurationElement.getChildren(BINDING)) {
+			for (final IConfigurationElement child : fConfigurationElement.getChildren(BINDING)) {
 				String scriptTypeID = child.getAttribute(TYPE);
 
 				if (scriptTypeID != null) {
@@ -61,17 +61,17 @@ public class EngineDescription {
 					if (scriptType == null)
 						Logger.logError("Unknow scriptType " + scriptTypeID);
 					else
-						types.add(scriptType);
+						fTypes.add(scriptType);
 				}
 			}
 		}
 
-		return types;
+		return fTypes;
 	}
 
 	public int getPriority() {
 		try {
-			return Integer.parseInt(mConfigurationElement.getAttribute(PRIORITY));
+			return Integer.parseInt(fConfigurationElement.getAttribute(PRIORITY));
 		} catch (Throwable e) {
 			// ignore
 		}
@@ -86,7 +86,7 @@ public class EngineDescription {
 	 */
 	public IScriptEngine createEngine() {
 		try {
-			Object object = mConfigurationElement.createExecutableExtension(CLASS);
+			Object object = fConfigurationElement.createExecutableExtension(CLASS);
 			if (object instanceof IScriptEngine) {
 				// configure engine
 				if (object instanceof AbstractScriptEngine)
@@ -108,11 +108,11 @@ public class EngineDescription {
 	}
 
 	public String getID() {
-		return mConfigurationElement.getAttribute(ID);
+		return fConfigurationElement.getAttribute(ID);
 	}
 
 	public String getName() {
-		String name = mConfigurationElement.getAttribute(NAME);
+		String name = fConfigurationElement.getAttribute(NAME);
 		return (name != null) ? name : getID();
 	}
 
@@ -130,6 +130,6 @@ public class EngineDescription {
 	}
 
 	public boolean supportsDebugging() {
-		return Boolean.parseBoolean(mConfigurationElement.getAttribute(DEBUGGING));
+		return Boolean.parseBoolean(fConfigurationElement.getAttribute(DEBUGGING));
 	}
 }
