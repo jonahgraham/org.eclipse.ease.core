@@ -32,7 +32,7 @@ public class EventDispatchJob extends Job {
 	private final IEventProcessor mDebugger;
 
 	public EventDispatchJob(final IEventProcessor host, final IEventProcessor debugger) {
-		super("Text Debugger event dispatcher");
+		super(debugger + " event dispatcher");
 
 		mHost = host;
 		mDebugger = debugger;
@@ -41,54 +41,73 @@ public class EventDispatchJob extends Job {
 	}
 
 	public void addEvent(final IDebugEvent event) {
-		synchronized(mEvents) {
-			if(!mEvents.contains(event))
-				mEvents.add(event);
-		}
+		synchronized (mEvents) {
+			if (!mEvents.contains(event)) {
+				// TODO use tracing for these sysouts
+				// DEBUG print events
+				if (event instanceof IDebuggerEvent)
+					System.out.println("Debugger ---> " + event);
 
-		synchronized(this) {
-			notifyAll();
+				else if (event instanceof IModelRequest)
+					System.out.println("Target   ---> " + event);
+				// end DEBUG
+
+				mEvents.add(event);
+				mEvents.notifyAll();
+			}
 		}
 	}
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
-		while(!mTerminated) {
-			// wait for new events
-			if(mEvents.isEmpty()) {
-				try {
-					synchronized(this) {
-						wait();
-					}
-				} catch (final InterruptedException e) {
-				}
-			}
-
-			if(!monitor.isCanceled()) {
+		while (!mTerminated) {
+			// handle event
+			if (!monitor.isCanceled()) {
 
 				IDebugEvent event = null;
-				synchronized(mEvents) {
-					if(!mEvents.isEmpty())
+				synchronized (mEvents) {
+					if (!mEvents.isEmpty())
 						event = mEvents.remove(0);
 				}
 
-				if(event != null)
+				if (event != null)
 					handleEvent(event);
 
 			} else
 				terminate();
+
+			// wait for new events
+			// do this after handling events as we might get terminated during wait()
+			synchronized (mEvents) {
+				if (mEvents.isEmpty()) {
+					try {
+						mEvents.wait();
+					} catch (final InterruptedException e) {
+					}
+				}
+			}
 		}
 
 		return Status.OK_STATUS;
 	}
 
 	private void handleEvent(final IDebugEvent event) {
+
+		// TODO use tracing for these sysouts
+		// DEBUG print events
+		if (event instanceof IDebuggerEvent)
+			System.out.println("\t\t! Target  : " + event);
+
+		else if (event instanceof IModelRequest)
+			System.out.println("\t\t! Debugger: " + event);
+		// end DEBUG
+
 		// forward event handling to target
-		if(event instanceof IDebuggerEvent)
+		if (event instanceof IDebuggerEvent)
 			mHost.handleEvent(event);
 
-		else if(event instanceof IModelRequest)
+		else if (event instanceof IModelRequest)
 			mDebugger.handleEvent(event);
 
 		else
@@ -99,7 +118,7 @@ public class EventDispatchJob extends Job {
 		mTerminated = true;
 
 		// wake up job
-		synchronized(this) {
+		synchronized (this) {
 			notifyAll();
 		}
 	}

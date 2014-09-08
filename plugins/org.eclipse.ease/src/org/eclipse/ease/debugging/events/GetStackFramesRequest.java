@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging.events;
 
-public class GetStackFramesRequest implements IModelRequest {
+public class GetStackFramesRequest extends AbstractEvent implements IModelRequest {
 
 	public GetStackFramesRequest(final Thread thread) {
 	}

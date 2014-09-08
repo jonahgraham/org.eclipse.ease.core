@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 
-public class StackFramesEvent implements IDebuggerEvent {
+public class StackFramesEvent extends AbstractEvent implements IDebuggerEvent {
 
 	private final List<IScriptDebugFrame> mDebugFrames;
 

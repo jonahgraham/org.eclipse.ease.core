@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 
-public class SuspendedEvent implements IDebuggerEvent {
+public class SuspendedEvent extends AbstractEvent implements IDebuggerEvent {
 
 	private final int mType;
 

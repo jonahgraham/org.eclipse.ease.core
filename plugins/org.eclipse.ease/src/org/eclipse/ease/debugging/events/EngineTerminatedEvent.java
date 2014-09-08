@@ -10,5 +10,5 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging.events;
 
-public class EngineTerminatedEvent implements IDebuggerEvent {
+public class EngineTerminatedEvent extends AbstractEvent implements IDebuggerEvent {
 }

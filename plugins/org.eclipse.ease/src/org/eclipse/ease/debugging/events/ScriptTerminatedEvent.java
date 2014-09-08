@@ -12,7 +12,7 @@ package org.eclipse.ease.debugging.events;
 
 import org.eclipse.ease.Script;
 
-public class ScriptTerminatedEvent implements IDebuggerEvent {
+public class ScriptTerminatedEvent extends AbstractEvent implements IDebuggerEvent {
 
 	private final Script mScript;
 

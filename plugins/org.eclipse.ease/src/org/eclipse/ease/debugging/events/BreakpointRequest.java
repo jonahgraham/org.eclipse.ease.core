@@ -13,7 +13,7 @@ package org.eclipse.ease.debugging.events;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.ease.Script;
 
-public class BreakpointRequest implements IModelRequest {
+public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 
 	private final Script mScript;
 

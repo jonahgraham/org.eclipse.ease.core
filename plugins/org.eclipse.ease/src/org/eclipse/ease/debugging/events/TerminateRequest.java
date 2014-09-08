@@ -10,5 +10,5 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging.events;
 
-public class TerminateRequest implements IModelRequest {
+public class TerminateRequest extends AbstractEvent implements IModelRequest {
 }

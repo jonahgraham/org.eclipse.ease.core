@@ -32,7 +32,6 @@ import org.eclipse.ease.debugging.events.IDebugEvent;
 import org.eclipse.ease.debugging.events.ResumeRequest;
 import org.eclipse.ease.debugging.events.ResumedEvent;
 import org.eclipse.ease.debugging.events.ScriptReadyEvent;
-import org.eclipse.ease.debugging.events.ScriptStartRequest;
 import org.eclipse.ease.debugging.events.StackFramesEvent;
 import org.eclipse.ease.debugging.events.SuspendedEvent;
 import org.eclipse.ease.debugging.events.TerminateRequest;
@@ -51,17 +50,20 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	private final boolean mSuspendOnStartup;
 
-	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup) {
+	private final boolean fSuspendOnScriptLoad;
+
+	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad) {
 		super(null);
 		mLaunch = launch;
 		mSuspendOnStartup = suspendOnStartup;
+		fSuspendOnScriptLoad = suspendOnScriptLoad;
 
 		fireCreationEvent();
 	}
 
 	@Override
 	public String getName() throws DebugException {
-		return "EASE Rhino Debugger";
+		return "EASE Debugger";
 	}
 
 	@Override
@@ -100,7 +102,6 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	}
 
 	protected void fireDispatchEvent(final IDebugEvent event) {
-		System.out.println("Target:   ----> " + event);
 		mDispatcher.addEvent(event);
 	}
 
@@ -110,19 +111,17 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	@Override
 	public void handleEvent(final IDebugEvent event) {
-		System.out.println("     Target:    " + event);
-
-		if(event instanceof EngineStartedEvent) {
+		if (event instanceof EngineStartedEvent) {
 			mProcess = new ScriptDebugProcess(this);
 			mProcess.fireCreationEvent();
 
-		} else if(event instanceof ScriptReadyEvent) {
+		} else if (event instanceof ScriptReadyEvent) {
 			// find existing DebugThread
-			ScriptDebugThread debugThread = findDebugThread(((ScriptReadyEvent)event).getThread());
+			ScriptDebugThread debugThread = findDebugThread(((ScriptReadyEvent) event).getThread());
 
-			if(debugThread == null) {
+			if (debugThread == null) {
 				// thread does not exist, create new one
-				debugThread = new ScriptDebugThread(getDebugTarget(), ((ScriptReadyEvent)event).getThread());
+				debugThread = new ScriptDebugThread(getDebugTarget(), ((ScriptReadyEvent) event).getThread());
 				mThreads.add(debugThread);
 
 				debugThread.fireCreationEvent();
@@ -132,47 +131,49 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			debugThread.fireChangeEvent(DebugEvent.CONTENT);
 
 			// set deferred breakpoints
-			setDeferredBreakpoints(((ScriptReadyEvent)event).getScript());
+			setDeferredBreakpoints(((ScriptReadyEvent) event).getScript());
 
 			// tell framework we are suspended
 			fireSuspendEvent(DebugEvent.CLIENT_REQUEST);
 			debugThread.setSuspended(DebugEvent.CLIENT_REQUEST);
 
-			if(!mSuspendOnStartup)
-				// resume thread
-				fireDispatchEvent(new ScriptStartRequest(debugThread.getThread()));
+			if (fSuspendOnScriptLoad)
+				// suspend on any script load event
+				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_INTO, debugThread.getThread()));
 
-			else if(!((ScriptReadyEvent)event).isRoot()) {
-				// resume thread
-				fireDispatchEvent(new ScriptStartRequest(debugThread.getThread()));
+			else if ((((ScriptReadyEvent) event).isRoot()) && (mSuspendOnStartup))
+				// suspend on script startup event
+				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_INTO, debugThread.getThread()));
 
-			}
+			else
+				// immediately resume execution
+				fireDispatchEvent(new ResumeRequest(DebugEvent.RESUME, debugThread.getThread()));
 
-		} else if(event instanceof StackFramesEvent) {
+		} else if (event instanceof StackFramesEvent) {
 			// stackframe refresh
-			final ScriptDebugThread debugThread = findDebugThread(((StackFramesEvent)event).getThread());
-			debugThread.setStackFrames(((StackFramesEvent)event).getDebugFrames());
+			final ScriptDebugThread debugThread = findDebugThread(((StackFramesEvent) event).getThread());
+			debugThread.setStackFrames(((StackFramesEvent) event).getDebugFrames());
 
-		} else if(event instanceof ResumedEvent) {
-			final ScriptDebugThread debugThread = findDebugThread(((ResumedEvent)event).getThread());
-			debugThread.setResumed(((ResumedEvent)event).getType());
+		} else if (event instanceof ResumedEvent) {
+			final ScriptDebugThread debugThread = findDebugThread(((ResumedEvent) event).getThread());
+			debugThread.setResumed(((ResumedEvent) event).getType());
 
-		} else if(event instanceof SuspendedEvent) {
-			final ScriptDebugThread debugThread = findDebugThread(((SuspendedEvent)event).getThread());
-			debugThread.setStackFrames(((SuspendedEvent)event).getDebugFrames());
-			debugThread.setSuspended(((SuspendedEvent)event).getType());
+		} else if (event instanceof SuspendedEvent) {
+			final ScriptDebugThread debugThread = findDebugThread(((SuspendedEvent) event).getThread());
+			debugThread.setStackFrames(((SuspendedEvent) event).getDebugFrames());
+			debugThread.setSuspended(((SuspendedEvent) event).getType());
 
-		} else if(event instanceof EngineTerminatedEvent) {
+		} else if (event instanceof EngineTerminatedEvent) {
 			mState = State.TERMINATED;
 			fireTerminateEvent();
-			for(final ScriptDebugThread thread : getThreads())
+			for (final ScriptDebugThread thread : getThreads())
 				thread.setTerminated();
 		}
 	}
 
 	private ScriptDebugThread findDebugThread(final Thread thread) {
-		for(final ScriptDebugThread debugThread : getThreads()) {
-			if(thread.equals(debugThread.getThread()))
+		for (final ScriptDebugThread debugThread : getThreads()) {
+			if (thread.equals(debugThread.getThread()))
 				return debugThread;
 		}
 
@@ -182,11 +183,11 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	private void setDeferredBreakpoints(final Script script) {
 
 		final Object file = script.getFile();
-		if(file instanceof IResource) {
+		if (file instanceof IResource) {
 			final IBreakpoint[] breakpoints = getBreakpoints(script);
 
-			for(final IBreakpoint breakpoint : breakpoints) {
-				if(file.equals(breakpoint.getMarker().getResource()))
+			for (final IBreakpoint breakpoint : breakpoints) {
+				if (file.equals(breakpoint.getMarker().getResource()))
 					fireDispatchEvent(new BreakpointRequest(script, breakpoint));
 			}
 		}
@@ -252,7 +253,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	@Override
 	public boolean isSuspended() {
 		final ScriptDebugThread[] threads = getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			threads[0].isSuspended();
 
 		return false;
@@ -261,7 +262,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	@Override
 	public void resume() throws DebugException {
 		final ScriptDebugThread[] threads = getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			fireDispatchEvent(new ResumeRequest(DebugEvent.CLIENT_REQUEST, threads[0].getThread()));
 	}
 
@@ -285,7 +286,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	@Override
 	public boolean isStepping() {
 		final ScriptDebugThread[] threads = getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			threads[0].isStepping();
 
 		return false;

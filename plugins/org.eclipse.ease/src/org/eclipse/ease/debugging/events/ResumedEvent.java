@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging.events;
 
-public class ResumedEvent implements IDebuggerEvent {
+public class ResumedEvent extends AbstractEvent implements IDebuggerEvent {
 
 	private final Thread mThread;
 

@@ -35,7 +35,6 @@ import org.eclipse.ease.debugging.events.IDebugEvent;
 import org.eclipse.ease.debugging.events.ResumeRequest;
 import org.eclipse.ease.debugging.events.ResumedEvent;
 import org.eclipse.ease.debugging.events.ScriptReadyEvent;
-import org.eclipse.ease.debugging.events.ScriptStartRequest;
 import org.eclipse.ease.debugging.events.StackFramesEvent;
 import org.eclipse.ease.debugging.events.SuspendedEvent;
 import org.eclipse.ease.debugging.events.TerminateRequest;
@@ -92,7 +91,7 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 		@Override
 		public void onEnter(final Context cx, final Scriptable activation, final Scriptable thisObj, final Object[] args) {
-			if(!mFnOrScript.isFunction()) {
+			if (!mFnOrScript.isFunction()) {
 				// this is a new script source, no function call
 				fireDispatchEvent(new ScriptReadyEvent(getScript(), mThread, mDebugFrames.size() == 1));
 				suspend();
@@ -106,12 +105,12 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 			// check breakpoints
 			// TODO use cache for faster lookup
 			final List<IBreakpoint> breakpoints = mScriptBreakpoints.get(mFrameToSource.get(mFnOrScript));
-			if(breakpoints != null) {
-				for(final IBreakpoint breakpoint : breakpoints) {
+			if (breakpoints != null) {
+				for (final IBreakpoint breakpoint : breakpoints) {
 					try {
-						if(breakpoint.isEnabled()) {
+						if (breakpoint.isEnabled()) {
 							final int breakline = breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1);
-							if(breakline == lineNumber) {
+							if (breakline == lineNumber) {
 								fireDispatchEvent(new SuspendedEvent(DebugEvent.BREAKPOINT, mThread, mDebugFrames));
 								mRunMode = DebugEvent.CLIENT_REQUEST;
 								suspend();
@@ -125,7 +124,7 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 			}
 
 			// no breakpoint, check for step into
-			if(mRunMode == DebugEvent.STEP_INTO) {
+			if (mRunMode == DebugEvent.STEP_INTO) {
 				// this is the next chance to stop
 				fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
 				suspend();
@@ -133,9 +132,9 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 			}
 
 			// check for step over
-			if(mRunMode == DebugEvent.STEP_OVER) {
+			if (mRunMode == DebugEvent.STEP_OVER) {
 				// check call stack
-				if(mResumedFrames.size() >= mDebugFrames.size()) {
+				if (mResumedFrames.size() >= mDebugFrames.size()) {
 					// call stack did not grow
 					fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
 					suspend();
@@ -153,9 +152,9 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 			mDebugFrames.remove(this);
 
 			// check for step return / step over
-			if((mRunMode == DebugEvent.STEP_RETURN) || (mRunMode == DebugEvent.STEP_OVER)) {
+			if ((mRunMode == DebugEvent.STEP_RETURN) || (mRunMode == DebugEvent.STEP_OVER)) {
 				// check call stack
-				if((mResumedFrames.size() > mDebugFrames.size()) && (!mDebugFrames.isEmpty())) {
+				if ((mResumedFrames.size() > mDebugFrames.size()) && (!mDebugFrames.isEmpty())) {
 					// call stack got smaller
 					fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
 					suspend();
@@ -184,17 +183,17 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 		@Override
 		public String getName() {
-			if(mFnOrScript.isFunction())
+			if (mFnOrScript.isFunction())
 				return mFnOrScript.getFunctionName() + "()";
 
 			else {
 				final Object file = getScript().getFile();
-				if(file != null) {
-					if(file instanceof IFile)
-						return ((IFile)file).getName();
+				if (file != null) {
+					if (file instanceof IFile)
+						return ((IFile) file).getName();
 
-					else if(file instanceof File)
-						return ((File)file).getName();
+					else if (file instanceof File)
+						return ((File) file).getName();
 
 				} else {
 					// dynamic script
@@ -217,9 +216,8 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 	}
 
 	private void fireDispatchEvent(final IDebugEvent event) {
-		System.out.println("Debugger: ----> " + event);
-		synchronized(mDispatcher) {
-			if(mDispatcher != null)
+		synchronized (mDispatcher) {
+			if (mDispatcher != null)
 				mDispatcher.addEvent(event);
 		}
 	}
@@ -228,22 +226,22 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 	public DebugFrame getFrame(final Context cx, final DebuggableScript fnOrScript) {
 
 		Script script = getScript(fnOrScript);
-		if(script == null) {
+		if (script == null) {
 			script = mLastScript;
 			mLastScript = null;
 		}
 
-		if(script == null)
+		if (script == null)
 			return null;
 
 		// ignore dynamic code if not requested by debug target
-		if(!mShowDynamicCode && (isDynamicCode(script))) {
+		if (!mShowDynamicCode && (isDynamicCode(script))) {
 			return null;
 		}
 
 		// register script source
 		DebuggableScript parentScript = getParentScript(fnOrScript);
-		if(!mFrameToSource.containsKey(parentScript))
+		if (!mFrameToSource.containsKey(parentScript))
 			mFrameToSource.put(parentScript, script);
 
 		// create debug frame
@@ -255,39 +253,34 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 	@Override
 	public void handleEvent(final IDebugEvent event) {
-		System.out.println("     Debugger:  " + event);
-
-		if(event instanceof ResumeRequest) {
+		if (event instanceof ResumeRequest) {
 			// store resume mode
-			mRunMode = ((ResumeRequest)event).getType();
-			// store debug frame stack on resume event (to detect step into/over/return) 
-			if(mRunMode != DebugEvent.CLIENT_REQUEST)
+			mRunMode = ((ResumeRequest) event).getType();
+			// store debug frame stack on resume event (to detect step into/over/return)
+			if (mRunMode != DebugEvent.CLIENT_REQUEST)
 				// only for step commands
 				mResumedFrames = new ArrayList<IScriptDebugFrame>(mDebugFrames);
 
 			resume();
 
-		} else if(event instanceof ScriptStartRequest) {
-			resume();
-
-		} else if(event instanceof BreakpointRequest) {
-			final Script script = ((BreakpointRequest)event).getScript();
-			if(!mScriptBreakpoints.containsKey(script))
+		} else if (event instanceof BreakpointRequest) {
+			final Script script = ((BreakpointRequest) event).getScript();
+			if (!mScriptBreakpoints.containsKey(script))
 				mScriptBreakpoints.put(script, new ArrayList<IBreakpoint>());
 
-			mScriptBreakpoints.get(script).add(((BreakpointRequest)event).getBreakpoint());
+			mScriptBreakpoints.get(script).add(((BreakpointRequest) event).getBreakpoint());
 
-		} else if(event instanceof GetStackFramesRequest) {
+		} else if (event instanceof GetStackFramesRequest) {
 			fireDispatchEvent(new StackFramesEvent(mDebugFrames, mThread));
 
-		} else if(event instanceof TerminateRequest) {
+		} else if (event instanceof TerminateRequest) {
 			// TODO implement
 		}
 	}
 
 	@Override
 	public void notify(final IScriptEngine engine, final Script script, final int status) {
-		switch(status) {
+		switch (status) {
 		case ENGINE_START:
 			fireDispatchEvent(new EngineStartedEvent());
 			mThread = Thread.currentThread();
@@ -298,7 +291,7 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 			// allow for garbage collection
 			mEngine = null;
-			synchronized(mDispatcher) {
+			synchronized (mDispatcher) {
 				mDispatcher = null;
 			}
 			break;
@@ -306,7 +299,7 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 		case SCRIPT_START:
 			// fall through
 		case SCRIPT_INJECTION_START:
-			if(mLastScript != null)
+			if (mLastScript != null)
 				throw new RuntimeException("LastScript has to be null");
 
 			mLastScript = script;
@@ -325,18 +318,18 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 	}
 
 	private void resume() {
-		synchronized(mEngine) {
+		synchronized (mEngine) {
 			mSuspended = false;
 			mEngine.notifyAll();
 		}
 	}
 
 	private void suspend() {
-		synchronized(mEngine) {
+		synchronized (mEngine) {
 			mSuspended = true;
 
 			try {
-				while(mSuspended)
+				while (mSuspended)
 					mEngine.wait();
 
 			} catch (final InterruptedException e) {
@@ -352,7 +345,7 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 	}
 
 	private static DebuggableScript getParentScript(DebuggableScript rhinoScript) {
-		while(rhinoScript.getParent() != null)
+		while (rhinoScript.getParent() != null)
 			rhinoScript = rhinoScript.getParent();
 
 		return rhinoScript;

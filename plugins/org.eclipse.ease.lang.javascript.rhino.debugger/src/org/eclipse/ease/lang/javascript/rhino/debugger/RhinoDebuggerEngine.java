@@ -35,8 +35,8 @@ public class RhinoDebuggerEngine extends RhinoScriptEngine implements IDebugEngi
 	}
 
 	@Override
-	public void setupDebugger(ILaunch launch, boolean suspendOnStartup, boolean suspendOnScriptLoad, boolean showDynamicCode) {
-		final RhinoDebugTarget debugTarget = new RhinoDebugTarget(launch, suspendOnStartup);
+	public void setupDebugger(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, final boolean showDynamicCode) {
+		final RhinoDebugTarget debugTarget = new RhinoDebugTarget(launch, suspendOnStartup, suspendOnScriptLoad);
 		launch.addDebugTarget(debugTarget);
 
 		final RhinoDebugger debugger = new RhinoDebugger(this, showDynamicCode);

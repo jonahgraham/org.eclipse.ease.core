@@ -16,14 +16,11 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.debugging.ScriptDebugTarget;
-import org.eclipse.ease.debugging.events.IDebugEvent;
 
 public class RhinoDebugTarget extends ScriptDebugTarget {
 
-	public RhinoDebugTarget(final ILaunch launch, final boolean suspendOnStartup) {
-		super(launch, suspendOnStartup);
-
-		fireCreationEvent();
+	public RhinoDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad) {
+		super(launch, suspendOnStartup, suspendOnScriptLoad);
 	}
 
 	@Override
@@ -36,16 +33,7 @@ public class RhinoDebugTarget extends ScriptDebugTarget {
 	// ************************************************************
 
 	@Override
-	public void handleEvent(final IDebugEvent event) {
-		//		System.out.println("     Target:    " + event);
-
-		super.handleEvent(event);
-
-	}
-
-	@Override
 	protected IBreakpoint[] getBreakpoints(final Script script) {
 		return DebugPlugin.getDefault().getBreakpointManager().getBreakpoints("org.eclipse.wst.jsdt.debug.model");
 	}
-
 }

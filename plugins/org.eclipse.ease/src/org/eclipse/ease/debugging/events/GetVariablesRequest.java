@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging.events;
 
-public class GetVariablesRequest implements IModelRequest {
+public class GetVariablesRequest extends AbstractEvent implements IModelRequest {
 
 	public GetVariablesRequest(final Thread thread) {
 	}
