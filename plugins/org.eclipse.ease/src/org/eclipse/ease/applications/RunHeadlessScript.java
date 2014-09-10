@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.applications;
+ *******************************************************************************/
+package org.eclipse.ease.applications;
 
 import java.io.File;
 import java.net.URL;
@@ -23,6 +24,7 @@ import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.osgi.service.datalocation.Location;
@@ -33,16 +35,16 @@ public class RunHeadlessScript implements IApplication {
 	public Object start(final IApplicationContext context) throws Exception {
 		final Object object = context.getArguments().get(IApplicationContext.APPLICATION_ARGS);
 		if (object instanceof String[]) {
-			Map<String, Object> parameters = extractInputParameters((String[]) object);
+			final Map<String, Object> parameters = extractInputParameters((String[]) object);
 
 			if (parameters != null) {
 
 				// create workspace
 				if (parameters.containsKey("workspace")) {
 
-					Location location = Platform.getInstanceLocation();
+					final Location location = Platform.getInstanceLocation();
 					// stick to the deprecated method as file.toURI().toURL() will not work on paths containing spaces
-					URL workspaceURL = new File(parameters.get("workspace").toString()).toURL();
+					final URL workspaceURL = new File(parameters.get("workspace").toString()).toURL();
 
 					// check if workspace location has not been set yet (can be set only once!)
 					if (!location.isSet()) {
@@ -65,10 +67,10 @@ public class RunHeadlessScript implements IApplication {
 
 					else {
 						// locate engine by file extension
-						int pos = parameters.get("script").toString().lastIndexOf('.');
+						final int pos = parameters.get("script").toString().lastIndexOf('.');
 						if (pos != -1) {
-							String extension = parameters.get("script").toString().substring(pos + 1);
-							ScriptType scriptType = scriptService.getScriptType(extension);
+							final String extension = parameters.get("script").toString().substring(pos + 1);
+							final ScriptType scriptType = scriptService.getScriptType(extension);
 							if (scriptType != null)
 								engineDescription = scriptService.getEngine(scriptType.getName());
 						}
@@ -76,10 +78,15 @@ public class RunHeadlessScript implements IApplication {
 
 					if (engineDescription != null) {
 						// create engine
-						IScriptEngine engine = engineDescription.createEngine();
+						final IScriptEngine engine = engineDescription.createEngine();
 						engine.setVariable("argv", ((List) parameters.get("args")).toArray(new String[0]));
 
-						ScriptResult scriptResult = engine.executeAsync("include('" + parameters.get("script") + "');");
+						Object scriptObject = ResourceTools.resolveFile(parameters.get("script"), null, true);
+						if (scriptObject == null)
+							// no file available, try to include to resolve URIs
+							scriptObject = "include(\"" + parameters.get("script") + "\")";
+
+						final ScriptResult scriptResult = engine.executeAsync(scriptObject);
 						engine.schedule();
 
 						synchronized (scriptResult) {
@@ -90,23 +97,23 @@ public class RunHeadlessScript implements IApplication {
 						if (scriptResult.hasException())
 							return -1;
 
-						Object result = scriptResult.getResult();
+						final Object result = scriptResult.getResult();
 						if (result != null) {
 							try {
 								return Integer.parseInt(result.toString());
-							} catch (Exception e) {
+							} catch (final Exception e) {
 								// no integer
 							}
 
 							try {
 								return new Double(Double.parseDouble(result.toString())).intValue();
-							} catch (Exception e) {
+							} catch (final Exception e) {
 								// no double
 							}
 
 							try {
 								return Boolean.parseBoolean(result.toString()) ? 0 : -1;
-							} catch (Exception e) {
+							} catch (final Exception e) {
 								// no boolean
 							}
 
@@ -127,7 +134,7 @@ public class RunHeadlessScript implements IApplication {
 	}
 
 	private static Map<String, Object> extractInputParameters(final String[] arguments) {
-		Map<String, Object> parameters = new HashMap<String, Object>();
+		final Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("args", new ArrayList<String>());
 
 		for (int index = 0; index < arguments.length; index++) {
