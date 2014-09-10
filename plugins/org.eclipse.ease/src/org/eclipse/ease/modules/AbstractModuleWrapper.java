@@ -175,7 +175,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 			}
 		}
 		if ((Boolean.class.equals(clazz)) || (boolean.class.equals(clazz))) {
-			return Boolean.toString(Boolean.parseBoolean(defaultStringValue));
+			return Boolean.parseBoolean(defaultStringValue) ? getTrueString() : getFalseString();
 		}
 
 		// undefined resolves to empty constructor
@@ -205,8 +205,6 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 
 		return getNullString();
 	}
-
-	protected abstract String getNullString();
 
 	public static Collection<String> getMethodNames(final Method method) {
 		Set<String> methodNames = new HashSet<String>();
@@ -243,4 +241,25 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 
 		return code.toString();
 	}
+
+	/**
+	 * Get string representation for <code>null</code> in target language.
+	 * 
+	 * @return <code>null</code> in target language.
+	 */
+	protected abstract String getNullString();
+
+	/**
+	 * Get string representation for <code>true</code> in target language.
+	 * 
+	 * @return <code>true</code> in target language.
+	 */
+	protected abstract String getTrueString();
+
+	/**
+	 * Get string representation for <code>false</code> in target language.
+	 * 
+	 * @return <code>false</code> in target language.
+	 */
+	protected abstract String getFalseString();
 }

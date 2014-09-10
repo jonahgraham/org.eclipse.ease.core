@@ -139,4 +139,14 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 
 		return data;
 	}
+
+	@Override
+	protected String getTrueString() {
+		return Boolean.TRUE.toString();
+	}
+
+	@Override
+	protected String getFalseString() {
+		return Boolean.FALSE.toString();
+	}
 }
