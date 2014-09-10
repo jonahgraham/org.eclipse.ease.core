@@ -70,9 +70,9 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 	 * @return
 	 */
 	protected String getParameterName(final Annotation[] parameterAnnotations) {
-		for (Annotation annot : parameterAnnotations) {
+		for (final Annotation annot : parameterAnnotations) {
 			if (annot instanceof ScriptParameter) {
-				ScriptParameter namedParameter = (ScriptParameter) annot;
+				final ScriptParameter namedParameter = (ScriptParameter) annot;
 				return namedParameter.name();
 			}
 		}
@@ -80,13 +80,13 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 	}
 
 	public static List<Parameter> parseParameters(final Method method) {
-		ArrayList<Parameter> parameters = new ArrayList<Parameter>();
+		final ArrayList<Parameter> parameters = new ArrayList<Parameter>();
 
 		for (int index = 0; index < method.getParameterTypes().length; index++) {
-			Parameter parameter = new Parameter();
+			final Parameter parameter = new Parameter();
 			parameter.setClass(method.getParameterTypes()[index]);
 
-			ScriptParameter annotation = getParameterAnnotation(method.getParameterAnnotations()[index]);
+			final ScriptParameter annotation = getParameterAnnotation(method.getParameterAnnotations()[index]);
 			if (annotation != null) {
 				parameter.setName(annotation.name());
 				parameter.setOptional(ScriptParameter.Helper.isOptional(annotation));
@@ -96,7 +96,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 		}
 
 		// post process parameters: find unique names for unnamed parameters
-		for (Parameter parameter : parameters) {
+		for (final Parameter parameter : parameters) {
 			if (parameter.getName().isEmpty())
 				parameter.setName(findName(parameters));
 		}
@@ -105,7 +105,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 	}
 
 	private static ScriptParameter getParameterAnnotation(final Annotation[] annotations) {
-		for (Annotation annotation : annotations) {
+		for (final Annotation annotation : annotations) {
 			if (annotation instanceof ScriptParameter)
 				return (ScriptParameter) annotation;
 		}
@@ -128,7 +128,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 			found = true;
 			name = "param" + index;
 
-			for (Parameter parameter : parameters) {
+			for (final Parameter parameter : parameters) {
 				if (name.equals(parameter.getName())) {
 					index++;
 					found = false;
@@ -142,8 +142,8 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 	}
 
 	protected String getDefaultValue(final Parameter parameter) {
-		String defaultStringValue = parameter.getDefaultValue().replaceAll("\\r", "\\\\r").replaceAll("\\n", "\\\\n");
-		Class<?> clazz = parameter.getClazz();
+		final String defaultStringValue = parameter.getDefaultValue().replaceAll("\\r", "\\\\r").replaceAll("\\n", "\\\\n");
+		final Class<?> clazz = parameter.getClazz();
 
 		// null as default value
 		if (ScriptParameter.NULL.equals(defaultStringValue))
@@ -153,25 +153,25 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 		if ((Integer.class.equals(clazz)) || (int.class.equals(clazz))) {
 			try {
 				return Integer.toString(Integer.parseInt(defaultStringValue));
-			} catch (NumberFormatException e1) {
+			} catch (final NumberFormatException e1) {
 			}
 		}
 		if ((Long.class.equals(clazz)) || (long.class.equals(clazz))) {
 			try {
 				return Long.toString(Long.parseLong(defaultStringValue));
-			} catch (NumberFormatException e1) {
+			} catch (final NumberFormatException e1) {
 			}
 		}
 		if ((Float.class.equals(clazz)) || (float.class.equals(clazz))) {
 			try {
 				return Float.toString(Float.parseFloat(defaultStringValue));
-			} catch (NumberFormatException e1) {
+			} catch (final NumberFormatException e1) {
 			}
 		}
 		if ((Double.class.equals(clazz)) || (double.class.equals(clazz))) {
 			try {
 				return Double.toString(Double.parseDouble(defaultStringValue));
-			} catch (NumberFormatException e1) {
+			} catch (final NumberFormatException e1) {
 			}
 		}
 		if ((Boolean.class.equals(clazz)) || (boolean.class.equals(clazz))) {
@@ -185,8 +185,8 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 				clazz.getConstructor();
 				// empty constructor found, return class
 				return classInstantiation(clazz, null);
-			} catch (SecurityException e) {
-			} catch (NoSuchMethodException e) {
+			} catch (final SecurityException e) {
+			} catch (final NoSuchMethodException e) {
 			}
 		}
 
@@ -195,8 +195,8 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 			clazz.getConstructor(String.class);
 			// string constructor found, return class
 			return classInstantiation(clazz, new String[] { "\"" + defaultStringValue + "\"" });
-		} catch (SecurityException e) {
-		} catch (NoSuchMethodException e) {
+		} catch (final SecurityException e) {
+		} catch (final NoSuchMethodException e) {
 		}
 
 		// special handling for string defaults passed to an Object.class
@@ -207,12 +207,12 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 	}
 
 	public static Collection<String> getMethodNames(final Method method) {
-		Set<String> methodNames = new HashSet<String>();
+		final Set<String> methodNames = new HashSet<String>();
 		methodNames.add(method.getName());
 
-		WrapToScript wrapAnnotation = method.getAnnotation(WrapToScript.class);
+		final WrapToScript wrapAnnotation = method.getAnnotation(WrapToScript.class);
 		if (wrapAnnotation != null) {
-			for (String name : wrapAnnotation.alias().split(WrapToScript.DELIMITER))
+			for (final String name : wrapAnnotation.alias().split(WrapToScript.DELIMITER))
 				if (!name.trim().isEmpty())
 					methodNames.add(name.trim());
 		}
@@ -244,22 +244,26 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 
 	/**
 	 * Get string representation for <code>null</code> in target language.
-	 * 
+	 *
 	 * @return <code>null</code> in target language.
 	 */
 	protected abstract String getNullString();
 
 	/**
 	 * Get string representation for <code>true</code> in target language.
-	 * 
+	 *
 	 * @return <code>true</code> in target language.
 	 */
-	protected abstract String getTrueString();
+	protected String getTrueString() {
+		return Boolean.TRUE.toString();
+	}
 
 	/**
 	 * Get string representation for <code>false</code> in target language.
-	 * 
+	 *
 	 * @return <code>false</code> in target language.
 	 */
-	protected abstract String getFalseString();
+	protected String getFalseString() {
+		return Boolean.FALSE.toString();
+	}
 }

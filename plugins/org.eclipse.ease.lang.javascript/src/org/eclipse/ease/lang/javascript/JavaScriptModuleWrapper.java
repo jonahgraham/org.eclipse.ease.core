@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.lang.javascript.JavaScriptHelper;
 import org.eclipse.ease.modules.AbstractModuleWrapper;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
@@ -40,11 +39,11 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 
 	@Override
 	public String classInstantiation(final Class<?> clazz, final String[] parameters) {
-		StringBuilder code = new StringBuilder();
+		final StringBuilder code = new StringBuilder();
 		code.append("new Packages.").append(clazz.getName()).append("(");
 
 		if (parameters != null) {
-			for (String parameter : parameters)
+			for (final String parameter : parameters)
 				code.append(parameter).append(", ");
 
 			if (parameters.length > 0)
@@ -59,20 +58,20 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 	@Override
 	public String createFunctionWrapper(final IEnvironment environment, final String moduleVariable, final Method method) {
 
-		StringBuilder javaScriptCode = new StringBuilder();
+		final StringBuilder javaScriptCode = new StringBuilder();
 
 		// parse parameters
-		List<Parameter> parameters = parseParameters(method);
+		final List<Parameter> parameters = parseParameters(method);
 
 		// build parameter string
-		StringBuilder parameterList = new StringBuilder();
-		for (Parameter parameter : parameters)
+		final StringBuilder parameterList = new StringBuilder();
+		for (final Parameter parameter : parameters)
 			parameterList.append(", ").append(parameter.getName());
 
 		if (parameterList.length() > 2)
 			parameterList.delete(0, 2);
 
-		StringBuilder body = new StringBuilder();
+		final StringBuilder body = new StringBuilder();
 		// insert parameter checks
 		body.append(verifyParameters(parameters));
 
@@ -91,7 +90,7 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 		body.append("\treturn ").append(IScriptFunctionModifier.RESULT_NAME).append(";\n");
 
 		// build function declarations
-		for (String name : getMethodNames(method)) {
+		for (final String name : getMethodNames(method)) {
 			if (!isValidMethodName(name)) {
 				Logger.logError("The method name \"" + name + "\" from the module \"" + moduleVariable + "\" can not be wrapped because it's name is reserved",
 						Activator.PLUGIN_ID);
@@ -122,10 +121,10 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	private StringBuilder verifyParameters(final List<Parameter> parameters) {
-		StringBuilder data = new StringBuilder();
+		final StringBuilder data = new StringBuilder();
 
 		if (!parameters.isEmpty()) {
-			Parameter parameter = parameters.get(parameters.size() - 1);
+			final Parameter parameter = parameters.get(parameters.size() - 1);
 			data.append("\tif (typeof " + parameter.getName() + " === \"undefined\") {\n");
 			if (parameter.isOptional()) {
 				data.append("\t\t" + parameter.getName() + " = " + getDefaultValue(parameter) + ";\n");
@@ -138,15 +137,5 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 		}
 
 		return data;
-	}
-
-	@Override
-	protected String getTrueString() {
-		return Boolean.TRUE.toString();
-	}
-
-	@Override
-	protected String getFalseString() {
-		return Boolean.FALSE.toString();
 	}
 }
