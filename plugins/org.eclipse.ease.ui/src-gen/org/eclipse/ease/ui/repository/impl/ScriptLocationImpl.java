@@ -12,6 +12,7 @@ package org.eclipse.ease.ui.repository.impl;
 
 import java.util.Collection;
 
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.repository.IRepositoryPackage;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.repository.IScriptLocation;
@@ -29,9 +30,9 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl#isRecursive <em>Recursive</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl#isDefault <em>Default</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl#getScripts <em>Scripts</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl#isRecursive <em>Recursive</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl#isDefault <em>Default</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.repository.impl.ScriptLocationImpl#getScripts <em>Scripts</em>}</li>
  * </ul>
  * </p>
  *
@@ -39,8 +40,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
  */
 public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocation {
 	/**
-	 * The default value of the '{@link #isRecursive() <em>Recursive</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The default value of the '{@link #isRecursive() <em>Recursive</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #isRecursive()
 	 * @generated
 	 * @ordered
@@ -48,8 +49,8 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	protected static final boolean RECURSIVE_EDEFAULT = false;
 
 	/**
-	 * The cached value of the '{@link #isRecursive() <em>Recursive</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #isRecursive() <em>Recursive</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #isRecursive()
 	 * @generated
 	 * @ordered
@@ -57,8 +58,8 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	protected boolean recursive = RECURSIVE_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #isDefault() <em>Default</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The default value of the '{@link #isDefault() <em>Default</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #isDefault()
 	 * @generated
 	 * @ordered
@@ -66,8 +67,8 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	protected static final boolean DEFAULT_EDEFAULT = false;
 
 	/**
-	 * The cached value of the '{@link #isDefault() <em>Default</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #isDefault() <em>Default</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #isDefault()
 	 * @generated
 	 * @ordered
@@ -75,8 +76,8 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	protected boolean default_ = DEFAULT_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getScripts() <em>Scripts</em>}' containment reference list.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getScripts() <em>Scripts</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #getScripts()
 	 * @generated
 	 * @ordered
@@ -85,6 +86,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	protected ScriptLocationImpl() {
@@ -93,6 +95,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
@@ -102,6 +105,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
@@ -111,11 +115,12 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public void setRecursive(boolean newRecursive) {
-		boolean oldRecursive = recursive;
+		final boolean oldRecursive = recursive;
 		recursive = newRecursive;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE, oldRecursive, recursive));
@@ -123,6 +128,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
@@ -132,11 +138,12 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public void setDefault(boolean newDefault) {
-		boolean oldDefault = default_;
+		final boolean oldDefault = default_;
 		default_ = newDefault;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.SCRIPT_LOCATION__DEFAULT, oldDefault, default_));
@@ -144,133 +151,148 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public EList<IScript> getScripts() {
 		if (scripts == null) {
-			scripts = new EObjectContainmentWithInverseEList<IScript>(IScript.class, this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS, IRepositoryPackage.SCRIPT__ENTRY);
+			scripts = new EObjectContainmentWithInverseEList<IScript>(IScript.class, this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS,
+					IRepositoryPackage.SCRIPT__ENTRY);
 		}
 		return scripts;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-				return ((InternalEList<InternalEObject>)(InternalEList<?>)getScripts()).basicAdd(otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getScripts()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-				return ((InternalEList<?>)getScripts()).basicRemove(otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
+			return ((InternalEList<?>) getScripts()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
-				return isRecursive();
-			case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
-				return isDefault();
-			case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-				return getScripts();
+		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
+			return isRecursive();
+		case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
+			return isDefault();
+		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
+			return getScripts();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
-				setRecursive((Boolean)newValue);
-				return;
-			case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
-				setDefault((Boolean)newValue);
-				return;
-			case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-				getScripts().clear();
-				getScripts().addAll((Collection<? extends IScript>)newValue);
-				return;
+		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
+			setRecursive((Boolean) newValue);
+			return;
+		case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
+			setDefault((Boolean) newValue);
+			return;
+		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
+			getScripts().clear();
+			getScripts().addAll((Collection<? extends IScript>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
-				setRecursive(RECURSIVE_EDEFAULT);
-				return;
-			case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
-				setDefault(DEFAULT_EDEFAULT);
-				return;
-			case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-				getScripts().clear();
-				return;
+		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
+			setRecursive(RECURSIVE_EDEFAULT);
+			return;
+		case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
+			setDefault(DEFAULT_EDEFAULT);
+			return;
+		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
+			getScripts().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
-				return recursive != RECURSIVE_EDEFAULT;
-			case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
-				return default_ != DEFAULT_EDEFAULT;
-			case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-				return scripts != null && !scripts.isEmpty();
+		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
+			return recursive != RECURSIVE_EDEFAULT;
+		case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
+			return default_ != DEFAULT_EDEFAULT;
+		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
+			return scripts != null && !scripts.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy())
+			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		final StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (recursive: ");
 		result.append(recursive);
 		result.append(", default: ");
 		result.append(default_);
 		result.append(')');
 		return result.toString();
+	}
+
+	@Override
+	public Object getResource() {
+		return ResourceTools.resolveFolder(getLocation(), null, false);
 	}
 } // ScriptLocationImpl
