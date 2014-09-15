@@ -51,7 +51,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	@WrapToScript
 	public void wrap(final Object toBeWrapped) {
 		// register new variable in script engine
-		String identifier = getScriptEngine().getSaveVariableName(MODULE_PREFIX + toBeWrapped.toString());
+		final String identifier = getScriptEngine().getSaveVariableName(MODULE_PREFIX + toBeWrapped.toString());
 
 		// FIXME either remove or move to script engine
 		// if (getScriptEngine().isUI()) {
@@ -60,7 +60,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 		// Display.getDefault().syncExec(tt);
 		// module = tt.getResult();
 
-		boolean reloaded = getScriptEngine().hasVariable(identifier);
+		final boolean reloaded = getScriptEngine().hasVariable(identifier);
 		getScriptEngine().setVariable(identifier, toBeWrapped);
 
 		// FIXME move to script engine
@@ -87,11 +87,11 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 */
 	private void createWrappers(final Object instance, final String identifier, final boolean reload) {
 		// script code to inject
-		StringBuilder scriptCode = new StringBuilder();
+		final StringBuilder scriptCode = new StringBuilder();
 
 		// create wrappers for methods
 		for (final Method method : ModuleHelper.getMethods(instance.getClass())) {
-			String code = getWrapper().createFunctionWrapper(this, identifier, method);
+			final String code = getWrapper().createFunctionWrapper(this, identifier, method);
 
 			if ((code != null) && !code.isEmpty()) {
 				scriptCode.append(code);
@@ -102,12 +102,12 @@ public class EnvironmentModule extends AbstractEnvironment {
 		// create wrappers for static fields
 		if (!reload) {
 			// this is only done upon initial loading as we try to create constants here
-			for (Field field : ModuleHelper.getFields(instance.getClass())) {
+			for (final Field field : ModuleHelper.getFields(instance.getClass())) {
 				try {
 
 					// only wrap if field is not already declared
 					if (!getScriptEngine().hasVariable(getWrapper().getSaveVariableName(field.getName()))) {
-						String code = getWrapper().createStaticFieldWrapper(this, field);
+						final String code = getWrapper().createStaticFieldWrapper(this, field);
 
 						if ((code != null) && !code.isEmpty()) {
 							scriptCode.append(code);
@@ -118,14 +118,14 @@ public class EnvironmentModule extends AbstractEnvironment {
 								+ "\") as variable is already declared.");
 					}
 
-				} catch (IllegalArgumentException e) {
+				} catch (final IllegalArgumentException e) {
 					Logger.logError("Could not wrap field \"" + field.getName() + " \" of module \"" + instance.getClass() + "\".");
 				}
 			}
 		}
 
 		// execute code
-		String codeToInject = scriptCode.toString();
+		final String codeToInject = scriptCode.toString();
 		// FIXME move log to script engine
 		if (ITracingConstant.ENVIRONEMENT_MODULE_WRAPPER_TRACING) {
 			Tracer.logInfo("[Environement Module] Injecting code:\n" + codeToInject);
@@ -170,7 +170,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 */
 	@WrapToScript
 	public final Object include(final String filename) {
-		Object file = ResourceTools.resolveFile(filename, getScriptEngine().getExecutedFile(), true);
+		final Object file = ResourceTools.resolveFile(filename, getScriptEngine().getExecutedFile(), true);
 		if (file != null)
 			return getScriptEngine().inject(file);
 
@@ -178,11 +178,11 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 			// maybe this is a URI
 			try {
-				URL url = new URL(filename);
+				final URL url = new URL(filename);
 				return getScriptEngine().inject(url.openStream());
 
-			} catch (MalformedURLException e) {
-			} catch (IOException e) {
+			} catch (final MalformedURLException e) {
+			} catch (final IOException e) {
 			}
 		}
 
@@ -196,7 +196,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	@Override
 	public IScriptEngine getScriptEngine() {
 
-		IScriptEngine engine = super.getScriptEngine();
+		final IScriptEngine engine = super.getScriptEngine();
 		if (engine == null) {
 			final Job currentJob = Job.getJobManager().currentJob();
 			if (currentJob instanceof IScriptEngine)
@@ -216,8 +216,17 @@ public class EnvironmentModule extends AbstractEnvironment {
 		return ScriptService.getService().getModuleWrapper(getScriptEngine().getDescription().getID());
 	}
 
+	/**
+	 * Add a jar file to the classpath. Contents of the jar can be accessed right after loading. <i>location</i> can be an URI, a path, a File or an IFile
+	 * instance.
+	 *
+	 * @param location
+	 *            URI, Path, File or IFile
+	 * @throws MalformedURLException
+	 *             invalid URL detected
+	 */
 	@WrapToScript
-	public void registerJar(Object location) throws MalformedURLException {
+	public void loadJar(Object location) throws MalformedURLException {
 		if (!(location instanceof URL)) {
 			// try to resolve workspace URIs
 			Object file = ResourceTools.resolveFile(location.toString(), getScriptEngine().getExecutedFile(), true);
