@@ -49,7 +49,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 		@Override
 		public void doubleClick(final DoubleClickEvent event) {
 
-			Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
+			final Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 
 			if ((element instanceof IScript) && (fEngineProvider != null)) {
 				final IScriptEngine scriptEngine = fEngineProvider.getScriptEngine();
@@ -63,7 +63,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 
 	/**
 	 * Constructor creating the script tree viewer.
-	 * 
+	 *
 	 * @param engineProvider
 	 *            component providing script support
 	 * @param site
@@ -111,12 +111,6 @@ public class ScriptComposite extends Composite implements IScriptListener {
 			public int category(final Object element) {
 				return (element instanceof IPath) ? 0 : 1;
 			}
-
-			// @Override
-			// public int compare(Viewer viewer, Object e1, Object e2) {
-			// super.compare(viewer, e1, e2)
-			// return e1.toString().compareTo(e2.toString());
-			// }
 		});
 
 		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
@@ -174,7 +168,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 	public void notify(final ScriptRepositoryEvent event) {
 		switch (event.getType()) {
 		case ScriptRepositoryEvent.PARAMETER_CHANGE:
-			Map<String, String> eventData = (Map<String, String>) event.getEventData();
+			final Map<String, String> eventData = (Map<String, String>) event.getEventData();
 			if (!eventData.containsKey("name"))
 				return;
 
