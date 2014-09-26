@@ -77,6 +77,7 @@ public class RunHeadlessScript implements IApplication {
 						final IScriptEngine engine = engineDescription.createEngine();
 						engine.setVariable("argv", ((List) parameters.get("args")).toArray(new String[0]));
 
+						// TODO implement better URI handling - eg create URI and pass to script engine
 						Object scriptObject = ResourceTools.resolveFile(parameters.get("script"), null, true);
 						if (scriptObject == null)
 							// no file available, try to include to resolve URIs

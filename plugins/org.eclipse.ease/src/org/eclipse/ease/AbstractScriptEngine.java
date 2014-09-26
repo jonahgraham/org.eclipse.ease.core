@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -61,6 +62,8 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	/** Variables tried to set before engine was started. */
 	private final Map<String, Object> fBufferedVariables = new HashMap<String, Object>();
+
+	private boolean fCloseStreamsOnTerminate;
 
 	/**
 	 * Constructor. Contains a name for the underlying job and an indicator for the presence of online help.
@@ -251,10 +254,38 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			teardownEngine();
 		}
 
+		closeStreams();
+
 		if (isTerminated())
 			return Status.OK_STATUS;
 
 		return Status.CANCEL_STATUS;
+	}
+
+	private void closeStreams() {
+		if (fCloseStreamsOnTerminate) {
+			// gracefully close I/O streams
+			try {
+				if ((getInputStream() != null) && (!System.in.equals(getInputStream())))
+					getInputStream().close();
+			} catch (final IOException e) {
+			}
+			try {
+				if ((getOutputStream() != null) && (!System.out.equals(getOutputStream())))
+					getOutputStream().close();
+			} catch (final Exception e) {
+			}
+			try {
+				if ((getErrorStream() != null) && (!System.err.equals(getErrorStream())))
+					getErrorStream().close();
+			} catch (final Exception e) {
+			}
+		}
+	}
+
+	@Override
+	public void setCloseStreamsOnTerminate(final boolean closeStreams) {
+		fCloseStreamsOnTerminate = closeStreams;
 	}
 
 	@Override

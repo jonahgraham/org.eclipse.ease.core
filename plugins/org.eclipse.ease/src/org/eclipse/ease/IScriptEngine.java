@@ -29,7 +29,7 @@ public interface IScriptEngine {
 	/**
 	 * Execute script code asynchronously. The code provided will be scheduled and executed as soon as all previously scheduled code is executed. If
 	 * <i>content</i> is a {@link Reader} object, or a {@link File} special treatment is done, otherwise the toString() method is used to extract script code.
-	 * 
+	 *
 	 * @param content
 	 *            content to be executed.
 	 * @return execution result
@@ -40,7 +40,7 @@ public interface IScriptEngine {
 	 * Execute script code synchronously. The code provided will be scheduled and executed as soon as all previously scheduled code is executed.If
 	 * <i>content</i> is a {@link Reader} object, or a {@link File} special treatment is done, otherwise the toString() method is used to extract script code.
 	 * The calling thread is stalled until the script code is processed.
-	 * 
+	 *
 	 * @param content
 	 *            content to be executed.
 	 * @return execution result
@@ -52,7 +52,7 @@ public interface IScriptEngine {
 	/**
 	 * Inject script code and execute synchronously. Code passed to this method will be invoked immediately. It might interrupt a currently running execution
 	 * requested asynchronously.
-	 * 
+	 *
 	 * @param content
 	 *            content to be executed.
 	 * @return execution result
@@ -62,7 +62,7 @@ public interface IScriptEngine {
 	/**
 	 * Inject script code and execute synchronously within the UI thread. Code passed to this method will be invoked immediately. It might interrupt a currently
 	 * running execution requested asynchronously.
-	 * 
+	 *
 	 * @param content
 	 *            content to be executed.
 	 * @return execution result
@@ -71,14 +71,14 @@ public interface IScriptEngine {
 
 	/**
 	 * Get the currently executed file instance.
-	 * 
+	 *
 	 * @return currently executed file
 	 */
 	Object getExecutedFile();
 
 	/**
 	 * Set the default output stream for the interpreter.
-	 * 
+	 *
 	 * @param outputStream
 	 *            default output stream
 	 */
@@ -86,7 +86,7 @@ public interface IScriptEngine {
 
 	/**
 	 * Set the default error stream for the interpreter.
-	 * 
+	 *
 	 * @param errorStream
 	 *            default error stream
 	 */
@@ -94,7 +94,7 @@ public interface IScriptEngine {
 
 	/**
 	 * Set the default input stream for the interpreter.
-	 * 
+	 *
 	 * @param inputStream
 	 *            default input stream
 	 */
@@ -107,17 +107,25 @@ public interface IScriptEngine {
 	InputStream getInputStream();
 
 	/**
+	 * Set marker to automatically close I/O streams when engine is terminated.
+	 *
+	 * @param closeStreams
+	 *            <code>true</code> to close streams
+	 */
+	void setCloseStreamsOnTerminate(final boolean closeStreams);
+
+	/**
 	 * Set a marker that the interpreter should terminate instead entering IDLE mode. If set, the interpreter will execute all pending requests and terminate
 	 * afterwards.
-	 * 
+	 *
 	 * @param terminate
-	 *            true to request termination
+	 *            <code>true</code> to request termination
 	 */
 	void setTerminateOnIdle(final boolean terminate);
 
 	/**
 	 * Get termination condition when engine is idle.
-	 * 
+	 *
 	 * @return <code>true</code> when engine is terminated when idle
 	 */
 	boolean getTerminateOnIdle();
@@ -149,7 +157,7 @@ public interface IScriptEngine {
 	/**
 	 * Returns the execution state of the engine. If the engine is processing code or is terminated this will return <code>false</code>. If the engine is
 	 * waiting for further scripts to execute this will return <code>true</code>.
-	 * 
+	 *
 	 * @return execution state.
 	 */
 	boolean isIdle();
@@ -158,21 +166,21 @@ public interface IScriptEngine {
 	 * Get the current file trace. A trace is a stack starting with the root file executed by the engine. Files called via include command will be put on top of
 	 * that stack. Each entry may contain a pointer to the current line number executed. Traces might be created dynamically on demand or accumulated during
 	 * execution depending on the underlying engine.
-	 * 
+	 *
 	 * @return current FileTrace
 	 */
 	FileTrace getFileTrace();
 
 	/**
 	 * Get the engine name.
-	 * 
+	 *
 	 * @return engine name
 	 */
 	String getName();
 
 	/**
 	 * Set a variable in the script engine. This variable will be stored in the global script scope
-	 * 
+	 *
 	 * @param name
 	 *            variable name
 	 * @param content
@@ -182,10 +190,10 @@ public interface IScriptEngine {
 
 	/**
 	 * Get a script variable. Retrieve a variable from the global script scope.
-	 * 
+	 *
 	 * @param name
 	 *            variable name
-	 * 
+	 *
 	 * @return variable content or <code>null</code>
 	 */
 	Object getVariable(final String name);
@@ -193,7 +201,7 @@ public interface IScriptEngine {
 	/**
 	 * Check if a variable exists within the scope of the engine. As a variable content may be <code>null</code>, {@link #getVariable(String)} might not be
 	 * sufficient to query.
-	 * 
+	 *
 	 * @param name
 	 *            variable name
 	 * @return <code>true</code> when variable exists
@@ -203,7 +211,7 @@ public interface IScriptEngine {
 	/**
 	 * Return a save name to be used for a variable. The returned value denotes a valid name to be used for a variable within this engine. The returned name
 	 * might already be in use.
-	 * 
+	 *
 	 * @param name
 	 *            variable name candidate
 	 * @return converted variable name
@@ -212,14 +220,14 @@ public interface IScriptEngine {
 
 	/**
 	 * Get engine description for current engine.
-	 * 
+	 *
 	 * @return engine description
 	 */
 	EngineDescription getDescription();
 
 	/**
 	 * Remove a variable from the scope.
-	 * 
+	 *
 	 * @param name
 	 *            variable to be removed.
 	 * @return
@@ -228,14 +236,14 @@ public interface IScriptEngine {
 
 	/**
 	 * Get all variables from the scope.
-	 * 
+	 *
 	 * @return map of variables
 	 */
 	Map<String, Object> getVariables();
 
 	/**
 	 * Register a jar file and add it to the classpath. After registering, classes within the jar file shall be usable within the script.
-	 * 
+	 *
 	 * @param url
 	 *            url to load jar file from
 	 */

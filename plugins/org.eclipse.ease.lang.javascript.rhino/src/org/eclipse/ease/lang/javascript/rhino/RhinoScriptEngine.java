@@ -132,23 +132,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		// unregister from classloader
 		RhinoClassLoader.unregisterEngine(this);
 
-		// gracefully close I/O streams
-		try {
-			if ((getInputStream() != null) && (!System.in.equals(getInputStream())))
-				getInputStream().close();
-		} catch (final IOException e) {
-		}
-		try {
-			if ((getOutputStream() != null) && (!System.out.equals(getOutputStream())))
-				getOutputStream().close();
-		} catch (final Exception e) {
-		}
-		try {
-			if ((getErrorStream() != null) && (!System.err.equals(getErrorStream())))
-				getErrorStream().close();
-		} catch (final Exception e) {
-		}
-
 		return true;
 	}
 

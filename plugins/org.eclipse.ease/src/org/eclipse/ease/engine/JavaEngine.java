@@ -202,4 +202,8 @@ public class JavaEngine implements IScriptEngine {
 	public void registerJar(final URL url) {
 		throw new RuntimeException("not supported");
 	}
+
+	@Override
+	public void setCloseStreamsOnTerminate(final boolean closeStreams) {
+	}
 }
