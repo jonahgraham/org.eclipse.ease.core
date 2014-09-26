@@ -15,8 +15,10 @@ import java.util.Collection;
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ease.service.EngineDescription;
+import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 public class EngineTester extends PropertyTester {
@@ -37,7 +39,8 @@ public class EngineTester extends PropertyTester {
 			receiver = ((FileEditorInput) receiver).getFile();
 
 		if (receiver instanceof IFile) {
-			ScriptType scriptType = ResourceTools.getScriptType((IFile) receiver);
+			final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+			ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(receiver, null));
 			if (scriptType != null) {
 
 				Collection<EngineDescription> engines = scriptType.getEngines();

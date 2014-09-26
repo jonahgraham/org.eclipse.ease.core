@@ -280,11 +280,7 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 
 		// resolve script type by file extension
 		String sourceFile = txtSourceFile.getText();
-		int dotPosition = sourceFile.lastIndexOf('.');
-		if (dotPosition >= 0) {
-			String extension = sourceFile.substring(dotPosition + 1);
-			scriptType = scriptService.getScriptType(extension);
-		}
+		scriptType = scriptService.getScriptType(sourceFile);
 
 		if (scriptType != null) {
 			List<EngineDescription> engines = scriptService.getEngines(scriptType.getName());

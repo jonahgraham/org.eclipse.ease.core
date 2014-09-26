@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
@@ -29,6 +30,7 @@ import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.IModuleWrapper;
 import org.eclipse.ease.modules.ModuleCategoryDefinition;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ui.PlatformUI;
 
 public class ScriptService implements IScriptService {
@@ -229,20 +231,32 @@ public class ScriptService implements IScriptService {
 	}
 
 	@Override
-	public ScriptType getScriptType(final IContentType contentType) {
-		for (ScriptType scriptType : getAvailableScriptTypes().values()) {
-			if (scriptType.getContentTypes().contains(contentType.getId()))
-				return scriptType;
+	public ScriptType getScriptType(final String location) {
+		Object resource = ResourceTools.getResource(location);
+		try {
+			if (resource instanceof IFile) {
+				// try to resolve by content type
+				IContentType contentType = ((IFile) resource).getContentDescription().getContentType();
+
+				for (ScriptType scriptType : getAvailableScriptTypes().values()) {
+					if (scriptType.getContentTypes().contains(contentType.getId()))
+						return scriptType;
+				}
+			}
+		} catch (CoreException e) {
+			// could not retrieve content type, continue using file extension
 		}
 
-		return null;
-	}
+		// try to resolve by extension
+		int pos = location.lastIndexOf('.');
+		if (pos != -1) {
+			String extension = location.substring(pos + 1);
 
-	@Override
-	public ScriptType getScriptType(final String fileExtension) {
-		for (ScriptType scriptType : getAvailableScriptTypes().values()) {
-			if (scriptType.getDefaultExtension().equalsIgnoreCase(fileExtension))
-				return scriptType;
+			// FIXME search all extensions, not only default one
+			for (ScriptType scriptType : getAvailableScriptTypes().values()) {
+				if (scriptType.getDefaultExtension().equalsIgnoreCase(extension))
+					return scriptType;
+			}
 		}
 
 		return null;

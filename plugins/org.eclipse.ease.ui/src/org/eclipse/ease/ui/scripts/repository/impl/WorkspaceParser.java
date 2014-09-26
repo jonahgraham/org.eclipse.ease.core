@@ -18,11 +18,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.repository.IScriptLocation;
+import org.eclipse.ui.PlatformUI;
 
 public class WorkspaceParser extends InputStreamParser {
 
@@ -57,9 +59,11 @@ public class WorkspaceParser extends InputStreamParser {
 			IScript script = getScriptByLocation(location);
 
 			try {
+				final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+
 				if (script == null) {
 
-					ScriptType scriptType = ResourceTools.getScriptType((IFile) resource);
+					ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
 					if (scriptType != null) {
 						// new script detected
 						script = IRepositoryFactory.eINSTANCE.createScript();
@@ -77,7 +81,7 @@ public class WorkspaceParser extends InputStreamParser {
 
 				} else if (script.getTimestamp() != resource.getModificationStamp()) {
 					// script needs updating
-					ScriptType scriptType = ResourceTools.getScriptType((IFile) resource);
+					ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
 					Map<String, String> parameters = extractParameters(scriptType, ((IFile) resource).getContents());
 
 					script.setTimestamp(resource.getModificationStamp());

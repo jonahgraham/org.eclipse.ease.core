@@ -67,13 +67,9 @@ public class RunHeadlessScript implements IApplication {
 
 					else {
 						// locate engine by file extension
-						final int pos = parameters.get("script").toString().lastIndexOf('.');
-						if (pos != -1) {
-							final String extension = parameters.get("script").toString().substring(pos + 1);
-							final ScriptType scriptType = scriptService.getScriptType(extension);
-							if (scriptType != null)
-								engineDescription = scriptService.getEngine(scriptType.getName());
-						}
+						final ScriptType scriptType = scriptService.getScriptType(parameters.get("script").toString());
+						if (scriptType != null)
+							engineDescription = scriptService.getEngine(scriptType.getName());
 					}
 
 					if (engineDescription != null) {

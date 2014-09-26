@@ -410,13 +410,13 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (type == null) {
 			Object resource = getResource();
 			if ((resource instanceof IFile) && (((IFile) resource).exists()))
-				type = ResourceTools.getScriptType((IFile) resource);
+				type = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
 
 			else if ((resource instanceof File) && (((File) resource).exists()))
-				type = ResourceTools.getScriptType((File) resource);
+				type = scriptService.getScriptType(resource.toString());
 
 			else if (resource instanceof URI)
-				type = ResourceTools.getScriptType(resource.toString());
+				type = scriptService.getScriptType(resource.toString());
 
 			// TODO get content type from raw file data (read file)
 		}

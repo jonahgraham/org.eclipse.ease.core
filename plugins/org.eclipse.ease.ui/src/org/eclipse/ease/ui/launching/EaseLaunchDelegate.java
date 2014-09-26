@@ -131,7 +131,7 @@ public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, IL
 		final ILaunchConfigurationType type = manager.getLaunchConfigurationType(LAUNCH_CONFIGURATION_ID);
 
 		// try to find existing configurations using the same file
-		String resourceLocation = ResourceTools.toLocation(resource);
+		String resourceLocation = ResourceTools.toAbsoluteLocation(resource, null);
 		try {
 			for (final ILaunchConfiguration configuration : manager.getLaunchConfigurations(type)) {
 				try {
@@ -183,10 +183,11 @@ public class EaseLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, IL
 					final ILaunchConfigurationType type = manager.getLaunchConfigurationType(LAUNCH_CONFIGURATION_ID);
 
 					final ILaunchConfigurationWorkingCopy configuration = type.newInstance(null, file.getName());
-					configuration.setAttribute(LaunchConstants.FILE_LOCATION, ResourceTools.toLocation(file));
+					configuration.setAttribute(LaunchConstants.FILE_LOCATION, ResourceTools.toAbsoluteLocation(file, null));
 
 					// find a valid engine
-					Collection<EngineDescription> engines = ResourceTools.getScriptType((IFile) file).getEngines();
+					final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+					Collection<EngineDescription> engines = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(file, null)).getEngines();
 					if (engines.isEmpty())
 						// TODO use a better way to bail out and use the direct file launch
 						throw new CoreException(Status.CANCEL_STATUS);

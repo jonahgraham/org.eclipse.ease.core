@@ -21,14 +21,9 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.content.IContentDescription;
-import org.eclipse.ease.service.IScriptService;
-import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.urlhandler.WorkspaceURLConnection;
-import org.eclipse.ui.PlatformUI;
 
 public final class ResourceTools {
 
@@ -240,40 +235,25 @@ public final class ResourceTools {
 		return null;
 	}
 
-	public static String toLocation(final IResource resource) {
-		return WorkspaceURLConnection.SCHEME + ":/" + resource.getFullPath().toPortableString();
-	}
+	public static String toAbsoluteLocation(final Object location, final Object parent) {
+		// try to resolve file
+		Object file = resolveFile(location, parent, true);
+		if (file instanceof IResource)
+			return WorkspaceURLConnection.SCHEME + ":/" + ((IResource) file).getFullPath().toPortableString();
 
-	public static ScriptType getScriptType(final IFile file) {
-		// resolve by content type
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		try {
-			IContentDescription contentDescription = file.getContentDescription();
-			if (contentDescription != null)
-				return scriptService.getScriptType(contentDescription.getContentType());
+		else if (file instanceof File)
+			return ((File) file).toURI().toASCIIString();
 
-		} catch (CoreException e) {
-		}
+		// try to resolve folder
+		Object folder = resolveFolder(location, parent, true);
+		if (folder instanceof IResource)
+			return WorkspaceURLConnection.SCHEME + ":/" + ((IResource) folder).getFullPath().toPortableString();
 
-		// did not work, resolve by extension
-		return scriptService.getScriptType(file.getFileExtension());
-	}
+		else if (folder instanceof File)
+			return ((File) file).toURI().toASCIIString();
 
-	public static ScriptType getScriptType(final File file) {
-		// resolve by extension
-		return getScriptType(file.getName());
-	}
-
-	public static ScriptType getScriptType(final String location) {
-		// resolve by extension
-		if (location.contains(".")) {
-			String extension = location.substring(location.lastIndexOf('.') + 1);
-
-			final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-			return scriptService.getScriptType(extension);
-		}
-
-		return null;
+		// nothing to resolve, return location
+		return location.toString();
 	}
 
 	/**
