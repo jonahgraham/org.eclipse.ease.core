@@ -426,6 +426,27 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		return Collections.unmodifiableMap(fBufferedVariables);
 	}
 
+	public static final String[] extractArguments(final String arguments) {
+		ArrayList<String> args = new ArrayList<String>();
+		if (arguments != null) {
+			int index = 0;
+			while (index < arguments.length()) {
+				int endIndex = arguments.indexOf((arguments.charAt(index) == '"') ? '"' : ' ', index + 1);
+
+				if (endIndex > index) {
+					args.add(arguments.substring(index + 1, endIndex));
+					index = endIndex + 2;
+				} else {
+					// no end token, ignore and treat rest of arguments as a single arg
+					args.add(arguments.substring(index + 1));
+					index = arguments.length();
+				}
+			}
+		}
+
+		return args.toArray(new String[args.size()]);
+	}
+
 	/**
 	 * Internal version of {@link #getVariable(String)}. Only called after script engine was initialized successfully.
 	 */
