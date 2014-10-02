@@ -745,7 +745,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		}
 	}
 
-	public void setEngine(final String id) {
+	public final void setEngine(final String id) {
 		if (fScriptEngine != null) {
 			fScriptEngine.removeExecutionListener(this);
 			fScriptEngine.terminate();

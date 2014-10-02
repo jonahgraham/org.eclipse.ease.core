@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
 import org.eclipse.ease.Logger;
@@ -66,7 +67,7 @@ public class ScriptService implements IScriptService {
 		}
 	}
 
-	public static ScriptService getInstance() {
+	public synchronized static ScriptService getInstance() {
 		if (fInstance == null)
 			fInstance = new ScriptService();
 
@@ -236,11 +237,14 @@ public class ScriptService implements IScriptService {
 		try {
 			if (resource instanceof IFile) {
 				// try to resolve by content type
-				IContentType contentType = ((IFile) resource).getContentDescription().getContentType();
+				IContentDescription description = ((IFile) resource).getContentDescription();
+				if (description != null) {
+					IContentType contentType = description.getContentType();
 
-				for (ScriptType scriptType : getAvailableScriptTypes().values()) {
-					if (scriptType.getContentTypes().contains(contentType.getId()))
-						return scriptType;
+					for (ScriptType scriptType : getAvailableScriptTypes().values()) {
+						if (scriptType.getContentTypes().contains(contentType.getId()))
+							return scriptType;
+					}
 				}
 			}
 		} catch (CoreException e) {

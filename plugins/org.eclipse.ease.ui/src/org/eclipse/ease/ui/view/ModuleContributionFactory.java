@@ -29,7 +29,7 @@ import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.service.prefs.Preferences;
 
-public class ModuleContributionFactory extends AbstractContributionFactory {
+public final class ModuleContributionFactory extends AbstractContributionFactory {
 
 	private static ModuleContributionFactory fInstance = null;
 
@@ -43,7 +43,7 @@ public class ModuleContributionFactory extends AbstractContributionFactory {
 
 	/**
 	 * Get instance of this factory.
-	 * 
+	 *
 	 * @return factory instance
 	 */
 	private static ModuleContributionFactory getInstance() {
@@ -100,7 +100,7 @@ public class ModuleContributionFactory extends AbstractContributionFactory {
 			additions.addContributionItem(item.getContribution(serviceLocator), null);
 	}
 
-	private static ModulePopupMenu createPath(final HashMap<IPath, ModulePopupMenu> moduleTree, final IPath path) {
+	private static ModulePopupMenu createPath(final Map<IPath, ModulePopupMenu> moduleTree, final IPath path) {
 		if (!moduleTree.containsKey(path)) {
 			ModulePopupMenu parentMenu = createPath(moduleTree, path.removeLastSegments(1));
 			ModulePopupMenu menu = new ModulePopupMenu(path.lastSegment());

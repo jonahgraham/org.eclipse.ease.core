@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
-import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.emf.common.ui.EclipseUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -40,9 +39,6 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-
-		// we need bundle org.eclipse.ecf.filetransfer to be activated (to register URL extensions), so load something from that plug-in
-		new UserCancelledException();
 
 		mInstance = this;
 	}
