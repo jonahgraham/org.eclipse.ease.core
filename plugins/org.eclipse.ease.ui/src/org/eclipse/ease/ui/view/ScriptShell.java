@@ -363,9 +363,9 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			@Override
 			public Image getImage(final Object element) {
 				if (((Entry<?, ?>) element).getKey().toString().endsWith("()"))
-					return Activator.getImage("org.eclipse.ease.ui", "/icons/full/obj16/Method_16x16.png", true);
+					return Activator.getImage("org.eclipse.wst.jsdt.ui", "/icons/full/obj16/methpub_obj.gif", true);
 
-				return Activator.getImage("org.eclipse.ease.ui", "/icons/full/obj16/Field_16x16.png", true);
+				return Activator.getImage("org.eclipse.wst.jsdt.ui", "/icons/full/obj16/field_public_obj.gif", true);
 			}
 		});
 
