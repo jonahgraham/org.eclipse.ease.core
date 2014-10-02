@@ -19,7 +19,7 @@
 			<id>sonar</id>
 
 			<properties>
-				<sonar.exclusions>**/src-gen/**</sonar.exclusions>
+				<sonar.global.exclusions>**/src-gen/**</sonar.global.exclusions>
 			</properties>
 		</profile>
 	</profiles>
