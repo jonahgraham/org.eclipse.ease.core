@@ -164,10 +164,10 @@ public class ModuleDoclet extends Doclet {
 		String require = mainAttributes.getValue("Require-Bundle");
 
 		if ((require == null) || (require.isEmpty()))
-			mainAttributes.putValue("Require-Bundle", "org.eclipse.help;bundle-version=\"[3.6.0,4.0.0)\"");
+			mainAttributes.putValue("Require-Bundle", "org.eclipse.help;bundle-version=\"[3.5.0,4.0.0)\"");
 
 		else if (!require.contains("org.eclipse.help"))
-			mainAttributes.putValue("Require-Bundle", "org.eclipse.help;bundle-version=\"[3.6.0,4.0.0)\"," + require);
+			mainAttributes.putValue("Require-Bundle", "org.eclipse.help;bundle-version=\"[3.5.0,4.0.0)\"," + require);
 
 		else
 			// manifest contains reference to org.eclipse.help, bail out
