@@ -12,6 +12,7 @@ package org.eclipse.ease.ui.scripts.ui;
 
 import java.util.HashMap;
 
+import org.eclipse.ease.ui.handler.EditScript;
 import org.eclipse.ease.ui.handler.RenameScript;
 import org.eclipse.ease.ui.handler.RunScript;
 import org.eclipse.ease.ui.repository.IScript;
@@ -32,7 +33,7 @@ public class ScriptContextMenuEntries extends AbstractContributionFactory {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param location
 	 *            location to add factory to.
 	 */
@@ -69,14 +70,12 @@ public class ScriptContextMenuEntries extends AbstractContributionFactory {
 					// add separator
 					additions.addContributionItem(new Separator(), null);
 
-					// TODO re-implement
 					// add "edit" entry
-					// parameters.clear();
-					// parameters.put(Edit.PARAMETER_NAME, names.toString());
-					// contributionParameter.commandId = Edit.COMMAND_ID;
-					// contributionParameter.label = "Edit";
-					// contribution = new CommandContributionItem(contributionParameter);
-					// additions.addContributionItem(contribution, null);
+					parameters.clear();
+					contributionParameter.commandId = EditScript.COMMAND_ID;
+					contributionParameter.label = "Edit";
+					contribution = new CommandContributionItem(contributionParameter);
+					additions.addContributionItem(contribution, null);
 
 					// add "rename" entry
 					parameters.clear();
