@@ -10,21 +10,4 @@
 		<version>0.1.0-SNAPSHOT</version>
 		<relativePath>../../releng/org.eclipse.ease.releng</relativePath>
 	</parent>
-	
-	<profiles>
-		<profile>
-			<id>sonar</id>
-
-			<properties>
-				<sonar.global.exclusions>**/src-gen/**/*</sonar.global.exclusions>
-
-				<!-- see http://stackoverflow.com/questions/21825469/configure-sonar-sonar-issue-ignore-multicriteria-through-maven -->
-				<sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
-				
-				<!-- if/else/for/while/do statements should always use curly braces -->
-				<sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S00121</sonar.issue.ignore.multicriteria.e1.ruleKey>
-				<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
-			</properties>
-		</profile>
-	</profiles>
 </project>
