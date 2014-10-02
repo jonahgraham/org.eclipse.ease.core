@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.helpgenerator;
+ *******************************************************************************/
+package org.eclipse.ease.helpgenerator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,8 +17,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -27,12 +34,39 @@ import com.sun.javadoc.AnnotationDesc.ElementValuePair;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
 
 public class ModuleDoclet extends Doclet {
+
+	public static void main(final String[] args) {
+
+		String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
+				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
+				ModuleDoclet.class.getName(), "-docletpath",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "org.eclipse.ease.modules.platform" };
+		com.sun.tools.javadoc.Main.execute(javadocargs);
+	}
+
+	private class Overview implements Comparable<Overview> {
+		private final String fTitle;
+		private final String fLinkID;
+		private final String fDescription;
+
+		public Overview(final String title, final String linkID, final String description) {
+			fTitle = title;
+			fLinkID = linkID;
+			fDescription = description;
+		}
+
+		@Override
+		public int compareTo(final Overview arg0) {
+			return fTitle.compareTo(arg0.fTitle);
+		}
+	};
 
 	private static final String QUALIFIED_WRAP_TO_SCRIPT = "org.eclipse.ease.modules.WrapToScript";
 	private static final String WRAP_TO_SCRIPT = "WrapToScript";
@@ -61,7 +95,7 @@ public class ModuleDoclet extends Doclet {
 		return fDocletPath;
 	}
 
-	private Map<String, String> mLookupTable;
+	private Map<String, IMemento> mLookupTable;
 	private File fDocletPath;
 
 	private boolean process(final RootDoc root) {
@@ -191,10 +225,10 @@ public class ModuleDoclet extends Doclet {
 		XMLMemento memento = XMLMemento.createWriteRoot("toc");
 		memento.putString("label", "Modules");
 		memento.putString("link_to", "../org.eclipse.ease/help/scripting_book.xml#modules_anchor");
-		for (String moduleName : mLookupTable.values()) {
+		for (IMemento moduleDefinition : mLookupTable.values()) {
 			IMemento topicNode = memento.createChild("topic");
-			topicNode.putString("href", "help/module_" + escape(moduleName) + ".html");
-			topicNode.putString("label", moduleName);
+			topicNode.putString("href", "help/module_" + escape(moduleDefinition.getString("name")) + ".html");
+			topicNode.putString("label", moduleDefinition.getString("name"));
 		}
 		File targetFile = getChild(getChild(rootFolder, "help"), "modules_toc.xml");
 		writeFile(targetFile, memento.toString());
@@ -212,11 +246,13 @@ public class ModuleDoclet extends Doclet {
 				File headerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "header.txt");
 				buffer.append(readResourceFile(headerFile));
 
+				// header
 				buffer.append("\t<h1>Module ");
-				buffer.append(mLookupTable.get(clazz.qualifiedName()));
+				buffer.append(mLookupTable.get(clazz.qualifiedName()).getString("name"));
 				buffer.append("</h1>");
 				buffer.append(LINE_DELIMITER);
 
+				// class description
 				buffer.append("\t<p>");
 				final String classComment = clazz.commentText();
 				if ((classComment != null) && (!classComment.isEmpty()))
@@ -225,29 +261,37 @@ public class ModuleDoclet extends Doclet {
 				buffer.append("</p>");
 				buffer.append(LINE_DELIMITER);
 
-				// TODO add dependencies
-				buffer.append("\t<p class=\"dependencies\">");
-				buffer.append("");
-				buffer.append("</p>");
-				buffer.append(LINE_DELIMITER);
+				// constants
+				buffer.append(createConstantsSection(clazz));
 
+				// function overview
 				buffer.append(LINE_DELIMITER);
 				buffer.append("\t<h2>Function Overview</h2>");
 				buffer.append(LINE_DELIMITER);
 				buffer.append("\t<table class=\"functions\">");
 				buffer.append(LINE_DELIMITER);
+
+				List<Overview> overview = new ArrayList<Overview>();
 				for (final MethodDoc method : clazz.methods()) {
 					if (isExported(method)) {
-						buffer.append("\t\t<tr>");
-						buffer.append(LINE_DELIMITER);
-						buffer.append("\t\t\t<th><a href=\"#" + method.name() + "\">" + method.name() + "</a></th>");
-						buffer.append(LINE_DELIMITER);
-						buffer.append("\t\t\t<td>" + method.commentText() + "</td>");
-						buffer.append(LINE_DELIMITER);
-						buffer.append("\t\t</tr>");
-						buffer.append(LINE_DELIMITER);
+						overview.add(new Overview(method.name(), method.name(), method.commentText()));
+						for (String alias : getFunctionAliases(method))
+							overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>."));
 					}
 				}
+				Collections.sort(overview);
+
+				for (Overview entry : overview) {
+					buffer.append("\t\t<tr>");
+					buffer.append(LINE_DELIMITER);
+					buffer.append("\t\t\t<th><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a></th>");
+					buffer.append(LINE_DELIMITER);
+					buffer.append("\t\t\t<td>" + entry.fDescription + "</td>");
+					buffer.append(LINE_DELIMITER);
+					buffer.append("\t\t</tr>");
+					buffer.append(LINE_DELIMITER);
+				}
+
 				buffer.append("\t</table>");
 				buffer.append(LINE_DELIMITER);
 				buffer.append(LINE_DELIMITER);
@@ -282,9 +326,14 @@ public class ModuleDoclet extends Doclet {
 						buffer.append("\t<p class=\"description\">" + method.commentText() + "</p>");
 						buffer.append(LINE_DELIMITER);
 
-						String synonyms = getSynonyms(method);
-						if (!synonyms.isEmpty()) {
-							buffer.append("\t<p class=\"synonyms\">" + synonyms.replace(";", ", ") + "</p>");
+						Collection<String> aliases = getFunctionAliases(method);
+						if (!aliases.isEmpty()) {
+							buffer.append("\t<p class=\"synonyms\">");
+
+							for (String alias : aliases)
+								buffer.append(alias).append(" ");
+
+							buffer.append("</p>");
 							buffer.append(LINE_DELIMITER);
 						}
 
@@ -322,13 +371,48 @@ public class ModuleDoclet extends Doclet {
 				buffer.append(readResourceFile(footerFile));
 
 				// write document
-				File targetFile = getChild(getChild(rootFolder, "help"), "module_" + escape(mLookupTable.get(clazz.qualifiedName()) + ".html"));
+				File targetFile = getChild(getChild(rootFolder, "help"), "module_"
+						+ escape(mLookupTable.get(clazz.qualifiedName()).getString("name") + ".html"));
 				writeFile(targetFile, buffer.toString());
 				createdFiles = true;
 			}
 		}
 
 		return createdFiles;
+	}
+
+	private StringBuffer createConstantsSection(final ClassDoc clazz) {
+		StringBuffer buffer = new StringBuffer();
+		HashMap<String, String> constants = new HashMap<String, String>();
+		for (final FieldDoc field : clazz.fields()) {
+			if (isExported(field))
+				constants.put(field.name(), field.commentText());
+		}
+
+		if (!constants.isEmpty()) {
+			buffer.append(LINE_DELIMITER);
+			buffer.append("\t<h2>Constants</h2>");
+			buffer.append(LINE_DELIMITER);
+			buffer.append("\t<table class=\"constants\">");
+			buffer.append(LINE_DELIMITER);
+
+			for (Entry<String, String> entry : constants.entrySet()) {
+				buffer.append("\t\t<tr>");
+				buffer.append(LINE_DELIMITER);
+				buffer.append("\t\t\t<th>" + entry.getKey() + "</th>");
+				buffer.append(LINE_DELIMITER);
+				buffer.append("\t\t\t<td>" + entry.getValue() + "</td>");
+				buffer.append(LINE_DELIMITER);
+				buffer.append("\t\t</tr>");
+				buffer.append(LINE_DELIMITER);
+			}
+
+			buffer.append("\t</table>");
+			buffer.append(LINE_DELIMITER);
+			buffer.append(LINE_DELIMITER);
+		}
+
+		return buffer;
 	}
 
 	private String createLink(final String qualifiedTypeName) {
@@ -340,17 +424,23 @@ public class ModuleDoclet extends Doclet {
 		return qualifiedTypeName;
 	}
 
-	private String getSynonyms(final MethodDoc method) {
-		for (AnnotationDesc annotation : method.annotations()) {
-			if (isWrapToScriptAnnotation(annotation)) {
-				for (ElementValuePair pair : annotation.elementValues()) {
-					if ("alias".equals(pair.element().name()))
-						return pair.value().toString();
+	private Collection<String> getFunctionAliases(final MethodDoc method) {
+		Collection<String> aliases = new HashSet<String>();
+		AnnotationDesc annotation = getWrapAnnotation(method);
+		if (annotation != null) {
+			for (ElementValuePair pair : annotation.elementValues()) {
+				if ("alias".equals(pair.element().name())) {
+					String candidates = pair.value().toString();
+					candidates = candidates.substring(1, candidates.length() - 1);
+					for (String token : candidates.split("[,;]")) {
+						if (!token.trim().isEmpty())
+							aliases.add(token.trim());
+					}
 				}
 			}
 		}
 
-		return "";
+		return aliases;
 	}
 
 	private static void writeFile(final File file, final String data) throws IOException {
@@ -371,7 +461,7 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private void createModuleLookupTable(final File projectRoot) {
-		mLookupTable = new HashMap<String, String>();
+		mLookupTable = new HashMap<String, IMemento>();
 
 		// read plugin.xml
 		final File pluginXML = getChild(projectRoot, "plugin.xml");
@@ -381,14 +471,14 @@ public class ModuleDoclet extends Doclet {
 			for (final IMemento extensionNode : root.getChildren("extension")) {
 				if ("org.eclipse.ease.modules".equals(extensionNode.getString("point"))) {
 					for (final IMemento instanceNode : extensionNode.getChildren("module"))
-						mLookupTable.put(instanceNode.getString("class"), instanceNode.getString("name"));
+						mLookupTable.put(instanceNode.getString("class"), instanceNode);
 				}
 			}
 		} catch (final Exception e) {
 		}
 	}
 
-	private String findComment(final MethodDoc method, final String name) {
+	private static String findComment(final MethodDoc method, final String name) {
 
 		for (final ParamTag paramTags : method.paramTags()) {
 			if (name.equals(paramTags.parameterName()))
@@ -398,13 +488,26 @@ public class ModuleDoclet extends Doclet {
 		return "";
 	}
 
-	private boolean isExported(final MethodDoc method) {
-		for (final AnnotationDesc annotation : method.annotations()) {
+	private static boolean isExported(final FieldDoc field) {
+		for (final AnnotationDesc annotation : field.annotations()) {
 			if (isWrapToScriptAnnotation(annotation))
 				return true;
 		}
 
 		return false;
+	}
+
+	private static boolean isExported(final MethodDoc method) {
+		return getWrapAnnotation(method) != null;
+	}
+
+	private static AnnotationDesc getWrapAnnotation(final MethodDoc method) {
+		for (final AnnotationDesc annotation : method.annotations()) {
+			if (isWrapToScriptAnnotation(annotation))
+				return annotation;
+		}
+
+		return null;
 	}
 
 	private static boolean isWrapToScriptAnnotation(final AnnotationDesc annotation) {
