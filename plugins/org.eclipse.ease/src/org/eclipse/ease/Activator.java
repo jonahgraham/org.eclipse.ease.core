@@ -10,8 +10,15 @@
  *******************************************************************************/
 package org.eclipse.ease;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ecf.filetransfer.FileTransferInfo;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 public class Activator extends AbstractUIPlugin {
@@ -45,5 +52,31 @@ public class Activator extends AbstractUIPlugin {
 		fInstance = null;
 
 		super.stop(context);
+	}
+
+	/**
+	 * Get {@link ImageDescriptor} for a given bundle/path location.
+	 * 
+	 * @param bundleID
+	 * @param path
+	 * @return
+	 */
+	public static ImageDescriptor getImageDescriptor(final String bundleID, final String path) {
+		assert (bundleID != null) : "No bundle defined";
+		assert (path != null) : "No path defined";
+
+		// if the bundle is not ready then there is no image
+		final Bundle bundle = Platform.getBundle(bundleID);
+		final int bundleState = bundle.getState();
+		if ((bundleState != Bundle.ACTIVE) && (bundleState != Bundle.STARTING) && (bundleState != Bundle.RESOLVED))
+			return null;
+
+		// look for the image (this will check both the plugin and fragment folders)
+		final URL imagePath = FileLocator.find(bundle, new Path(path), null);
+
+		if (imagePath != null)
+			return ImageDescriptor.createFromURL(imagePath);
+
+		return null;
 	}
 }

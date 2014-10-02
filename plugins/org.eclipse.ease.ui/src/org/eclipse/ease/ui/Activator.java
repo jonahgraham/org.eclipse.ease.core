@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
-import org.eclipse.ecf.filetransfer.FileTransferInfo;
 import org.eclipse.ecf.filetransfer.UserCancelledException;
 import org.eclipse.emf.common.ui.EclipseUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -44,7 +43,7 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 
 		// we need bundle org.eclipse.ecf.filetransfer to be activated (to register URL extensions), so load something from that plug-in
 		new UserCancelledException();
-		
+
 		mInstance = this;
 	}
 
@@ -57,7 +56,7 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in relative path
-	 * 
+	 *
 	 * @param path
 	 *            the path
 	 * @return the image descriptor
@@ -110,10 +109,10 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 
 	// FIXME seems to be obsolete
 	/**
-	 * 
+	 *
 	 * This method returns an <code>org.eclipse.swt.graphics.Image</code> identified by its pluginId and iconPath.<BR>
 	 */
-	public static Image getPluginIconImage(String pluginId, String iconPath) {
+	public static Image getPluginIconImage(final String pluginId, final String iconPath) {
 		String key = pluginId + iconPath;
 		ImageRegistry registry = getDefault().getImageRegistry();
 		Image image = registry.get(key);
@@ -125,11 +124,11 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 		return image;
 	}
 
-	public static Image getLocalPluginIconImage(String iconPath) {
+	public static Image getLocalPluginIconImage(final String iconPath) {
 		return getPluginIconImage(PLUGIN_ID, iconPath);
 	}
 
-	public static ImageDescriptor getLocalImageDescriptor(String iconPath) {
+	public static ImageDescriptor getLocalImageDescriptor(final String iconPath) {
 		return getImageDescriptor(PLUGIN_ID, iconPath);
 	}
 

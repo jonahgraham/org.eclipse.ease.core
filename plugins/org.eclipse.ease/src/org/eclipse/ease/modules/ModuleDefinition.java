@@ -75,7 +75,7 @@ public class ModuleDefinition {
 
 	/**
 	 * Get a collection of module dependencies. Collection contains ids of required modules.
-	 * 
+	 *
 	 * @return collection of required module ids
 	 */
 	public Collection<String> getDependencies() {
@@ -89,7 +89,7 @@ public class ModuleDefinition {
 
 	/**
 	 * Get the class definition of the provided module. Will not create an instance of this class, but look up the class definition directly.
-	 * 
+	 *
 	 * @return class definition of module contribution
 	 */
 	public Class<?> getModuleClass() {
@@ -113,6 +113,11 @@ public class ModuleDefinition {
 		return null;
 	}
 
+	/**
+	 * Create a new instance of the module.
+	 *
+	 * @return module instance
+	 */
 	public Object createModuleInstance() {
 		try {
 			return fConfig.createExecutableExtension(CLASS);
@@ -123,6 +128,12 @@ public class ModuleDefinition {
 		return null;
 	}
 
+	/**
+	 * Get visibility status of module. Modules have a default visibility stored in its definition. Users may override this setting using preferences. Invisible
+	 * modules may still be used in scripts. However they are not visible in the UI.
+	 *
+	 * @return <code>true</code> when visible
+	 */
 	public boolean isVisible() {
 		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
 		Preferences node = prefs.node("modules");
@@ -130,8 +141,29 @@ public class ModuleDefinition {
 	}
 
 	/**
+	 * Sets visibility status of module in preferences
+	 *
+	 * @param visible
+	 *            <code>true</code> to make visible
+	 */
+	public void setVisible(final boolean visible) {
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+		Preferences node = prefs.node("modules");
+		node.putBoolean(getPath().toString(), visible);
+	}
+
+	/**
+	 * Reset visibility to defaults.
+	 */
+	public void resetVisible() {
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+		Preferences node = prefs.node("modules");
+		node.remove(getPath().toString());
+	}
+
+	/**
 	 * Get the full module name. The full name consists of optional parent categories and the module name itself.
-	 * 
+	 *
 	 * @return absolute path of this module definition
 	 */
 	public IPath getPath() {
