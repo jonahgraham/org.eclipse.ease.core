@@ -22,11 +22,14 @@
 				<sonar.global.exclusions>file:**/src-gen/**/*</sonar.global.exclusions>
 
 				<!-- see http://stackoverflow.com/questions/21825469/configure-sonar-sonar-issue-ignore-multicriteria-through-maven -->
-				<sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
+				<sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
 				
 				<!-- if/else/for/while/do statements should always use curly braces -->
 				<sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S00121</sonar.issue.ignore.multicriteria.e1.ruleKey>
-				<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
+				<sonar.issue.ignore.multicriteria.e1.resourceKey>file:**/*</sonar.issue.ignore.multicriteria.e1.resourceKey>
+
+				<sonar.issue.ignore.multicriteria.e2.ruleKey>rule:squid:S00121</sonar.issue.ignore.multicriteria.e2.ruleKey>
+				<sonar.issue.ignore.multicriteria.e2.resourceKey>file:**/*</sonar.issue.ignore.multicriteria.e2.resourceKey>
 			</properties>
 		</profile>
 	</profiles>
