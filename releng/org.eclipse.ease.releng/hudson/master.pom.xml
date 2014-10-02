@@ -13,4 +13,15 @@
 		<module>ease.core</module>
 		<module>ease.modules</module>
 	</modules>
+
+	<profiles>
+		<profile>
+			<id>sonar</id>
+
+			<properties>
+				<sonar.exclusions>**/src-gen/**</sonar.exclusions>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>  

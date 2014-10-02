@@ -10,15 +10,4 @@
 		<version>0.1.0-SNAPSHOT</version>
 		<relativePath>../../releng/org.eclipse.ease.releng</relativePath>
 	</parent>
-
-	<profiles>
-		<profile>
-			<id>sonar</id>
-
-			<properties>
-				<sonar.exclusions>src-gen</sonar.exclusions>
-			</properties>
-		</profile>
-	</profiles>
-
 </project>
