@@ -10,7 +10,12 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.view;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -34,12 +39,21 @@ import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
@@ -48,16 +62,22 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -145,6 +165,14 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	private AutoFocus fAutoFocusListener = null;
 
 	private ContentProposalAdapter fContentAssistAdapter = null;
+	private TabItem fTabScripts;
+	private TabItem ftabItem_1;
+	private TabItem ftabItem_2;
+	private Text ftext;
+	private TabItem fTabVariables;
+	private Composite fcomposite;
+	private Tree ftree;
+	private TreeViewer fVariablesTree;
 
 	/**
 	 * Default constructor.
@@ -170,8 +198,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	public final void init(final IViewSite site, final IMemento memento) throws PartInitException {
 		super.init(site, memento);
 
-		// cannot restore command history right now, do this in
-		// createPartControl()
+		// cannot restore command history right now, do this in createPartControl()
 		fInitMemento = memento;
 	}
 
@@ -207,16 +234,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			fOutputText.setFont(fResourceManager.createFont(FontDescriptor.createFrom("Monospace", 10, SWT.NONE)));
 
 		fOutputText.setEditable(false);
-		fOutputText.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseUp(final MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDown(final MouseEvent e) {
-			}
-
+		fOutputText.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(final MouseEvent e) {
 				// copy line under cursor in input box
@@ -229,8 +247,140 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			}
 		});
 
-		fScriptComposite = new ScriptComposite(this, getSite(), fSashForm, SWT.NONE);
+		TabFolder tabFolder = new TabFolder(fSashForm, SWT.BOTTOM);
+
+		fTabScripts = new TabItem(tabFolder, SWT.NONE);
+		fTabScripts.setText("Scripts");
+		fScriptComposite = new ScriptComposite(this, getSite(), tabFolder, SWT.NONE);
 		fScriptComposite.setEngine(fScriptEngine.getDescription().getID());
+		fTabScripts.setControl(fScriptComposite);
+
+		fTabVariables = new TabItem(tabFolder, SWT.NONE);
+		fTabVariables.setText("Variables");
+
+		fcomposite = new Composite(tabFolder, SWT.NONE);
+		fTabVariables.setControl(fcomposite);
+		TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
+		fcomposite.setLayout(treeColumnLayout);
+
+		fVariablesTree = new TreeViewer(fcomposite, SWT.BORDER);
+		ftree = fVariablesTree.getTree();
+		ftree.setHeaderVisible(true);
+		ftree.setLinesVisible(true);
+
+		fVariablesTree.setFilters(new ViewerFilter[] { new ViewerFilter() {
+
+			@Override
+			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
+				return !((Entry<?, ?>) element).getValue().getClass().getName().startsWith("org.mozilla.javascript.gen");
+			}
+		}, new ViewerFilter() {
+
+			@Override
+			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
+				Object name = ((Entry<?, ?>) element).getKey();
+				if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name)) || ("equals()".equals(name))
+						|| ("getClass()".equals(name)) || ("hashCode()".equals(name)) || ("toString()".equals(name)))
+					return false;
+
+				return true;
+			}
+		} });
+
+		fVariablesTree.setComparator(new ViewerComparator() {
+			@Override
+			public int category(final Object element) {
+				return (((Entry<?, ?>) element).getKey().toString().endsWith("()")) ? 2 : 1;
+			}
+		});
+
+		fVariablesTree.setContentProvider(new ITreeContentProvider() {
+
+			@Override
+			public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
+			}
+
+			@Override
+			public void dispose() {
+			}
+
+			@Override
+			public boolean hasChildren(final Object element) {
+				return getChildren(element).length > 0;
+			}
+
+			@Override
+			public Object getParent(final Object element) {
+				return null;
+			}
+
+			@Override
+			public Object[] getElements(final Object inputElement) {
+				return getScriptEngine().getVariables().entrySet().toArray();
+			}
+
+			@Override
+			public Object[] getChildren(final Object parentElement) {
+				Object parent = ((Entry<?, ?>) parentElement).getValue();
+
+				// use reflection to resolve elements
+				Map<String, Object> children = new HashMap<String, Object>();
+
+				if (!((Entry<?, ?>) parentElement).getKey().toString().endsWith("()")) {
+					// fields
+					for (Field field : parent.getClass().getFields()) {
+						try {
+							children.put(field.getName(), field.get(parent));
+						} catch (Exception e) {
+							// ignore, try next
+						}
+					}
+
+					// methods
+					for (Method method : parent.getClass().getMethods()) {
+						try {
+							children.put(method.getName() + "()", method.getReturnType().getName());
+						} catch (Exception e) {
+							// ignore, try next
+						}
+					}
+				}
+
+				return children.entrySet().toArray();
+			}
+		});
+
+		TreeViewerColumn treeViewerColumn = new TreeViewerColumn(fVariablesTree, SWT.NONE);
+		TreeColumn column = treeViewerColumn.getColumn();
+		treeColumnLayout.setColumnData(column, new ColumnWeightData(1));
+		column.setText("Variable");
+		treeViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				return ((Entry<?, ?>) element).getKey().toString();
+			}
+
+			@Override
+			public Image getImage(final Object element) {
+				if (((Entry<?, ?>) element).getKey().toString().endsWith("()"))
+					return Activator.getImage("org.eclipse.ease.ui", "/icons/full/obj16/Method_16x16.png", true);
+
+				return Activator.getImage("org.eclipse.ease.ui", "/icons/full/obj16/Field_16x16.png", true);
+			}
+		});
+
+		TreeViewerColumn treeViewerColumn2 = new TreeViewerColumn(fVariablesTree, SWT.NONE);
+		TreeColumn column2 = treeViewerColumn2.getColumn();
+		treeColumnLayout.setColumnData(column2, new ColumnWeightData(1));
+		column2.setText("Content");
+		treeViewerColumn2.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(final Object element) {
+				return ((Entry<?, ?>) element).getValue().toString();
+			}
+		});
+
+		fVariablesTree.setInput(this);
 
 		fSashForm.setWeights(fSashWeights);
 		fInputCombo = new Combo(parent, SWT.NONE);
@@ -561,14 +711,21 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 					if (fContentAssistAdapter != null)
 						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script.getCode());
 
+					// update variables
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							fVariablesTree.refresh();
+						}
+					});
 				}
 
 				if (fKeepCommand) {
 					final String code = script.getCode();
 					Display.getDefault().asyncExec(new Runnable() {
-
 						@Override
 						public void run() {
+
 							if (!fInputCombo.isDisposed()) {
 								fInputCombo.setText(code);
 								fInputCombo.setSelection(new Point(0, code.length()));
