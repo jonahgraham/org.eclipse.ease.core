@@ -19,6 +19,7 @@
 			<id>sonar</id>
 
 			<properties>
+				<sonar.exclusions>**/src-gen/**/*</sonar.exclusions>
 				<sonar.global.exclusions>**/src-gen/**/*</sonar.global.exclusions>
 
 				<!-- see http://stackoverflow.com/questions/21825469/configure-sonar-sonar-issue-ignore-multicriteria-through-maven -->
