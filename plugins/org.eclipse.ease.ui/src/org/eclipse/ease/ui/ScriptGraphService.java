@@ -4,7 +4,7 @@
  *   are made available under the terms of the Eclipse Public License v1.0
  *   which accompanies this distribution, and is available at
  *   http://www.eclipse.org/legal/epl-v10.html
- *  
+ *
  *   Contributors:
  *       Arthur Daussy - initial implementation
  */
@@ -37,11 +37,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
-
 public class ScriptGraphService implements IStoredScriptListener {
 
 	private static class SingletonHolder {
-
 		public static ScriptGraphService INSTANCE = new ScriptGraphService();
 	}
 
@@ -49,115 +47,102 @@ public class ScriptGraphService implements IStoredScriptListener {
 		return SingletonHolder.INSTANCE;
 	}
 
+	private Root fRoot = null;
 
-	protected ScriptGraphService() {
-	}
-
-	private Root root = null;
-
-	private ResourceSet resourceSet;
-
+	private ResourceSet fResourceSet;
 
 	/**
 	 * @return the resourceSet
 	 */
 	public ResourceSet getResourceSet() {
-		if(resourceSet == null) {
+		if (fResourceSet == null) {
 			init();
 		}
-		return resourceSet;
+		return fResourceSet;
 	}
-
 
 	public Root getScriptGraph() {
-		if(root == null) {
+		if (fRoot == null) {
 			init();
 		}
-		return root;
+		return fRoot;
 	}
-
 
 	protected void init() {
 
 		IStoredScriptService.INSTANCE.addListener(this);
-		resourceSet = new ResourceSetImpl();
+		fResourceSet = new ResourceSetImpl();
 		ResourceImpl r = new ResourceImpl();
-		resourceSet.getResources().add(r);
-		root = ScriptuigraphFactory.eINSTANCE.createRoot();
-		r.getContents().add(root);
+		fResourceSet.getResources().add(r);
+		fRoot = ScriptuigraphFactory.eINSTANCE.createRoot();
+		r.getContents().add(fRoot);
 		Set<IStoredScript> storeScripts = IStoredScriptService.INSTANCE.getStoredScript();
-		for(IStoredScript s : storeScripts) {
+		for (IStoredScript s : storeScripts) {
 			addUIScript(s);
 		}
-
 	}
 
-	public Node getNodeFromFragment(String fragment) {
+	public Node getNodeFromFragment(final String fragment) {
 		Resource resource = getGraphResource();
-		if(resource != null) {
+		if (resource != null) {
 			EObject eObject = resource.getEObject(fragment);
-			if(eObject instanceof Node) {
-				return (Node)eObject;
+			if (eObject instanceof Node) {
+				return (Node) eObject;
 			}
 		}
 		return null;
 	}
 
-	public String getNodeFragment(Node n) {
+	public String getNodeFragment(final Node n) {
 		return getGraphResource().getURIFragment(n);
 	}
 
-
 	protected Resource getGraphResource() {
-		return resourceSet.getResources().get(0);
+		return fResourceSet.getResources().get(0);
 	}
 
-
-
-	private Map<IStoredScript, StoredScriptUI> map = new HashMap<IStoredScript, StoredScriptUI>();
+	private final Map<IStoredScript, StoredScriptUI> map = new HashMap<IStoredScript, StoredScriptUI>();
 
 	@Override
-	public void scriptChange(Notification scriptNotif) {
+	public void scriptChange(final Notification scriptNotif) {
 		Object notifier = scriptNotif.getNotifier();
-		if(notifier instanceof StoredScriptRegistry) {
-			if(StoredscriptPackage.Literals.STORED_SCRIPT_REGISTRY__SCRIPTS.equals(scriptNotif.getFeature())) {
-				if(Notification.ADD == scriptNotif.getEventType()) {
-					addUIScript((IStoredScript)scriptNotif.getNewValue());
-				} else if(Notification.REMOVE == scriptNotif.getEventType()) {
-					removeUIScript((IStoredScript)scriptNotif.getOldValue());
-				} else if(Notification.REMOVE_MANY == scriptNotif.getEventType()) {
-					Collection<IStoredScript> toRemove = (Collection<IStoredScript>)scriptNotif.getOldValue();
-					for(IStoredScript script : toRemove) {
+		if (notifier instanceof StoredScriptRegistry) {
+			if (StoredscriptPackage.Literals.STORED_SCRIPT_REGISTRY__SCRIPTS.equals(scriptNotif.getFeature())) {
+				if (Notification.ADD == scriptNotif.getEventType()) {
+					addUIScript((IStoredScript) scriptNotif.getNewValue());
+				} else if (Notification.REMOVE == scriptNotif.getEventType()) {
+					removeUIScript((IStoredScript) scriptNotif.getOldValue());
+				} else if (Notification.REMOVE_MANY == scriptNotif.getEventType()) {
+					Collection<IStoredScript> toRemove = (Collection<IStoredScript>) scriptNotif.getOldValue();
+					for (IStoredScript script : toRemove) {
 						removeUIScript(script);
 					}
 
-				} else if(Notification.ADD_MANY == scriptNotif.getEventType()) {
-					Collection<IStoredScript> toRemove = (Collection<IStoredScript>)scriptNotif.getOldValue();
-					for(IStoredScript script : toRemove) {
+				} else if (Notification.ADD_MANY == scriptNotif.getEventType()) {
+					Collection<IStoredScript> toRemove = (Collection<IStoredScript>) scriptNotif.getOldValue();
+					for (IStoredScript script : toRemove) {
 						addUIScript(script);
 					}
 
 				}
 			}
-		} else if(notifier instanceof ScriptMetadata) {
-			ScriptMetadata notif = (ScriptMetadata)notifier;
-			if(StoredscriptPackage.Literals.SCRIPT_METADATA__VALUE.equals(scriptNotif.getFeature())) {
-				if(Notification.SET == scriptNotif.getEventType()) {
+		} else if (notifier instanceof ScriptMetadata) {
+			ScriptMetadata notif = (ScriptMetadata) notifier;
+			if (StoredscriptPackage.Literals.SCRIPT_METADATA__VALUE.equals(scriptNotif.getFeature())) {
+				if (Notification.SET == scriptNotif.getEventType()) {
 					IStoredScript script = notif.getScript();
-					if(IUIMetadata.MENU_METADATA.equals(notif.getKey())) {
+					if (IUIMetadata.MENU_METADATA.equals(notif.getKey())) {
 						removeUIScript(script);
 						addUIScript(script);
 					}
 				}
 			}
 		}
-
-
 	}
 
-	private void removeUIScript(IStoredScript script) {
+	private void removeUIScript(final IStoredScript script) {
 		StoredScriptUI node2 = map.get(script);
-		if(node2 == null) {
+		if (node2 == null) {
 			Logger.logError("No UI element for " + script.getUri());
 			return;
 		}
@@ -165,8 +150,8 @@ public class ScriptGraphService implements IStoredScriptListener {
 		map.remove(script);
 	}
 
-	private void addUIScript(IStoredScript script) {
-		if(script == null) {
+	private void addUIScript(final IStoredScript script) {
+		if (script == null) {
 			Logger.logError("Script not found in registry");
 		}
 		List<String> menus = UIMetadataUtils.getMenu(script);
@@ -176,9 +161,4 @@ public class ScriptGraphService implements IStoredScriptListener {
 		node.setName(path.get(path.size() - 1));
 		map.put(script, node);
 	}
-
-
-
-
-
 }

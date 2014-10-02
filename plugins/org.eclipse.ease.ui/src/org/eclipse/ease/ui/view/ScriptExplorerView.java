@@ -24,7 +24,7 @@ public class ScriptExplorerView extends ViewPart {
 	}
 
 	public static final String ID = "org.eclipse.ease.ui.view.ScriptExplorerView"; //$NON-NLS-1$
-	private ScriptComposite scriptComposite;
+	private ScriptComposite fScriptComposite;
 
 	/**
 	 * Create contents of the view part.
@@ -35,8 +35,8 @@ public class ScriptExplorerView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		scriptComposite = new ScriptComposite(null, getSite(), parent, SWT.NONE);
-		scriptComposite.setDoubleClickListener(new IDoubleClickListener() {
+		fScriptComposite = new ScriptComposite(null, getSite(), parent, SWT.NONE);
+		fScriptComposite.setDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
@@ -48,6 +48,6 @@ public class ScriptExplorerView extends ViewPart {
 
 	@Override
 	public void setFocus() {
-		scriptComposite.setFocus();
+		fScriptComposite.setFocus();
 	}
 }

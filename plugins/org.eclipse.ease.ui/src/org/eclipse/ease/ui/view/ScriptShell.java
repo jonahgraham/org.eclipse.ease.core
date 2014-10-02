@@ -72,33 +72,33 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 	public static final String VIEW_ID = "org.eclipse.ease.views.scriptShell";
 
-	private SashForm sashForm;
-
 	private static final String XML_HISTORY_NODE = "history";
 
-	protected static final int TYPE_ERROR = 1;
+	private static final int TYPE_ERROR = 1;
 
-	protected static final int TYPE_OUTPUT = 2;
+	private static final int TYPE_OUTPUT = 2;
 
-	protected static final int TYPE_RESULT = 3;
+	private static final int TYPE_RESULT = 3;
 
 	private static final int TYPE_COMMAND = 4;
 
-	private Combo mInputCombo;
+	private SashForm fSashForm;
 
-	private StyledText mOutputText;
+	private Combo fInputCombo;
 
-	private boolean mScrollLock = false;
+	private StyledText fOutputText;
 
-	private boolean mPrintLock = false;
+	private boolean fScrollLock = false;
 
-	private LocalResourceManager mResourceManager = null;
+	private boolean fPrintLock = false;
 
-	private int[] mSashWeights = new int[] { 70, 30 };
+	private LocalResourceManager fResourceManager = null;
+
+	private int[] fSashWeights = new int[] { 70, 30 };
 
 	private IScriptEngine fScriptEngine;
 
-	private IMemento mInitMemento;
+	private IMemento fInitMemento;
 
 	private ScriptComposite fScriptComposite;
 
@@ -125,19 +125,19 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 				final Clipboard clipboard = new Clipboard(Display.getDefault());
 				final Object content = clipboard.getContents(TextTransfer.getInstance());
 				if (content != null)
-					mInputCombo.setText(mInputCombo.getText() + content.toString());
+					fInputCombo.setText(fInputCombo.getText() + content.toString());
 
-				mInputCombo.setFocus();
-				mInputCombo.setSelection(new Point(mInputCombo.getText().length(), mInputCombo.getText().length()));
+				fInputCombo.setFocus();
+				fInputCombo.setSelection(new Point(fInputCombo.getText().length(), fInputCombo.getText().length()));
 			}
 		}
 
 		@Override
 		public void keyPressed(final KeyEvent e) {
 			if (!((e.keyCode == 'c') && ((e.stateMask & SWT.CONTROL) != 0)) && (e.keyCode != SWT.CONTROL)) {
-				mInputCombo.setText(mInputCombo.getText() + e.character);
-				mInputCombo.setFocus();
-				mInputCombo.setSelection(new Point(mInputCombo.getText().length(), mInputCombo.getText().length()));
+				fInputCombo.setText(fInputCombo.getText() + e.character);
+				fInputCombo.setFocus();
+				fInputCombo.setSelection(new Point(fInputCombo.getText().length(), fInputCombo.getText().length()));
 			}
 		}
 	}
@@ -172,13 +172,13 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		// cannot restore command history right now, do this in
 		// createPartControl()
-		mInitMemento = memento;
+		fInitMemento = memento;
 	}
 
 	@Override
 	public final void saveState(final IMemento memento) {
 		// save command history
-		for (final String item : mInputCombo.getItems())
+		for (final String item : fInputCombo.getItems())
 			memento.createChild(XML_HISTORY_NODE).putTextData(item);
 
 		super.saveState(memento);
@@ -188,26 +188,26 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	public final void createPartControl(final Composite parent) {
 
 		// setup resource manager
-		mResourceManager = new LocalResourceManager(JFaceResources.getResources(), parent);
+		fResourceManager = new LocalResourceManager(JFaceResources.getResources(), parent);
 
 		// setup layout
 		parent.setLayout(new GridLayout());
 
-		sashForm = new SashForm(parent, SWT.NONE);
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		fSashForm = new SashForm(parent, SWT.NONE);
+		fSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		mOutputText = new StyledText(sashForm, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER);
+		fOutputText = new StyledText(fSashForm, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER);
 
 		// set monospaced font
 		final Object os = Platform.getOS();
 		if ("win32".equals(os))
-			mOutputText.setFont(mResourceManager.createFont(FontDescriptor.createFrom("Courier New", 10, SWT.NONE)));
+			fOutputText.setFont(fResourceManager.createFont(FontDescriptor.createFrom("Courier New", 10, SWT.NONE)));
 
 		else if ("linux".equals(os))
-			mOutputText.setFont(mResourceManager.createFont(FontDescriptor.createFrom("Monospace", 10, SWT.NONE)));
+			fOutputText.setFont(fResourceManager.createFont(FontDescriptor.createFrom("Monospace", 10, SWT.NONE)));
 
-		mOutputText.setEditable(false);
-		mOutputText.addMouseListener(new MouseListener() {
+		fOutputText.setEditable(false);
+		fOutputText.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseUp(final MouseEvent e) {
@@ -220,48 +220,48 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			@Override
 			public void mouseDoubleClick(final MouseEvent e) {
 				// copy line under cursor in input box
-				String selected = mOutputText.getLine(mOutputText.getLineIndex(e.y));
+				String selected = fOutputText.getLine(fOutputText.getLineIndex(e.y));
 				if (!selected.isEmpty()) {
-					mInputCombo.setText(selected);
-					mInputCombo.setFocus();
-					mInputCombo.setSelection(new Point(0, selected.length()));
+					fInputCombo.setText(selected);
+					fInputCombo.setFocus();
+					fInputCombo.setSelection(new Point(0, selected.length()));
 				}
 			}
 		});
 
-		fScriptComposite = new ScriptComposite(this, getSite(), sashForm, SWT.NONE);
+		fScriptComposite = new ScriptComposite(this, getSite(), fSashForm, SWT.NONE);
 		fScriptComposite.setEngine(fScriptEngine.getDescription().getID());
 
-		sashForm.setWeights(mSashWeights);
-		mInputCombo = new Combo(parent, SWT.NONE);
-		mInputCombo.addSelectionListener(new SelectionAdapter() {
+		fSashForm.setWeights(fSashWeights);
+		fInputCombo = new Combo(parent, SWT.NONE);
+		fInputCombo.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				final String input = mInputCombo.getText();
-				mInputCombo.setText("");
+				final String input = fInputCombo.getText();
+				fInputCombo.setText("");
 
 				addToHistory(input);
 				fScriptEngine.executeAsync(input);
 			}
 		});
 
-		mInputCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		fInputCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		// restore command history
-		if (mInitMemento != null) {
-			for (final IMemento node : mInitMemento.getChildren(XML_HISTORY_NODE)) {
+		if (fInitMemento != null) {
+			for (final IMemento node : fInitMemento.getChildren(XML_HISTORY_NODE)) {
 				if (node.getTextData() != null)
-					mInputCombo.add(node.getTextData());
+					fInputCombo.add(node.getTextData());
 			}
 		}
 
 		addAutoCompletion();
 
 		// clear reference as we are done with initialization
-		mInitMemento = null;
+		fInitMemento = null;
 
 		// add DND support
-		ShellDropTarget.addDropSupport(mOutputText, this);
+		ShellDropTarget.addDropSupport(fOutputText, this);
 
 		// set view title
 		setPartName(fScriptEngine.getName() + " " + super.getTitle());
@@ -277,7 +277,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			if (fAutoFocusListener == null)
 				fAutoFocusListener = new AutoFocus();
 
-			mOutputText.addKeyListener(fAutoFocusListener);
+			fOutputText.addKeyListener(fAutoFocusListener);
 		}
 
 		// run startup commands, do this for all supported script types
@@ -295,7 +295,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		if (provider != null) {
 			try {
 				KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-				ContentProposalAdapter adapter = new ContentProposalAdapter(mInputCombo, new ComboContentAdapter(), provider, activationKey,
+				ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
 						provider.getActivationChars());
 				adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 				fContentAssistAdapter = adapter;
@@ -318,29 +318,29 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	/**
 	 * Add a command to the command history. History is stored in a ring buffer, so old entries will drop out once new entries are added. History will be
 	 * preserved over program sessions.
-	 * 
+	 *
 	 * @param input
 	 *            command to be stored to history.
 	 */
 	private void addToHistory(final String input) {
-		if (mInputCombo.getSelectionIndex() != -1)
-			mInputCombo.remove(mInputCombo.getSelectionIndex());
+		if (fInputCombo.getSelectionIndex() != -1)
+			fInputCombo.remove(fInputCombo.getSelectionIndex());
 
 		else {
 			// new element; check if we already have such an element in our history
-			for (int index = 0; index < mInputCombo.getItemCount(); index++) {
-				if (mInputCombo.getItem(index).equals(input)) {
-					mInputCombo.remove(index);
+			for (int index = 0; index < fInputCombo.getItemCount(); index++) {
+				if (fInputCombo.getItem(index).equals(input)) {
+					fInputCombo.remove(index);
 					break;
 				}
 			}
 		}
 
 		// avoid history overflows
-		while (mInputCombo.getItemCount() >= fHistoryLength)
-			mInputCombo.remove(mInputCombo.getItemCount() - 1);
+		while (fInputCombo.getItemCount() >= fHistoryLength)
+			fInputCombo.remove(fInputCombo.getItemCount() - 1);
 
-		mInputCombo.add(input, 0);
+		fInputCombo.add(input, 0);
 	}
 
 	@Override
@@ -350,48 +350,48 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			fScriptEngine.terminate();
 		}
 
-		mResourceManager.dispose();
+		fResourceManager.dispose();
 
 		super.dispose();
 	}
 
 	@Override
 	public final void setFocus() {
-		mInputCombo.setFocus();
+		fInputCombo.setFocus();
 	}
 
 	/**
 	 * Clear the output text.
 	 */
 	public final void clearOutput() {
-		mOutputText.setText("");
-		mOutputText.setStyleRanges(new StyleRange[0]);
+		fOutputText.setText("");
+		fOutputText.setStyleRanges(new StyleRange[0]);
 	}
 
 	/**
 	 * Set/unset the scroll lock feature.
-	 * 
+	 *
 	 * @param lock
 	 *            true when auto scrolling shall be locked
 	 */
 	public final void setScrollLock(final boolean lock) {
-		mScrollLock = lock;
+		fScrollLock = lock;
 	}
 
 	/**
 	 * Set/unset the print lock feature. When
-	 * 
+	 *
 	 * @param lock
 	 *            true when printing shall be disabled
 	 */
 	public final void setPrintLock(final boolean lock) {
-		mPrintLock = lock;
+		fPrintLock = lock;
 	}
 
 	/**
 	 * Print to the output pane or to console. Text in the output pane may be formatted in different styles depending on the style flag. Printing is executed if
 	 * printLock is turned off or in case of error output.
-	 * 
+	 *
 	 * @param text
 	 *            text to print
 	 * @param style
@@ -400,7 +400,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 	private void localPrint(final String message, final int style) {
 		if (message != null) {
-			if ((!mPrintLock) || (style == TYPE_ERROR)) {
+			if ((!fPrintLock) || (style == TYPE_ERROR)) {
 				// // print to output pane
 				Display.getDefault().asyncExec(new Runnable() {
 
@@ -411,19 +411,19 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 							// indent message
 							out = "\t" + message.replaceAll("\\r?\\n", "\n\t");
 
-						if (!mOutputText.isDisposed()) {
-							mOutputText.append("\n");
+						if (!fOutputText.isDisposed()) {
+							fOutputText.append("\n");
 
 							// create new style range
-							final StyleRange styleRange = getStyle(style, mOutputText.getText().length(), out.length());
+							final StyleRange styleRange = getStyle(style, fOutputText.getText().length(), out.length());
 
-							mOutputText.append(out);
-							mOutputText.setStyleRange(styleRange);
+							fOutputText.append(out);
+							fOutputText.setStyleRange(styleRange);
 
 							// scroll to end of window
-							if (!mScrollLock) {
-								mOutputText.setHorizontalPixel(0);
-								mOutputText.setTopPixel(mOutputText.getLineHeight() * mOutputText.getLineCount());
+							if (!fScrollLock) {
+								fOutputText.setHorizontalPixel(0);
+								fOutputText.setTopPixel(fOutputText.getLineHeight() * fOutputText.getLineCount());
 							}
 						}
 					}
@@ -433,7 +433,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	}
 
 	/**
-	 * 
+	 *
 	 * @param style
 	 *            style to use (see JavaScriptShell.STYLE_* constants)
 	 * @param start
@@ -450,24 +450,24 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		switch (style) {
 		case TYPE_RESULT:
-			styleRange.foreground = mResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
 					.getSystemColor(SWT.COLOR_DARK_GRAY)));
 			break;
 
 		case TYPE_COMMAND:
-			styleRange.foreground = mResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
 					.getSystemColor(SWT.COLOR_BLUE)));
 			styleRange.fontStyle = SWT.BOLD;
 			break;
 
 		case TYPE_ERROR:
-			styleRange.foreground = mResourceManager.createColor(ColorDescriptor
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor
 					.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
 			styleRange.fontStyle = SWT.ITALIC;
 			break;
 
 		case TYPE_OUTPUT:
-			styleRange.foreground = mResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
 					.getSystemColor(SWT.COLOR_BLACK)));
 			break;
 
@@ -480,25 +480,25 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 	/**
 	 * Get the text selected in the output pane. if no text is selected, the whole content will be returned.
-	 * 
+	 *
 	 * @return selected text of output pane
 	 */
 	public final String getSelectedText() {
-		final String text = mOutputText.getSelectionText();
+		final String text = fOutputText.getSelectionText();
 		if (text.isEmpty())
-			return mOutputText.getText();
+			return fOutputText.getText();
 
 		return text;
 	}
 
 	@Override
 	public final void toggleMacroManager() {
-		if (sashForm.getWeights()[1] == 0)
-			sashForm.setWeights(mSashWeights);
+		if (fSashForm.getWeights()[1] == 0)
+			fSashForm.setWeights(fSashWeights);
 
 		else {
-			mSashWeights = sashForm.getWeights();
-			sashForm.setWeights(new int[] { 100, 0 });
+			fSashWeights = fSashForm.getWeights();
+			fSashForm.setWeights(new int[] { 100, 0 });
 		}
 	}
 
@@ -511,10 +511,10 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 				if (fAutoFocusListener == null)
 					fAutoFocusListener = new AutoFocus();
 
-				mOutputText.addKeyListener(fAutoFocusListener);
+				fOutputText.addKeyListener(fAutoFocusListener);
 
 			} else
-				mOutputText.removeKeyListener(fAutoFocusListener);
+				fOutputText.removeKeyListener(fAutoFocusListener);
 
 		} else if (IPreferenceConstants.SHELL_KEEP_COMMAND.equals(event.getProperty())) {
 			fKeepCommand = Boolean.parseBoolean(event.getNewValue().toString());
@@ -525,7 +525,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	}
 
 	public StyledText getOutput() {
-		return mOutputText;
+		return fOutputText;
 	}
 
 	public void stopScriptEngine() {
@@ -569,9 +569,9 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 						@Override
 						public void run() {
-							if (!mInputCombo.isDisposed()) {
-								mInputCombo.setText(code);
-								mInputCombo.setSelection(new Point(0, code.length()));
+							if (!fInputCombo.isDisposed()) {
+								fInputCombo.setText(code);
+								fInputCombo.setSelection(new Point(0, code.length()));
 							}
 						}
 					});
@@ -620,7 +620,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 			// execute startup scripts
 			// TODO currently we cannot run this on the first launch as the UI is not ready yet
-			if (mInputCombo != null)
+			if (fInputCombo != null)
 				runStartupCommands();
 		}
 	}

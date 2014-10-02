@@ -30,7 +30,7 @@ import org.eclipse.ui.services.IServiceLocator;
 
 public class EngineContributionFactory extends AbstractContributionFactory {
 
-	private static EngineContributionFactory mInstance = null;
+	private static EngineContributionFactory fInstance = null;
 
 	/**
 	 * Add context menu for these contribution items.
@@ -46,10 +46,10 @@ public class EngineContributionFactory extends AbstractContributionFactory {
 	 * @return factory instance
 	 */
 	private static EngineContributionFactory getInstance() {
-		if(mInstance == null)
-			mInstance = new EngineContributionFactory();
+		if(fInstance == null)
+			fInstance = new EngineContributionFactory();
 
-		return mInstance;
+		return fInstance;
 	}
 
 	/**

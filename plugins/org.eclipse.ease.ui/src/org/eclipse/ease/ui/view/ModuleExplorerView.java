@@ -36,7 +36,7 @@ public class ModuleExplorerView extends ViewPart implements
 		IPreferenceChangeListener {
 
 	public static final String ID = "org.eclipse.ease.ui.view.ModulesExplorerView"; //$NON-NLS-1$
-	private ModulesComposite modulesComposite;
+	private ModulesComposite fModulesComposite;
 
 	public ModuleExplorerView() {
 
@@ -50,19 +50,19 @@ public class ModuleExplorerView extends ViewPart implements
 	@Override
 	public void createPartControl(Composite parent) {
 
-		modulesComposite = new ModulesComposite(parent, SWT.NONE, false);
-		modulesComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		fModulesComposite = new ModulesComposite(parent, SWT.NONE, false);
+		fModulesComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		modulesComposite.addFilter(ModulesFilter.visible(modulesComposite));
+		fModulesComposite.addFilter(ModulesFilter.visible(fModulesComposite));
 
 		MenuManager menuManager = new MenuManager();
-		Menu menu = menuManager.createContextMenu(modulesComposite
+		Menu menu = menuManager.createContextMenu(fModulesComposite
 				.getTreeViewer().getTree());
 		getSite().registerContextMenu(menuManager,
-				modulesComposite.getTreeViewer());
-		modulesComposite.getTreeViewer().getTree().setMenu(menu);
+				fModulesComposite.getTreeViewer());
+		fModulesComposite.getTreeViewer().getTree().setMenu(menu);
 
-		getSite().setSelectionProvider(modulesComposite.getTreeViewer());
+		getSite().setSelectionProvider(fModulesComposite.getTreeViewer());
 
 		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(
 				org.eclipse.ease.Activator.PLUGIN_ID).node("modules"))
@@ -72,7 +72,7 @@ public class ModuleExplorerView extends ViewPart implements
 				.getWorkbench().getService(IScriptService.class);
 		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(
 				scriptService.getAvailableModules().values());
-		modulesComposite.setInput(modules);
+		fModulesComposite.setInput(modules);
 
 	}
 
@@ -93,14 +93,14 @@ public class ModuleExplorerView extends ViewPart implements
 	@Override
 	public void preferenceChange(PreferenceChangeEvent event) {
 		if (event.getNode().name().equals("modules")) {
-			modulesComposite.refresh();
+			fModulesComposite.refresh();
 
 		}
 
 	}
 
 	public IContentProvider getContentProvider() {
-		return modulesComposite.getTreeViewer().getContentProvider();
+		return fModulesComposite.getTreeViewer().getContentProvider();
 
 	}
 
