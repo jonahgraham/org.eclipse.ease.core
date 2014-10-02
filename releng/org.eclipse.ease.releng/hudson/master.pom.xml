@@ -20,6 +20,10 @@
 
 			<properties>
 				<sonar.global.exclusions>**/src-gen</sonar.global.exclusions>
+
+				<sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
+				<sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S00121</sonar.issue.ignore.multicriteria.e1.ruleKey>
+				<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
 			</properties>
 		</profile>
 	</profiles>
