@@ -145,7 +145,7 @@ public interface IScriptEngine {
 	 */
 	void terminateCurrent();
 
-	public void addExecutionListener(IExecutionListener listener);
+	void addExecutionListener(IExecutionListener listener);
 
 	void removeExecutionListener(IExecutionListener listener);
 

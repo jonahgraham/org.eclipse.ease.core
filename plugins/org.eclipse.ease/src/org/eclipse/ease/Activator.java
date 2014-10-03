@@ -25,10 +25,10 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ease";
 
-	public static String PREFERENCES_NODE_SCRIPTS = "scripts";
+	public static final String PREFERENCES_NODE_SCRIPTS = "scripts";
 
-	public static String SCRIPTS_ALLOW_UI_ACCESS = "scriptUIAccess";
-	public static boolean DEFAULT_SCRIPTS_ALLOW_UI_ACCESS = false;
+	public static final String SCRIPTS_ALLOW_UI_ACCESS = "scriptUIAccess";
+	public static final boolean DEFAULT_SCRIPTS_ALLOW_UI_ACCESS = false;
 
 	private static Activator fInstance;
 
@@ -56,7 +56,7 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * Get {@link ImageDescriptor} for a given bundle/path location.
-	 * 
+	 *
 	 * @param bundleID
 	 * @param path
 	 * @return
