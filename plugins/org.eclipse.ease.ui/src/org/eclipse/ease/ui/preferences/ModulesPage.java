@@ -59,7 +59,7 @@ public class ModulesPage extends PreferencePage implements IWorkbenchPreferenceP
 			if (element instanceof IPath) {
 				final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 				for (ModuleDefinition definition : scriptService.getAvailableModules().values()) {
-					if (definition.isVisible() == fShowVisible)
+					if ((((IPath) element).isPrefixOf(definition.getPath())) && (definition.isVisible() == fShowVisible))
 						return true;
 				}
 
@@ -103,7 +103,12 @@ public class ModulesPage extends PreferencePage implements IWorkbenchPreferenceP
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
 		visibleTreeViewer.setLabelProvider(new ModulesLabelProvider());
 		visibleTreeViewer.setContentProvider(new ModulesContentProvider());
-		visibleTreeViewer.setSorter(new ViewerSorter());
+		visibleTreeViewer.setSorter(new ViewerSorter() {
+			@Override
+			public int category(final Object element) {
+				return (element instanceof IPath) ? 1 : 2;
+			}
+		});
 		visibleTreeViewer.setFilters(new ViewerFilter[] { new VisibilityFilter(true) });
 		addDNDSupport(visibleTreeViewer, true);
 
@@ -112,7 +117,12 @@ public class ModulesPage extends PreferencePage implements IWorkbenchPreferenceP
 		tree_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 2));
 		invisibleTreeViewer.setLabelProvider(new ModulesLabelProvider());
 		invisibleTreeViewer.setContentProvider(new ModulesContentProvider());
-		invisibleTreeViewer.setSorter(new ViewerSorter());
+		invisibleTreeViewer.setSorter(new ViewerSorter() {
+			@Override
+			public int category(final Object element) {
+				return (element instanceof IPath) ? 1 : 2;
+			}
+		});
 		invisibleTreeViewer.setFilters(new ViewerFilter[] { new VisibilityFilter(false) });
 		addDNDSupport(invisibleTreeViewer, false);
 
