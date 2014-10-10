@@ -39,6 +39,7 @@ import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.Tag;
 
 public class ModuleDoclet extends Doclet {
 
@@ -441,8 +442,14 @@ public class ModuleDoclet extends Doclet {
 						if (!"void".equals(method.returnType().qualifiedTypeName())) {
 							buffer.append("\t<p class=\"return\">");
 							buffer.append(createLink(method.returnType().qualifiedTypeName()));
-							// TODO add return type description
-							buffer.append(" ... </p>");
+
+							Tag[] tags = method.tags("return");
+							if (tags.length > 0) {
+								buffer.append(" ... ");
+								buffer.append(tags[0].text());
+							}
+
+							buffer.append("</p>");
 							buffer.append(LINE_DELIMITER);
 						}
 					}
