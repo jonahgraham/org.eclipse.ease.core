@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationDesc.ElementValuePair;
@@ -48,12 +49,14 @@ public class ModuleDoclet extends Doclet {
 		String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
 				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
 				ModuleDoclet.class.getName(), "-docletpath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "org.eclipse.ease.modules.platform" };
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
+				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules.platform" };
 		com.sun.tools.javadoc.Main.execute(javadocargs);
 
 		String[] javadocargs2 = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet", ModuleDoclet.class.getName(), "-docletpath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "org.eclipse.ease.modules" };
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
+				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules" };
 		com.sun.tools.javadoc.Main.execute(javadocargs2);
 	}
 
@@ -80,6 +83,7 @@ public class ModuleDoclet extends Doclet {
 
 	private static final String OPTION_PROJECT_ROOT = "-root";
 	private static final String OPTION_DOCLETPATH = "-docletpath";
+	private static final Object OPTION_API_LINKS = "-apiLinks";
 
 	public static boolean start(final RootDoc root) {
 		final ModuleDoclet doclet = new ModuleDoclet();
@@ -88,6 +92,9 @@ public class ModuleDoclet extends Doclet {
 
 	public static int optionLength(final String option) {
 		if (OPTION_PROJECT_ROOT.equals(option))
+			return 2;
+
+		if (OPTION_API_LINKS.equals(option))
 			return 2;
 
 		return Doclet.optionLength(option);
@@ -105,6 +112,7 @@ public class ModuleDoclet extends Doclet {
 	private File fDocletPath;
 	private File fRootFolder = null;
 	private final Collection<IMemento> fCategoryNodes = new HashSet<IMemento>();
+	private final Map<Pattern, String> fExternalAPIDocs = new HashMap<Pattern, String>();
 
 	private boolean process(final RootDoc root) {
 
@@ -116,6 +124,14 @@ public class ModuleDoclet extends Doclet {
 
 			else if (OPTION_PROJECT_ROOT.equals(option[0]))
 				fRootFolder = new File(option[1]);
+
+			else if (OPTION_API_LINKS.equals(option[0])) {
+				for (String entry : option[1].split(";")) {
+					String[] tokens = entry.trim().split("\\|");
+					if (tokens.length == 2)
+						fExternalAPIDocs.put(Pattern.compile(tokens[0]), tokens[1] + (tokens[1].endsWith("/") ? "" : "/"));
+				}
+			}
 		}
 
 		final ClassDoc[] classes = root.classes();
@@ -378,6 +394,7 @@ public class ModuleDoclet extends Doclet {
 				buffer.append(LINE_DELIMITER);
 				buffer.append(LINE_DELIMITER);
 
+				// function details
 				buffer.append("\t<h2>Functions</h2>");
 				buffer.append(LINE_DELIMITER);
 
@@ -387,13 +404,14 @@ public class ModuleDoclet extends Doclet {
 						buffer.append("\t<h3><a id=\"" + method.name() + "\">" + method.name() + "</a></h3>");
 						buffer.append(LINE_DELIMITER);
 
+						// synopsis
 						buffer.append("\t<p class=\"synopsis\">");
-						buffer.append(method.returnType().qualifiedTypeName());
+						buffer.append(createClassText(method.returnType().qualifiedTypeName()));
 						buffer.append(" ");
 						buffer.append(method.name());
 						buffer.append("(");
 						for (Parameter parameter : method.parameters()) {
-							buffer.append(parameter.type().qualifiedTypeName());
+							buffer.append(createClassText(parameter.type().qualifiedTypeName()));
 							buffer.append(" ");
 							buffer.append(parameter.name());
 							buffer.append(", ");
@@ -405,6 +423,7 @@ public class ModuleDoclet extends Doclet {
 						buffer.append("</p>");
 						buffer.append(LINE_DELIMITER);
 
+						// main description
 						buffer.append("\t<p class=\"description\">" + method.commentText() + "</p>");
 						buffer.append(LINE_DELIMITER);
 
@@ -427,7 +446,7 @@ public class ModuleDoclet extends Doclet {
 								buffer.append(LINE_DELIMITER);
 								buffer.append("\t\t\t<td>" + parameter.name() + "</td>");
 								buffer.append(LINE_DELIMITER);
-								buffer.append("\t\t\t<td>" + createLink(parameter.type().qualifiedTypeName()) + "</td>");
+								buffer.append("\t\t\t<td>" + createClassText(parameter.type().qualifiedTypeName()) + "</td>");
 								buffer.append(LINE_DELIMITER);
 								buffer.append("\t\t\t<td>" + findComment(method, parameter.name()) + "</td>");
 								buffer.append(LINE_DELIMITER);
@@ -441,7 +460,7 @@ public class ModuleDoclet extends Doclet {
 
 						if (!"void".equals(method.returnType().qualifiedTypeName())) {
 							buffer.append("\t<p class=\"return\">");
-							buffer.append(createLink(method.returnType().qualifiedTypeName()));
+							buffer.append(createClassText(method.returnType().qualifiedTypeName()));
 
 							Tag[] tags = method.tags("return");
 							if (tags.length > 0) {
@@ -467,6 +486,16 @@ public class ModuleDoclet extends Doclet {
 		}
 
 		return createdFiles;
+	}
+
+	private Object createClassText(final String qualifiedName) {
+		for (Entry<Pattern, String> entry : fExternalAPIDocs.entrySet()) {
+			if (entry.getKey().matcher(qualifiedName).matches())
+				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + "\" title=\"" + qualifiedName + "\">"
+						+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
+		}
+
+		return qualifiedName;
 	}
 
 	private StringBuffer createConstantsSection(final ClassDoc clazz) {
@@ -501,15 +530,6 @@ public class ModuleDoclet extends Doclet {
 		}
 
 		return buffer;
-	}
-
-	private String createLink(final String qualifiedTypeName) {
-		if (qualifiedTypeName.startsWith("java.")) {
-			String target = "http://docs.oracle.com/javase/7/docs/api/" + qualifiedTypeName.replace('.', '/') + ".html";
-
-			return "<a href=\"" + target + "\">" + qualifiedTypeName + "</a>";
-		}
-		return qualifiedTypeName;
 	}
 
 	private Collection<String> getFunctionAliases(final MethodDoc method) {
