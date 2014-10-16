@@ -106,8 +106,8 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	@Override
-	public String createStaticFieldWrapper(final IEnvironment environment, final Field field) {
-		return "const " + JavaScriptHelper.getSaveName(field.getName()) + " = Packages." + field.getDeclaringClass().getName() + "." + field.getName() + ";\n";
+	public String createStaticFieldWrapper(final IEnvironment environment, final String moduleVariable, final Field field) {
+		return "const " + JavaScriptHelper.getSaveName(field.getName()) + " = " + moduleVariable + "." + field.getName() + ";\n";
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public final class ModuleHelper {
 	/**
 	 * Returns a list of exported methods. Any public method marked by a @WrapToScript annotation is exported. If no annotations are found all public methods
 	 * are returned.
-	 * 
+	 *
 	 * @param clazz
 	 *            class to be evaluated
 	 * @return list of methods
@@ -55,7 +55,7 @@ public final class ModuleHelper {
 	/**
 	 * Returns a List of exported fields. Any public static field marked by a @WrapToScript annotation is exported. If no annotations are found all public
 	 * static fields are returned.
-	 * 
+	 *
 	 * @param clazz
 	 *            Class to be evaluated
 	 * @return List of Fields
@@ -68,7 +68,7 @@ public final class ModuleHelper {
 		List<Field> fields = new ArrayList<Field>();
 		boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
 		for (Field field : clazz.getDeclaredFields()) {
-			if ((Modifier.isStatic(field.getModifiers()))
+			if ((Modifier.isFinal(field.getModifiers()))
 					&& (Modifier.isPublic(field.getModifiers()) && (!wrapping || field.isAnnotationPresent(WrapToScript.class))))
 				fields.add(field);
 		}
@@ -78,7 +78,7 @@ public final class ModuleHelper {
 
 	/**
 	 * Returns if the Class to be evaluated contains {@link WrapToScript} annotations.
-	 * 
+	 *
 	 * @param clazz
 	 *            class to be evaluated
 	 * @return <code>true</code> when clazz contains {@link WrapToScript} annotations
@@ -101,7 +101,7 @@ public final class ModuleHelper {
 	/**
 	 * Resolve a relative module name to its absolute name. When only the last part of a module name is provided (without path), this method tries to locate the
 	 * module and returns its absolute path. If 2 modules with the same name are detected, a {@link RuntimeException} is thrown.
-	 * 
+	 *
 	 * @param identifier
 	 *            module identifier
 	 * @return absolute module name

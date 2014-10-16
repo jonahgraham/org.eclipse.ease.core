@@ -53,13 +53,6 @@ public class EnvironmentModule extends AbstractEnvironment {
 		// register new variable in script engine
 		final String identifier = getScriptEngine().getSaveVariableName(MODULE_PREFIX + toBeWrapped.toString());
 
-		// FIXME either remove or move to script engine
-		// if (getScriptEngine().isUI()) {
-		// InstaciateModuleRunnble tt = new InstaciateModuleRunnble(
-		// definition);
-		// Display.getDefault().syncExec(tt);
-		// module = tt.getResult();
-
 		final boolean reloaded = getScriptEngine().hasVariable(identifier);
 		getScriptEngine().setVariable(identifier, toBeWrapped);
 
@@ -107,7 +100,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 					// only wrap if field is not already declared
 					if (!getScriptEngine().hasVariable(getWrapper().getSaveVariableName(field.getName()))) {
-						final String code = getWrapper().createStaticFieldWrapper(this, field);
+						final String code = getWrapper().createStaticFieldWrapper(this, identifier, field);
 
 						if ((code != null) && !code.isEmpty()) {
 							scriptCode.append(code);

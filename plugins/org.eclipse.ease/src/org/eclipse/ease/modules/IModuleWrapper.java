@@ -21,5 +21,5 @@ public interface IModuleWrapper {
 
 	String classInstantiation(Class<?> clazz, String[] parameters);
 
-	String createStaticFieldWrapper(IEnvironment environment, Field field);
+	String createStaticFieldWrapper(IEnvironment environment, String moduleVariable, Field field);
 }
