@@ -15,7 +15,7 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ecf.filetransfer.FileTransferInfo;
+import org.eclipse.ecf.filetransfer.FileTransferJob;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
@@ -42,7 +42,7 @@ public class Activator extends AbstractUIPlugin {
 
 		// we need to force loading of the org.eclipse.ecf.filetransfer plugin to correctly register extended URL protocols.
 		// therefore load a class from that plugin
-		Class<FileTransferInfo> foo = FileTransferInfo.class;
+		new FileTransferJob("dummy").setFileTransfer(null);
 
 		fInstance = this;
 	}
