@@ -44,4 +44,7 @@ public interface IPreferenceConstants {
 	String SHELL_STARTUP = "shellStartup";
 	String SHELL_MODULES_AS_LIST = "shellModulesAsList";
 	boolean DEFAULT_SHELL_MODULES_AS_LIST = false;
+
+	String SHELL_DEFAULT_ENGINE = "shellDefaultEngine";
+	String DEFAULT_SHELL_DEFAULT_ENGINE = "org.eclipse.ease.javascript.rhino";
 }

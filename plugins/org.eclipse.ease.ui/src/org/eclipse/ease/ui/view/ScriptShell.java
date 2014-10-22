@@ -182,10 +182,26 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		// setup Script engine
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		ScriptType scriptType = scriptService.getAvailableScriptTypes().get("JavaScript");
-		Collection<EngineDescription> engines = scriptType.getEngines();
-		if (!engines.isEmpty())
-			setEngine(engines.iterator().next().getID());
+
+		// try to load preferred engine
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
+		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE, IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
+		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
+
+		if (engineDescription == null) {
+			// not found, try to load any JavaScript engine
+			engineDescription = scriptService.getEngine("JavaScript");
+
+			if (engineDescription == null) {
+				// no luck either, get next engine of any type
+				final Collection<EngineDescription> engines = scriptService.getEngines();
+				if (!engines.isEmpty())
+					engineDescription = engines.iterator().next();
+			}
+		}
+
+		if (engineDescription != null)
+			setEngine(engineDescription.getID());
 
 		// add dynamic context menu for scripts
 		// ScriptContributionFactory.addContextMenu("org.eclipse.ease.commands.script.toggleScriptPane.popup");
@@ -238,7 +254,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			@Override
 			public void mouseDoubleClick(final MouseEvent e) {
 				// copy line under cursor in input box
-				String selected = fOutputText.getLine(fOutputText.getLineIndex(e.y));
+				final String selected = fOutputText.getLine(fOutputText.getLineIndex(e.y));
 				if (!selected.isEmpty()) {
 					fInputCombo.setText(selected);
 					fInputCombo.setFocus();
@@ -247,7 +263,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			}
 		});
 
-		TabFolder tabFolder = new TabFolder(fSashForm, SWT.BOTTOM);
+		final TabFolder tabFolder = new TabFolder(fSashForm, SWT.BOTTOM);
 
 		fTabScripts = new TabItem(tabFolder, SWT.NONE);
 		fTabScripts.setText("Scripts");
@@ -260,7 +276,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		fcomposite = new Composite(tabFolder, SWT.NONE);
 		fTabVariables.setControl(fcomposite);
-		TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
+		final TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
 		fcomposite.setLayout(treeColumnLayout);
 
 		fVariablesTree = new TreeViewer(fcomposite, SWT.BORDER);
@@ -278,7 +294,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 			@Override
 			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-				Object name = ((Entry<?, ?>) element).getKey();
+				final Object name = ((Entry<?, ?>) element).getKey();
 				if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name)) || ("equals()".equals(name))
 						|| ("getClass()".equals(name)) || ("hashCode()".equals(name)) || ("toString()".equals(name)))
 					return false;
@@ -321,26 +337,26 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 			@Override
 			public Object[] getChildren(final Object parentElement) {
-				Object parent = ((Entry<?, ?>) parentElement).getValue();
+				final Object parent = ((Entry<?, ?>) parentElement).getValue();
 
 				// use reflection to resolve elements
-				Map<String, Object> children = new HashMap<String, Object>();
+				final Map<String, Object> children = new HashMap<String, Object>();
 
 				if (!((Entry<?, ?>) parentElement).getKey().toString().endsWith("()")) {
 					// fields
-					for (Field field : parent.getClass().getFields()) {
+					for (final Field field : parent.getClass().getFields()) {
 						try {
 							children.put(field.getName(), field.get(parent));
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							// ignore, try next
 						}
 					}
 
 					// methods
-					for (Method method : parent.getClass().getMethods()) {
+					for (final Method method : parent.getClass().getMethods()) {
 						try {
 							children.put(method.getName() + "()", method.getReturnType().getName());
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							// ignore, try next
 						}
 					}
@@ -350,8 +366,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			}
 		});
 
-		TreeViewerColumn treeViewerColumn = new TreeViewerColumn(fVariablesTree, SWT.NONE);
-		TreeColumn column = treeViewerColumn.getColumn();
+		final TreeViewerColumn treeViewerColumn = new TreeViewerColumn(fVariablesTree, SWT.NONE);
+		final TreeColumn column = treeViewerColumn.getColumn();
 		treeColumnLayout.setColumnData(column, new ColumnWeightData(1));
 		column.setText("Variable");
 		treeViewerColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -369,8 +385,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			}
 		});
 
-		TreeViewerColumn treeViewerColumn2 = new TreeViewerColumn(fVariablesTree, SWT.NONE);
-		TreeColumn column2 = treeViewerColumn2.getColumn();
+		final TreeViewerColumn treeViewerColumn2 = new TreeViewerColumn(fVariablesTree, SWT.NONE);
+		final TreeColumn column2 = treeViewerColumn2.getColumn();
 		treeColumnLayout.setColumnData(column2, new ColumnWeightData(1));
 		column2.setText("Content");
 		treeViewerColumn2.setLabelProvider(new ColumnLabelProvider() {
@@ -417,7 +433,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		setPartName(fScriptEngine.getName() + " " + super.getTitle());
 
 		// read default preferences
-		Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
 
 		fHistoryLength = prefs.getInt(IPreferenceConstants.SHELL_HISTORY_LENGTH, IPreferenceConstants.DEFAULT_SHELL_HISTORY_LENGTH);
 		fAutoFocus = prefs.getBoolean(IPreferenceConstants.SHELL_AUTOFOCUS, IPreferenceConstants.DEFAULT_SHELL_AUTOFOCUS);
@@ -440,25 +456,25 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			fContentAssistAdapter.setEnabled(false);
 
 		// get auto completion provider for current engine
-		ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine.getDescription());
+		final ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine.getDescription());
 
 		if (provider != null) {
 			try {
-				KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-				ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
+				final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
+				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
 						provider.getActivationChars());
 				adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 				fContentAssistAdapter = adapter;
-			} catch (ParseException e) {
+			} catch (final ParseException e) {
 				Logger.logError("Cannot create content assist", e);
 			}
 		}
 	}
 
 	public void runStartupCommands() {
-		Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
 
-		for (ScriptType scriptType : fScriptEngine.getDescription().getSupportedScriptTypes()) {
+		for (final ScriptType scriptType : fScriptEngine.getDescription().getSupportedScriptTypes()) {
 			final String initCommands = prefs.get(IPreferenceConstants.SHELL_STARTUP + scriptType.getName(), "").trim();
 			if (!initCommands.isEmpty())
 				fScriptEngine.executeAsync(initCommands);
@@ -761,7 +777,7 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			setPartName(fScriptEngine.getName() + " Script Shell");
 
 			// prepare console
-			ScriptConsole console = ScriptConsole.create(fScriptEngine.getName() + "Script Shell", fScriptEngine);
+			final ScriptConsole console = ScriptConsole.create(fScriptEngine.getName() + "Script Shell", fScriptEngine);
 			fScriptEngine.setOutputStream(console.getOutputStream());
 			fScriptEngine.setErrorStream(console.getErrorStream());
 
