@@ -24,6 +24,7 @@ import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
@@ -284,24 +285,38 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		ftree.setHeaderVisible(true);
 		ftree.setLinesVisible(true);
 
-		fVariablesTree.setFilters(new ViewerFilter[] { new ViewerFilter() {
+		fVariablesTree.setFilters(new ViewerFilter[] {
+				// filter internal javascript classes
+				new ViewerFilter() {
 
-			@Override
-			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-				return !((Entry<?, ?>) element).getValue().getClass().getName().startsWith("org.mozilla.javascript.gen");
-			}
-		}, new ViewerFilter() {
+					@Override
+					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
+						return !((Entry<?, ?>) element).getValue().getClass().getName().startsWith("org.mozilla.javascript.gen");
+					}
+				},
 
-			@Override
-			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-				final Object name = ((Entry<?, ?>) element).getKey();
-				if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name)) || ("equals()".equals(name))
-						|| ("getClass()".equals(name)) || ("hashCode()".equals(name)) || ("toString()".equals(name)))
-					return false;
+				// filter modules
+				new ViewerFilter() {
 
-				return true;
-			}
-		} });
+					@Override
+					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
+						return !((Entry<?, ?>) element).getKey().toString().startsWith(EnvironmentModule.MODULE_PREFIX);
+					}
+				},
+
+				// filter default methods of Object class
+				new ViewerFilter() {
+
+					@Override
+					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
+						final Object name = ((Entry<?, ?>) element).getKey();
+						if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name)) || ("equals()".equals(name))
+								|| ("getClass()".equals(name)) || ("hashCode()".equals(name)) || ("toString()".equals(name)))
+							return false;
+
+						return true;
+					}
+				} });
 
 		fVariablesTree.setComparator(new ViewerComparator() {
 			@Override
