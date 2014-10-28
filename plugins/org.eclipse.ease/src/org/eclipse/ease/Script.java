@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Platform;
@@ -37,7 +38,7 @@ public class Script {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param title
 	 *            name of script object
 	 * @param command
@@ -51,7 +52,7 @@ public class Script {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param command
 	 *            command (sequence) to be executed
 	 */
@@ -62,7 +63,7 @@ public class Script {
 	/**
 	 * Get the scriptable data as {@link InputStream}. The caller needs to close the stream when it is not used anymore. Calling this method multiple times will
 	 * return different streams with the same text content.
-	 * 
+	 *
 	 * @return scriptable data
 	 * @throws Exception
 	 */
@@ -72,7 +73,7 @@ public class Script {
 
 	/**
 	 * Get the scriptable data as {@link InputStream}. The caller needs to close the stream when it is not used anymore.
-	 * 
+	 *
 	 * @return scriptable data
 	 * @throws Exception
 	 */
@@ -127,7 +128,7 @@ public class Script {
 
 	/**
 	 * Get execution result.
-	 * 
+	 *
 	 * @return execution result.
 	 */
 	public final ScriptResult getResult() {
@@ -136,7 +137,7 @@ public class Script {
 
 	/**
 	 * Set the execution result.
-	 * 
+	 *
 	 * @param result
 	 *            execution result
 	 */
@@ -160,7 +161,7 @@ public class Script {
 
 	/**
 	 * Set an execution exception.
-	 * 
+	 *
 	 * @param e
 	 *            exception
 	 */
@@ -190,8 +191,17 @@ public class Script {
 	}
 
 	/**
+	 * Check if this script is defined by dynmically generated code. Generated code might be hidden while debugging.
+	 *
+	 * @return <code>true</code> when not a file and not an {@link URL}
+	 */
+	public boolean isDynamic() {
+		return !((fCommand instanceof URL) || (getFile() != null));
+	}
+
+	/**
 	 * Convert an input stream to a string.
-	 * 
+	 *
 	 * @param stream
 	 *            input string to read from
 	 * @return string containing stream data
@@ -204,7 +214,7 @@ public class Script {
 
 	/**
 	 * Read characters from a {@link Reader} and return its string representation. Can be used to convert an {@link InputStream} to a string.
-	 * 
+	 *
 	 * @param reader
 	 *            reader to read from
 	 * @return string content of reader

@@ -62,6 +62,7 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 	private Text fTxtStartupParameters;
 
 	private ComboViewer comboViewer;
+	private Button chkSuspendOnStartup;
 
 	@Override
 	public void setDefaults(final ILaunchConfigurationWorkingCopy configuration) {
@@ -69,6 +70,7 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 		configuration.setAttribute(LaunchConstants.SCRIPT_ENGINE, "");
 		configuration.setAttribute(LaunchConstants.STARTUP_PARAMETERS, "");
 		configuration.setAttribute(LaunchConstants.SUSPEND_ON_STARTUP, false);
+		configuration.setAttribute(LaunchConstants.SUSPEND_ON_SCRIPT_LOAD, false);
 		configuration.setAttribute(LaunchConstants.DISPLAY_DYNAMIC_CODE, false);
 	}
 
@@ -78,6 +80,7 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 
 		txtSourceFile.setText("");
 		chkShowDynamicScript.setSelection(false);
+		chkSuspendOnStartup.setSelection(false);
 		chkSuspendOnScript.setSelection(false);
 
 		try {
@@ -85,16 +88,19 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 			populateScriptEngines();
 			// TODO select correct engine from configuration
 			final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-			EngineDescription engineDescription = scriptService.getEngineByID(configuration.getAttribute(LaunchConstants.SCRIPT_ENGINE, ""));
+			final EngineDescription engineDescription = scriptService.getEngineByID(configuration.getAttribute(LaunchConstants.SCRIPT_ENGINE, ""));
 			if (engineDescription != null)
 				comboViewer.setSelection(new StructuredSelection(engineDescription));
 
 			fTxtStartupParameters.setText(configuration.getAttribute(LaunchConstants.STARTUP_PARAMETERS, ""));
 
 			chkShowDynamicScript.setSelection(configuration.getAttribute(LaunchConstants.DISPLAY_DYNAMIC_CODE, false));
-			chkSuspendOnScript.setSelection(configuration.getAttribute(LaunchConstants.SUSPEND_ON_STARTUP, false));
+			chkSuspendOnStartup.setSelection(configuration.getAttribute(LaunchConstants.SUSPEND_ON_STARTUP, false));
+			chkSuspendOnScript.setSelection(configuration.getAttribute(LaunchConstants.SUSPEND_ON_SCRIPT_LOAD, false));
 
-		} catch (CoreException e) {
+			chkSuspendOnScript.setEnabled(chkSuspendOnStartup.getSelection());
+
+		} catch (final CoreException e) {
 		}
 
 		mDisableUpdate = false;
@@ -104,15 +110,16 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 	public void performApply(final ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(LaunchConstants.FILE_LOCATION, txtSourceFile.getText());
 
-		IStructuredSelection selection = (IStructuredSelection) comboViewer.getSelection();
+		final IStructuredSelection selection = (IStructuredSelection) comboViewer.getSelection();
 		if (!selection.isEmpty()) {
-			EngineDescription engineDescription = (EngineDescription) selection.getFirstElement();
+			final EngineDescription engineDescription = (EngineDescription) selection.getFirstElement();
 			configuration.setAttribute(LaunchConstants.SCRIPT_ENGINE, engineDescription.getID());
 		}
 
 		configuration.setAttribute(LaunchConstants.STARTUP_PARAMETERS, fTxtStartupParameters.getText());
 
-		configuration.setAttribute(LaunchConstants.SUSPEND_ON_STARTUP, chkSuspendOnScript.getSelection());
+		configuration.setAttribute(LaunchConstants.SUSPEND_ON_STARTUP, chkSuspendOnStartup.getSelection());
+		configuration.setAttribute(LaunchConstants.SUSPEND_ON_SCRIPT_LOAD, chkSuspendOnScript.getSelection() & chkSuspendOnStartup.getSelection());
 		configuration.setAttribute(LaunchConstants.DISPLAY_DYNAMIC_CODE, chkShowDynamicScript.getSelection());
 	}
 
@@ -122,12 +129,12 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 
 		// allow launch when a file is selected and file exists
 		try {
-			boolean resourceExists = ResourceTools.exists(launchConfig.getAttribute(LaunchConstants.FILE_LOCATION, ""));
+			final boolean resourceExists = ResourceTools.exists(launchConfig.getAttribute(LaunchConstants.FILE_LOCATION, ""));
 			if (resourceExists) {
 				// check engine
-				String selectedEngineID = launchConfig.getAttribute(LaunchConstants.SCRIPT_ENGINE, "");
+				final String selectedEngineID = launchConfig.getAttribute(LaunchConstants.SCRIPT_ENGINE, "");
 				final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-				for (EngineDescription description : scriptService.getEngines()) {
+				for (final EngineDescription description : scriptService.getEngines()) {
 					if (description.getID().equals(selectedEngineID))
 						return true;
 				}
@@ -137,7 +144,7 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 			} else
 				setErrorMessage("Invalid source file selected.");
 
-		} catch (CoreException e) {
+		} catch (final CoreException e) {
 			setErrorMessage("Invalid launch configuration detected.");
 		}
 
@@ -165,10 +172,10 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 	 */
 	@Override
 	public void createControl(final Composite parent) {
-		Composite topControl = new Composite(parent, SWT.NONE);
+		final Composite topControl = new Composite(parent, SWT.NONE);
 		topControl.setLayout(new GridLayout(1, false));
 
-		Group grpScriptSource = new Group(topControl, SWT.NONE);
+		final Group grpScriptSource = new Group(topControl, SWT.NONE);
 		grpScriptSource.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpScriptSource.setText("Script Source");
 		grpScriptSource.setLayout(new GridLayout(2, false));
@@ -182,11 +189,11 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 		});
 		txtSourceFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		Button btnBrowseProject = new Button(grpScriptSource, SWT.NONE);
+		final Button btnBrowseProject = new Button(grpScriptSource, SWT.NONE);
 		btnBrowseProject.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
+				final ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(parent.getShell(), new WorkbenchLabelProvider(),
 						new WorkbenchContentProvider());
 				dialog.setTitle("Select script source file");
 				dialog.setMessage("Select the script file to execute:");
@@ -198,25 +205,25 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 		btnBrowseProject.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 		btnBrowseProject.setText("Browse Workspace...");
 
-		Button btnBrowseFilesystem = new Button(grpScriptSource, SWT.NONE);
+		final Button btnBrowseFilesystem = new Button(grpScriptSource, SWT.NONE);
 		btnBrowseFilesystem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-				String fileName = dialog.open();
+				final FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
+				final String fileName = dialog.open();
 				txtSourceFile.setText(new File(fileName).toURI().toString());
 			}
 		});
 		btnBrowseFilesystem.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btnBrowseFilesystem.setText("Browse Filesystem...");
 
-		Group grpExecutionEngine = new Group(topControl, SWT.NONE);
+		final Group grpExecutionEngine = new Group(topControl, SWT.NONE);
 		grpExecutionEngine.setLayout(new GridLayout(1, false));
 		grpExecutionEngine.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpExecutionEngine.setText("Execution Engine");
 
 		comboViewer = new ComboViewer(grpExecutionEngine, SWT.NONE);
-		Combo combo = comboViewer.getCombo();
+		final Combo combo = comboViewer.getCombo();
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		comboViewer.setContentProvider(ArrayContentProvider.getInstance());
 		comboViewer.setLabelProvider(new LabelProvider());
@@ -228,7 +235,7 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 			}
 		});
 
-		Group grpProgramArguments = new Group(topControl, SWT.NONE);
+		final Group grpProgramArguments = new Group(topControl, SWT.NONE);
 		grpProgramArguments.setLayout(new GridLayout(1, false));
 		grpProgramArguments.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		grpProgramArguments.setText("Script arguments");
@@ -243,21 +250,10 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 		fTxtStartupParameters.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
 		// options only available in debug mode
-		Group group = new Group(topControl, SWT.NONE);
+		final Group group = new Group(topControl, SWT.NONE);
 		group.setLayout(new GridLayout(1, false));
 		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		group.setText("Debug Options");
-
-		chkSuspendOnScript = new Button(group, SWT.CHECK);
-		chkSuspendOnScript.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				if (!mDisableUpdate)
-					updateLaunchConfigurationDialog();
-			}
-		});
-		chkSuspendOnScript.setText("Suspend on script load");
 
 		chkShowDynamicScript = new Button(group, SWT.CHECK);
 		chkShowDynamicScript.addSelectionListener(new SelectionAdapter() {
@@ -270,6 +266,32 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 		});
 		chkShowDynamicScript.setText("Show dynamic script content");
 
+		chkSuspendOnStartup = new Button(group, SWT.CHECK);
+		chkSuspendOnStartup.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				chkSuspendOnScript.setEnabled(chkSuspendOnStartup.getSelection());
+
+				if (!mDisableUpdate)
+					updateLaunchConfigurationDialog();
+			}
+		});
+		chkSuspendOnStartup.setText("Suspend on startup");
+
+		chkSuspendOnScript = new Button(group, SWT.CHECK);
+		final GridData gd_chkSuspendOnScript = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_chkSuspendOnScript.horizontalIndent = 20;
+		chkSuspendOnScript.setLayoutData(gd_chkSuspendOnScript);
+		chkSuspendOnScript.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				if (!mDisableUpdate)
+					updateLaunchConfigurationDialog();
+			}
+		});
+		chkSuspendOnScript.setText("Suspend on script load");
+
 		setControl(topControl);
 	}
 
@@ -279,11 +301,11 @@ public class MainTab extends AbstractLaunchConfigurationTab implements ILaunchCo
 		ScriptType scriptType = null;
 
 		// resolve script type by file extension
-		String sourceFile = txtSourceFile.getText();
+		final String sourceFile = txtSourceFile.getText();
 		scriptType = scriptService.getScriptType(sourceFile);
 
 		if (scriptType != null) {
-			List<EngineDescription> engines = scriptService.getEngines(scriptType.getName());
+			final List<EngineDescription> engines = scriptService.getEngines(scriptType.getName());
 			comboViewer.setInput(engines);
 			comboViewer.refresh();
 

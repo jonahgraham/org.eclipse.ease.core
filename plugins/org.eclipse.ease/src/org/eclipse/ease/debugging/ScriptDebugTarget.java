@@ -52,11 +52,14 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	private final boolean fSuspendOnScriptLoad;
 
-	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad) {
+	private final boolean fShowDynamicCode;
+
+	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, boolean showDynamicCode) {
 		super(null);
 		fLaunch = launch;
 		fSuspendOnStartup = suspendOnStartup;
 		fSuspendOnScriptLoad = suspendOnScriptLoad;
+		fShowDynamicCode = showDynamicCode;
 
 		fireCreationEvent();
 	}
@@ -147,12 +150,12 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 			else
 				// immediately resume execution
-				fireDispatchEvent(new ResumeRequest(DebugEvent.RESUME, debugThread.getThread()));
+				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_END, debugThread.getThread()));
 
 		} else if (event instanceof StackFramesEvent) {
 			// stackframe refresh
 			final ScriptDebugThread debugThread = findDebugThread(((StackFramesEvent) event).getThread());
-			debugThread.setStackFrames(((StackFramesEvent) event).getDebugFrames());
+			debugThread.setStackFrames(filterFrames(((StackFramesEvent) event).getDebugFrames()));
 
 		} else if (event instanceof ResumedEvent) {
 			final ScriptDebugThread debugThread = findDebugThread(((ResumedEvent) event).getThread());
@@ -160,7 +163,8 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 		} else if (event instanceof SuspendedEvent) {
 			final ScriptDebugThread debugThread = findDebugThread(((SuspendedEvent) event).getThread());
-			debugThread.setStackFrames(((SuspendedEvent) event).getDebugFrames());
+
+			debugThread.setStackFrames(filterFrames(((SuspendedEvent) event).getDebugFrames()));
 			debugThread.setSuspended(((SuspendedEvent) event).getType());
 
 		} else if (event instanceof EngineTerminatedEvent) {
@@ -169,6 +173,26 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			for (final ScriptDebugThread thread : getThreads())
 				thread.setTerminated();
 		}
+	}
+
+	/**
+	 * Remove dynamic code fragments in case they are disabled by the debug target.
+	 *
+	 * @param frames
+	 *            frames to be filtered
+	 * @return filtered frames
+	 */
+	private List<IScriptDebugFrame> filterFrames(List<IScriptDebugFrame> frames) {
+		if (fShowDynamicCode)
+			return frames;
+
+		final ArrayList<IScriptDebugFrame> filteredFrames = new ArrayList<IScriptDebugFrame>(frames);
+		for (final IScriptDebugFrame frame : frames) {
+			if (frame.getScript().getFile() == null)
+				filteredFrames.remove(frame);
+		}
+
+		return filteredFrames;
 	}
 
 	private ScriptDebugThread findDebugThread(final Thread thread) {

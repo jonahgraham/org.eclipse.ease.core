@@ -63,15 +63,15 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 	private Thread mThread;
 
-	private final boolean mShowDynamicCode;
-
 	private int mRunMode;
 
 	private List<IScriptDebugFrame> mResumedFrames;
 
-	public RhinoDebugger(final RhinoScriptEngine engine, final boolean showDynamicCode) {
+	private final boolean fShowDynamicCode;
+
+	public RhinoDebugger(final RhinoScriptEngine engine, boolean showDynamicCode) {
 		mEngine = engine;
-		mShowDynamicCode = showDynamicCode;
+		fShowDynamicCode = showDynamicCode;
 		mEngine.addExecutionListener(this);
 	}
 
@@ -91,54 +91,61 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 		@Override
 		public void onEnter(final Context cx, final Scriptable activation, final Scriptable thisObj, final Object[] args) {
-			if (!mFnOrScript.isFunction()) {
-				// this is a new script source, no function call
-				fireDispatchEvent(new ScriptReadyEvent(getScript(), mThread, mDebugFrames.size() == 1));
-				suspend();
+			if (!getScript().isDynamic() || fShowDynamicCode) {
+				// static code or dynamic code activated
+				if (!mFnOrScript.isFunction()) {
+					// this is a new script source, no function call
+					fireDispatchEvent(new ScriptReadyEvent(getScript(), mThread, mDebugFrames.size() == 1));
+					suspend();
+				}
 			}
 		}
 
 		@Override
 		public void onLineChange(final Context cx, final int lineNumber) {
-			mLineNumber = lineNumber;
+			if (!getScript().isDynamic() || fShowDynamicCode) {
+				// static code or dynamic code activated
 
-			// check breakpoints
-			// TODO use cache for faster lookup
-			final List<IBreakpoint> breakpoints = mScriptBreakpoints.get(mFrameToSource.get(mFnOrScript));
-			if (breakpoints != null) {
-				for (final IBreakpoint breakpoint : breakpoints) {
-					try {
-						if (breakpoint.isEnabled()) {
-							final int breakline = breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1);
-							if (breakline == lineNumber) {
-								fireDispatchEvent(new SuspendedEvent(DebugEvent.BREAKPOINT, mThread, mDebugFrames));
-								mRunMode = DebugEvent.CLIENT_REQUEST;
-								suspend();
-								return;
+				mLineNumber = lineNumber;
+
+				// check breakpoints
+				// TODO use cache for faster lookup
+				final List<IBreakpoint> breakpoints = mScriptBreakpoints.get(mFrameToSource.get(mFnOrScript));
+				if (breakpoints != null) {
+					for (final IBreakpoint breakpoint : breakpoints) {
+						try {
+							if (breakpoint.isEnabled()) {
+								final int breakline = breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1);
+								if (breakline == lineNumber) {
+									fireDispatchEvent(new SuspendedEvent(DebugEvent.BREAKPOINT, mThread, mDebugFrames));
+									mRunMode = DebugEvent.CLIENT_REQUEST;
+									suspend();
+									return;
+								}
 							}
+						} catch (final CoreException e) {
+							// cannot query enabled property, ignore breakpoint
 						}
-					} catch (final CoreException e) {
-						// cannot query enabled property, ignore breakpoint
 					}
 				}
-			}
 
-			// no breakpoint, check for step into
-			if (mRunMode == DebugEvent.STEP_INTO) {
-				// this is the next chance to stop
-				fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
-				suspend();
-				return;
-			}
-
-			// check for step over
-			if (mRunMode == DebugEvent.STEP_OVER) {
-				// check call stack
-				if (mResumedFrames.size() >= mDebugFrames.size()) {
-					// call stack did not grow
+				// no breakpoint, check for step into
+				if (mRunMode == DebugEvent.STEP_INTO) {
+					// this is the next chance to stop
 					fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
 					suspend();
 					return;
+				}
+
+				// check for step over
+				if (mRunMode == DebugEvent.STEP_OVER) {
+					// check call stack
+					if (mResumedFrames.size() >= mDebugFrames.size()) {
+						// call stack did not grow
+						fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
+						suspend();
+						return;
+					}
 				}
 			}
 		}
@@ -151,13 +158,17 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 		public void onExit(final Context cx, final boolean byThrow, final Object resultOrException) {
 			mDebugFrames.remove(this);
 
-			// check for step return / step over
-			if ((mRunMode == DebugEvent.STEP_RETURN) || (mRunMode == DebugEvent.STEP_OVER)) {
-				// check call stack
-				if ((mResumedFrames.size() > mDebugFrames.size()) && (!mDebugFrames.isEmpty())) {
-					// call stack got smaller
-					fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
-					suspend();
+			if (!getScript().isDynamic() || fShowDynamicCode) {
+				// static code or dynamic code activated
+
+				// check for step return / step over
+				if ((mRunMode == DebugEvent.STEP_RETURN) || (mRunMode == DebugEvent.STEP_OVER)) {
+					// check call stack
+					if ((mResumedFrames.size() > mDebugFrames.size()) && (!mDebugFrames.isEmpty())) {
+						// call stack got smaller
+						fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
+						suspend();
+					}
 				}
 			}
 		}
@@ -234,13 +245,8 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 		if (script == null)
 			return null;
 
-		// ignore dynamic code if not requested by debug target
-		if (!mShowDynamicCode && (isDynamicCode(script))) {
-			return null;
-		}
-
 		// register script source
-		DebuggableScript parentScript = getParentScript(fnOrScript);
+		final DebuggableScript parentScript = getParentScript(fnOrScript);
 		if (!mFrameToSource.containsKey(parentScript))
 			mFrameToSource.put(parentScript, script);
 
@@ -349,9 +355,5 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 			rhinoScript = rhinoScript.getParent();
 
 		return rhinoScript;
-	}
-
-	private static boolean isDynamicCode(final Script script) {
-		return (script.getFile() == null);
 	}
 }
