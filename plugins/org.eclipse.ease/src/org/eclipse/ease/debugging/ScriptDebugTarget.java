@@ -96,7 +96,6 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	@Override
 	public boolean supportsBreakpoint(final IBreakpoint breakpoint) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

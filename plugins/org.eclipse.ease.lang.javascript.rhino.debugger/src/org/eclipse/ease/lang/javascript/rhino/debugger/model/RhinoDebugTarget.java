@@ -36,4 +36,9 @@ public class RhinoDebugTarget extends ScriptDebugTarget {
 	protected IBreakpoint[] getBreakpoints(final Script script) {
 		return DebugPlugin.getDefault().getBreakpointManager().getBreakpoints("org.eclipse.wst.jsdt.debug.model");
 	}
+
+	@Override
+	public boolean supportsBreakpoint(final IBreakpoint breakpoint) {
+		return true;
+	}
 }
