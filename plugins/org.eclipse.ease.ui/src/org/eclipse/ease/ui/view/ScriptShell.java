@@ -286,14 +286,6 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		ftree.setLinesVisible(true);
 
 		fVariablesTree.setFilters(new ViewerFilter[] {
-				// filter internal javascript classes
-				new ViewerFilter() {
-
-					@Override
-					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-						return !((Entry<?, ?>) element).getValue().getClass().getName().startsWith("org.mozilla.javascript.gen");
-					}
-				},
 
 				// filter modules
 				new ViewerFilter() {

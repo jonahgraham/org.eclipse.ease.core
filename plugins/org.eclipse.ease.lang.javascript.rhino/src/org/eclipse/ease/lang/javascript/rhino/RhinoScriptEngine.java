@@ -139,7 +139,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Exception {
 		if (uiThread) {
 			// run in UI thread
-			RunnableWithResult<Entry<Object, Exception>> runnable = new RunnableWithResult<Entry<Object, Exception>>() {
+			final RunnableWithResult<Entry<Object, Exception>> runnable = new RunnableWithResult<Entry<Object, Exception>>() {
 
 				@Override
 				public void run() {
@@ -149,7 +149,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 					// call execute again, now from correct thread
 					try {
 						setResult(new AbstractMap.SimpleEntry<Object, Exception>(internalExecute(script, reference, fileName), null));
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						setResult(new AbstractMap.SimpleEntry<Object, Exception>(null, e));
 					}
 				}
@@ -158,7 +158,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			Display.getDefault().syncExec(runnable);
 
 			// evaluate result
-			Entry<Object, Exception> result = runnable.getResult();
+			final Entry<Object, Exception> result = runnable.getResult();
 			if (result.getValue() != null)
 				throw (result.getValue());
 
@@ -265,8 +265,9 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		final Map<String, Object> result = new HashMap<String, Object>();
 
 		for (final Object key : getScope().getIds()) {
-			if (key instanceof String)
-				result.put((String) key, getVariable((String) key));
+			final Object value = internalGetVariable(key.toString());
+			if (!value.getClass().getName().startsWith("org.mozilla.javascript.gen"))
+				result.put(key.toString(), value);
 		}
 
 		return result;
