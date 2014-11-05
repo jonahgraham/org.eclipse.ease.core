@@ -1,0 +1,10 @@
+target "Luna with Python"
+
+with source requirements
+
+include "Luna.tpd"
+
+location "http://pydev.org/updates/" {
+	org.python.pydev.feature.feature.group
+}
+
