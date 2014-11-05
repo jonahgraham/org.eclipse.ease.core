@@ -11,31 +11,14 @@
 package org.eclipse.ease.lang.javascript.rhino.debugger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.debugging.AbstractScriptDebugger;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
-import org.eclipse.ease.debugging.events.BreakpointRequest;
-import org.eclipse.ease.debugging.events.EngineStartedEvent;
-import org.eclipse.ease.debugging.events.EngineTerminatedEvent;
-import org.eclipse.ease.debugging.events.GetStackFramesRequest;
-import org.eclipse.ease.debugging.events.IDebugEvent;
-import org.eclipse.ease.debugging.events.ResumeRequest;
-import org.eclipse.ease.debugging.events.ResumedEvent;
-import org.eclipse.ease.debugging.events.ScriptReadyEvent;
-import org.eclipse.ease.debugging.events.StackFramesEvent;
-import org.eclipse.ease.debugging.events.SuspendedEvent;
-import org.eclipse.ease.debugging.events.TerminateRequest;
 import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -44,32 +27,6 @@ import org.mozilla.javascript.debug.DebuggableScript;
 import org.mozilla.javascript.debug.Debugger;
 
 public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
-
-	private RhinoScriptEngine mEngine;
-
-	private boolean mSuspended;
-
-	private final Map<DebuggableScript, Script> mFrameToSource = new HashMap<DebuggableScript, Script>();
-
-	private final List<IScriptDebugFrame> mDebugFrames = new ArrayList<IScriptDebugFrame>();
-
-	private final Map<Script, List<IBreakpoint>> mScriptBreakpoints = new HashMap<Script, List<IBreakpoint>>();
-
-	private Script mLastScript = null;
-
-	private Thread mThread;
-
-	private int mRunMode;
-
-	private List<IScriptDebugFrame> mResumedFrames;
-
-	private final boolean fShowDynamicCode;
-
-	public RhinoDebugger(final RhinoScriptEngine engine, final boolean showDynamicCode) {
-		mEngine = engine;
-		fShowDynamicCode = showDynamicCode;
-		mEngine.addExecutionListener(this);
-	}
 
 	public class RhinoDebugFrame implements DebugFrame, IScriptDebugFrame {
 
@@ -83,62 +40,17 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		@Override
 		public void onEnter(final Context cx, final Scriptable activation, final Scriptable thisObj, final Object[] args) {
-			if (!getScript().isDynamic() || fShowDynamicCode) {
-				// static code or dynamic code activated
-				if (!mFnOrScript.isFunction()) {
-					// this is a new script source, no function call
-					fireDispatchEvent(new ScriptReadyEvent(getScript(), mThread, mDebugFrames.size() == 1));
-					suspend();
-				}
-			}
+			// nothing to do
 		}
 
 		@Override
 		public void onLineChange(final Context cx, final int lineNumber) {
-			if (!getScript().isDynamic() || fShowDynamicCode) {
+			mLineNumber = lineNumber;
+			if (isTrackedScript(getScript())) {
 				// static code or dynamic code activated
 
-				mLineNumber = lineNumber;
-
-				// check breakpoints
-				// TODO use cache for faster lookup
-				final List<IBreakpoint> breakpoints = mScriptBreakpoints.get(mFrameToSource.get(mFnOrScript));
-				if (breakpoints != null) {
-					for (final IBreakpoint breakpoint : breakpoints) {
-						try {
-							if (breakpoint.isEnabled()) {
-								final int breakline = breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1);
-								if (breakline == lineNumber) {
-									fireDispatchEvent(new SuspendedEvent(DebugEvent.BREAKPOINT, mThread, mDebugFrames));
-									mRunMode = DebugEvent.CLIENT_REQUEST;
-									suspend();
-									return;
-								}
-							}
-						} catch (final CoreException e) {
-							// cannot query enabled property, ignore breakpoint
-						}
-					}
-				}
-
-				// no breakpoint, check for step into
-				if (mRunMode == DebugEvent.STEP_INTO) {
-					// this is the next chance to stop
-					fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
-					suspend();
-					return;
-				}
-
-				// check for step over
-				if (mRunMode == DebugEvent.STEP_OVER) {
-					// check call stack
-					if (mResumedFrames.size() >= mDebugFrames.size()) {
-						// call stack did not grow
-						fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
-						suspend();
-						return;
-					}
-				}
+				// TODO in future we should not add stuff to the stack we do not track anyway, so we can get rid of the "if" statement
+				processLine(getScript(), lineNumber);
 			}
 		}
 
@@ -148,25 +60,12 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		@Override
 		public void onExit(final Context cx, final boolean byThrow, final Object resultOrException) {
-			mDebugFrames.remove(this);
-
-			if (!getScript().isDynamic() || fShowDynamicCode) {
-				// static code or dynamic code activated
-
-				// check for step return / step over
-				if ((mRunMode == DebugEvent.STEP_RETURN) || (mRunMode == DebugEvent.STEP_OVER)) {
-					// check call stack
-					if ((mResumedFrames.size() > mDebugFrames.size()) && (!mDebugFrames.isEmpty())) {
-						// call stack got smaller
-						fireDispatchEvent(new SuspendedEvent(DebugEvent.STEP_END, mThread, mDebugFrames));
-						suspend();
-					}
-				}
-			}
+			getStacktrace().remove(this);
 		}
 
 		@Override
 		public void onDebuggerStatement(final Context cx) {
+			// nothing to do
 		}
 
 		@Override
@@ -210,8 +109,16 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		@Override
 		public Map<String, Object> getVariables() {
-			return mEngine.getVariables();
+			return getEngine().getVariables();
 		}
+	}
+
+	private final Map<DebuggableScript, Script> mFrameToSource = new HashMap<DebuggableScript, Script>();
+
+	private Script mLastScript = null;
+
+	public RhinoDebugger(final RhinoScriptEngine engine, final boolean showDynamicCode) {
+		super(engine, showDynamicCode);
 	}
 
 	@Override
@@ -237,55 +144,16 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		// create debug frame
 		final RhinoDebugFrame debugFrame = new RhinoDebugFrame(fnOrScript);
-		mDebugFrames.add(0, debugFrame);
+		// mDebugFrames.add(0, debugFrame);
+
+		getStacktrace().add(0, debugFrame);
 
 		return debugFrame;
 	}
 
 	@Override
-	public void handleEvent(final IDebugEvent event) {
-		if (event instanceof ResumeRequest) {
-			// store resume mode
-			mRunMode = ((ResumeRequest) event).getType();
-			// store debug frame stack on resume event (to detect step into/over/return)
-			if (mRunMode != DebugEvent.CLIENT_REQUEST)
-				// only for step commands
-				mResumedFrames = new ArrayList<IScriptDebugFrame>(mDebugFrames);
-
-			resume();
-
-		} else if (event instanceof BreakpointRequest) {
-			final Script script = ((BreakpointRequest) event).getScript();
-			if (!mScriptBreakpoints.containsKey(script))
-				mScriptBreakpoints.put(script, new ArrayList<IBreakpoint>());
-
-			if (((BreakpointRequest) event).getMode() == BreakpointRequest.Mode.ADD)
-				mScriptBreakpoints.get(script).add(((BreakpointRequest) event).getBreakpoint());
-			else
-				mScriptBreakpoints.get(script).remove(((BreakpointRequest) event).getBreakpoint());
-
-		} else if (event instanceof GetStackFramesRequest) {
-			fireDispatchEvent(new StackFramesEvent(mDebugFrames, mThread));
-
-		} else if (event instanceof TerminateRequest) {
-			// TODO implement
-		}
-	}
-
-	@Override
 	public void notify(final IScriptEngine engine, final Script script, final int status) {
 		switch (status) {
-		case ENGINE_START:
-			fireDispatchEvent(new EngineStartedEvent());
-			mThread = Thread.currentThread();
-			break;
-
-		case ENGINE_END:
-			fireDispatchEvent(new EngineTerminatedEvent());
-
-			// allow for garbage collection
-			mEngine = null;
-			break;
 
 		case SCRIPT_START:
 			// fall through
@@ -296,39 +164,12 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 			mLastScript = script;
 			break;
 
-		case SCRIPT_END:
-			// fall through
-		case SCRIPT_INJECTION_END:
-			// nothing to do
-			break;
-
 		default:
 			// unknown event
 			break;
 		}
-	}
 
-	private void resume() {
-		synchronized (mEngine) {
-			mSuspended = false;
-			mEngine.notifyAll();
-		}
-	}
-
-	private void suspend() {
-		synchronized (mEngine) {
-			mSuspended = true;
-
-			try {
-				while (mSuspended)
-					mEngine.wait();
-
-			} catch (final InterruptedException e) {
-				mSuspended = false;
-			}
-
-			fireDispatchEvent(new ResumedEvent(Thread.currentThread(), mRunMode));
-		}
+		super.notify(engine, script, status);
 	}
 
 	private Script getScript(final DebuggableScript rhinoScript) {

@@ -145,17 +145,18 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			fireSuspendEvent(DebugEvent.CLIENT_REQUEST);
 			debugThread.setSuspended(DebugEvent.CLIENT_REQUEST);
 
+			// by default resume execution
+			int stepType = DebugEvent.UNSPECIFIED;
 			if (fSuspendOnScriptLoad)
 				// suspend on any script load event
-				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_INTO, debugThread.getThread()));
+				stepType = DebugEvent.STEP_INTO;
 
 			else if ((((ScriptReadyEvent) event).isRoot()) && (fSuspendOnStartup))
 				// suspend on script startup event
-				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_INTO, debugThread.getThread()));
+				stepType = DebugEvent.STEP_INTO;
 
-			else
-				// immediately resume execution
-				fireDispatchEvent(new ResumeRequest(DebugEvent.UNSPECIFIED, debugThread.getThread()));
+			// send resume request
+			fireDispatchEvent(new ResumeRequest(stepType, debugThread.getThread()));
 
 		} else if (event instanceof StackFramesEvent) {
 			// stackframe refresh

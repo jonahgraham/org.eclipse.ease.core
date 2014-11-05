@@ -254,9 +254,7 @@ public class Script {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = (prime * result) + ((fCodeBuffer == null) ? 0 : fCodeBuffer.hashCode());
 		result = (prime * result) + ((fCommand == null) ? 0 : fCommand.hashCode());
-		result = (prime * result) + ((fResult == null) ? 0 : fResult.hashCode());
 		return result;
 	}
 
@@ -268,23 +266,12 @@ public class Script {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final Script other = (Script) obj;
-		if (fCodeBuffer == null) {
-			if (other.fCodeBuffer != null)
-				return false;
-		} else if (!fCodeBuffer.equals(other.fCodeBuffer))
-			return false;
+		Script other = (Script) obj;
 		if (fCommand == null) {
 			if (other.fCommand != null)
 				return false;
 		} else if (!fCommand.equals(other.fCommand))
 			return false;
-		if (fResult == null) {
-			if (other.fResult != null)
-				return false;
-		} else if (!fResult.equals(other.fResult))
-			return false;
 		return true;
 	}
-
 }
