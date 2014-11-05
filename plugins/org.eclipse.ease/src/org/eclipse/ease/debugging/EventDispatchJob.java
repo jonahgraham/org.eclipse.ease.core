@@ -23,6 +23,8 @@ import org.eclipse.ease.debugging.events.IModelRequest;
 
 public class EventDispatchJob extends Job {
 
+	private static final boolean DEBUG = true;
+
 	private final List<IDebugEvent> fEvents = new ArrayList<IDebugEvent>();
 
 	private boolean fTerminated = false;
@@ -45,11 +47,13 @@ public class EventDispatchJob extends Job {
 			if (!fEvents.contains(event)) {
 				// TODO use tracing for these sysouts
 				// DEBUG print events
-				if (event instanceof IDebuggerEvent)
-					System.out.println("Debugger ---> " + event);
+				if (DEBUG) {
+					if (event instanceof IDebuggerEvent)
+						System.out.println("Debugger ---> " + event);
 
-				else if (event instanceof IModelRequest)
-					System.out.println("Target   ---> " + event);
+					else if (event instanceof IModelRequest)
+						System.out.println("Target   ---> " + event);
+				}
 				// end DEBUG
 
 				fEvents.add(event);
@@ -96,11 +100,13 @@ public class EventDispatchJob extends Job {
 
 		// TODO use tracing for these sysouts
 		// DEBUG print events
-		if (event instanceof IDebuggerEvent)
-			System.out.println("\t\t! Target  : " + event);
+		if (DEBUG) {
+			if (event instanceof IDebuggerEvent)
+				System.out.println("\t\t! Target  : " + event);
 
-		else if (event instanceof IModelRequest)
-			System.out.println("\t\t! Debugger: " + event);
+			else if (event instanceof IModelRequest)
+				System.out.println("\t\t! Debugger: " + event);
+		}
 		// end DEBUG
 
 		// forward event handling to target

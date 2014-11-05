@@ -21,11 +21,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.model.IBreakpoint;
-import org.eclipse.ease.IExecutionListener;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
-import org.eclipse.ease.debugging.EventDispatchJob;
-import org.eclipse.ease.debugging.IEventProcessor;
+import org.eclipse.ease.debugging.AbstractScriptDebugger;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.events.BreakpointRequest;
 import org.eclipse.ease.debugging.events.EngineStartedEvent;
@@ -45,11 +43,9 @@ import org.mozilla.javascript.debug.DebugFrame;
 import org.mozilla.javascript.debug.DebuggableScript;
 import org.mozilla.javascript.debug.Debugger;
 
-public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListener {
+public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 	private RhinoScriptEngine mEngine;
-
-	private EventDispatchJob mDispatcher;
 
 	private boolean mSuspended;
 
@@ -69,14 +65,10 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 	private final boolean fShowDynamicCode;
 
-	public RhinoDebugger(final RhinoScriptEngine engine, boolean showDynamicCode) {
+	public RhinoDebugger(final RhinoScriptEngine engine, final boolean showDynamicCode) {
 		mEngine = engine;
 		fShowDynamicCode = showDynamicCode;
 		mEngine.addExecutionListener(this);
-	}
-
-	public void setDispatcher(final EventDispatchJob dispatcher) {
-		mDispatcher = dispatcher;
 	}
 
 	public class RhinoDebugFrame implements DebugFrame, IScriptDebugFrame {
@@ -226,13 +218,6 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 	public void handleCompilationDone(final Context cx, final DebuggableScript fnOrScript, final String source) {
 	}
 
-	private void fireDispatchEvent(final IDebugEvent event) {
-		synchronized (mDispatcher) {
-			if (mDispatcher != null)
-				mDispatcher.addEvent(event);
-		}
-	}
-
 	@Override
 	public DebugFrame getFrame(final Context cx, final DebuggableScript fnOrScript) {
 
@@ -274,7 +259,10 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 			if (!mScriptBreakpoints.containsKey(script))
 				mScriptBreakpoints.put(script, new ArrayList<IBreakpoint>());
 
-			mScriptBreakpoints.get(script).add(((BreakpointRequest) event).getBreakpoint());
+			if (((BreakpointRequest) event).getMode() == BreakpointRequest.Mode.ADD)
+				mScriptBreakpoints.get(script).add(((BreakpointRequest) event).getBreakpoint());
+			else
+				mScriptBreakpoints.get(script).remove(((BreakpointRequest) event).getBreakpoint());
 
 		} else if (event instanceof GetStackFramesRequest) {
 			fireDispatchEvent(new StackFramesEvent(mDebugFrames, mThread));
@@ -297,9 +285,6 @@ public class RhinoDebugger implements Debugger, IEventProcessor, IExecutionListe
 
 			// allow for garbage collection
 			mEngine = null;
-			synchronized (mDispatcher) {
-				mDispatcher = null;
-			}
 			break;
 
 		case SCRIPT_START:

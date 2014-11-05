@@ -15,13 +15,20 @@ import org.eclipse.ease.Script;
 
 public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 
+	public enum Mode {
+		ADD, REMOVE
+	}
+
 	private final Script fScript;
 
 	private final IBreakpoint fBreakpoint;
 
-	public BreakpointRequest(final Script script, final IBreakpoint breakpoint) {
+	private final Mode fMode;
+
+	public BreakpointRequest(final Script script, final IBreakpoint breakpoint, final Mode mode) {
 		fScript = script;
 		fBreakpoint = breakpoint;
+		fMode = mode;
 	}
 
 	public Script getScript() {
@@ -30,5 +37,9 @@ public class BreakpointRequest extends AbstractEvent implements IModelRequest {
 
 	public IBreakpoint getBreakpoint() {
 		return fBreakpoint;
+	}
+
+	public Mode getMode() {
+		return fMode;
 	}
 }

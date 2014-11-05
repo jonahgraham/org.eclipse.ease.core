@@ -19,13 +19,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.debugging.events.BreakpointRequest;
+import org.eclipse.ease.debugging.events.BreakpointRequest.Mode;
 import org.eclipse.ease.debugging.events.EngineStartedEvent;
 import org.eclipse.ease.debugging.events.EngineTerminatedEvent;
 import org.eclipse.ease.debugging.events.IDebugEvent;
@@ -54,12 +57,15 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	private final boolean fShowDynamicCode;
 
-	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, boolean showDynamicCode) {
+	public ScriptDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, final boolean showDynamicCode) {
 		super(null);
 		fLaunch = launch;
 		fSuspendOnStartup = suspendOnStartup;
 		fSuspendOnScriptLoad = suspendOnScriptLoad;
 		fShowDynamicCode = showDynamicCode;
+
+		// subscribe for breakpoint changes
+		DebugPlugin.getDefault().getBreakpointManager().addBreakpointListener(this);
 
 		fireCreationEvent();
 	}
@@ -149,7 +155,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 			else
 				// immediately resume execution
-				fireDispatchEvent(new ResumeRequest(DebugEvent.STEP_END, debugThread.getThread()));
+				fireDispatchEvent(new ResumeRequest(DebugEvent.UNSPECIFIED, debugThread.getThread()));
 
 		} else if (event instanceof StackFramesEvent) {
 			// stackframe refresh
@@ -167,6 +173,9 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			debugThread.setSuspended(((SuspendedEvent) event).getType());
 
 		} else if (event instanceof EngineTerminatedEvent) {
+			// unsubscribe from breakpoint changes
+			DebugPlugin.getDefault().getBreakpointManager().removeBreakpointListener(this);
+
 			fState = State.TERMINATED;
 			fireTerminateEvent();
 			for (final ScriptDebugThread thread : getThreads())
@@ -181,13 +190,13 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 	 *            frames to be filtered
 	 * @return filtered frames
 	 */
-	private List<IScriptDebugFrame> filterFrames(List<IScriptDebugFrame> frames) {
+	private List<IScriptDebugFrame> filterFrames(final List<IScriptDebugFrame> frames) {
 		if (fShowDynamicCode)
 			return frames;
 
 		final ArrayList<IScriptDebugFrame> filteredFrames = new ArrayList<IScriptDebugFrame>(frames);
 		for (final IScriptDebugFrame frame : frames) {
-			if (frame.getScript().getFile() == null)
+			if (frame.getScript().isDynamic())
 				filteredFrames.remove(frame);
 		}
 
@@ -211,7 +220,7 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 			for (final IBreakpoint breakpoint : breakpoints) {
 				if (file.equals(breakpoint.getMarker().getResource()))
-					fireDispatchEvent(new BreakpointRequest(script, breakpoint));
+					fireDispatchEvent(new BreakpointRequest(script, breakpoint, BreakpointRequest.Mode.ADD));
 			}
 		}
 	}
@@ -224,20 +233,35 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 	@Override
 	public void breakpointAdded(final IBreakpoint breakpoint) {
-		// TODO Auto-generated method stub
-
+		handleBreakpointChange(breakpoint, BreakpointRequest.Mode.ADD);
 	}
 
 	@Override
 	public void breakpointRemoved(final IBreakpoint breakpoint, final IMarkerDelta delta) {
-		// TODO Auto-generated method stub
-
+		handleBreakpointChange(breakpoint, BreakpointRequest.Mode.REMOVE);
 	}
 
 	@Override
 	public void breakpointChanged(final IBreakpoint breakpoint, final IMarkerDelta delta) {
-		// TODO Auto-generated method stub
+		breakpointRemoved(breakpoint, delta);
+		breakpointAdded(breakpoint);
+	}
 
+	private void handleBreakpointChange(final IBreakpoint breakpoint, final Mode mode) {
+		IResource affectedResource = breakpoint.getMarker().getResource();
+
+		// see if we are affected by this breakpoint
+		for (ScriptDebugThread thread : getThreads()) {
+			for (IStackFrame frame : thread.getStackFrames()) {
+				if (frame instanceof ScriptDebugStackFrame) {
+					Script script = ((ScriptDebugStackFrame) frame).getScript();
+					if (affectedResource.equals(script.getFile())) {
+						// we need to deal with this breakpoint
+						fireDispatchEvent(new BreakpointRequest(script, breakpoint, mode));
+					}
+				}
+			}
+		}
 	}
 
 	// ************************************************************
