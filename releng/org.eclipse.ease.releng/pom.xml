@@ -177,6 +177,29 @@
 							</execution>
 						</executions>
 					</plugin>
+
+					<plugin>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<groupId>org.codehaus.mojo</groupId>
+						<version>1.9.1</version>
+						<executions>
+							<execution>
+								<id>add_help</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>add-resource</goal>
+								</goals>
+								<configuration>
+									<resources>
+										<resource>
+											<directory>${basedir}/help</directory>
+											<targetPath>help</targetPath>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -191,20 +214,9 @@
 				<module>../../tests/org.eclipse.ease.test</module>
 			</modules>
 
-<!-- 
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>tycho-surefire-plugin</artifactId>
-						<version>${tycho.version}</version>
-						<configuration>
-							<useUIHarness>false</useUIHarness>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
- -->
+			<!-- <build> <plugins> <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>tycho-surefire-plugin</artifactId> 
+				<version>${tycho.version}</version> <configuration> <useUIHarness>false</useUIHarness> 
+				</configuration> </plugin> </plugins> </build> -->
 		</profile>
 
 		<profile>
