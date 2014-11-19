@@ -109,7 +109,6 @@
 		<!-- core -->
 		<module>../../plugins/org.eclipse.ease</module>
 		<module>../../plugins/org.eclipse.ease.ui</module>
-		<module>../../plugins/org.eclipse.ease.storedscript</module>
 		<module>../../features/org.eclipse.ease.feature</module>
 		<module>../../features/org.eclipse.ease.ui.feature</module>
 

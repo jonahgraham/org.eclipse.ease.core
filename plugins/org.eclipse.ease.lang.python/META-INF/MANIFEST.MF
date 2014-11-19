@@ -6,7 +6,6 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Eclipse
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.ease,
- org.eclipse.ease.storedscript,
  com.google.guava;bundle-version="11.0.2",
  org.eclipse.swt,
  org.eclipse.jface,

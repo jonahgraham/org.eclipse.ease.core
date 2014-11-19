@@ -380,29 +380,6 @@
 
    
    <extension
-        point="org.eclipse.ease.storedscript.metadata">
-     <metadata
-           impl="org.eclipse.ease.ui.metadata.DescriptionMetadataParser"
-           name="Description">
-     </metadata>
-     <metadata
-           impl="org.eclipse.ease.ui.metadata.MenuMetadataParser"
-           name="Menu">
-     </metadata>
-      <metadata
-            impl="org.eclipse.ease.ui.metadata.VisibleWhenMetadataParser"
-            name="VisibleWhen">
-      </metadata>
-      <metadata
-            impl="org.eclipse.ease.ui.metadata.ThreadMetadataParser"
-            name="Thread">
-      </metadata>
-      <metadata
-            impl="org.eclipse.ease.ui.metadata.EffectiveScriptGenerationMetadata"
-            name="GenerateInjectedCodeFile">
-      </metadata>
-  </extension>
-   <extension
          point="org.eclipse.ui.commands">
       <command
             description="Run the script selected in the Script Explorer View"
