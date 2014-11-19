@@ -1,20 +1,20 @@
-target "Luna"
-
-with source requirements
+target "Luna" with source requirements
 
 location "http://download.eclipse.org/releases/luna/" {
 	org.eclipse.platform.feature.group
 	org.eclipse.rcp.feature.group
 	org.eclipse.jdt.feature.group
-	
+
 	// javascript support (rhino & editors)
 	org.eclipse.wst.jsdt.feature.feature.group
-	
+
 	// for modeling stuff
 	org.eclipse.emf.sdk.feature.group
-	
+
 	// modeling modules
 	org.eclipse.papyrus.infra.feature.feature.group
+	org.eclipse.papyrus.infra.gmfdiag.feature.feature.group
+	org.eclipse.papyrus.uml.diagram.feature.feature.group
 	org.eclipse.uml2.uml
 	org.eclipse.gmf.runtime.diagram.ui
 }
