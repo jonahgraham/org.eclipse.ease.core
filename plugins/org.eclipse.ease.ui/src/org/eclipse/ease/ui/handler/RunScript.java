@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.handler;
+ *******************************************************************************/
+package org.eclipse.ease.ui.handler;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -53,6 +54,7 @@ public class RunScript extends AbstractHandler implements IHandler {
 
 			if (part instanceof IScriptEngineProvider)
 				// execute in current view
+				// FIXME do not use include command, include script directly => check with implementation to avoid continuous loops
 				((IScriptEngineProvider) part).getScriptEngine().executeAsync("include('script:/" + script.getPath() + "');");
 			else
 				// execute stand-alone

@@ -58,6 +58,7 @@ public class ModulesLabelProvider extends LabelProvider {
 			return icon.createImage();
 		}
 
+		// FIXME needs dependency to JSDT - move icons to local project
 		if (element instanceof Method)
 			return Activator.getImage("org.eclipse.wst.jsdt.ui", "/icons/full/obj16/methpub_obj.gif", true);
 
