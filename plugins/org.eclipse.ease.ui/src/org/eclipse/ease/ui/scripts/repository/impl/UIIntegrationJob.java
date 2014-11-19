@@ -34,9 +34,13 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
 public class UIIntegrationJob extends UIJob implements IScriptListener {
+	private static final String KEYWORD_POPUP = "popup";
+
 	private static final String KEYWORD_MENU = "menu";
 
 	private static final String KEYWORD_TOOLBAR = "toolbar";
+
+	public static final String POPUP_LOCATION = "org.eclipse.ui.popup.any?after=additions";
 
 	private class LocationDescription {
 		public String fScheme;
@@ -46,37 +50,45 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 		public LocationDescription(final String scheme, final String entry) {
 			fScheme = scheme;
 
-			String locationID;
-			if (entry.contains("|")) {
-				fName = entry.substring(entry.indexOf('|') + 1).trim();
-				locationID = entry.substring(0, entry.indexOf('|')).trim();
+			if (KEYWORD_POPUP.equals(fScheme)) {
+				// general popup menu
+				fViewID = "";
+				fName = null;
 
 			} else {
-				fName = null;
-				locationID = entry.trim();
-			}
+				// menu or toolbar
+				String locationID;
+				if (entry.contains("|")) {
+					fName = entry.substring(entry.indexOf('|') + 1).trim();
+					locationID = entry.substring(0, entry.indexOf('|')).trim();
 
-			// try to find a view with matching ID or matching title
-			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.ui.views");
-			for (final IConfigurationElement e : config) {
-				if ("view".equals(e.getName())) {
-					String id = e.getAttribute("id");
-					if (id.equals(locationID)) {
-						fViewID = id;
-						return;
-					}
+				} else {
+					fName = null;
+					locationID = entry.trim();
+				}
 
-					String name = e.getAttribute("name");
-					if (name.equals(locationID)) {
-						fViewID = id;
-						return;
+				// try to find a view with matching ID or matching title
+				final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.ui.views");
+				for (final IConfigurationElement e : config) {
+					if ("view".equals(e.getName())) {
+						String id = e.getAttribute("id");
+						if (id.equals(locationID)) {
+							fViewID = id;
+							return;
+						}
+
+						String name = e.getAttribute("name");
+						if (name.equals(locationID)) {
+							fViewID = id;
+							return;
+						}
 					}
 				}
 			}
 		}
 
 		public String getId() {
-			return fScheme + ":" + fViewID;
+			return fScheme + ":" + ((KEYWORD_POPUP.equals(fScheme)) ? POPUP_LOCATION : fViewID);
 		}
 	}
 
@@ -154,7 +166,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	}
 
 	private void handleAdditions(final IScript script) {
-		for (String scheme : new String[] { KEYWORD_TOOLBAR, KEYWORD_MENU }) {
+		for (String scheme : new String[] { KEYWORD_TOOLBAR, KEYWORD_MENU, KEYWORD_POPUP }) {
 			if (script.getParameters().containsKey(scheme)) {
 				LocationDescription location = new LocationDescription(scheme, script.getParameters().get(scheme));
 				addViewContribution(location, script);
@@ -163,7 +175,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	}
 
 	private void handleRemoval(final IScript script) {
-		for (String scheme : new String[] { KEYWORD_TOOLBAR, KEYWORD_MENU }) {
+		for (String scheme : new String[] { KEYWORD_TOOLBAR, KEYWORD_MENU, KEYWORD_POPUP }) {
 			if (script.getParameters().containsKey(scheme)) {
 				LocationDescription location = new LocationDescription(scheme, script.getParameters().get(scheme));
 				removeViewContribution(location, script);
@@ -172,7 +184,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	}
 
 	private void handleParameterChange(final IScript script, final ParameterDelta parameterDelta) {
-		for (String scheme : new String[] { KEYWORD_TOOLBAR, KEYWORD_MENU }) {
+		for (String scheme : new String[] { KEYWORD_TOOLBAR, KEYWORD_MENU, KEYWORD_POPUP }) {
 			modifyViewContribution(scheme, script, parameterDelta);
 		}
 	}
@@ -275,7 +287,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	@Override
 	public void notify(final ScriptRepositoryEvent event) {
 		Map<String, String> parameters = event.getScript().getParameters();
-		if (parameters.containsKey(KEYWORD_MENU) || parameters.containsKey(KEYWORD_TOOLBAR) || parameters.containsKey("popup")
+		if (parameters.containsKey(KEYWORD_MENU) || parameters.containsKey(KEYWORD_TOOLBAR) || parameters.containsKey(KEYWORD_POPUP)
 				|| (event.getType() == ScriptRepositoryEvent.PARAMETER_CHANGE)) {
 			// script with UI integration
 			switch (event.getType()) {
@@ -291,7 +303,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 
 			case ScriptRepositoryEvent.PARAMETER_CHANGE:
 				ParameterDelta delta = (ParameterDelta) event.getEventData();
-				if (delta.isAffected(KEYWORD_TOOLBAR) || delta.isAffected(KEYWORD_MENU) || delta.isAffected("popup") || delta.isAffected("name")
+				if (delta.isAffected(KEYWORD_TOOLBAR) || delta.isAffected(KEYWORD_MENU) || delta.isAffected(KEYWORD_POPUP) || delta.isAffected("name")
 						|| delta.isAffected("image")) {
 					// we need to adapt the appearance
 					fChangedScripts.put(event.getScript(), delta);

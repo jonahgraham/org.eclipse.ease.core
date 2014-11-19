@@ -57,8 +57,14 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 			}
 		}
 
-		for (IScript script : fScripts)
-			additions.addContributionItem(new ScriptContributionItem(script), null);
+		if (getLocation().endsWith(UIIntegrationJob.POPUP_LOCATION)) {
+			for (IScript script : fScripts)
+				additions.addContributionItem(new ScriptContributionItem(script, script.getParameters().get("popup")), null);
+
+		} else {
+			for (IScript script : fScripts)
+				additions.addContributionItem(new ScriptContributionItem(script), null);
+		}
 	}
 
 	public void addScript(final IScript script) {

@@ -591,4 +591,16 @@
             state="true">
       </decorator>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.eclipse.ease.ui.runSelectedScript"
+               label="User Scripts"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
 </plugin>

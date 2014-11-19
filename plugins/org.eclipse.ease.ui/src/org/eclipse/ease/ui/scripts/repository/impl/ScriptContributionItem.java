@@ -12,16 +12,27 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.expressions.EvaluationResult;
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.internal.expressions.AdaptExpression;
+import org.eclipse.core.internal.expressions.IterateExpression;
+import org.eclipse.core.internal.expressions.WithExpression;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ease.ui.LocationImageDescriptor;
 import org.eclipse.ease.ui.handler.RunScript;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 
 public class ScriptContributionItem extends CommandContributionItem {
+
+	private static final Pattern ENABLE_PATTERN = Pattern.compile("enableFor\\((.*)\\)");
 
 	private static ImageDescriptor getImageDescriptor(final String imageLocation) {
 		if (imageLocation != null)
@@ -38,6 +49,7 @@ public class ScriptContributionItem extends CommandContributionItem {
 	}
 
 	private final IScript fScript;
+	private Expression fVisibleExpression = null;
 
 	public ScriptContributionItem(final IScript script) {
 		super(new CommandContributionItemParameter(PlatformUI.getWorkbench().getActiveWorkbenchWindow(), script.getLocation(), RunScript.COMMAND_ID,
@@ -45,6 +57,28 @@ public class ScriptContributionItem extends CommandContributionItem {
 				true));
 
 		fScript = script;
+	}
+
+	public ScriptContributionItem(final IScript script, final String enablement) {
+		this(script);
+
+		Matcher matcher = ENABLE_PATTERN.matcher(enablement);
+		if (matcher.matches()) {
+			try {
+				WithExpression withExpression = new WithExpression("selection");
+				IterateExpression iteratorExpression = new IterateExpression(null, Boolean.FALSE.toString());
+				AdaptExpression adaptExpression = new AdaptExpression(matcher.group(1));
+
+				withExpression.add(iteratorExpression);
+				iteratorExpression.add(adaptExpression);
+
+				fVisibleExpression = withExpression;
+			} catch (CoreException e) {
+				// TODO provide log message to user
+
+				fVisibleExpression = Expression.FALSE;
+			}
+		}
 	}
 
 	@Override
@@ -68,6 +102,20 @@ public class ScriptContributionItem extends CommandContributionItem {
 
 	@Override
 	public boolean isVisible() {
+
+		if (fVisibleExpression != null) {
+			try {
+				final IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
+				EvaluationResult evaluate = fVisibleExpression.evaluate(handlerService.getCurrentState());
+
+				return Boolean.parseBoolean(evaluate.toString());
+
+			} catch (CoreException e) {
+				// TODO provide log message to user
+				return false;
+			}
+		}
+
 		return true;
 	}
 }
