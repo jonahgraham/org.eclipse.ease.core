@@ -7,68 +7,69 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository.impl;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.ease.ui.handler.RunScript;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IContributionManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.AbstractContributionFactory;
-import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.menus.IContributionRoot;
+import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.services.IServiceLocator;
 
 public class ScriptContributionFactory extends AbstractContributionFactory {
 
-	public static final String DYNAMIC_ID = "dynamic";
-	public static final String STATIC_ID = "static.one.time";
-
+	/** List of scripts to be registered. */
 	private final List<IScript> fScripts = new ArrayList<IScript>();
 
-	public ScriptContributionFactory(String location, String namespace) {
+	/** ContributionManager scripts should be added to. */
+	private IContributionManager fContributionManager = null;
+
+	public ScriptContributionFactory(final String location, final String namespace) {
 		super(location, namespace);
+
+		// register factory
+		final IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
+		menuService.addContributionFactory(this);
 	}
 
 	@Override
-	public void createContributionItems(IServiceLocator serviceLocator, IContributionRoot additions) {
-		for (IContributionItem item : createContributions(DYNAMIC_ID, serviceLocator))
-			additions.addContributionItem(item, null);
+	public void createContributionItems(final IServiceLocator serviceLocator, final IContributionRoot additions) {
 
-		System.out.println("added dynamic toolbar entry");
+		// if we added contributions manually before, do not add them a 2nd time
+		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=452203 for details
+		boolean rendered = (fContributionManager instanceof MenuManager) && (((MenuManager) fContributionManager).getMenu() != null);
+		rendered |= (fContributionManager instanceof ToolBarManager) && (((ToolBarManager) fContributionManager).getControl() != null);
 
-	}
-
-	public List<IContributionItem> createContributions(String id, IServiceLocator serviceLocator) {
-		List<IContributionItem> items = new ArrayList<IContributionItem>();
-
-		for (IScript script : fScripts) {
-
-			CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(serviceLocator, id, RunScript.COMMAND_ID,
-					CommandContributionItem.STYLE_PUSH);
-
-			contributionParameter.label = script.getName();
-			contributionParameter.visibleEnabled = true;
-			contributionParameter.parameters = new HashMap<String, String>();
-			contributionParameter.parameters.put(RunScript.PARAMETER_NAME, script.getPath().toString());
-
-			items.add(new CommandContributionItem(contributionParameter) {
-				@Override
-				public boolean isDynamic() {
-					return true;
+		if (rendered) {
+			for (IContributionItem item : fContributionManager.getItems()) {
+				if (item instanceof ScriptContributionItem) {
+					// contributions already added to toolbar, do not add again
+					return;
 				}
-
-			});
+			}
 		}
 
-		return items;
+		for (IScript script : fScripts)
+			additions.addContributionItem(new ScriptContributionItem(script), null);
 	}
 
-	public void addScript(IScript script) {
-		if (!fScripts.contains(script))
-			fScripts.add(script);
+	public void addScript(final IScript script) {
+		fScripts.add(script);
+	}
+
+	public void removeScript(final IScript script) {
+		fScripts.remove(script);
+	}
+
+	public void setAffectedContribution(final IContributionManager manager) {
+		fContributionManager = manager;
 	}
 }

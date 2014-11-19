@@ -108,7 +108,7 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 
 	private synchronized void update(final IScriptLocation entry) {
 		fEntriesforUpdate.add(entry);
-		scheduleUpdate(0);
+		scheduleUpdate(300);
 	}
 
 	@Override
@@ -136,32 +136,4 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 			throw new RuntimeException(e);
 		}
 	}
-
-	// @Override
-	// public void notify(ScriptRepositoryEvent event) {
-	// switch (event.getType()) {
-	// case ScriptRepositoryEvent.ADD:
-	// if ((event.getScript().getParameters().get("menu") != null) || (event.getScript().getParameters().get("toolbar") != null)) {
-	// // to be added
-	//
-	// }
-	// break;
-	//
-	// case ScriptRepositoryEvent.DELETE:
-	// if ((event.getScript().getParameters().get("menu") != null) || (event.getScript().getParameters().get("toolbar") != null)) {
-	// // to be deleted
-	// }
-	// break;
-	//
-	// case ScriptRepositoryEvent.PARAMETER_CHANGE:
-	// Map<String, String> parameters = (Map<String, String>) event.getEventData();
-	// if ((parameters.containsKey("menu")) || (parameters.containsKey("toolbar"))) {
-	// // to be changed
-	// }
-	// break;
-	//
-	// default:
-	// break;
-	// }
-	// }
 }

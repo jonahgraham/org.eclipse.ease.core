@@ -7,10 +7,18 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository;
 
 import org.eclipse.ease.ui.scripts.repository.impl.ScriptRepositoryEvent;
 
 public interface IScriptListener {
+
+	/**
+	 * Notify of script change events.
+	 *
+	 * @param event
+	 *            script event
+	 */
 	void notify(ScriptRepositoryEvent event);
 }

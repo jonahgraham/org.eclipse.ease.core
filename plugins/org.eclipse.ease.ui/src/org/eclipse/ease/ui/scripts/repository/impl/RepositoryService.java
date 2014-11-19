@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -94,7 +95,6 @@ public class RepositoryService implements IRepositoryService {
 	};
 
 	private final ListenerList fListeners = new ListenerList();
-	private final UIIntegrationJob fUiIntegration;
 
 	/**
 	 * Initialize the repository service.
@@ -130,8 +130,7 @@ public class RepositoryService implements IRepositoryService {
 		}
 
 		// apply UI integrations
-		fUiIntegration = new UIIntegrationJob(this);
-		fUiIntegration.addScripts(getScripts());
+		new UIIntegrationJob(this);
 
 		// update repository
 		fUpdateJob = new UpdateRepositoryJob(this);
@@ -229,9 +228,9 @@ public class RepositoryService implements IRepositoryService {
 		fSaveJob.schedule(5000);
 	}
 
-	private void notifyListeners(final ScriptRepositoryEvent scriptRepositoryEvent) {
+	private void notifyListeners(final ScriptRepositoryEvent event) {
 		for (Object listener : fListeners.getListeners())
-			((IScriptListener) listener).notify(scriptRepositoryEvent);
+			((IScriptListener) listener).notify(event);
 	}
 
 	@Override
@@ -260,42 +259,23 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	void updateScript(final IScript script, final Map<String, String> parameters) {
-		// TODO update listeners (only if parameters changed)
 
 		// store current parameters
-		Map<String, String> oldParameters = script.getParameters();
+		Map<String, String> oldParameters = new HashMap<String, String>(script.getParameters());
 
 		script.getScriptParameters().clear();
 		script.getScriptParameters().putAll(parameters);
 
-		// get new parameters
-		Map<String, String> newParameters = script.getParameters();
+		// get new parameters (merged with user parameters)
+		Map<String, String> newParameters = new HashMap<String, String>(script.getParameters());
 
 		// now look for changes
-
-		// first find removed parameters
-		HashSet<String> deletedKeys = new HashSet<String>(oldParameters.keySet());
-		deletedKeys.removeAll(newParameters.keySet());
-
-		// now remove parameters that were not changed
-		for (String key : oldParameters.keySet()) {
-			if (oldParameters.get(key).equals(newParameters.get(key)))
-				newParameters.remove(key);
-		}
-
-		// re-add deleted keys with value set to null
-		for (String key : deletedKeys)
-			newParameters.put(key, null);
-
-		if (!newParameters.isEmpty()) {
+		if (!oldParameters.equals(newParameters)) {
 			// some parameters changed
-			notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.PARAMETER_CHANGE, newParameters));
+			notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.PARAMETER_CHANGE, new ParameterDelta(oldParameters, newParameters)));
 		}
 
 		script.setUpdatePending(false);
-
-		System.out.println("RepositoryService.updateScript() -> scheduling UI");
-		fUiIntegration.schedule();
 	}
 
 	void addScript(final IScript script) {

@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.scripts.ui;
 
-import java.util.Map;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineProvider;
@@ -19,6 +17,7 @@ import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptListener;
+import org.eclipse.ease.ui.scripts.repository.impl.ParameterDelta;
 import org.eclipse.ease.ui.scripts.repository.impl.ScriptRepositoryEvent;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -168,8 +167,8 @@ public class ScriptComposite extends Composite implements IScriptListener {
 	public void notify(final ScriptRepositoryEvent event) {
 		switch (event.getType()) {
 		case ScriptRepositoryEvent.PARAMETER_CHANGE:
-			final Map<String, String> eventData = (Map<String, String>) event.getEventData();
-			if (!eventData.containsKey("name"))
+			final ParameterDelta eventData = (ParameterDelta) event.getEventData();
+			if (!eventData.isAffected("name"))
 				return;
 
 			// name changed, fall through
