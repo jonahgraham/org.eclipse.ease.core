@@ -22,17 +22,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.ease.IHeaderParser;
 import org.eclipse.ease.Logger;
 
-import com.google.common.base.Function;
-
 public class ScriptType {
-
-	public static class ToExtensionFile implements Function<ScriptType, String> {
-
-		@Override
-		public String apply(final ScriptType arg0) {
-			return arg0.getDefaultExtension();
-		}
-	}
 
 	private static final String NAME = "name";
 	private static final String DEFAULT_EXTENSION = "defaultExtension";
