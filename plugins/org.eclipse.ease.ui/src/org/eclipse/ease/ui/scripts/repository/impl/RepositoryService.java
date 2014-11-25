@@ -164,27 +164,37 @@ public class RepositoryService implements IRepositoryService {
 						return true;
 
 					else {
-						String location = node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, "");
+						String storageLocation = node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, "");
 
 						boolean found = false;
-						for (IScriptLocation entry : getLocations()) {
-							if (entry.getLocation().equals(location)) {
-								entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
-								entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false));
-								entry.setUpdatePending(false);
+						for (IScriptLocation location : getLocations()) {
+							if (location.getLocation().equals(storageLocation)) {
+								boolean defaultLocation = node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false);
+								if (defaultLocation != location.isDefault()) {
+									location.setDefault(defaultLocation);
+									fUpdateJob.update(location);
+								}
 
+								boolean recursive = node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false);
+								if (recursive != location.isRecursive()) {
+									location.setRecursive(recursive);
+									fUpdateJob.update(location);
+								}
+
+								location.setUpdatePending(false);
 								found = true;
 								break;
 							}
 						}
 
 						if (!found) {
-							IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
-							entry.setLocation(location);
-							entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
-							entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false));
+							IScriptLocation location = IRepositoryFactory.eINSTANCE.createScriptLocation();
+							location.setLocation(storageLocation);
+							location.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
+							location.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false));
 
-							fRepository.getEntries().add(entry);
+							fRepository.getEntries().add(location);
+							fUpdateJob.update(location);
 						}
 
 						return false;
@@ -194,12 +204,11 @@ public class RepositoryService implements IRepositoryService {
 
 			// remove all repositories where update is pending as they are not stored in the preferences
 			for (IScriptLocation entry : new HashSet<IScriptLocation>(getLocations())) {
-				if (entry.isUpdatePending())
+				if (entry.isUpdatePending()) {
 					fRepository.getEntries().remove(entry);
+					fUpdateJob.update(entry);
+				}
 			}
-
-			// we updated our locations, now update all scripts
-			update(false);
 
 		} catch (BackingStoreException e) {
 			Logger.logError("Could not update script repository.", e);
@@ -254,7 +263,12 @@ public class RepositoryService implements IRepositoryService {
 	}
 
 	void removeScript(final IScript script) {
-		fRepository.getScripts().remove(script);
+		for (IScriptLocation entry : fRepository.getEntries()) {
+			if (entry.getScripts().remove(script))
+				// script removed, do not search any longer
+				break;
+		}
+
 		notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.DELETE, null));
 	}
 
