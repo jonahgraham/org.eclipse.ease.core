@@ -1,5 +1,5 @@
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease/help/scripting_book.css">
+		<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/scripting_book.css">
 	</head>
 	<body>

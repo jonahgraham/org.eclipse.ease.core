@@ -77,8 +77,8 @@ public class ModuleDoclet extends Doclet {
 		}
 	};
 
-	private static final String QUALIFIED_WRAP_TO_SCRIPT = "org.eclipse.ease.modules.WrapToScript";
 	private static final String WRAP_TO_SCRIPT = "WrapToScript";
+	private static final String QUALIFIED_WRAP_TO_SCRIPT = "org.eclipse.ease.modules." + WRAP_TO_SCRIPT;
 	private static final String LINE_DELIMITER = "\n";
 
 	private static final String OPTION_PROJECT_ROOT = "-root";
@@ -220,7 +220,7 @@ public class ModuleDoclet extends Doclet {
 				return "../" + categoryId.substring(0, index) + "/help/" + createCategoryFileName(categoryId) + "#modules_anchor";
 		}
 
-		return "../org.eclipse.ease/help/scripting_book.xml#modules_anchor";
+		return "../org.eclipse.ease.help/help/scripting_book.xml#modules_anchor";
 	}
 
 	private static String createCategoryFileName(final String categoryId) {
@@ -492,7 +492,7 @@ public class ModuleDoclet extends Doclet {
 		for (Entry<Pattern, String> entry : fExternalAPIDocs.entrySet()) {
 			if (entry.getKey().matcher(qualifiedName).matches())
 				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + "\" title=\"" + qualifiedName + "\">"
-						+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
+				+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
 		}
 
 		return qualifiedName;
@@ -632,6 +632,7 @@ public class ModuleDoclet extends Doclet {
 		while (stream.available() > 0)
 			buffer.append((char) stream.read());
 
+		stream.close();
 		return buffer;
 	}
 }

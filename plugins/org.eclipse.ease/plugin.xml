@@ -53,10 +53,6 @@
             name="System">
       </category>
    </extension>
-   <extension point="org.eclipse.help.toc">
-      <toc file="help/scripting_book.xml" primary="true">
-      </toc>
-   </extension>
 
 <extension
       point="org.eclipse.ease.language">

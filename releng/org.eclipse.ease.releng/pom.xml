@@ -140,6 +140,7 @@
 			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples</module> 
 			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml</module> 
 			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml.examples</module> -->
+		<module>../../plugins/org.eclipse.ease.help</module>
 	</modules>
 
 
