@@ -277,10 +277,39 @@
          </separator>
       </menuContribution>
       <menuContribution
+            allPopups="false"
+            locationURI="menu:help?after=additions">
+         <command
+               commandId="org.eclipse.equinox.p2.ui.discovery.commands.ShowRepositoryCatalog"
+               icon="icons/eobj16/ease_component.png"
+               label="Install EASE Components"
+               tooltip="Install EASE Additional Components">
+            <parameter
+                  name="org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter"
+                  value="http://topcased-mm.gforge.enseeiht.fr/ease_jython/updates/ease_jython_nightly/">
+            </parameter>
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="true"
+            locationURI="menu:org.eclipse.ease.commands.scriptShell.loadModule.popup">
+         <dynamic
+               class="org.eclipse.ease.ui.view.ModuleContributionFactory"
+               id="org.eclipse.ease.ui.dynamic.modules">
+         </dynamic>
+      </menuContribution>
+      <menuContribution
             locationURI="menu:org.eclipse.ease.commands.script.toggleScriptPane.popup">
          <dynamic
                class="org.eclipse.ease.ui.scripts.ScriptContributionFactory"
-               id="org.eclipse.ease.ui.dynamic">
+               id="org.eclipse.ease.ui.dynamic.scripts">
+         </dynamic>
+      </menuContribution>
+      <menuContribution
+            locationURI="menu:org.eclipse.ease.commands.scriptShell.switchEngine.popup">
+         <dynamic
+               class="org.eclipse.ease.ui.view.EngineContributionFactory"
+               id="org.eclipse.ease.ui.dynamic.engines">
          </dynamic>
       </menuContribution>
       <menuContribution
@@ -300,20 +329,6 @@
                name="additions"
                visible="false">
          </separator>
-      </menuContribution>
-      <menuContribution
-            allPopups="false"
-            locationURI="menu:help?after=additions">
-         <command
-               commandId="org.eclipse.equinox.p2.ui.discovery.commands.ShowRepositoryCatalog"
-               icon="icons/eobj16/ease_component.png"
-               label="Install EASE Components"
-               tooltip="Install EASE Additional Components">
-            <parameter
-                  name="org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter"
-                  value="http://topcased-mm.gforge.enseeiht.fr/ease_jython/updates/ease_jython_nightly/">
-            </parameter>
-         </command>
       </menuContribution>
    </extension>
    <extension

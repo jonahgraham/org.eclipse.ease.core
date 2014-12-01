@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
@@ -19,49 +21,28 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.handler.LoadModule;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.tools.AbstractPopupItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.menus.AbstractContributionFactory;
-import org.eclipse.ui.menus.IContributionRoot;
-import org.eclipse.ui.menus.IMenuService;
+import org.eclipse.ui.actions.CompoundContributionItem;
+import org.eclipse.ui.menus.IWorkbenchContribution;
 import org.eclipse.ui.services.IServiceLocator;
 import org.osgi.service.prefs.Preferences;
 
-public final class ModuleContributionFactory extends AbstractContributionFactory {
+public final class ModuleContributionFactory extends CompoundContributionItem implements IWorkbenchContribution {
 
-	private static ModuleContributionFactory fInstance = null;
+	private IServiceLocator fServiceLocator;
 
-	/**
-	 * Add context menu for these contribution items.
-	 */
-	public static void addContextMenu() {
-		final IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
-		menuService.addContributionFactory(getInstance());
-	}
-
-	/**
-	 * Get instance of this factory.
-	 *
-	 * @return factory instance
-	 */
-	private static ModuleContributionFactory getInstance() {
-		if (fInstance == null)
-			fInstance = new ModuleContributionFactory();
-
-		return fInstance;
-	}
-
-	/**
-	 * Private constructor.
-	 */
-	private ModuleContributionFactory() {
-		super("menu:" + LoadModule.COMMAND_ID + ".popup", null);
+	@Override
+	public void initialize(final IServiceLocator serviceLocator) {
+		fServiceLocator = serviceLocator;
 	}
 
 	@Override
-	public void createContributionItems(final IServiceLocator serviceLocator, final IContributionRoot additions) {
+	protected IContributionItem[] getContributionItems() {
+
+		List<IContributionItem> contributions = new ArrayList<IContributionItem>();
 
 		IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		Map<String, ModuleDefinition> modules = scriptService.getAvailableModules();
@@ -97,7 +78,14 @@ public final class ModuleContributionFactory extends AbstractContributionFactory
 		// populate root contributions
 		ModulePopupMenu root = moduleTree.get(new Path("/"));
 		for (AbstractPopupItem item : root.getEntries())
-			additions.addContributionItem(item.getContribution(serviceLocator), null);
+			contributions.add(item.getContribution(fServiceLocator));
+
+		return contributions.toArray(new IContributionItem[contributions.size()]);
+	}
+
+	@Override
+	public boolean isDirty() {
+		return true;
 	}
 
 	private static ModulePopupMenu createPath(final Map<IPath, ModulePopupMenu> moduleTree, final IPath path) {

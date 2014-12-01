@@ -21,47 +21,27 @@ import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.handler.SwitchEngine;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.menus.AbstractContributionFactory;
+import org.eclipse.ui.actions.CompoundContributionItem;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
-import org.eclipse.ui.menus.IContributionRoot;
-import org.eclipse.ui.menus.IMenuService;
+import org.eclipse.ui.menus.IWorkbenchContribution;
 import org.eclipse.ui.services.IServiceLocator;
 
-public final class EngineContributionFactory extends AbstractContributionFactory {
+public final class EngineContributionFactory extends CompoundContributionItem implements IWorkbenchContribution {
 
-	private static EngineContributionFactory fInstance = null;
+	private IServiceLocator fServiceLocator;
 
-	/**
-	 * Add context menu for these contribution items.
-	 */
-	public static void addContextMenu() {
-		final IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
-		menuService.addContributionFactory(getInstance());
-	}
-
-	/**
-	 * Get instance of this factory.
-	 *
-	 * @return factory instance
-	 */
-	private static EngineContributionFactory getInstance() {
-		if (fInstance == null)
-			fInstance = new EngineContributionFactory();
-
-		return fInstance;
-	}
-
-	/**
-	 * Private constructor.
-	 */
-	private EngineContributionFactory() {
-		super("menu:" + SwitchEngine.COMMAND_ID + ".popup", null);
+	@Override
+	public void initialize(final IServiceLocator serviceLocator) {
+		fServiceLocator = serviceLocator;
 	}
 
 	@Override
-	public void createContributionItems(final IServiceLocator serviceLocator, final IContributionRoot additions) {
+	protected IContributionItem[] getContributionItems() {
+
+		List<IContributionItem> contributions = new ArrayList<IContributionItem>();
 
 		IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		if (scriptService != null) {
@@ -74,7 +54,7 @@ public final class EngineContributionFactory extends AbstractContributionFactory
 				final HashMap<String, String> parameters = new HashMap<String, String>();
 				parameters.put(SwitchEngine.PARAMETER_ID, description.getID());
 
-				final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(serviceLocator, null,
+				final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(fServiceLocator, null,
 						SwitchEngine.COMMAND_ID, CommandContributionItem.STYLE_PUSH);
 				contributionParameter.parameters = parameters;
 				contributionParameter.label = description.getName();
@@ -94,7 +74,14 @@ public final class EngineContributionFactory extends AbstractContributionFactory
 			});
 
 			for (final CommandContributionItemParameter item : items)
-				additions.addContributionItem(new CommandContributionItem(item), null);
+				contributions.add(new CommandContributionItem(item));
 		}
+
+		return contributions.toArray(new IContributionItem[contributions.size()]);
+	}
+
+	@Override
+	public boolean isDirty() {
+		return true;
 	}
 }

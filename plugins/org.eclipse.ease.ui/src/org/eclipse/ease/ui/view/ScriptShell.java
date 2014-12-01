@@ -76,7 +76,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IMemento;
@@ -102,40 +101,6 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	private static final int TYPE_RESULT = 3;
 
 	private static final int TYPE_COMMAND = 4;
-
-	private SashForm fSashForm;
-
-	private Combo fInputCombo;
-
-	private StyledText fOutputText;
-
-	private boolean fScrollLock = false;
-
-	private boolean fPrintLock = false;
-
-	private LocalResourceManager fResourceManager = null;
-
-	private int[] fSashWeights = new int[] { 70, 30 };
-
-	private IScriptEngine fScriptEngine;
-
-	private IMemento fInitMemento;
-
-	private ScriptComposite fScriptComposite;
-
-	private int fHistoryLength;
-
-	private boolean fAutoFocus;
-
-	private boolean fKeepCommand;
-
-	static {
-		// add dynamic context menu for engine switching
-		EngineContributionFactory.addContextMenu();
-
-		// add dynamic context menu for module loading
-		ModuleContributionFactory.addContextMenu();
-	}
 
 	private class AutoFocus implements KeyListener {
 
@@ -163,13 +128,36 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		}
 	}
 
+	private SashForm fSashForm;
+
+	private Combo fInputCombo;
+
+	private StyledText fOutputText;
+
+	private boolean fScrollLock = false;
+
+	private boolean fPrintLock = false;
+
+	private LocalResourceManager fResourceManager = null;
+
+	private int[] fSashWeights = new int[] { 70, 30 };
+
+	private IScriptEngine fScriptEngine;
+
+	private IMemento fInitMemento;
+
+	private ScriptComposite fScriptComposite;
+
+	private int fHistoryLength;
+
+	private boolean fAutoFocus;
+
+	private boolean fKeepCommand;
+
 	private AutoFocus fAutoFocusListener = null;
 
 	private ContentProposalAdapter fContentAssistAdapter = null;
 	private TabItem fTabScripts;
-	private TabItem ftabItem_1;
-	private TabItem ftabItem_2;
-	private Text ftext;
 	private TabItem fTabVariables;
 	private Composite fcomposite;
 	private Tree ftree;
@@ -203,9 +191,6 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		if (engineDescription != null)
 			setEngine(engineDescription.getID());
-
-		// add dynamic context menu for scripts
-		// ScriptContributionFactory.addContextMenu("org.eclipse.ease.commands.script.toggleScriptPane.popup");
 
 		// FIXME add preferences lookup
 		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
