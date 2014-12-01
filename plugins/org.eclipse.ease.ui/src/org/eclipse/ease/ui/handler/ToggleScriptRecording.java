@@ -88,14 +88,14 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 							final InputDialog dialog = new InputDialog(HandlerUtil.getActiveShell(event), "Save Script",
 									"Enter a unique name for your script (use '/' as path delimiter)", "", new IInputValidator() {
 
-								@Override
-								public String isValid(final String name) {
-									if (storage.exists(name))
-										return "Script name <" + name + "> is already in use. Choose a different one.";
+										@Override
+										public String isValid(final String name) {
+											if (storage.exists(name))
+												return "Script name <" + name + "> is already in use. Choose a different one.";
 
-									return null;
-								}
-							});
+											return null;
+										}
+									});
 
 							if (dialog.open() == Window.OK)
 								name = dialog.getValue();
@@ -173,10 +173,10 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 		super.updateElement(element, parameters);
 
 		if (fChecked)
-			element.setIcon(Activator.getImageDescriptor(Activator.PLUGIN_ID, "images/record_script_stop.png"));
+			element.setIcon(Activator.getImageDescriptor(Activator.PLUGIN_ID, "icons/elcl16/stop_script_recording.png"));
 
 		else
-			element.setIcon(Activator.getImageDescriptor(Activator.PLUGIN_ID, "images/record_script_start.png"));
+			element.setIcon(Activator.getImageDescriptor(Activator.PLUGIN_ID, "icons/elcl16/start_script_recording.png"));
 	}
 
 	@Override

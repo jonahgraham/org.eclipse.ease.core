@@ -10,14 +10,13 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.tools;
 
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.internal.WorkbenchImages;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.eclipse.ui.services.IServiceLocator;
 
@@ -77,8 +76,7 @@ public abstract class AbstractPopupMenu extends AbstractPopupItem implements IMe
 
 	@Override
 	protected ImageDescriptor getImageDescriptor() {
-		// TODO provide own image
-		return WorkbenchImages.getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER);
+		return Activator.getImageDescriptor("/icons/eobj16/folder.png");
 	}
 
 	protected abstract void populate();

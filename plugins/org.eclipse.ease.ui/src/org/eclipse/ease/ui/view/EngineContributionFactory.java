@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.handler.SwitchEngine;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.AbstractContributionFactory;
@@ -78,6 +79,7 @@ public final class EngineContributionFactory extends AbstractContributionFactory
 				contributionParameter.parameters = parameters;
 				contributionParameter.label = description.getName();
 				contributionParameter.visibleEnabled = true;
+				contributionParameter.icon = Activator.getImageDescriptor("/icons/eobj16/engine.png");
 
 				items.add(contributionParameter);
 			}

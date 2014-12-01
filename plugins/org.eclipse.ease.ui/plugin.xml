@@ -8,7 +8,7 @@
             allowMultiple="true"
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ScriptShell"
-            icon="images/shell_view.gif"
+            icon="icons/eview16/script_shell.png"
             id="org.eclipse.ease.views.scriptShell"
             name="Script Shell"
             restorable="true">
@@ -20,7 +20,7 @@
       <view
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ScriptExplorerView"
-            icon="icons/full/obj16/eclipse_monkey.png"
+            icon="icons/eview16/script_explorer.png"
             id="org.eclipse.ease.ui.view.ScriptEplorerView"
             name="Script Explorer">
       </view>
@@ -28,7 +28,7 @@
             allowMultiple="false"
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ModuleExplorerView"
-            icon="icons/full/obj16/ModuleExplorer_16x16.png"
+            icon="icons/eview16/modules_explorer.png"
             id="org.eclipse.ease.ui.view.ModulesExplorerView"
             name="Modules Explorer"
             restorable="true">
@@ -188,7 +188,7 @@
          </separator>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.loadModule"
-               icon="images/libraries.gif"
+               icon="icons/elcl16/modules.png"
                id="org.eclipse.ease.commands.scriptShell.loadModule.popup"
                label="Load Module"
                style="pulldown"
@@ -196,7 +196,7 @@
          </command>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.clearDisplay"
-               icon="images/erase.gif"
+               icon="icons/elcl16/erase.png"
                label="Clear Display"
                style="push">
          </command>
@@ -206,21 +206,21 @@
          </separator>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.switchEngine"
-               icon="images/engine.png"
+               icon="icons/elcl16/engines.png"
                id="org.eclipse.ease.commands.scriptShell.switchEngine.popup"
                label="Switch engine"
                style="pulldown">
          </command>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.reset"
-               icon="images/reset.gif"
+               icon="icons/elcl16/reset.png"
                label="Reset"
                style="push"
                tooltip="Reset Script Engine">
          </command>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.newShell"
-               icon="images/shell_view.gif"
+               icon="icons/elcl16/new_shell.png"
                id="org.eclipse.ease.commands.scriptShell.newShell.popup"
                label="New shell"
                style="push">
@@ -231,14 +231,14 @@
          </separator>
          <command
                commandId="org.eclipse.ease.commands.script.toggleScriptPane"
-               icon="images/macro_folder.gif"
+               icon="icons/eview16/script_explorer.png"
                id="org.eclipse.ease.commands.script.toggleScriptPane.popup"
                label="Script Pane"
                style="pulldown">
          </command>
          <command
                commandId="org.eclipse.ease.commands.script.toggleScriptRecording"
-               icon="images/record_script_start.png"
+               icon="icons/elcl16/start_script_recording.png"
                label="Toggle Script Recording"
                style="toggle">
          </command>
@@ -249,21 +249,25 @@
       </menuContribution>
       <menuContribution
             locationURI="toolbar:org.eclipse.ease.ui.view.ScriptEplorerView">
+         <separator
+               name="top"
+               visible="false">
+         </separator>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.runScript"
-               icon="images/start_script.gif"
+               icon="icons/elcl16/run_script.png"
                label="Run"
                style="push">
          </command>
          <command
                commandId="org.eclipse.ease.commands.script.edit"
-               icon="images/script_edit.png"
+               icon="icons/elcl16/edit_script.png"
                label="Edit"
                style="push">
          </command>
          <command
                commandId="org.eclipse.ease.commands.scriptShell.refreshRepository"
-               icon="images/refresh.gif"
+               icon="icons/elcl16/refresh.png"
                label="Refresh"
                style="push">
          </command>
@@ -288,7 +292,7 @@
          </separator>
          <command
                commandId="org.eclipse.ease.commands.ModulesExplorer.openHelp"
-               icon="platform:/plugin/org.eclipse.ui/icons/full/elcl16/linkto_help.gif"
+               icon="icons/eobj16/help.png"
                label="open help"
                style="push">
          </command>
@@ -302,7 +306,7 @@
             locationURI="menu:help?after=additions">
          <command
                commandId="org.eclipse.equinox.p2.ui.discovery.commands.ShowRepositoryCatalog"
-               icon="images/monkey.gif"
+               icon="icons/eobj16/ease_component.png"
                label="Install EASE Components"
                tooltip="Install EASE Additional Components">
             <parameter
@@ -437,7 +441,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="org.eclipse.ease.launchConfigurationType"
-            icon="images/script.gif"
+            icon="icons/eobj16/script.png"
             id="org.eclipse.ease.launchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
@@ -446,7 +450,7 @@
       <shortcut
             class="org.eclipse.ease.ui.launching.EaseLaunchDelegate"
             description="Run a script file"
-            icon="images/script.gif"
+            icon="icons/eobj16/script.png"
             id="org.eclipse.ease.launchShortcut"
             label="EASE Script"
             modes="run">
@@ -467,7 +471,7 @@
       <shortcut
             class="org.eclipse.ease.ui.launching.EaseLaunchDelegate"
             description="Run a script file"
-            icon="images/script.gif"
+            icon="icons/eobj16/script.png"
             id="org.eclipse.ease.launchShortcut"
             label="EASE Script"
             modes="debug">
@@ -531,7 +535,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.eclipse.ease.ui.perspectives.ScriptingPerspective"
-            icon="images/script.gif"
+            icon="icons/eobj16/script.png"
             id="org.eclipse.ease.ui.perspectives.ScriptingPerspective"
             name="Scripting">
       </perspective>
@@ -567,18 +571,6 @@
             objectClass="java.lang.reflect.Method"
             state="true">
       </decorator>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            allPopups="false"
-            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
-         <command
-               commandId="org.eclipse.ease.ui.runSelectedScript"
-               label="User Scripts"
-               style="push">
-         </command>
-      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

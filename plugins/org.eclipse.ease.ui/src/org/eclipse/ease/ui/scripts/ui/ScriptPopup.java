@@ -48,6 +48,6 @@ public class ScriptPopup extends AbstractPopupItem {
 
 	@Override
 	protected ImageDescriptor getImageDescriptor() {
-		return Activator.getImageDescriptor("/images/script.gif");
+		return Activator.getImageDescriptor("/icons/eobj16//script.png");
 	}
 }

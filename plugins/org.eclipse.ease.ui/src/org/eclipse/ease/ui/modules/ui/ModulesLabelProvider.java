@@ -48,22 +48,21 @@ public class ModulesLabelProvider extends LabelProvider {
 	public Image getImage(final Object element) {
 
 		if (element instanceof IPath)
-			return Activator.getImage("org.eclipse.ui", "/icons/full/obj16/fldr_obj.gif", true);
+			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/folder.png", true);
 
 		if (element instanceof ModuleDefinition) {
 			ImageDescriptor icon = ((ModuleDefinition) element).getImageDescriptor();
 			if (icon == null)
-				return Activator.getImage("org.eclipse.ease.ui", "/icons/full/obj16/Module_16x16.png", true);
+				return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/module.png", true);
 
 			return icon.createImage();
 		}
 
-		// FIXME needs dependency to JSDT - move icons to local project
 		if (element instanceof Method)
-			return Activator.getImage("org.eclipse.wst.jsdt.ui", "/icons/full/obj16/methpub_obj.gif", true);
+			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/function.png", true);
 
 		if (element instanceof Field)
-			return Activator.getImage("org.eclipse.wst.jsdt.ui", "/icons/full/obj16/field_public_obj.gif", true);
+			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/field.png", true);
 
 		return null;
 	}

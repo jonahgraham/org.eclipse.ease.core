@@ -13,10 +13,8 @@ package org.eclipse.ease.ui.scripts.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.tools.AbstractPopupItem;
 import org.eclipse.ease.ui.tools.AbstractPopupMenu;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ScriptPopupMenu extends AbstractPopupMenu {
 
@@ -60,10 +58,5 @@ public class ScriptPopupMenu extends AbstractPopupMenu {
 		}
 
 		return null;
-	}
-
-	@Override
-	protected ImageDescriptor getImageDescriptor() {
-		return Activator.getImageDescriptor("/images/macro_folder.gif");
 	}
 }
