@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.completion;
+ *******************************************************************************/
+package org.eclipse.ease.ui.completion;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -124,18 +125,27 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	public void addCode(final String code) {
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
-		for (String name : getModuleNames(code)) {
-			String fullName = ModuleHelper.resolveName(name);
+		Collection<String> modules = getModuleNames(code);
+		while (!modules.isEmpty()) {
+			String candidate = modules.iterator().next();
+			modules.remove(candidate);
+
+			String fullName = ModuleHelper.resolveName(candidate);
 			ModuleDefinition definition = scriptService.getAvailableModules().get(fullName);
-			if (definition != null)
+			if (definition != null) {
 				fLoadedModules.add(definition);
+
+				// add dependencies to list
+				for (String moduleID : definition.getDependencies())
+					modules.add(scriptService.getModuleDefinition(moduleID).getPath().toString());
+			}
 		}
 	}
 
 	/**
 	 * Extract names of loaded modules within provided code. Will only detect string literals, so if the loadModule parameter is not a single string, extraction
 	 * will fail.
-	 * 
+	 *
 	 * @param code
 	 *            code to parse
 	 * @return collection of module names
@@ -154,7 +164,7 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	 * Extract context relevant information from current line. The returned matcher locates the last alphanumeric word in the line and an optional non
 	 * alphanumeric character right before that word. result.group(1) contains the last non-alphanumeric token (eg a dot, brackets, arithmetic operators, ...),
 	 * result.group(2) contains the alphanumeric text. This text can be used to filter content assist proposals.
-	 * 
+	 *
 	 * @param data
 	 *            current line of code left from cursor
 	 * @return matcher containing content assist information
