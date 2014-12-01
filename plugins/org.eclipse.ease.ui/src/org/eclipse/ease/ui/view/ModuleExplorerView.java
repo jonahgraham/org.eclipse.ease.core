@@ -32,8 +32,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class ModuleExplorerView extends ViewPart implements
-		IPreferenceChangeListener {
+public class ModuleExplorerView extends ViewPart implements IPreferenceChangeListener {
 
 	public static final String ID = "org.eclipse.ease.ui.view.ModulesExplorerView"; //$NON-NLS-1$
 	private ModulesComposite fModulesComposite;
@@ -44,11 +43,11 @@ public class ModuleExplorerView extends ViewPart implements
 
 	/**
 	 * Create contents of the view part.
-	 * 
+	 *
 	 * @param parent
 	 */
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 
 		fModulesComposite = new ModulesComposite(parent, SWT.NONE, false);
 		fModulesComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -56,52 +55,35 @@ public class ModuleExplorerView extends ViewPart implements
 		fModulesComposite.addFilter(ModulesFilter.visible(fModulesComposite));
 
 		MenuManager menuManager = new MenuManager();
-		Menu menu = menuManager.createContextMenu(fModulesComposite
-				.getTreeViewer().getTree());
-		getSite().registerContextMenu(menuManager,
-				fModulesComposite.getTreeViewer());
+		Menu menu = menuManager.createContextMenu(fModulesComposite.getTreeViewer().getTree());
+		getSite().registerContextMenu(menuManager, fModulesComposite.getTreeViewer());
 		fModulesComposite.getTreeViewer().getTree().setMenu(menu);
 
 		getSite().setSelectionProvider(fModulesComposite.getTreeViewer());
 
-		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(
-				org.eclipse.ease.Activator.PLUGIN_ID).node("modules"))
-				.addPreferenceChangeListener(this);
+		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(org.eclipse.ease.Activator.PLUGIN_ID).node("modules")).addPreferenceChangeListener(this);
 
-		final IScriptService scriptService = (IScriptService) PlatformUI
-				.getWorkbench().getService(IScriptService.class);
-		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(
-				scriptService.getAvailableModules().values());
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 		fModulesComposite.setInput(modules);
-
 	}
 
 	@Override
 	public void setFocus() {
-		// Set the focus
 	}
 
 	@Override
 	public void dispose() {
-
-		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(
-				Activator.PLUGIN_ID).node("modules"))
-				.removePreferenceChangeListener(this);
-
+		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node("modules")).removePreferenceChangeListener(this);
 	}
 
 	@Override
-	public void preferenceChange(PreferenceChangeEvent event) {
-		if (event.getNode().name().equals("modules")) {
+	public void preferenceChange(final PreferenceChangeEvent event) {
+		if (event.getNode().name().equals("modules"))
 			fModulesComposite.refresh();
-
-		}
-
 	}
 
 	public IContentProvider getContentProvider() {
 		return fModulesComposite.getTreeViewer().getContentProvider();
-
 	}
-
 }

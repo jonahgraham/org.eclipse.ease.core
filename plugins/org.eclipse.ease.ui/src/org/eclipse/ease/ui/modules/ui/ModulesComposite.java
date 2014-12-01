@@ -32,7 +32,7 @@ public class ModulesComposite extends Composite {
 
 	/**
 	 * Create the composite.
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 * @param modulesOnly
@@ -43,7 +43,7 @@ public class ModulesComposite extends Composite {
 
 		treeViewer = new TreeViewer(this, SWT.NONE);
 
-		this.setLayout(new FillLayout(SWT.HORIZONTAL));
+		setLayout(new FillLayout(SWT.HORIZONTAL));
 		treeViewer.getTree().setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		ColumnViewerToolTipSupport.enableFor(treeViewer);
@@ -70,7 +70,6 @@ public class ModulesComposite extends Composite {
 		});
 
 		treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TextTransfer.getInstance() }, new ModulesDragListener(treeViewer));
-
 	}
 
 	@Override
@@ -87,15 +86,10 @@ public class ModulesComposite extends Composite {
 	}
 
 	public void addFilter(final ViewerFilter filter) {
-
 		treeViewer.addFilter(filter);
-
 	}
 
 	public TreeViewer getTreeViewer() {
-
 		return treeViewer;
-
 	}
-
 }

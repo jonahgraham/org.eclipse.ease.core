@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Platform;
  */
 public final class StringTools {
 
+	// TODO move to o.e.ease.core
 	/** Default line break character. */
 	public static final String LINE_DELIMITER = System.getProperty(Platform.PREF_LINE_SEPARATOR);
 }
