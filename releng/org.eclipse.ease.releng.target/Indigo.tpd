@@ -14,9 +14,9 @@ location "http://download.eclipse.org/releases/indigo/" {
 	org.eclipse.emf.sdk.feature.group
 	
 	// modeling modules
-	org.eclipse.papyrus.infra.feature.feature.group
-	org.eclipse.uml2.uml
-	org.eclipse.gmf.runtime.diagram.ui
+	org.eclipse.gmf.examples.runtime.feature.group
+	org.eclipse.papyrus.uml.feature.group
+	org.eclipse.uml2.feature.group
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/" {

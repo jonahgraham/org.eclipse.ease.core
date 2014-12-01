@@ -8,3 +8,13 @@ location "http://pydev.org/updates/" {
 	org.python.pydev.feature.feature.group
 }
 
+location "http://download.eclipse.org/releases/luna/" {
+	org.eclipse.egit.feature.group
+	org.eclipse.mylyn.gerrit.feature.feature.group
+	org.eclipse.mylyn.git.feature.group
+	org.eclipse.mylyn.commons.feature.group
+	org.eclipse.mylyn.team_feature.feature.group
+	org.eclipse.mylyn.commons.repositories.feature.group
+	org.eclipse.mylyn.ide_feature.feature.group
+}
+
