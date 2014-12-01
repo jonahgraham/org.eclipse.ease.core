@@ -105,7 +105,6 @@ public class ModulesTools {
 		}
 
 		return signature.toString();
-
 	}
 
 	/**
@@ -126,7 +125,6 @@ public class ModulesTools {
 		}
 
 		return null;
-
 	}
 
 	/**
@@ -147,6 +145,5 @@ public class ModulesTools {
 		}
 
 		return null;
-
 	}
 }

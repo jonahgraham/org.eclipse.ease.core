@@ -7,23 +7,24 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.modules.ui;
+ *******************************************************************************/
+package org.eclipse.ease.ui.modules.ui;
 
 import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.tools.DecoratedLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 
 public class ModulesDecoratedLabelProvider extends DecoratedLabelProvider {
 
-	public ModulesDecoratedLabelProvider(ILabelProvider commonLabelProvider) {
+	public ModulesDecoratedLabelProvider(final ILabelProvider commonLabelProvider) {
 		super(commonLabelProvider);
-
 	}
 
 	@Override
-	public String getToolTipText(Object element) {
+	public String getToolTipText(final Object element) {
 
 		if (element instanceof IPath)
 			return null;
@@ -36,5 +37,4 @@ public class ModulesDecoratedLabelProvider extends DecoratedLabelProvider {
 
 		return null;
 	}
-
 }

@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.view;
+package org.eclipse.ease.ui.modules.ui;
 
  import java.util.HashMap;
  import java.util.Map;

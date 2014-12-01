@@ -25,12 +25,12 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 
 	private final boolean mModulesOnly;
 
-	public ModulesContentProvider(boolean modulesOnly) {
+	public ModulesContentProvider(final boolean modulesOnly) {
 		mModulesOnly = modulesOnly;
 	}
 
 	@Override
-	public Object getParent(Object element) {
+	public Object getParent(final Object element) {
 
 		if (element instanceof IPath)
 			return ((IPath) element).removeLastSegments(1);
@@ -42,50 +42,36 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 			return ModulesTools.getDeclaringModule((Method) element);
 
 		return null;
-
 	}
 
 	@Override
-	public Object[] getChildren(Object parentElement) {
+	public Object[] getChildren(final Object parentElement) {
 
 		if ((parentElement instanceof ModuleDefinition) && !mModulesOnly) {
 			List<Object> children = new ArrayList<Object>();
 
 			// TODO wait for getModuleClass()
-			children.addAll(ModuleHelper
-					.getFields(((ModuleDefinition) parentElement)
-							.getModuleClass()));
-
-			children.addAll(ModuleHelper
-					.getMethods(((ModuleDefinition) parentElement)
-							.getModuleClass()));
+			children.addAll(ModuleHelper.getFields(((ModuleDefinition) parentElement).getModuleClass()));
+			children.addAll(ModuleHelper.getMethods(((ModuleDefinition) parentElement).getModuleClass()));
 
 			return children.toArray();
-
 		}
 
 		return super.getChildren(parentElement);
-
 	};
 
 	@Override
-	protected void populateElements(Object inputElement) {
-
+	protected void populateElements(final Object inputElement) {
 		if (inputElement instanceof Collection<?>) {
-
 			for (Object module : (Collection<?>) inputElement) {
-
-				if (module instanceof ModuleDefinition) {
-					registerElement(((ModuleDefinition) module).getPath()
-							.removeLastSegments(1), module);
-				}
+				if (module instanceof ModuleDefinition)
+					registerElement(((ModuleDefinition) module).getPath().removeLastSegments(1), module);
 			}
 		}
-
 	}
 
 	@Override
-	public boolean hasChildren(Object element) {
+	public boolean hasChildren(final Object element) {
 
 		if ((element instanceof ModuleDefinition) && !mModulesOnly) {
 			boolean hasChildren = false;

@@ -294,7 +294,7 @@
             allPopups="true"
             locationURI="menu:org.eclipse.ease.commands.scriptShell.loadModule.popup">
          <dynamic
-               class="org.eclipse.ease.ui.view.ModuleContributionFactory"
+               class="org.eclipse.ease.ui.modules.ui.ModuleContributionFactory"
                id="org.eclipse.ease.ui.dynamic.modules">
          </dynamic>
       </menuContribution>
@@ -559,7 +559,7 @@
          point="org.eclipse.ui.commands">
       <command
             categoryId="org.eclipse.ease.commands.category.ModulesExplorer"
-            defaultHandler="org.eclipse.ease.ui.modules.ui.OpenHelp"
+            defaultHandler="org.eclipse.ease.ui.handler.OpenHelp"
             id="org.eclipse.ease.commands.ModulesExplorer.openHelp"
             name="open help">
       </command>

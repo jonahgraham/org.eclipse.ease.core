@@ -8,7 +8,6 @@
  * Contributors:
  *     Bernhard Wedl - initial API and implementation
  *******************************************************************************/
-
 package org.eclipse.ease.ui.modules.ui;
 
 import java.lang.reflect.Field;

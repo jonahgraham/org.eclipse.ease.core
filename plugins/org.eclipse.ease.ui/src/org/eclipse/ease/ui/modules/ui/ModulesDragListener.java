@@ -8,7 +8,6 @@
  * Contributors:
  *     Bernhard Wedl - initial API and implementation
  *******************************************************************************/
-
 package org.eclipse.ease.ui.modules.ui;
 
 import java.lang.reflect.Field;
@@ -26,35 +25,31 @@ public class ModulesDragListener implements DragSourceListener {
 
 	private final TreeViewer mTreeViewer;
 
-	public ModulesDragListener(TreeViewer viewer) {
+	public ModulesDragListener(final TreeViewer viewer) {
 		mTreeViewer = viewer;
 	}
 
 	@Override
-	public void dragStart(DragSourceEvent event) {
-
+	public void dragStart(final DragSourceEvent event) {
 		event.doit = !(event.data instanceof IPath);
 	}
 
 	@Override
-	public void dragSetData(DragSourceEvent event) {
-		IStructuredSelection selection = (IStructuredSelection) mTreeViewer
-				.getSelection();
+	public void dragSetData(final DragSourceEvent event) {
+		IStructuredSelection selection = (IStructuredSelection) mTreeViewer.getSelection();
 		Object firstElement = selection.getFirstElement();
 
 		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 
 			StringBuilder data = new StringBuilder();
-			if (firstElement instanceof ModuleDefinition) {
-				data.append("loadModule('")
-						.append(((ModuleDefinition) firstElement).getPath()
-								.toString()).append("');\n");
-			} else if (firstElement instanceof Field) {
+			if (firstElement instanceof ModuleDefinition)
+				data.append("loadModule('").append(((ModuleDefinition) firstElement).getPath().toString()).append("');\n");
+
+			else if (firstElement instanceof Field)
 				data.append(((Field) firstElement).getName());
-			} else if (firstElement instanceof Method) {
-				data.append(ModulesTools.getSignature((Method) firstElement))
-						.append(";\n");
-			}
+
+			else if (firstElement instanceof Method)
+				data.append(ModulesTools.getSignature((Method) firstElement)).append(";\n");
 
 			event.data = data.toString();
 		}
@@ -62,8 +57,7 @@ public class ModulesDragListener implements DragSourceListener {
 	}
 
 	@Override
-	public void dragFinished(DragSourceEvent event) {
+	public void dragFinished(final DragSourceEvent event) {
 		// nothing to do
 	}
-
 }

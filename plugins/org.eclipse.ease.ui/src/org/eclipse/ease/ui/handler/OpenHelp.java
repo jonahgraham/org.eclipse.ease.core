@@ -8,8 +8,7 @@
  * Contributors:
  *     Bernhard Wedl - initial API and implementation
  *******************************************************************************/
-
-package org.eclipse.ease.ui.modules.ui;
+package org.eclipse.ease.ui.handler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,6 +18,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.modules.ui.ModulesTools;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PlatformUI;
@@ -38,26 +38,26 @@ public class OpenHelp extends AbstractHandler implements IHandler {
 			if (element instanceof ModuleDefinition) {
 				ModuleDefinition module = (ModuleDefinition) element;
 				PlatformUI.getWorkbench().getHelpSystem()
-				.displayHelpResource("/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html");
+						.displayHelpResource("/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html");
 
 			} else if (element instanceof Method) {
 				ModuleDefinition module = ModulesTools.getDeclaringModule((Method) element);
 				if (module != null) {
 					PlatformUI
-					.getWorkbench()
-					.getHelpSystem()
-					.displayHelpResource(
-							"/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html#" + ((Method) element).getName());
+							.getWorkbench()
+							.getHelpSystem()
+							.displayHelpResource(
+									"/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html#" + ((Method) element).getName());
 				}
 
 			} else if (element instanceof Field) {
 				ModuleDefinition module = ModulesTools.getDeclaringModule((Field) element);
 				if (module != null) {
 					PlatformUI
-					.getWorkbench()
-					.getHelpSystem()
-					.displayHelpResource(
-							"/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html#" + ((Field) element).getName());
+							.getWorkbench()
+							.getHelpSystem()
+							.displayHelpResource(
+									"/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html#" + ((Field) element).getName());
 				}
 			}
 		}

@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui;
+package org.eclipse.ease.ui.tools;
 
 import java.io.IOException;
 import java.io.InputStream;

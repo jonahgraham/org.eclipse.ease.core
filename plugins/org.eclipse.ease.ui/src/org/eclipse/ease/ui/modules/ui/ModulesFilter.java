@@ -8,7 +8,6 @@
  * Contributors:
  *     Bernhard Wedl - initial API and implementation
  *******************************************************************************/
-
 package org.eclipse.ease.ui.modules.ui;
 
 import java.lang.reflect.Field;
@@ -30,8 +29,7 @@ public class ModulesFilter {
 
 		return new ViewerFilter() {
 			@Override
-			public boolean select(Viewer viewer, Object parentElement,
-					Object element) {
+			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
 
 				if (element instanceof Field)
 					return ((ModuleDefinition) parentElement).isVisible();
@@ -43,34 +41,26 @@ public class ModulesFilter {
 					return ((ModuleDefinition) element).isVisible();
 
 				if (element instanceof IPath) {
-
 					boolean visible = false;
+					Object[] children = ((ModulesContentProvider) (composite.getTreeViewer().getContentProvider())).getChildren(element);
 
-					Object[] children = ((ModulesContentProvider) (composite
-							.getTreeViewer().getContentProvider()))
-							.getChildren(element);
-
-					for (Object node : children) {
+					for (Object node : children)
 						visible |= select(viewer, parentElement, node);
 
-					}
 					return visible;
 
 				}
 
 				return true;
 			}
-
 		};
-
 	}
 
 	public static ViewerFilter modulesOnly() {
 
 		return new ViewerFilter() {
 			@Override
-			public boolean select(Viewer viewer, Object parentElement,
-					Object element) {
+			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
 
 				if (element instanceof ModuleDefinition)
 					return true;
@@ -87,12 +77,9 @@ public class ModulesFilter {
 
 		return new ViewerFilter() {
 			@Override
-			public boolean select(Viewer viewer, Object parentElement,
-					Object element) {
+			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
 				return true;
 			}
-
 		};
-
 	}
 }
