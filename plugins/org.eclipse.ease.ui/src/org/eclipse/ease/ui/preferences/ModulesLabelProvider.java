@@ -28,7 +28,7 @@ public class ModulesLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(final Object element) {
 		if (element instanceof IPath)
-			return Activator.getImage("org.eclipse.ui", "/icons/full/obj16/fldr_obj.gif", true);
+			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/folder.png", true);
 
 		if (element instanceof ModuleDefinition) {
 			ImageDescriptor descriptor = ((ModuleDefinition) element).getImageDescriptor();
@@ -39,7 +39,7 @@ public class ModulesLabelProvider extends LabelProvider {
 				return fImages.get(descriptor);
 
 			} else
-				return Activator.getImage("org.eclipse.ease.ui", "/icons/full/obj16/Module_16x16.png", true);
+				return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/module.png", true);
 		}
 
 		return super.getImage(element);
