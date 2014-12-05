@@ -14,6 +14,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -455,11 +456,8 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 */
 	@Override
 	public void run() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
-		EngineDescription engineDescription = scriptService.getEngine(getType().getName());
-
-		// try to execute
+		EngineDescription engineDescription = getEngineDescription();
 		if (engineDescription != null) {
 			IScriptEngine engine = engineDescription.createEngine();
 
@@ -477,4 +475,36 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			Logger.logError("Could not detect script engine for " + this);
 	}
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated NOT
+	 */
+	private EngineDescription getEngineDescription() {
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+
+		String engineIDs = getParameters().get("script-engine");
+		if (engineIDs == null)
+			return scriptService.getEngine(getType().getName());
+
+		// work through whitelist, prepare blacklist
+		HashSet<String> blacklist = new HashSet<String>();
+		for (String id : engineIDs.split(",")) {
+			EngineDescription engineDescription = scriptService.getEngineByID(id.trim());
+			if (engineDescription != null)
+				return engineDescription;
+
+			if (id.trim().startsWith("!"))
+				blacklist.add(id.trim().substring(1));
+		}
+
+		// no engine from whitelist found, find potential engine not part of blacklist
+		for (EngineDescription description : scriptService.getEngines(getType().getName())) {
+			if (!blacklist.contains(description.getID()))
+				return description;
+		}
+
+		// no suitable engine found
+		return null;
+	}
 } // ScriptImpl
