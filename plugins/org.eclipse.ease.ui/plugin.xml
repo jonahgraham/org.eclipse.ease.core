@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="completionProcessor" name="CompletionProcessor" schema="schema/completionProcessor.exsd"/>
+   <extension-point id="dropHandler" name="DropHandler" schema="schema/dropHandler.exsd"/>
    <extension
          point="org.eclipse.ui.views">
       <view
