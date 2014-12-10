@@ -10,9 +10,16 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.dnd;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngineProvider;
+import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -20,6 +27,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -30,6 +38,31 @@ import org.eclipse.swt.widgets.Control;
  */
 public final class ShellDropTarget extends DropTargetAdapter {
 
+	private static final String EXTENSION_DROP_HANDLER_ID = "org.eclipse.ease.ui.dropHandler";
+	private static final String DROP_HANDLER = "dropHandler";
+	private static final String PARAMETER_CLASS = "class";
+
+	private static Collection<DropTargetListener> getDropTargetListeners() {
+		Collection<DropTargetListener> listeners = new HashSet<DropTargetListener>();
+
+		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_DROP_HANDLER_ID);
+		for (final IConfigurationElement e : config) {
+			if (e.getName().equals(DROP_HANDLER)) {
+				// drop listener
+				try {
+					Object executable = e.createExecutableExtension(PARAMETER_CLASS);
+					if (executable instanceof DropTargetListener)
+						listeners.add((DropTargetListener) executable);
+
+				} catch (CoreException e1) {
+					Logger.logError("Invalid drop taret listener detected", e1);
+				}
+			}
+		}
+
+		return listeners;
+	}
+
 	/**
 	 * JavaScript shell for DND execution.
 	 */
@@ -37,7 +70,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 
 	/**
 	 * Add drop support for various objects. A drop will always be interpreted as <i>copy</i>, even if <i>move</i> was requested.
-	 * 
+	 *
 	 * @param parent
 	 *            control accepting drops
 	 * @param javaScriptShell
@@ -51,7 +84,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param scriptShell
 	 *            shell for DND action execution
 	 */
@@ -71,6 +104,18 @@ public final class ShellDropTarget extends DropTargetAdapter {
 
 	@Override
 	public void drop(final DropTargetEvent event) {
+		Collection<DropTargetListener> listeners = getDropTargetListeners();
+		if (!listeners.isEmpty()) {
+			for (DropTargetListener listener : listeners) {
+				try {
+					listener.drop(event);
+					return;
+				} catch (RuntimeException e) {
+					// listener does not handle event
+				}
+			}
+		}
+
 		if (event.data instanceof IScript[]) {
 			// drop of scripts
 			for (final IScript script : (IScript[]) event.data)
