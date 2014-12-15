@@ -597,4 +597,11 @@
          </actionSet>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.eclipse.ease.newWizard.category"
+            name="Scripting">
+      </category>
+   </extension>
 </plugin>
