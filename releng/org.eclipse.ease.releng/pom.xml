@@ -98,6 +98,7 @@
 					<jgit.ignore>
 						pom.xml
 					</jgit.ignore>
+					<format>${build-prefix}yyyyMMddHHmm</format>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -109,6 +110,7 @@
 		<!-- core -->
 		<module>../../plugins/org.eclipse.ease</module>
 		<module>../../plugins/org.eclipse.ease.ui</module>
+		<module>../../plugins/org.eclipse.ease.help</module>
 		<module>../../features/org.eclipse.ease.feature</module>
 		<module>../../features/org.eclipse.ease.ui.feature</module>
 
@@ -127,26 +129,26 @@
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
-
-		<!-- <module>../../plugins/core/org.eclipse.ease.ui.e4</module> <module>../../plugins/core/org.eclipse.ease.ui.expression</module> 
-			<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext </module> 
-			<module>../../plugins/core/org.eclipse.ease.ui.expression.xtext.ui</module> 
-			<module>../../features/org.eclipse.ease.integration.modeling.feature</module> 
-			<module>../../features/org.eclipse.ease.integration.modeling.papyrus.feature</module> 
-			<module>../../features/org.eclipse.ease.integration.modeling.uml.feature</module> 
-			<module>../../plugins/integration/org.eclipse.ease.integration.modeling</module> 
-			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.examples</module> 
-			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus</module> 
-			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.papyrus.examples</module> 
-			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml</module> 
-			<module>../../plugins/integration/org.eclipse.ease.integration.modeling.uml.examples</module> -->
-		<module>../../plugins/org.eclipse.ease.help</module>
 	</modules>
 
 
 	<profiles>
 		<profile>
 			<id>local</id>
+		</profile>
+
+		<profile>
+			<!-- by default set build qualifier to "I" -->
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>!build-prefix</name>
+				</property>
+			</activation>
+
+			<properties>
+				<build-prefix>'I'</build-prefix>
+			</properties>
 		</profile>
 
 		<profile>
