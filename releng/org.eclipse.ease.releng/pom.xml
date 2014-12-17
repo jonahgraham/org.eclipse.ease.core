@@ -213,7 +213,9 @@
 		<profile>
 			<id>test</id>
 			<modules>
+				<!-- 
 				<module>../../tests/org.eclipse.ease.test</module>
+				 -->
 			</modules>
 
 			<!-- <build> <plugins> <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>tycho-surefire-plugin</artifactId> 
