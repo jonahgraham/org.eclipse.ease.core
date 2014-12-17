@@ -23,7 +23,7 @@
 
 				<!-- see http://stackoverflow.com/questions/21825469/configure-sonar-sonar-issue-ignore-multicriteria-through-maven -->
 				<sonar.issue.ignore.multicriteria>e1,e2</sonar.issue.ignore.multicriteria>
-				
+
 				<!-- if/else/for/while/do statements should always use curly braces -->
 				<sonar.issue.ignore.multicriteria.e1.ruleKey>squid:S00121</sonar.issue.ignore.multicriteria.e1.ruleKey>
 				<sonar.issue.ignore.multicriteria.e1.resourceKey>file:**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
@@ -32,6 +32,40 @@
 				<sonar.issue.ignore.multicriteria.e2.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e2.resourceKey>
 			</properties>
 		</profile>
-	</profiles>
 
+		<profile>
+			<id>update-p2</id>
+
+			<build>
+				<plugins>
+
+					<!-- enable module documentation builder -->
+					<plugin>
+						<artifactId>tycho-p2-extras-plugin</artifactId>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>addModules</id>
+								<phase>install</phase>
+								<goals>
+									<goal>mirror</goal>
+								</goals>
+								<configuration>
+									<source>
+										<repository>
+											<url>${SOURCE}</url>
+										</repository>
+									</source>
+									<append>true</append>
+									<latestVersionOnly>false</latestVersionOnly>
+									<destination>${DESTINATION}</destination>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>  
