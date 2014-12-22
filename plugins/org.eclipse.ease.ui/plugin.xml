@@ -377,28 +377,6 @@
          </enablement>
       </consolePageParticipant>
    </extension>
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated ScriptUIGraph -->
-      <package
-            uri="http://scriptuigraph/1.0"
-            class="org.eclipse.ease.ui.scriptuigraph.ScriptuigraphPackage"
-            genModel="model/ScriptUIGraph.genmodel"/>
-   </extension>
-
-   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
-      <!-- @generated ScriptUIGraph -->
-      <factory
-            uri="http://scriptuigraph/1.0"
-            class="org.eclipse.ease.ui.scriptuigraph.provider.ScriptuigraphItemProviderAdapterFactory"
-            supportedTypes=
-              "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
-               org.eclipse.emf.edit.provider.IStructuredItemContentProvider
-               org.eclipse.emf.edit.provider.ITreeItemContentProvider
-               org.eclipse.emf.edit.provider.IItemLabelProvider
-               org.eclipse.emf.edit.provider.IItemPropertySource"/>
-   </extension>
-
-   
    <extension
          point="org.eclipse.ui.commands">
       <command
