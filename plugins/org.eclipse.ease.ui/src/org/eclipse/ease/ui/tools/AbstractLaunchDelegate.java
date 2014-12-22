@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -73,6 +74,10 @@ public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunch
 			for (final Object element : ((IStructuredSelection) selection).toArray()) {
 				if (element instanceof IFile)
 					return (IResource) element;
+
+				Object adaptedFile = Platform.getAdapterManager().getAdapter(element, IResource.class);
+				if (adaptedFile instanceof IFile)
+					return (IResource) adaptedFile;
 			}
 		}
 

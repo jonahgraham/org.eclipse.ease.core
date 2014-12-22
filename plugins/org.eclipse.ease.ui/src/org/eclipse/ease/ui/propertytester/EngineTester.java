@@ -14,6 +14,8 @@ import java.util.Collection;
 
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
@@ -37,6 +39,9 @@ public class EngineTester extends PropertyTester {
 
 		if (receiver instanceof FileEditorInput)
 			receiver = ((FileEditorInput) receiver).getFile();
+
+		if (!(receiver instanceof IFile))
+			receiver = Platform.getAdapterManager().getAdapter(receiver, IResource.class);
 
 		if (receiver instanceof IFile) {
 			final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);

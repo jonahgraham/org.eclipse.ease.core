@@ -133,6 +133,10 @@
 		<module>../../plugins/org.eclipse.ease.lang.python</module>
 		<module>../../features/org.eclipse.ease.python.feature</module>
 
+		<!-- Native .class engine -->
+		<module>../../plugins/org.eclipse.ease.lang.jvm.compiled</module>
+		<module>../../features/org.eclipse.ease.lang.jvm.feature</module>
+		
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
