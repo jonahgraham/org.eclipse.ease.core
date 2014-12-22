@@ -17,6 +17,10 @@ location "http://download.eclipse.org/releases/luna/" {
 	org.eclipse.papyrus.uml.diagram.feature.feature.group
 	org.eclipse.uml2.uml
 	org.eclipse.gmf.runtime.diagram.ui
+	
+	// unit test modules
+	org.eclipse.wst.xml_core.feature.feature.group
+	org.eclipse.wst.xml_ui.feature.feature.group
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/" {
