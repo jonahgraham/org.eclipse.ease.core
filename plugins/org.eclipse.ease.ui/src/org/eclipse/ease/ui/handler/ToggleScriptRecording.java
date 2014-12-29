@@ -36,6 +36,7 @@ import org.eclipse.ease.ui.preferences.PreferencesHelper;
 import org.eclipse.ease.ui.scripts.ScriptStorage;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.tools.StringTools;
+import org.eclipse.ease.ui.tools.ToggleHandler;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;

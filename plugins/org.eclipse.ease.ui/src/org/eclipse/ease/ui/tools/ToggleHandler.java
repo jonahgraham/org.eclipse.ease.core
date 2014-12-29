@@ -8,7 +8,7 @@
  * Contributors:
  *     Ralf Ebert - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.handler;
+package org.eclipse.ease.ui.tools;
 
 import java.util.Map;
 
