@@ -32,8 +32,10 @@ public class Script {
 	/** script result returned from command. */
 	private final ScriptResult fResult;
 
+	/** Internal buffer when delivering code data from streams. */
 	private String fCodeBuffer = null;
 
+	/** Script title (optional). */
 	private final String fTitle;
 
 	/**
@@ -51,7 +53,7 @@ public class Script {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor. Using no title for this script
 	 *
 	 * @param command
 	 *            command (sequence) to be executed
@@ -66,16 +68,18 @@ public class Script {
 	 *
 	 * @return scriptable data
 	 * @throws Exception
+	 *             when stream cannot be established
 	 */
 	public InputStream getCodeStream() throws Exception {
 		return new ByteArrayInputStream(getCode().getBytes());
 	}
 
 	/**
-	 * Get the scriptable data as {@link InputStream}. The caller needs to close the stream when it is not used anymore.
+	 * Get the scriptable data as {@link String}.
 	 *
 	 * @return scriptable data
 	 * @throws Exception
+	 *             when code cannot be read from source
 	 */
 	public String getCode() throws Exception {
 		if (fCodeBuffer != null)
@@ -266,7 +270,7 @@ public class Script {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Script other = (Script) obj;
+		final Script other = (Script) obj;
 		if (fCommand == null) {
 			if (other.fCommand != null)
 				return false;
