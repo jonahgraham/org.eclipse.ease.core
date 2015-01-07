@@ -14,12 +14,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ease.tools.ResourceTools;
 
 /**
  * Scriptable object. Consists of scriptable data and a result container.
@@ -117,12 +117,12 @@ public class Script {
 	}
 
 	private String bufferReader(final Reader command) throws IOException {
-		fCodeBuffer = toString(command);
+		fCodeBuffer = ResourceTools.toString(command);
 		return fCodeBuffer;
 	}
 
 	private String bufferStream(final InputStream command) throws IOException {
-		fCodeBuffer = toString(command);
+		fCodeBuffer = ResourceTools.toString(command);
 		return fCodeBuffer;
 	}
 
@@ -201,42 +201,6 @@ public class Script {
 	 */
 	public boolean isDynamic() {
 		return !((fCommand instanceof URL) || (getFile() != null));
-	}
-
-	/**
-	 * Convert an input stream to a string.
-	 *
-	 * @param stream
-	 *            input string to read from
-	 * @return string containing stream data
-	 * @throws IOException
-	 *             thrown on problems with input stream
-	 */
-	private static String toString(final InputStream stream) throws IOException {
-		return toString(new InputStreamReader(stream));
-	}
-
-	/**
-	 * Read characters from a {@link Reader} and return its string representation. Can be used to convert an {@link InputStream} to a string.
-	 *
-	 * @param reader
-	 *            reader to read from
-	 * @return string content of reader
-	 * @throws IOException
-	 *             when reader is not accessible
-	 */
-	private static String toString(final Reader reader) throws IOException {
-		final StringBuffer out = new StringBuffer();
-
-		final char[] buffer = new char[1024];
-		int bytes = 0;
-		do {
-			bytes = reader.read(buffer);
-			if (bytes > 0)
-				out.append(buffer, 0, bytes);
-		} while (bytes != -1);
-
-		return out.toString();
 	}
 
 	@Override

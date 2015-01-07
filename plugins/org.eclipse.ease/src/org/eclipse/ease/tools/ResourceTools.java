@@ -12,7 +12,10 @@ package org.eclipse.ease.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -120,7 +123,7 @@ public final class ResourceTools {
 			// try to convert to an URI
 			try {
 				location = URI.create((String) location);
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				// throw on invalid URIs, ignore and continue with location as-is
 			}
 		}
@@ -129,7 +132,7 @@ public final class ResourceTools {
 			// resolve file:// URIs
 			try {
 				location = new File((URI) location);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// URI scheme is not "file"
 			}
 		}
@@ -138,7 +141,7 @@ public final class ResourceTools {
 			return location;
 
 		// nothing of the previous, try to resolve
-		String reference = location.toString();
+		final String reference = location.toString();
 
 		if (reference.startsWith(PROJECT_SCHEME)) {
 			// project relative link
@@ -152,7 +155,7 @@ public final class ResourceTools {
 		} else if (reference.startsWith(WorkspaceURLConnection.SCHEME)) {
 			// workspace absolute link
 			if (isFolder) {
-				Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3));
+				final Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3));
 				if (path.segmentCount() > 1)
 					return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
 				else
@@ -163,7 +166,7 @@ public final class ResourceTools {
 
 		} else {
 			// maybe this is an absolute path within the file system
-			File systemFile = new File(reference);
+			final File systemFile = new File(reference);
 			if (systemFile.isAbsolute())
 				return systemFile;
 		}
@@ -173,7 +176,7 @@ public final class ResourceTools {
 	}
 
 	private static Object resolveRelativeFile(final Object location, final Object parent, final boolean exists) {
-		String reference = location.toString();
+		final String reference = location.toString();
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
@@ -204,7 +207,7 @@ public final class ResourceTools {
 	}
 
 	private static Object resolveRelativeFolder(final Object location, final Object parent, final boolean exists) {
-		String reference = location.toString();
+		final String reference = location.toString();
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
@@ -237,7 +240,7 @@ public final class ResourceTools {
 
 	public static String toAbsoluteLocation(final Object location, final Object parent) {
 		// try to resolve file
-		Object file = resolveFile(location, parent, true);
+		final Object file = resolveFile(location, parent, true);
 		if (file instanceof IResource)
 			return WorkspaceURLConnection.SCHEME + ":/" + ((IResource) file).getFullPath().toPortableString();
 
@@ -245,7 +248,7 @@ public final class ResourceTools {
 			return ((File) file).toURI().toASCIIString();
 
 		// try to resolve folder
-		Object folder = resolveFolder(location, parent, true);
+		final Object folder = resolveFolder(location, parent, true);
 		if (folder instanceof IResource)
 			return WorkspaceURLConnection.SCHEME + ":/" + ((IResource) folder).getFullPath().toPortableString();
 
@@ -269,13 +272,13 @@ public final class ResourceTools {
 
 		// not a file, maybe an URI?
 		try {
-			URI uri = URI.create(location);
-			InputStream stream = uri.toURL().openStream();
+			final URI uri = URI.create(location);
+			final InputStream stream = uri.toURL().openStream();
 			if (stream != null) {
 				stream.close();
 				return true;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// cannot open / read from stream
 		}
 
@@ -295,7 +298,7 @@ public final class ResourceTools {
 		// not a folder, maybe an URI?
 		try {
 			return URI.create(location);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// cannot create URI
 		}
 
@@ -304,7 +307,7 @@ public final class ResourceTools {
 
 	public static InputStream getInputStream(final String location) {
 		try {
-			Object resource = getResource(location);
+			final Object resource = getResource(location);
 			if (resource instanceof IFile)
 				return ((IFile) resource).getContents();
 
@@ -313,7 +316,7 @@ public final class ResourceTools {
 
 			if (resource instanceof URI)
 				return ((URI) resource).toURL().openStream();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// cannot open stream
 		}
 
@@ -336,7 +339,7 @@ public final class ResourceTools {
 		try {
 			// try to preserve the path as a relative path
 			return new URI(escapeColons(path.toString()));
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			return toURI(path.toFile().getAbsolutePath());
 		}
 	}
@@ -354,7 +357,7 @@ public final class ResourceTools {
 		if (File.separatorChar != '/')
 			pathString = pathString.replace(File.separatorChar, '/');
 		final int length = pathString.length();
-		StringBuffer pathBuf = new StringBuffer(length + 1);
+		final StringBuffer pathBuf = new StringBuffer(length + 1);
 		// There must be a leading slash in a hierarchical URI
 		if ((length > 0) && (pathString.charAt(0) != '/'))
 			pathBuf.append('/');
@@ -364,7 +367,7 @@ public final class ResourceTools {
 		pathBuf.append(pathString);
 		try {
 			return new URI(EFS.SCHEME_FILE, null, pathBuf.toString(), null);
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			// try java.io implementation
 			return new File(pathString).toURI();
 		}
@@ -378,10 +381,10 @@ public final class ResourceTools {
 		final String COLON_STRING = "%3A"; //$NON-NLS-1$
 		if (string.indexOf(':') == -1)
 			return string;
-		int length = string.length();
-		StringBuffer result = new StringBuffer(length);
+		final int length = string.length();
+		final StringBuffer result = new StringBuffer(length);
 		for (int i = 0; i < length; i++) {
-			char c = string.charAt(i);
+			final char c = string.charAt(i);
 			if (c == ':')
 				result.append(COLON_STRING);
 			else
@@ -403,5 +406,41 @@ public final class ResourceTools {
 			resource = resolveAbsolute(location, null, false);
 
 		return (resource instanceof IResource) ? ((IResource) resource).getFullPath() : null;
+	}
+
+	/**
+	 * Convert an input stream to a string.
+	 *
+	 * @param stream
+	 *            input string to read from
+	 * @return string containing stream data
+	 * @throws IOException
+	 *             thrown on problems with input stream
+	 */
+	public static String toString(final InputStream stream) throws IOException {
+		return toString(new InputStreamReader(stream));
+	}
+
+	/**
+	 * Read characters from a {@link Reader} and return its string representation. Can be used to convert an {@link InputStream} to a string.
+	 *
+	 * @param reader
+	 *            reader to read from
+	 * @return string content of reader
+	 * @throws IOException
+	 *             when reader is not accessible
+	 */
+	public static String toString(final Reader reader) throws IOException {
+		final StringBuffer out = new StringBuffer();
+
+		final char[] buffer = new char[1024];
+		int bytes = 0;
+		do {
+			bytes = reader.read(buffer);
+			if (bytes > 0)
+				out.append(buffer, 0, bytes);
+		} while (bytes != -1);
+
+		return out.toString();
 	}
 }
