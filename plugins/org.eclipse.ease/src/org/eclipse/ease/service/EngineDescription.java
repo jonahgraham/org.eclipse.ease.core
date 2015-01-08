@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.ease.AbstractScriptEngine;
+import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
 import org.eclipse.ease.Logger;
@@ -34,8 +35,6 @@ public class EngineDescription {
 
 	private static final String NAME = "name";
 
-	private static final String DEBUGGING = "debugger";
-
 	private final IConfigurationElement fConfigurationElement;
 
 	private List<ScriptType> fTypes = null;
@@ -51,13 +50,13 @@ public class EngineDescription {
 	public List<ScriptType> getSupportedScriptTypes() {
 		if (fTypes == null) {
 			fTypes = new ArrayList<ScriptType>();
-			IScriptService scriptService = ScriptService.getService();
+			final IScriptService scriptService = ScriptService.getService();
 
 			for (final IConfigurationElement child : fConfigurationElement.getChildren(BINDING)) {
-				String scriptTypeID = child.getAttribute(TYPE);
+				final String scriptTypeID = child.getAttribute(TYPE);
 
 				if (scriptTypeID != null) {
-					ScriptType scriptType = scriptService.getAvailableScriptTypes().get(scriptTypeID);
+					final ScriptType scriptType = scriptService.getAvailableScriptTypes().get(scriptTypeID);
 					if (scriptType == null)
 						Logger.logError("Unknow scriptType " + scriptTypeID);
 					else
@@ -72,7 +71,7 @@ public class EngineDescription {
 	public int getPriority() {
 		try {
 			return Integer.parseInt(fConfigurationElement.getAttribute(PRIORITY));
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			// ignore
 		}
 
@@ -81,12 +80,12 @@ public class EngineDescription {
 
 	/**
 	 * Create a dedicated script engine.
-	 * 
+	 *
 	 * @return script engine or <code>null</code>
 	 */
 	public IScriptEngine createEngine() {
 		try {
-			Object object = fConfigurationElement.createExecutableExtension(CLASS);
+			final Object object = fConfigurationElement.createExecutableExtension(CLASS);
 			if (object instanceof IScriptEngine) {
 				// configure engine
 				if (object instanceof AbstractScriptEngine)
@@ -100,7 +99,7 @@ public class EngineDescription {
 				return (IScriptEngine) object;
 			}
 
-		} catch (CoreException e) {
+		} catch (final CoreException e) {
 			Logger.logError("Could not create script engine: " + getID(), e);
 		}
 
@@ -112,12 +111,12 @@ public class EngineDescription {
 	}
 
 	public String getName() {
-		String name = fConfigurationElement.getAttribute(NAME);
+		final String name = fConfigurationElement.getAttribute(NAME);
 		return (name != null) ? name : getID();
 	}
 
 	public boolean supports(final String scriptType) {
-		for (ScriptType type : getSupportedScriptTypes()) {
+		for (final ScriptType type : getSupportedScriptTypes()) {
 			if (type.getName().equals(scriptType))
 				return true;
 		}
@@ -130,6 +129,15 @@ public class EngineDescription {
 	}
 
 	public boolean supportsDebugging() {
-		return Boolean.parseBoolean(fConfigurationElement.getAttribute(DEBUGGING));
+		try {
+			// TODO try to find out class without creating an instance
+			final Object engine = fConfigurationElement.createExecutableExtension(CLASS);
+			return IDebugEngine.class.isAssignableFrom(engine.getClass());
+
+		} catch (final CoreException e) {
+			// not found, seems to be an invalid extension configuration
+			Logger.logError("Plugin extension configuration error for engine: " + toString());
+			return false;
+		}
 	}
 }

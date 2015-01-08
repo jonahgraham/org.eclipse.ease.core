@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +27,9 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ease.FileTrace.Trace;
 import org.eclipse.ease.debug.ITracingConstant;
 import org.eclipse.ease.debug.Tracer;
+import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ui.PlatformUI;
@@ -54,7 +55,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	private InputStream fInputStream = null;
 
-	private FileTrace fFileTrace = new FileTrace();
+	private final List<IScriptDebugFrame> fFileTrace = new LinkedList<IScriptDebugFrame>();
 
 	private EngineDescription fDescription;
 
@@ -123,8 +124,8 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	public final Object injectUI(final Object content) {
-		Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(Activator.PREFERENCES_NODE_SCRIPTS);
-		boolean allowUIAccess = prefs.getBoolean(Activator.SCRIPTS_ALLOW_UI_ACCESS, Activator.DEFAULT_SCRIPTS_ALLOW_UI_ACCESS);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(Activator.PREFERENCES_NODE_SCRIPTS);
+		final boolean allowUIAccess = prefs.getBoolean(Activator.SCRIPTS_ALLOW_UI_ACCESS, Activator.DEFAULT_SCRIPTS_ALLOW_UI_ACCESS);
 		if (!allowUIAccess)
 			throw new RuntimeException("Script UI access disabled by user preferences.");
 
@@ -171,7 +172,33 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				if (ITracingConstant.MODULE_WRAPPER_TRACING)
 					Tracer.logInfo("Executing (" + script.getTitle() + "):\n" + script.getCode());
 
-				fFileTrace.push(script.getFile());
+				fFileTrace.add(0, new IScriptDebugFrame() {
+
+					@Override
+					public Map<String, Object> getVariables() {
+						return Collections.emptyMap();
+					}
+
+					@Override
+					public int getType() {
+						return IScriptDebugFrame.TYPE_FILE;
+					}
+
+					@Override
+					public Script getScript() {
+						return script;
+					}
+
+					@Override
+					public String getName() {
+						return script.getTitle();
+					}
+
+					@Override
+					public int getLineNumber() {
+						return 0;
+					}
+				});
 
 				// execution
 				if (notifyListeners)
@@ -179,7 +206,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				else
 					notifyExecutionListeners(script, IExecutionListener.SCRIPT_INJECTION_START);
 
-				script.setResult(execute(script, script.getFile(), fFileTrace.peek().getFileName(), uiThread));
+				script.setResult(execute(script, script.getFile(), fFileTrace.get(0).getName(), uiThread));
 
 			} catch (final ExitException e) {
 				script.setResult(e.getCondition());
@@ -197,7 +224,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				else
 					notifyExecutionListeners(script, IExecutionListener.SCRIPT_INJECTION_END);
 
-				fFileTrace.pop();
+				fFileTrace.remove(0);
 			}
 		}
 
@@ -216,7 +243,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			fBufferedVariables.clear();
 
 			// setup new trace
-			fFileTrace = new FileTrace();
+			fFileTrace.clear();
 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_START);
 
@@ -396,17 +423,18 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			extension.createEngine(this);
 	}
 
-	@Override
-	public FileTrace getFileTrace() {
+	public List<IScriptDebugFrame> getStackTrace() {
 		return fFileTrace;
 	}
 
 	@Override
 	public Object getExecutedFile() {
-		for (Trace trace : getFileTrace()) {
-			Object file = trace.getFile();
-			if (file != null)
-				return file;
+		for (final IScriptDebugFrame trace : getStackTrace()) {
+			if (trace.getType() == IScriptDebugFrame.TYPE_FILE) {
+				final Object file = trace.getScript().getFile();
+				if (file != null)
+					return file;
+			}
 		}
 
 		return null;
@@ -458,11 +486,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	}
 
 	public static final String[] extractArguments(final String arguments) {
-		ArrayList<String> args = new ArrayList<String>();
+		final ArrayList<String> args = new ArrayList<String>();
 		if (arguments != null) {
 			int index = 0;
 			while (index < arguments.length()) {
-				int endIndex = arguments.indexOf((arguments.charAt(index) == '"') ? '"' : ' ', index + 1);
+				final int endIndex = arguments.indexOf((arguments.charAt(index) == '"') ? '"' : ' ', index + 1);
 
 				if (endIndex > index) {
 					args.add(arguments.substring(index + 1, endIndex));

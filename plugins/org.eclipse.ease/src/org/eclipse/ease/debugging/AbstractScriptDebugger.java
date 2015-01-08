@@ -179,7 +179,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 	 * @return {@link IBreakpoint} instance or <code>null</code>
 	 */
 	protected IBreakpoint getBreakpoint(final Script script, final int lineNumber) {
-		List<IBreakpoint> breakpoints = fBreakpoints.get(script);
+		final List<IBreakpoint> breakpoints = fBreakpoints.get(script);
 		if (breakpoints != null) {
 			for (final IBreakpoint breakpoint : breakpoints) {
 				try {
@@ -188,7 +188,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 						if (lineNumber == breakLocation)
 							return breakpoint;
 					}
-				} catch (CoreException e) {
+				} catch (final CoreException e) {
 					// cannot check enabled state, ignore
 				}
 			}
@@ -205,7 +205,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 		return fResumeType;
 	}
 
-	protected List<IScriptDebugFrame> getStacktrace() {
+	public List<IScriptDebugFrame> getStacktrace() {
 		return fStacktrace;
 	}
 
@@ -222,7 +222,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 	protected void processLine(final Script script, final int lineNumber) {
 
 		// check breakpoints
-		IBreakpoint breakpoint = getBreakpoint(script, lineNumber);
+		final IBreakpoint breakpoint = getBreakpoint(script, lineNumber);
 		if (breakpoint != null) {
 			suspend(new SuspendedEvent(DebugEvent.BREAKPOINT, ((AbstractScriptEngine) fEngine).getThread(), getStacktrace()));
 			return;

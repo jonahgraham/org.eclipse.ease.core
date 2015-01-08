@@ -163,15 +163,6 @@ public interface IScriptEngine {
 	boolean isIdle();
 
 	/**
-	 * Get the current file trace. A trace is a stack starting with the root file executed by the engine. Files called via include command will be put on top of
-	 * that stack. Each entry may contain a pointer to the current line number executed. Traces might be created dynamically on demand or accumulated during
-	 * execution depending on the underlying engine.
-	 *
-	 * @return current FileTrace
-	 */
-	FileTrace getFileTrace();
-
-	/**
 	 * Get the engine name.
 	 *
 	 * @return engine name

@@ -30,4 +30,5 @@ Export-Package: org.eclipse.ease.ui,
  org.eclipse.ease.ui.scripts,
  org.eclipse.ease.ui.scripts.repository,
  org.eclipse.ease.ui.scripts.ui,
+ org.eclipse.ease.ui.tools,
  org.eclipse.ease.ui.view

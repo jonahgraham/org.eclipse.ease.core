@@ -11,11 +11,15 @@
  *******************************************************************************/
 package org.eclipse.ease.lang.javascript.rhino.debugger;
 
+import java.util.List;
+
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.debugging.EventDispatchJob;
+import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.eclipse.ease.lang.javascript.rhino.debugger.model.RhinoDebugTarget;
+import org.mozilla.javascript.debug.Debugger;
 
 /**
  * A script engine to execute/debug JavaScript code on a Rhino interpreter.
@@ -27,6 +31,8 @@ public class RhinoDebuggerEngine extends RhinoScriptEngine implements IDebugEngi
 	 */
 	public RhinoDebuggerEngine() {
 		super("Rhino Debugger");
+
+		setDebugger(new LineNumberDebugger(this));
 	}
 
 	@Override
@@ -46,5 +52,15 @@ public class RhinoDebuggerEngine extends RhinoScriptEngine implements IDebugEngi
 		debugTarget.setDispatcher(dispatcher);
 		debugger.setDispatcher(dispatcher);
 		dispatcher.schedule();
+	}
+
+	@Override
+	public List<IScriptDebugFrame> getStackTrace() {
+		final Debugger debugger = getDebugger();
+
+		if (debugger instanceof RhinoDebugger)
+			return ((RhinoDebugger) debugger).getStacktrace();
+
+		return super.getStackTrace();
 	}
 }

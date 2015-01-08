@@ -19,7 +19,6 @@ import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.debugging.AbstractScriptDebugger;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
-import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.debug.DebugFrame;
@@ -117,7 +116,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 	private Script mLastScript = null;
 
-	public RhinoDebugger(final RhinoScriptEngine engine, final boolean showDynamicCode) {
+	public RhinoDebugger(final IScriptEngine engine, final boolean showDynamicCode) {
 		super(engine, showDynamicCode);
 	}
 

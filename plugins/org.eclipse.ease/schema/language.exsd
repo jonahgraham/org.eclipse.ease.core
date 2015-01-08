@@ -90,13 +90,6 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="debugger" type="boolean" use="default" value="false">
-            <annotation>
-               <documentation>
-                  Indicates that the engine supports debugging. Defaults to false.
-               </documentation>
-            </annotation>
-         </attribute>
       </complexType>
    </element>
 

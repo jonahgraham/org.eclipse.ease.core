@@ -18,16 +18,12 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.ease.AbstractScriptEngine;
-import org.eclipse.ease.FileTrace;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.lang.javascript.JavaScriptHelper;
-import org.eclipse.ease.lang.javascript.rhino.debugger.LineNumberDebugger;
-import org.eclipse.ease.lang.javascript.rhino.debugger.LineNumberDebugger.LineNumberDebugFrame;
 import org.eclipse.ease.tools.RunnableWithResult;
 import org.eclipse.swt.widgets.Display;
 import org.mozilla.javascript.Context;
@@ -70,8 +66,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	private int mOptimizationLevel = 9;
 
-	private boolean mCreateLineNumberInformation = false;
-
 	/**
 	 * Creates a new Rhino interpreter.
 	 */
@@ -102,12 +96,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			mContext.setGeneratingDebug(true);
 			mContext.setGeneratingSource(true);
 			mContext.setDebugger(mDebugger, null);
-
-		} else if (mCreateLineNumberInformation) {
-			// when we want to report line numbers on stack traces we need to add a debugger to our engine
-			mContext.setOptimizationLevel(-1);
-			mContext.setGeneratingDebug(true);
-			mContext.setDebugger(new LineNumberDebugger(), null);
 
 		} else {
 			mContext.setGeneratingDebug(false);
@@ -233,6 +221,10 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		mDebugger = debugger;
 	}
 
+	protected Debugger getDebugger() {
+		return mDebugger;
+	}
+
 	public ScriptableObject getScope() {
 		return mScope;
 	}
@@ -313,32 +305,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	private boolean isPrimitiveType(final Object value) {
 		return (value instanceof String) || (value instanceof Number) || (value instanceof Boolean);
-	}
-
-	public void setCreateLineNumberInformation(final boolean createLineNumberInformation) {
-		mCreateLineNumberInformation = createLineNumberInformation;
-	}
-
-	/**
-	 * Get the current file trace. This trace is created dynamically.
-	 */
-	@Override
-	public FileTrace getFileTrace() {
-
-		// might request the trace from a different thread, so do not use getContext() here
-		final Debugger debugger = mContext.getDebugger();
-		if (debugger instanceof LineNumberDebugger) {
-			final FileTrace trace = new FileTrace();
-
-			final List<LineNumberDebugFrame> frames = ((LineNumberDebugger) debugger).getFrames();
-			for (final LineNumberDebugFrame frame : frames) {
-				trace.push(frame.getScript().getSourceName(), frame.getLineNumber(), null);
-			}
-
-			return trace;
-		}
-
-		return super.getFileTrace();
 	}
 
 	@Override

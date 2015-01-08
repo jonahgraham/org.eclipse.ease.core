@@ -10,12 +10,24 @@
  *******************************************************************************/
 package org.eclipse.ease;
 
+import java.util.List;
+
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.ease.debugging.IScriptDebugFrame;
 
 /**
- * Interface to be implemented by a script debug engine
+ * Interface to be implemented by a script debug engine.
  */
 public interface IDebugEngine extends IScriptEngine {
+
+	/**
+	 * Get the current stack trace. A trace is a stack starting with the root file executed by the engine. Function calls and files (called via include command)
+	 * will be put on top of that stack. Each entry may contain a pointer to the current line number executed. Traces might be created dynamically on demand or
+	 * accumulated during execution depending on the underlying engine.
+	 *
+	 * @return current stack trace
+	 */
+	List<IScriptDebugFrame> getStackTrace();
 
 	void setupDebugger(ILaunch launch, boolean suspendOnStartup, boolean suspendOnScriptLoad, boolean showDynamicCode);
 }

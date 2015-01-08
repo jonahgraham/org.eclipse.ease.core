@@ -17,7 +17,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.ease.FileTrace;
 import org.eclipse.ease.IExecutionListener;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.ScriptResult;
@@ -109,11 +108,6 @@ public class JavaEngine implements IScriptEngine {
 	@Override
 	public boolean isIdle() {
 		return true;
-	}
-
-	@Override
-	public FileTrace getFileTrace() {
-		return null;
 	}
 
 	@Override
