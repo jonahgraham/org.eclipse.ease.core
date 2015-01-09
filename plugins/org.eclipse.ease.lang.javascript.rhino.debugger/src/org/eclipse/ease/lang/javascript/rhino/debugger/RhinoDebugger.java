@@ -128,10 +128,8 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 	public DebugFrame getFrame(final Context cx, final DebuggableScript fnOrScript) {
 
 		Script script = getScript(fnOrScript);
-		if (script == null) {
+		if (script == null)
 			script = mLastScript;
-			mLastScript = null;
-		}
 
 		if (script == null)
 			return null;
@@ -157,9 +155,6 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		case SCRIPT_START:
 			// fall through
 		case SCRIPT_INJECTION_START:
-			if (mLastScript != null)
-				throw new RuntimeException("LastScript has to be null");
-
 			mLastScript = script;
 			break;
 
