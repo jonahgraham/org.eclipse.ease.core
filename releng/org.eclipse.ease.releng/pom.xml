@@ -24,14 +24,6 @@
 	</properties>
 
 
-	<repositories>
-		<repository>
-			<id>luna</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/luna</url>
-		</repository>
-	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>cbi</id>
@@ -57,10 +49,20 @@
 			</plugin>
 
 			<!-- set target platform for build -->
-			<!-- <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>target-platform-configuration</artifactId> 
-				<version>${tycho.version}</version> <configuration> <target> <artifact> <groupId>org.eclipse.ease</groupId> 
-				<artifactId>org.eclipse.ease.releng.target</artifactId> <version>0.1.0</version> 
-				</artifact> </target> </configuration> </plugin> -->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<target>
+						<artifact>
+							<groupId>org.eclipse.ease</groupId>
+							<artifactId>org.eclipse.ease.releng.target</artifactId>
+							<version>0.2.0-SNAPSHOT</version>
+						</artifact>
+					</target>
+				</configuration>
+			</plugin>
 
 			<!-- set compiler options -->
 			<plugin>
@@ -212,13 +214,8 @@
 
 		<profile>
 			<id>test</id>
-			<modules>
-				<!-- 
-				<module>../../tests/org.eclipse.ease.test</module>
-				 -->
-			</modules>
-
-			<!-- <build> <plugins> <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>tycho-surefire-plugin</artifactId> 
+			<!-- <modules> <module>../../tests/org.eclipse.ease.test</module> </modules> 
+				<build> <plugins> <plugin> <groupId>org.eclipse.tycho</groupId> <artifactId>tycho-surefire-plugin</artifactId> 
 				<version>${tycho.version}</version> <configuration> <useUIHarness>false</useUIHarness> 
 				</configuration> </plugin> </plugins> </build> -->
 		</profile>
