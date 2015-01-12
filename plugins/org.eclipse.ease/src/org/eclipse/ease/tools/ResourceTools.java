@@ -116,7 +116,10 @@ public final class ResourceTools {
 	}
 
 	private static Object resolveAbsolute(Object location, final Object parent, final boolean isFolder) {
-		if (location instanceof IFile)
+		if ((!isFolder) && (location instanceof IFile))
+			return location;
+
+		if ((isFolder) && (location instanceof IContainer))
 			return location;
 
 		if (location instanceof String) {
@@ -147,9 +150,9 @@ public final class ResourceTools {
 			// project relative link
 			if (parent instanceof IResource) {
 				if (isFolder)
-					return ((IResource) parent).getProject().getFolder(new Path(reference.substring(PROJECT_SCHEME.length() + 3)));
+					return ((IResource) parent).getProject().getFolder(new Path(reference.substring(PROJECT_SCHEME.length() + 2)));
 				else
-					return ((IResource) parent).getProject().getFile(new Path(reference.substring(PROJECT_SCHEME.length() + 3)));
+					return ((IResource) parent).getProject().getFile(new Path(reference.substring(PROJECT_SCHEME.length() + 2)));
 			}
 
 		} else if (reference.startsWith(WorkspaceURLConnection.SCHEME)) {
@@ -235,6 +238,21 @@ public final class ResourceTools {
 		}
 
 		// giving up
+		return null;
+	}
+
+	public static String toProjectRelativeLocation(final Object location, final Object parent) {
+		// try to resolve file
+		final Object file = resolveFile(location, parent, true);
+		if (file instanceof IResource)
+			return PROJECT_SCHEME + ":/" + ((IResource) file).getProjectRelativePath().toPortableString();
+
+		// try to resolve folder
+		final Object folder = resolveFolder(location, parent, true);
+		if (folder instanceof IResource)
+			return PROJECT_SCHEME + ":/" + ((IResource) folder).getProjectRelativePath().toPortableString();
+
+		// nothing to resolve, return null
 		return null;
 	}
 
