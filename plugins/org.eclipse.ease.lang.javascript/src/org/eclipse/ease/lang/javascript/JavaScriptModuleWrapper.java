@@ -27,10 +27,69 @@ public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
 	public static List<String> RESERVED_KEYWORDS = new ArrayList<String>();
 
 	static {
-		RESERVED_KEYWORDS.add("for");
-		RESERVED_KEYWORDS.add("while");
+		RESERVED_KEYWORDS.add("abstract");
+		RESERVED_KEYWORDS.add("arguments");
+		RESERVED_KEYWORDS.add("boolean");
+		RESERVED_KEYWORDS.add("break");
+		RESERVED_KEYWORDS.add("byte");
+		RESERVED_KEYWORDS.add("case");
+		RESERVED_KEYWORDS.add("catch");
+		RESERVED_KEYWORDS.add("char");
+		RESERVED_KEYWORDS.add("class");
+		RESERVED_KEYWORDS.add("const");
+		RESERVED_KEYWORDS.add("continue");
+		RESERVED_KEYWORDS.add("debugger");
+		RESERVED_KEYWORDS.add("default");
 		RESERVED_KEYWORDS.add("delete");
-		// TODO Complete this list
+		RESERVED_KEYWORDS.add("do");
+		RESERVED_KEYWORDS.add("double");
+		RESERVED_KEYWORDS.add("else");
+		RESERVED_KEYWORDS.add("enum");
+		RESERVED_KEYWORDS.add("eval");
+		RESERVED_KEYWORDS.add("export");
+		RESERVED_KEYWORDS.add("extends");
+		RESERVED_KEYWORDS.add("false");
+		RESERVED_KEYWORDS.add("final");
+		RESERVED_KEYWORDS.add("finally");
+		RESERVED_KEYWORDS.add("float");
+		RESERVED_KEYWORDS.add("for");
+		RESERVED_KEYWORDS.add("function");
+		RESERVED_KEYWORDS.add("goto");
+		RESERVED_KEYWORDS.add("if");
+		RESERVED_KEYWORDS.add("implements");
+		RESERVED_KEYWORDS.add("import");
+		RESERVED_KEYWORDS.add("in");
+		RESERVED_KEYWORDS.add("instanceof");
+		RESERVED_KEYWORDS.add("int");
+		RESERVED_KEYWORDS.add("interface");
+		RESERVED_KEYWORDS.add("let");
+		RESERVED_KEYWORDS.add("long");
+		RESERVED_KEYWORDS.add("native");
+		RESERVED_KEYWORDS.add("new");
+		RESERVED_KEYWORDS.add("null");
+		RESERVED_KEYWORDS.add("package");
+		RESERVED_KEYWORDS.add("private");
+		RESERVED_KEYWORDS.add("protected");
+		RESERVED_KEYWORDS.add("public");
+		RESERVED_KEYWORDS.add("return");
+		RESERVED_KEYWORDS.add("short");
+		RESERVED_KEYWORDS.add("static");
+		RESERVED_KEYWORDS.add("super");
+		RESERVED_KEYWORDS.add("switch");
+		RESERVED_KEYWORDS.add("synchronized");
+		RESERVED_KEYWORDS.add("this");
+		RESERVED_KEYWORDS.add("throw");
+		RESERVED_KEYWORDS.add("throws");
+		RESERVED_KEYWORDS.add("transient");
+		RESERVED_KEYWORDS.add("true");
+		RESERVED_KEYWORDS.add("try");
+		RESERVED_KEYWORDS.add("typeof");
+		RESERVED_KEYWORDS.add("var");
+		RESERVED_KEYWORDS.add("void");
+		RESERVED_KEYWORDS.add("volatile");
+		RESERVED_KEYWORDS.add("while");
+		RESERVED_KEYWORDS.add("with");
+		RESERVED_KEYWORDS.add("yield");
 	}
 
 	private static boolean isValidMethodName(final String methodName) {
