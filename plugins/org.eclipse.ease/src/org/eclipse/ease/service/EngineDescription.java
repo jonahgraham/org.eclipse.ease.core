@@ -13,8 +13,10 @@ package org.eclipse.ease.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.IScriptEngine;
@@ -120,6 +122,29 @@ public class EngineDescription {
 			if (type.getName().equals(scriptType))
 				return true;
 		}
+		return false;
+	}
+
+	public boolean supports(final IFile file) {
+
+		// try to resolve by content type
+		try {
+			IContentType fileContentType = file.getContentDescription().getContentType();
+
+			for (ScriptType type : getSupportedScriptTypes()) {
+				for (String contentType : type.getContentTypes())
+					if (contentType.equals(fileContentType.getId()))
+						return true;
+			}
+
+		} catch (CoreException e) {
+			// did not work. Fall back to file extension
+			for (ScriptType type : getSupportedScriptTypes()) {
+				if (file.getFileExtension().equalsIgnoreCase(type.getDefaultExtension()))
+					return true;
+			}
+		}
+
 		return false;
 	}
 
