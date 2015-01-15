@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -48,20 +49,14 @@ public final class ResourceTools {
 	 * @param parent
 	 *            location of parent resource
 	 * @param exists
-	 *            return file only if it exists
+	 *            return file only if it exists, if <code>false</code> the file is returned whether it exists or not
 	 * @return {@link IFile}, {@link File} or <code>null</code>
 	 */
 	public static Object resolveFile(final Object location, final Object parent, final boolean exists) {
 		if (location == null)
 			return null;
 
-		Object parentObject = parent;
-		if ((parent != null) && (!(parent instanceof IResource)) && (!(parent instanceof File))) {
-			parentObject = resolveFile(parent, null, true);
-			if (parentObject == null)
-				parentObject = resolveFolder(parent, null, true);
-		}
-
+		final Object parentObject = resolveParent(parent);
 		Object candidate = resolveAbsolute(location, parentObject, false);
 
 		if ((candidate == null) && (parentObject != null))
@@ -93,13 +88,7 @@ public final class ResourceTools {
 		if (location == null)
 			return null;
 
-		Object parentObject = parent;
-		if ((parent != null) && (!(parent instanceof IResource)) && (!(parent instanceof File))) {
-			parentObject = resolveFile(parent, null, true);
-			if (parentObject == null)
-				parentObject = resolveFolder(parent, null, true);
-		}
-
+		final Object parentObject = resolveParent(parent);
 		Object candidate = resolveAbsolute(location, parentObject, true);
 
 		if ((candidate == null) && (parentObject != null))
@@ -113,6 +102,23 @@ public final class ResourceTools {
 
 		// giving up
 		return null;
+	}
+
+	private static Object resolveParent(Object parent) {
+		if ((parent != null) && (!(parent instanceof IResource)) && (!(parent instanceof File))) {
+			final Object parentReference = parent;
+			parent = resolveFile(parentReference, null, true);
+			if (parent == null)
+				parent = resolveFolder(parentReference, null, true);
+		}
+
+		if (parent instanceof IFile)
+			return ((IFile) parent).getParent();
+
+		if ((parent instanceof File) && (((File) parent).isFile()))
+			return ((File) parent).getParentFile();
+
+		return parent;
 	}
 
 	private static Object resolveAbsolute(Object location, final Object parent, final boolean isFolder) {
@@ -149,23 +155,28 @@ public final class ResourceTools {
 		if (reference.startsWith(PROJECT_SCHEME)) {
 			// project relative link
 			if (parent instanceof IResource) {
-				if (isFolder)
-					return ((IResource) parent).getProject().getFolder(new Path(reference.substring(PROJECT_SCHEME.length() + 2)));
-				else
-					return ((IResource) parent).getProject().getFile(new Path(reference.substring(PROJECT_SCHEME.length() + 2)));
+				final IProject project = ((IResource) parent).getProject();
+				if (project != null) {
+					if (isFolder)
+						return project.getFolder(new Path(reference.substring(PROJECT_SCHEME.length() + 3)));
+					else
+						return project.getFile(new Path(reference.substring(PROJECT_SCHEME.length() + 3)));
+				}
 			}
 
 		} else if (reference.startsWith(WorkspaceURLConnection.SCHEME)) {
 			// workspace absolute link
+			final Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3));
 			if (isFolder) {
-				final Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3));
 				if (path.segmentCount() > 1)
 					return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
 				else
 					return ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
 
-			} else
-				return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3)));
+			} else {
+				if (path.segmentCount() > 1)
+					return ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			}
 
 		} else {
 			// maybe this is an absolute path within the file system
@@ -183,24 +194,13 @@ public final class ResourceTools {
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
-			IFile relativeFile = null;
-			if (parent instanceof IContainer)
-				relativeFile = ((IContainer) parent).getFile(new Path(reference));
-			else if (parent instanceof IResource)
-				relativeFile = ((IResource) parent).getParent().getFile(new Path(reference));
-
+			final IFile relativeFile = ((IContainer) parent).getFile(new Path(reference));
 			if ((relativeFile.exists()) || (!exists))
 				return relativeFile;
 
 		} else if (parent instanceof File) {
 			// resolve a relative path in the file system
-			File systemFile = null;
-			if (((File) parent).isDirectory())
-				systemFile = new File(((File) parent).getAbsolutePath() + File.separator + reference);
-
-			else
-				systemFile = new File(((File) parent).getParentFile().getAbsolutePath() + File.separator + reference);
-
+			final File systemFile = new File(((File) parent).getAbsolutePath() + File.separator + reference);
 			if (((systemFile.exists()) && (systemFile.isFile())) || (!exists))
 				return systemFile;
 		}
@@ -214,25 +214,13 @@ public final class ResourceTools {
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
-			IContainer relativeFolder = null;
-
-			if (parent instanceof IContainer)
-				relativeFolder = ((IContainer) parent).getFolder(new Path(reference));
-			else if (parent instanceof IResource)
-				relativeFolder = ((IResource) parent).getParent().getFolder(new Path(reference));
-
+			final IContainer relativeFolder = ((IContainer) parent).getFolder(new Path(reference));
 			if ((relativeFolder.exists()) || (!exists))
 				return relativeFolder;
 
 		} else if (parent instanceof File) {
 			// resolve a relative path in the file system
-			File systemFolder = null;
-			if (((File) parent).isDirectory())
-				systemFolder = new File(((File) parent).getAbsolutePath() + File.separator + reference);
-
-			else
-				systemFolder = new File(((File) parent).getParentFile().getAbsolutePath() + File.separator + reference);
-
+			final File systemFolder = new File(((File) parent).getAbsolutePath() + File.separator + reference);
 			if (((systemFolder.exists()) && (systemFolder.isDirectory())) || (!exists))
 				return systemFolder;
 		}
@@ -243,14 +231,13 @@ public final class ResourceTools {
 
 	public static String toProjectRelativeLocation(final Object location, final Object parent) {
 		// try to resolve file
-		final Object file = resolveFile(location, parent, true);
-		if (file instanceof IResource)
-			return PROJECT_SCHEME + ":/" + ((IResource) file).getProjectRelativePath().toPortableString();
+		Object resource = resolveFile(location, parent, true);
+		if (!(resource instanceof IResource))
+			// try to resolve folder
+			resource = resolveFolder(location, parent, true);
 
-		// try to resolve folder
-		final Object folder = resolveFolder(location, parent, true);
-		if (folder instanceof IResource)
-			return PROJECT_SCHEME + ":/" + ((IResource) folder).getProjectRelativePath().toPortableString();
+		if (resource instanceof IResource)
+			return PROJECT_SCHEME + "://" + ((IResource) resource).getProjectRelativePath().toPortableString();
 
 		// nothing to resolve, return null
 		return null;
@@ -271,10 +258,10 @@ public final class ResourceTools {
 			return WorkspaceURLConnection.SCHEME + ":/" + ((IResource) folder).getFullPath().toPortableString();
 
 		else if (folder instanceof File)
-			return ((File) file).toURI().toASCIIString();
+			return ((File) folder).toURI().toASCIIString();
 
 		// nothing to resolve, return location
-		return location.toString();
+		return null;
 	}
 
 	/**
@@ -284,13 +271,17 @@ public final class ResourceTools {
 	 *            location to verify
 	 * @return <code>true</code> when location is readable
 	 */
-	public static boolean exists(final String location) {
+	public static boolean exists(final Object location) {
+		if (location == null)
+			return false;
+
 		if (resolveFile(location, null, true) != null)
 			return true;
 
 		// not a file, maybe an URI?
 		try {
-			final URI uri = URI.create(location);
+
+			final URI uri = (location instanceof URI) ? (URI) location : URI.create(location.toString());
 			final InputStream stream = uri.toURL().openStream();
 			if (stream != null) {
 				stream.close();
@@ -303,7 +294,14 @@ public final class ResourceTools {
 		return false;
 	}
 
-	public static Object getResource(final String location) {
+	/**
+	 * Get an existing resource (file/folder/URI).
+	 *
+	 * @param location
+	 *            location to look up
+	 * @return resource, either {@link File}, {@link IResource} or {@link URI}
+	 */
+	public static Object getResource(final Object location) {
 		Object file = resolveFile(location, null, true);
 		if (file != null)
 			return file;
@@ -314,8 +312,12 @@ public final class ResourceTools {
 			return file;
 
 		// not a folder, maybe an URI?
+		if (location instanceof URI)
+			return location;
+
 		try {
-			return URI.create(location);
+			if (location != null)
+				return URI.create(location.toString());
 		} catch (final Exception e) {
 			// cannot create URI
 		}
@@ -323,7 +325,7 @@ public final class ResourceTools {
 		return null;
 	}
 
-	public static InputStream getInputStream(final String location) {
+	public static InputStream getInputStream(final Object location) {
 		try {
 			final Object resource = getResource(location);
 			if (resource instanceof IFile)
@@ -342,7 +344,7 @@ public final class ResourceTools {
 	}
 
 	/**
-	 * Converts an {@link IPath} representing a local file system path to a {@link URI}.
+	 * Converts an {@link IPath} representing a workspace resource to an {@link URI}.
 	 *
 	 * @param path
 	 *            The path to convert
@@ -370,7 +372,7 @@ public final class ResourceTools {
 	 *            The path string to convert
 	 * @return The URI representing the provided path string
 	 */
-	public static URI toURI(String pathString) {
+	private static URI toURI(String pathString) {
 		// source from org.eclipse.core.filesystem.URIUtil (Indigo version)
 		if (File.separatorChar != '/')
 			pathString = pathString.replace(File.separatorChar, '/');
@@ -419,6 +421,9 @@ public final class ResourceTools {
 	 * @return
 	 */
 	public static IPath toPath(final String location) {
+		if (location == null)
+			return null;
+
 		Object resource = resolveAbsolute(location, null, true);
 		if (resource == null)
 			resource = resolveAbsolute(location, null, false);
@@ -436,6 +441,9 @@ public final class ResourceTools {
 	 *             thrown on problems with input stream
 	 */
 	public static String toString(final InputStream stream) throws IOException {
+		if (stream == null)
+			return null;
+
 		return toString(new InputStreamReader(stream));
 	}
 
@@ -449,6 +457,9 @@ public final class ResourceTools {
 	 *             when reader is not accessible
 	 */
 	public static String toString(final Reader reader) throws IOException {
+		if (reader == null)
+			return null;
+
 		final StringBuffer out = new StringBuffer();
 
 		final char[] buffer = new char[1024];
