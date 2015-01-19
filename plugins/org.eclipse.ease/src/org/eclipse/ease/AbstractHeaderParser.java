@@ -10,146 +10,153 @@
  *******************************************************************************/
 package org.eclipse.ease;
 
- import java.io.BufferedReader;
- import java.io.IOException;
- import java.io.InputStream;
- import java.io.InputStreamReader;
- import java.util.HashMap;
- import java.util.Map;
- import java.util.regex.Matcher;
- import java.util.regex.Pattern;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
- public abstract class AbstractHeaderParser implements IHeaderParser {
+import org.eclipse.core.runtime.Platform;
 
-	 private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\s*([\\p{Alnum}-_]*)\\s*:(.*)");
+public abstract class AbstractHeaderParser implements IHeaderParser {
 
-	 @Override
-	 public Map<String, String> parser(final InputStream stream) {
-		 Map<String, String> parameters = new HashMap<String, String>();
+	/** Default line break character. */
+	public static final String LINE_DELIMITER = System.getProperty(Platform.PREF_LINE_SEPARATOR);
 
-		 String comment = getComment(stream);
+	private static final Pattern PARAMETER_PATTERN = Pattern.compile("\\s*([\\p{Alnum}-_]*)\\s*:(.*)");
 
-		 String key = null;
-		 for (String line : comment.split("\\r?\\n")) {
-			 Matcher matcher = PARAMETER_PATTERN.matcher(line);
-			 if (matcher.matches()) {
-				 // key value pair found
-				 key = matcher.group(1);
-				 parameters.put(key, matcher.group(2).trim());
+	@Override
+	public Map<String, String> parse(final InputStream stream) {
+		final Map<String, String> parameters = new HashMap<String, String>();
 
-			 } else if ((key != null) && (!line.trim().isEmpty())) {
-				 // check that we do not have a delimiter line (all same chars)
-				 line = line.trim();
-				 if (!Pattern.matches("[" + line.charAt(0) + "]+", line))
-					 // line belongs to previous key value pair
-					 parameters.put(key, parameters.get(key) + " " + line.trim());
-			 }
+		final String comment = getComment(stream);
 
-			 // any other line will be ignored
-		 }
+		String key = null;
+		for (String line : comment.split("\\r?\\n")) {
+			final Matcher matcher = PARAMETER_PATTERN.matcher(line);
+			if (matcher.matches()) {
+				// key value pair found
+				key = matcher.group(1);
+				parameters.put(key, matcher.group(2).trim());
 
-		 return parameters;
-	 }
+			} else if ((key != null) && (!line.trim().isEmpty())) {
+				// check that we do not have a delimiter line (all same chars)
+				line = line.trim();
+				if (!Pattern.matches("[" + line.charAt(0) + "]+", line))
+					// line belongs to previous key value pair
+					parameters.put(key, parameters.get(key) + " " + line.trim());
+			}
 
-	 @Override
-	 public String createHeader(final Map<String, String> headerContent) {
-		 StringBuilder builder = new StringBuilder();
+			// any other line will be ignored
+		}
 
-		 builder.append(getLineCommentToken());
-		 builder.append(' ');
-		 builder.append("********************************************************************************\n");
+		return parameters;
+	}
 
-		 for (String key : headerContent.keySet()) {
-			 StringBuilder lineBuilder = new StringBuilder();
+	@Override
+	public String createHeader(final Map<String, String> headerContent) {
+		final StringBuilder builder = new StringBuilder();
 
-			 lineBuilder.append(getLineCommentToken()).append(" ").append(key);
-			 while (lineBuilder.length() < 24)
-				 lineBuilder.append(' ');
+		builder.append(getLineCommentToken());
+		builder.append(' ');
+		builder.append("********************************************************************************");
+		builder.append(LINE_DELIMITER);
 
-			 lineBuilder.append(": ").append(headerContent.get(key)).append("\n");
-			 builder.append(lineBuilder);
-		 }
+		for (final String key : headerContent.keySet()) {
+			final StringBuilder lineBuilder = new StringBuilder();
 
-		 builder.append(getLineCommentToken());
-		 builder.append(' ');
-		 builder.append("********************************************************************************\n");
+			lineBuilder.append(getLineCommentToken()).append(" ").append(key);
+			while (lineBuilder.length() < 24)
+				lineBuilder.append(' ');
 
-		 return builder.toString();
-	 }
+			lineBuilder.append(": ").append(headerContent.get(key)).append(LINE_DELIMITER);
+			builder.append(lineBuilder);
+		}
 
-	 /**
-	  * Default implementation to extract the first comment area from a stream. Looks for block and line comments. Might be replaced by more specific
-	  * implementations for dedicated languages.
-	  *
-	  * @param stream
-	  *            stream to parse
-	  * @return String containing the detected comment or an empty string. Never returns <code>null</code>
-	  */
-	 protected String getComment(final InputStream stream) {
-		 StringBuilder comment = new StringBuilder();
+		builder.append(getLineCommentToken());
+		builder.append(' ');
+		builder.append("********************************************************************************");
+		builder.append(LINE_DELIMITER);
 
-		 BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+		return builder.toString();
+	}
 
-		 boolean isComment = true;
-		 boolean isBlock = false;
-		 try {
-			 do {
-				 String line = reader.readLine();
-				 if (line == null)
-					 break;
+	/**
+	 * Default implementation to extract the first comment area from a stream. Looks for block and line comments. Might be replaced by more specific
+	 * implementations for dedicated languages.
+	 *
+	 * @param stream
+	 *            stream to parse
+	 * @return String containing the detected comment or an empty string. Never returns <code>null</code>
+	 */
+	protected String getComment(final InputStream stream) {
+		final StringBuilder comment = new StringBuilder();
 
-				 line = line.trim();
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
-				 if (line.isEmpty())
-					 continue;
+		boolean isComment = true;
+		boolean isBlock = false;
+		try {
+			do {
+				String line = reader.readLine();
+				if (line == null)
+					break;
 
-				 if (line.startsWith(getLineCommentToken())) {
-					 comment.append(line.substring(getLineCommentToken().length()).trim());
-					 comment.append("\n");
-					 continue;
-				 }
+				line = line.trim();
 
-				 if (hasBlockComment()) {
-					 if (line.startsWith(getBlockCommentStartToken())) {
-						 isBlock = true;
-						 line = line.substring(getBlockCommentStartToken().length()).trim();
-					 }
+				if (line.isEmpty())
+					continue;
 
-					 if (isBlock) {
-						 if (line.contains(getBlockCommentEndToken())) {
-							 isBlock = false;
-							 line = line.substring(0, line.indexOf(getBlockCommentEndToken()));
-						 }
+				if (line.startsWith(getLineCommentToken())) {
+					comment.append(line.substring(getLineCommentToken().length()).trim());
+					comment.append("\n");
+					continue;
+				}
 
-						 // remove leading '*' characters
-						 line = line.trim();
-						 while (line.startsWith("*"))
-							 line = line.substring(1);
+				if (hasBlockComment()) {
+					if (line.startsWith(getBlockCommentStartToken())) {
+						isBlock = true;
+						line = line.substring(getBlockCommentStartToken().length()).trim();
+					}
 
-						 comment.append(line.trim());
-						 comment.append("\n");
-						 continue;
-					 }
-				 }
+					if (isBlock) {
+						if (line.contains(getBlockCommentEndToken())) {
+							isBlock = false;
+							line = line.substring(0, line.indexOf(getBlockCommentEndToken()));
+						}
 
-				 // not a comment line, not empty
-				 isComment = false;
+						// remove leading '*' characters
+						line = line.trim();
+						while (line.startsWith("*"))
+							line = line.substring(1);
 
-			 } while (isComment);
+						comment.append(line.trim());
+						comment.append("\n");
+						continue;
+					}
+				}
 
-		 } catch (IOException e) {
-			 Logger.logError("Could not parse input stream header", e);
-			 return "";
-		 }
+				// not a comment line, not empty
+				isComment = false;
 
-		 return comment.toString();
-	 }
+			} while (isComment);
 
-	 protected abstract boolean hasBlockComment();
+		} catch (final IOException e) {
+			Logger.logError("Could not parse input stream header", e);
+			return "";
+		}
 
-	 protected abstract String getBlockCommentEndToken();
+		return comment.toString();
+	}
 
-	 protected abstract String getBlockCommentStartToken();
+	protected abstract boolean hasBlockComment();
 
-	 protected abstract String getLineCommentToken();
- }
+	protected abstract String getBlockCommentEndToken();
+
+	protected abstract String getBlockCommentStartToken();
+
+	protected abstract String getLineCommentToken();
+}

@@ -54,7 +54,7 @@ public class InputStreamParser {
 	protected Map<String, String> extractParameters(ScriptType type, InputStream stream) {
 		IHeaderParser parser = type.getHeaderParser();
 		if (parser != null)
-			return parser.parser(stream);
+			return parser.parse(stream);
 
 		return Collections.emptyMap();
 	}
