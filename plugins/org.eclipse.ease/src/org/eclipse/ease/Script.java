@@ -113,7 +113,6 @@ public class Script {
 		}
 
 		return null;
-
 	}
 
 	private String bufferReader(final Reader command) throws IOException {
@@ -126,6 +125,11 @@ public class Script {
 		return fCodeBuffer;
 	}
 
+	/**
+	 * Returns the command object of this script.
+	 *
+	 * @return command object
+	 */
 	public final Object getCommand() {
 		return fCommand;
 	}
@@ -149,18 +153,7 @@ public class Script {
 		fResult.setResult(result);
 
 		// gracefully close input streams & readers
-		if (fCommand instanceof InputStream) {
-			try {
-				((InputStream) fCommand).close();
-			} catch (final IOException e) {
-			}
-
-		} else if (fCommand instanceof Reader) {
-			try {
-				((Reader) fCommand).close();
-			} catch (final IOException e) {
-			}
-		}
+		closeInput();
 	}
 
 	/**
@@ -173,6 +166,10 @@ public class Script {
 		fResult.setException(e);
 
 		// gracefully close input streams & readers
+		closeInput();
+	}
+
+	private void closeInput() {
 		if (fCommand instanceof InputStream) {
 			try {
 				((InputStream) fCommand).close();
@@ -187,6 +184,11 @@ public class Script {
 		}
 	}
 
+	/**
+	 * Returns the file instance, if the current command is backed by a file.
+	 *
+	 * @return {@link IFile}, {@link File} or <code>null</code>
+	 */
 	public Object getFile() {
 		if ((fCommand instanceof IFile) || (fCommand instanceof File))
 			return fCommand;
@@ -195,7 +197,7 @@ public class Script {
 	}
 
 	/**
-	 * Check if this script is defined by dynmically generated code. Generated code might be hidden while debugging.
+	 * Check if this script is defined by dynamically generated code. Generated code might be hidden while debugging.
 	 *
 	 * @return <code>true</code> when not a file and not an {@link URL}
 	 */
@@ -214,6 +216,11 @@ public class Script {
 		return "(unknown script source)";
 	}
 
+	/**
+	 * Get the title of this script. Title has to be set by the caller via the constructor. Typically this is used for dynamic code to indicate its purpose.
+	 *
+	 * @return script title or <code>null</code>
+	 */
 	public String getTitle() {
 		return fTitle;
 	}
