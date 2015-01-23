@@ -17,6 +17,26 @@ location "http://download.eclipse.org/releases/indigo/" {
 	org.eclipse.gmf.examples.runtime.feature.group
 	org.eclipse.papyrus.uml.feature.group
 	org.eclipse.uml2.feature.group
+
+
+
+
+
+	// modeling modules
+//	org.eclipse.papyrus.infra.feature.feature.group
+//	org.eclipse.papyrus.infra.gmfdiag.feature.feature.group
+//	org.eclipse.papyrus.uml.diagram.feature.feature.group
+//	org.eclipse.uml2.uml
+//	org.eclipse.gmf.runtime.diagram.ui
+	
+	// unit test modules
+	org.eclipse.wst.xml_core.feature.feature.group
+	org.eclipse.wst.xml_ui.feature.feature.group
+	
+	// java module
+	org.eclipse.pde.feature.group
+	org.eclipse.jdt
+
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/" {
