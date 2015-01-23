@@ -30,6 +30,10 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 
 	public static final String PLUGIN_ID = "org.eclipse.ease.ui";
 
+	public static final String ICON_FIELD = "/icons/eobj16/field.png";
+
+	public static final String ICON_METHOD = "/icons/eobj16/function.png";
+
 	private static Activator mInstance;
 
 	public static Activator getDefault() {
