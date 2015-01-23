@@ -1,6 +1,7 @@
 package org.eclipse.ease.debugging;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,8 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 	private int fResumeType;
 
 	private List<IScriptDebugFrame> fStacktrace = new LinkedList<IScriptDebugFrame>();
+
+	private List<IScriptDebugFrame> fExceptionStacktrace = Collections.emptyList();
 
 	private int fResumeStackSize = 0;
 
@@ -198,15 +201,21 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 	}
 
 	protected boolean isTrackedScript(final Script script) {
-		return !script.isDynamic() || fShowDynamicCode;
+		return (!script.isDynamic()) || fShowDynamicCode;
 	}
 
 	protected int getResumeType() {
 		return fResumeType;
 	}
 
+	/**
+	 * Get current stack trace. If the current trace is empty (script not started or terminated) we get an optional exception stack trace. This is by default
+	 * empty and will only be filled when an exception is thrown.
+	 *
+	 * @return
+	 */
 	public List<IScriptDebugFrame> getStacktrace() {
-		return fStacktrace;
+		return (!fStacktrace.isEmpty() || fExceptionStacktrace.isEmpty()) ? fStacktrace : fExceptionStacktrace;
 	}
 
 	protected void setStacktrace(final List<IScriptDebugFrame> stacktrace) {
@@ -251,5 +260,12 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 		default:
 			// either user did not request anything yet or "RESUME" was triggered
 		}
+	}
+
+	protected void setExceptionStacktrace() {
+		// copy current stacktrace. In case this exception
+		fExceptionStacktrace = new ArrayList<IScriptDebugFrame>();
+		for (final IScriptDebugFrame frame : getStacktrace())
+			fExceptionStacktrace.add(new ScriptDebugFrame(frame));
 	}
 }

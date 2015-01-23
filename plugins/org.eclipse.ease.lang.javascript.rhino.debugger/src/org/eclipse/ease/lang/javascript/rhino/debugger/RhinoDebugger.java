@@ -55,6 +55,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		@Override
 		public void onExceptionThrown(final Context cx, final Throwable ex) {
+			setExceptionStacktrace();
 		}
 
 		@Override
