@@ -114,6 +114,9 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected synchronized boolean teardownEngine() {
+		// remove debugger to allow for garbage collection
+		mContext.setDebugger(null, null);
+
 		// cleanup context
 		Context.exit();
 
@@ -258,7 +261,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		for (final Object key : getScope().getIds()) {
 			final Object value = internalGetVariable(key.toString());
-			if (!value.getClass().getName().startsWith("org.mozilla.javascript.gen"))
+			if ((value == null) || (!value.getClass().getName().startsWith("org.mozilla.javascript.gen")))
 				result.put(key.toString(), value);
 		}
 
