@@ -14,21 +14,24 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.ease.Script;
-import org.eclipse.ease.debugging.IScriptDebugFrame;
 
+/**
+ * Frame containing debug location information for a dedicated script source.
+ */
 public class ScriptDebugFrame implements IScriptDebugFrame {
 
 	private final Script fScript;
 	private final int fLineNumber;
 	private final int fType;
 
-	public ScriptDebugFrame(Script script, int lineNumber, int type) {
-		fScript = script;
+	public ScriptDebugFrame(final Script script, final int lineNumber, final int type) {
+		// deep copy script to get rid of references to the script engine (due to the stored result)
+		fScript = new Script(script.getCommand());
 		fLineNumber = lineNumber;
 		fType = type;
 	}
 
-	public ScriptDebugFrame(IScriptDebugFrame frame) {
+	public ScriptDebugFrame(final IScriptDebugFrame frame) {
 		this(frame.getScript(), frame.getLineNumber(), frame.getType());
 	}
 
