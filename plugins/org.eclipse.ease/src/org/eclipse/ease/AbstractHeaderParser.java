@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,14 +66,14 @@ public abstract class AbstractHeaderParser implements IHeaderParser {
 		builder.append("********************************************************************************");
 		builder.append(LINE_DELIMITER);
 
-		for (final String key : headerContent.keySet()) {
+		for (final Entry<String, String> entry : headerContent.entrySet()) {
 			final StringBuilder lineBuilder = new StringBuilder();
 
-			lineBuilder.append(getLineCommentToken()).append(" ").append(key);
+			lineBuilder.append(getLineCommentToken()).append(" ").append(entry.getKey());
 			while (lineBuilder.length() < 24)
 				lineBuilder.append(' ');
 
-			lineBuilder.append(": ").append(headerContent.get(key)).append(LINE_DELIMITER);
+			lineBuilder.append(": ").append(entry.getValue()).append(LINE_DELIMITER);
 			builder.append(lineBuilder);
 		}
 

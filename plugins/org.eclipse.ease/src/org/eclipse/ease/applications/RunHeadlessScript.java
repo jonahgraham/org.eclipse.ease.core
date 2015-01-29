@@ -51,7 +51,7 @@ public class RunHeadlessScript implements IApplication {
 						location.release();
 						location.set(workspaceURL, true);
 
-					} else if (!location.getURL().equals(workspaceURL))
+					} else if (!location.getURL().toString().equals(workspaceURL.toString()))
 						System.err.println("WARNING: Could not set the workspace as it is already set to \"" + location.getURL() + "\"");
 				}
 

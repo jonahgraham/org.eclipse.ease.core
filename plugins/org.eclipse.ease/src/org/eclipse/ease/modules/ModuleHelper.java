@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -124,14 +125,14 @@ public final class ModuleHelper {
 		IPath searchPath = new Path(identifier);
 		if ((searchPath.segmentCount() == 1) && (!searchPath.isAbsolute())) {
 			// only module name given
-			for (String pathName : availableModules.keySet()) {
-				if (new Path(pathName).lastSegment().equals(identifier)) {
+			for (Entry<String, ModuleDefinition> module : availableModules.entrySet()) {
+				if (new Path(module.getKey()).lastSegment().equals(identifier)) {
 					// candidate detected
 					if (searchPath.isAbsolute())
 						// we already had one candidate, name is ambiguous
 						throw new RuntimeException("Module identifier \"" + identifier + "\" is ambiguous. Use full path name to load.");
 
-					searchPath = availableModules.get(pathName).getPath();
+					searchPath = module.getValue().getPath();
 				}
 			}
 		}

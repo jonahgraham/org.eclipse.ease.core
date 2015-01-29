@@ -13,9 +13,7 @@ package org.eclipse.ease.lang.javascript.rhino;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
@@ -59,7 +57,7 @@ public class RhinoClassLoader extends BundleProxyClassLoader {
 
 	/**
 	 * Add a URL to the search path of the classloader. Currently detects classes only, not resources.
-	 * 
+	 *
 	 * @param engine
 	 *            script engine used
 	 * @param url
@@ -71,10 +69,14 @@ public class RhinoClassLoader extends BundleProxyClassLoader {
 			REGISTERED_JARS.put(engine, URLClassLoader.newInstance(new URL[] { url }));
 
 		else {
-			// using a set avoids urls to be added multiple times to the search path
-			Collection<URL> urls = new HashSet<URL>(Arrays.asList(REGISTERED_JARS.get(engine).getURLs()));
-			urls.add(url);
-			REGISTERED_JARS.put(engine, URLClassLoader.newInstance(urls.toArray(new URL[urls.size()])));
+			URL[] registeredURLs = REGISTERED_JARS.get(engine).getURLs();
+			Arrays.sort(registeredURLs);
+			if (Arrays.binarySearch(registeredURLs, url) < 0) {
+				// new URL, add to list
+				URL[] updatedURLs = Arrays.copyOf(registeredURLs, registeredURLs.length + 1);
+				updatedURLs[updatedURLs.length - 1] = url;
+				REGISTERED_JARS.put(engine, URLClassLoader.newInstance(updatedURLs));
+			}
 		}
 	}
 

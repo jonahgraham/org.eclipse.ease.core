@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.ui.repository.IScript;
@@ -90,9 +91,9 @@ public final class ScriptContributionFactory extends CompoundContributionItem im
 			}
 
 			// add root menus to additions
-			for (IPath path : dynamicMenus.keySet()) {
-				if (path.segmentCount() == 1)
-					contributions.add(dynamicMenus.get(path).getContribution(fServiceLocator));
+			for (Entry<IPath, ScriptPopupMenu> element : dynamicMenus.entrySet()) {
+				if (element.getKey().segmentCount() == 1)
+					contributions.add(element.getValue().getContribution(fServiceLocator));
 			}
 
 			// add root elements to additions

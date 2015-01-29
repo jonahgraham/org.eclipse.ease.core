@@ -13,6 +13,7 @@ package org.eclipse.ease.debugging;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IRegisterGroup;
@@ -45,14 +46,14 @@ public class ScriptDebugStackFrame extends ScriptDebugElement implements IStackF
 
 	@Override
 	public IVariable[] getVariables() throws DebugException {
-		if(fDirty) {
+		if (fDirty) {
 			// TODO do not clear old variables, try to update them
 			fVariables.clear();
 
 			Map<String, Object> variables = getDebugFrame().getVariables();
-			for(String name : variables.keySet()) {
-				if(variables.get(name) != null) {
-					ScriptDebugVariable variable = new ScriptDebugVariable(this, name, variables.get(name));
+			for (Entry<String, Object> entry : variables.entrySet()) {
+				if (entry.getValue() != null) {
+					ScriptDebugVariable variable = new ScriptDebugVariable(this, entry.getKey(), entry.getValue());
 					fVariables.add(variable);
 				}
 			}
