@@ -214,7 +214,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			} catch (final BreakException e) {
 				script.setResult(e.getCondition());
 
-			} catch (final Exception e) {
+			} catch (final Throwable e) {
 				script.setException(e);
 				e.printStackTrace(getErrorStream());
 

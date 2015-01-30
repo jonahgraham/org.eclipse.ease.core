@@ -162,7 +162,7 @@ public class Script {
 	 * @param e
 	 *            exception
 	 */
-	public final void setException(final Exception e) {
+	public final void setException(final Throwable e) {
 		fResult.setException(e);
 
 		// gracefully close input streams & readers

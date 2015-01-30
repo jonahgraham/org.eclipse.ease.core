@@ -13,7 +13,10 @@ package org.eclipse.ease.lang.javascript.rhino;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
@@ -29,10 +32,22 @@ public class RhinoClassLoader extends BundleProxyClassLoader {
 
 	private static Map<IScriptEngine, URLClassLoader> REGISTERED_JARS = new HashMap<IScriptEngine, URLClassLoader>();
 
+	private static RhinoClassLoader fInstance = null;
+
+	public static RhinoClassLoader getInstance() {
+		if (fInstance == null)
+			fInstance = new RhinoClassLoader();
+
+		return fInstance;
+	}
+
+	/** Marker that we are currently looking within a specific URLClassLoader. */
+	private final Collection<URLClassLoader> fTraversingURLClassLoader = new HashSet<URLClassLoader>();
+
 	/**
 	 * Constructor for Rhino class loader.
 	 */
-	public RhinoClassLoader() {
+	private RhinoClassLoader() {
 		super(Platform.getBundle("org.mozilla.javascript"), RhinoClassLoader.class.getClassLoader());
 	}
 
@@ -42,12 +57,19 @@ public class RhinoClassLoader extends BundleProxyClassLoader {
 		final Job currentJob = Job.getJobManager().currentJob();
 		final URLClassLoader classLoader = REGISTERED_JARS.get(currentJob);
 		if (classLoader != null) {
-			try {
-				Class<?> clazz = classLoader.loadClass(name);
-				if (clazz != null)
-					return clazz;
-			} catch (ClassNotFoundException e) {
-				// ignore, try next one
+			// the URLClassLoader will query its parent (this) if it cannot find the requested class, keep a marker to break the cycle
+			if (!fTraversingURLClassLoader.contains(classLoader)) {
+				fTraversingURLClassLoader.add(classLoader);
+				try {
+					Class<?> clazz = classLoader.loadClass(name);
+					if (clazz != null)
+						return clazz;
+				} catch (ClassNotFoundException e) {
+					// ignore, class not found in registered JARs
+				} finally {
+					// clear marker
+					fTraversingURLClassLoader.remove(classLoader);
+				}
 			}
 		}
 
@@ -66,16 +88,16 @@ public class RhinoClassLoader extends BundleProxyClassLoader {
 	public static void registerURL(final IScriptEngine engine, final URL url) {
 		// engine needs to be registered as we use a single classloader for multiple script engines.
 		if (!REGISTERED_JARS.containsKey(engine))
-			REGISTERED_JARS.put(engine, URLClassLoader.newInstance(new URL[] { url }));
+			REGISTERED_JARS.put(engine, URLClassLoader.newInstance(new URL[] { url }, getInstance()));
 
 		else {
 			URL[] registeredURLs = REGISTERED_JARS.get(engine).getURLs();
-			Arrays.sort(registeredURLs);
-			if (Arrays.binarySearch(registeredURLs, url) < 0) {
+			List<URL> urlList = Arrays.asList(registeredURLs);
+			if (!urlList.contains(url)) {
 				// new URL, add to list
 				URL[] updatedURLs = Arrays.copyOf(registeredURLs, registeredURLs.length + 1);
 				updatedURLs[updatedURLs.length - 1] = url;
-				REGISTERED_JARS.put(engine, URLClassLoader.newInstance(updatedURLs));
+				REGISTERED_JARS.put(engine, URLClassLoader.newInstance(updatedURLs, getInstance()));
 			}
 		}
 	}

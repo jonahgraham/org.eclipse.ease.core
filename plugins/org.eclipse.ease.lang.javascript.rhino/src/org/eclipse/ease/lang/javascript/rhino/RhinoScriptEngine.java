@@ -51,7 +51,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 			@Override
 			public Object run() {
-				ContextFactory.getGlobal().initApplicationClassLoader(new RhinoClassLoader());
+				ContextFactory.getGlobal().initApplicationClassLoader(RhinoClassLoader.getInstance());
 				return null;
 			}
 		});
