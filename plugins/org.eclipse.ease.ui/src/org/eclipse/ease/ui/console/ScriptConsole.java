@@ -20,14 +20,17 @@ import org.eclipse.ease.Script;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IOConsole;
 import org.eclipse.ui.console.IOConsoleOutputStream;
+import org.eclipse.ui.themes.IThemeManager;
 
 public class ScriptConsole extends IOConsole implements IExecutionListener, IScriptEngineProvider, IPropertyChangeListener {
 
@@ -68,13 +71,18 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 	}
 
 	private void initializeStreams() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		final IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		IOConsoleOutputStream outputStream = getOutputStream();
+		final IOConsoleOutputStream outputStream = getOutputStream();
 		outputStream.setActivateOnWrite(store.getBoolean(IPreferenceConstants.CONSOLE_BASE + "." + getName() + "." + IPreferenceConstants.CONSOLE_OPEN_ON_OUT));
 
-		IOConsoleOutputStream errorStream = getErrorStream();
+		final IOConsoleOutputStream errorStream = getErrorStream();
 		errorStream.setActivateOnWrite(store.getBoolean(IPreferenceConstants.CONSOLE_BASE + "." + getName() + "." + IPreferenceConstants.CONSOLE_OPEN_ON_ERR));
+
+		// set error stream color
+		final IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
+		final ColorRegistry colorRegistry = themeManager.getCurrentTheme().getColorRegistry();
+		errorStream.setColor(colorRegistry.get("ERROR_COLOR"));
 	}
 
 	public static String getConsoleType() {
@@ -97,7 +105,7 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
 	@Override
 	protected void dispose() {
-		Activator activator = Activator.getDefault();
+		final Activator activator = Activator.getDefault();
 		if (activator != null)
 			activator.getPreferenceStore().removePropertyChangeListener(this);
 
@@ -136,13 +144,13 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 		try {
 			if (mOutputStream != null)
 				mOutputStream.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 
 		}
 		try {
 			if (mErrorStream != null)
 				mErrorStream.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 		}
 	}
 
@@ -161,7 +169,7 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
 	@Override
 	public void propertyChange(final PropertyChangeEvent event) {
-		String property = event.getProperty();
+		final String property = event.getProperty();
 
 		if (property.equals(IPreferenceConstants.CONSOLE_BASE + "." + getName() + "." + IPreferenceConstants.CONSOLE_OPEN_ON_OUT))
 			getOutputStream().setActivateOnWrite((Boolean) event.getNewValue());
