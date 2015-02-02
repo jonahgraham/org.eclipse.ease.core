@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.debug.ITracingConstant;
 import org.eclipse.ease.debug.Tracer;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
+import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ui.PlatformUI;
@@ -55,7 +56,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	private InputStream fInputStream = null;
 
-	private final List<IScriptDebugFrame> fFileTrace = new LinkedList<IScriptDebugFrame>();
+	private final List<IScriptDebugFrame> fStackTrace = new LinkedList<IScriptDebugFrame>();
 
 	private EngineDescription fDescription;
 
@@ -67,12 +68,10 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	private boolean fCloseStreamsOnTerminate;
 
 	/**
-	 * Constructor. Contains a name for the underlying job and an indicator for the presence of online help.
+	 * Constructor. Sets the name for the underlying job.
 	 *
 	 * @param name
 	 *            name of script engine job
-	 * @param helpAvailable
-	 *            <code>true</code> when help code shall be generated on the fly
 	 */
 	public AbstractScriptEngine(final String name) {
 		super(name);
@@ -172,33 +171,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				if (ITracingConstant.MODULE_WRAPPER_TRACING)
 					Tracer.logInfo("Executing (" + script.getTitle() + "):\n" + script.getCode());
 
-				fFileTrace.add(0, new IScriptDebugFrame() {
-
-					@Override
-					public Map<String, Object> getVariables() {
-						return Collections.emptyMap();
-					}
-
-					@Override
-					public int getType() {
-						return IScriptDebugFrame.TYPE_FILE;
-					}
-
-					@Override
-					public Script getScript() {
-						return script;
-					}
-
-					@Override
-					public String getName() {
-						return script.getTitle();
-					}
-
-					@Override
-					public int getLineNumber() {
-						return 0;
-					}
-				});
+				fStackTrace.add(new ScriptDebugFrame(script, 0, IScriptDebugFrame.TYPE_FILE));
 
 				// execution
 				if (notifyListeners)
@@ -206,7 +179,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				else
 					notifyExecutionListeners(script, IExecutionListener.SCRIPT_INJECTION_START);
 
-				script.setResult(execute(script, script.getFile(), fFileTrace.get(0).getName(), uiThread));
+				script.setResult(execute(script, script.getFile(), fStackTrace.get(0).getName(), uiThread));
 
 			} catch (final ExitException e) {
 				script.setResult(e.getCondition());
@@ -224,7 +197,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				else
 					notifyExecutionListeners(script, IExecutionListener.SCRIPT_INJECTION_END);
 
-				fFileTrace.remove(0);
+				fStackTrace.remove(0);
 			}
 		}
 
@@ -233,7 +206,8 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		if (setupEngine()) {
+		final boolean setup = setupEngine();
+		if (setup) {
 			fSetupDone = true;
 
 			// engine is initialized, set buffered variables
@@ -243,7 +217,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			fBufferedVariables.clear();
 
 			// setup new trace
-			fFileTrace.clear();
+			fStackTrace.clear();
 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_START);
 
@@ -282,6 +256,9 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		}
 
 		closeStreams();
+
+		if (!setup)
+			throw new RuntimeException("Could not setup script engine, terminating");
 
 		if (isTerminated())
 			return Status.OK_STATUS;
@@ -424,7 +401,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	}
 
 	public List<IScriptDebugFrame> getStackTrace() {
-		return fFileTrace;
+		return fStackTrace;
 	}
 
 	@Override
@@ -458,7 +435,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		if (fSetupDone)
 			return internalGetVariable(name);
 
-		throw new RuntimeException("Cannot retrieve variable, engine not initialized");
+		return fBufferedVariables.get(name);
 	}
 
 	@Override

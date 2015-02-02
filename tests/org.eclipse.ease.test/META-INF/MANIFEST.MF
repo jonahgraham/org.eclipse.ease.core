@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for org.eclipse.ease
-Bundle-SymbolicName: org.eclipse.ease.test
+Bundle-SymbolicName: org.eclipse.ease.test;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Fragment-Host: org.eclipse.ease;bundle-version="[0.1.0,1.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit;bundle-version="[4.8.2,5.0.0)"
+Require-Bundle: org.junit;bundle-version="[4.8.2,5.0.0)",
+ org.mockito;bundle-version="[1.9.5,2.0.0)"
 Bundle-Vendor: Eclipse.org
