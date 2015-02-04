@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JavaScript Rhino Engine Test
+Bundle-SymbolicName: org.eclipse.ease.lang.javascript.rhino.test
+Bundle-Version: 0.2.0.qualifier
+Fragment-Host: org.eclipse.ease.lang.javascript.rhino;bundle-version="[0.2.0,1.0.0)"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit,
+ org.eclipse.ui.workbench

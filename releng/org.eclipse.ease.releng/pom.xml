@@ -216,6 +216,7 @@
 			<id>test</id>
 			<modules>
 				<module>../../tests/org.eclipse.ease.test</module>
+				<module>../../tests/org.eclipse.ease.lang.javascript.rhino.test</module>
 			</modules>
 			<build>
 				<plugins>

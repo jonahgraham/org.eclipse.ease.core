@@ -57,6 +57,8 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		});
 	}
 
+	public static final String ENGINE_ID = "org.eclipse.ease.javascript.rhino";
+
 	/** Rhino Scope. Created when interpreter is initialized */
 	protected ScriptableObject mScope;
 
