@@ -334,22 +334,24 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 				// use reflection to resolve elements
 				final Map<String, Object> children = new HashMap<String, Object>();
 
-				if (!((Entry<?, ?>) parentElement).getKey().toString().endsWith("()")) {
-					// fields
-					for (final Field field : parent.getClass().getFields()) {
-						try {
-							children.put(field.getName(), field.get(parent));
-						} catch (final Exception e) {
-							// ignore, try next
+				if (parent != null) {
+					if (!((Entry<?, ?>) parentElement).getKey().toString().endsWith("()")) {
+						// fields
+						for (final Field field : parent.getClass().getFields()) {
+							try {
+								children.put(field.getName(), field.get(parent));
+							} catch (final Exception e) {
+								// ignore, try next
+							}
 						}
-					}
 
-					// methods
-					for (final Method method : parent.getClass().getMethods()) {
-						try {
-							children.put(method.getName() + "()", method.getReturnType().getName());
-						} catch (final Exception e) {
-							// ignore, try next
+						// methods
+						for (final Method method : parent.getClass().getMethods()) {
+							try {
+								children.put(method.getName() + "()", method.getReturnType().getName());
+							} catch (final Exception e) {
+								// ignore, try next
+							}
 						}
 					}
 				}
@@ -384,7 +386,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		treeViewerColumn2.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(final Object element) {
-				return ((Entry<?, ?>) element).getValue().toString();
+				final Object value = ((Entry<?, ?>) element).getValue();
+				return (value != null) ? value.toString() : "[null]";
 			}
 		});
 
