@@ -123,17 +123,6 @@
       </command>
       <command
             categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.handler.DeleteScript"
-            id="org.eclipse.ease.commands.script.delete"
-            name="Delete Script">
-         <commandParameter
-               id="org.eclipse.ease.commands.script.delete.name"
-               name="Script Name"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
             defaultHandler="org.eclipse.ease.ui.handler.RenameScript"
             id="org.eclipse.ease.commands.script.rename"
             name="Rename Script">
@@ -171,6 +160,21 @@
                optional="true">
          </commandParameter>
       </command>
+      <command
+            description="Run the script selected in the Script Explorer View"
+            id="org.eclipse.ease.ui.runSelectedScript"
+            name="Run Selected Script">
+      </command>
+      <command
+            categoryId="org.eclipse.ease.commands.category.ModulesExplorer"
+            defaultHandler="org.eclipse.ease.ui.handler.OpenHelp"
+            id="org.eclipse.ease.commands.ModulesExplorer.openHelp"
+            name="open help">
+      </command>
+      <category
+            id="org.eclipse.ease.commands.category.ModulesExplorer"
+            name="Modules Explorer">
+      </category>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -377,14 +381,6 @@
          </enablement>
       </consolePageParticipant>
    </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
-            description="Run the script selected in the Script Explorer View"
-            id="org.eclipse.ease.ui.runSelectedScript"
-            name="Run Selected Script">
-      </command>
-   </extension>
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated ScriptRepository -->
       <package
@@ -533,19 +529,6 @@
             id="org.eclipse.ease.ui.perspectives.ScriptingPerspective"
             name="Scripting">
       </perspective>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
-            categoryId="org.eclipse.ease.commands.category.ModulesExplorer"
-            defaultHandler="org.eclipse.ease.ui.handler.OpenHelp"
-            id="org.eclipse.ease.commands.ModulesExplorer.openHelp"
-            name="open help">
-      </command>
-      <category
-            id="org.eclipse.ease.commands.category.ModulesExplorer"
-            name="Modules Explorer">
-      </category>
    </extension>
    <extension
          point="org.eclipse.ui.decorators">
