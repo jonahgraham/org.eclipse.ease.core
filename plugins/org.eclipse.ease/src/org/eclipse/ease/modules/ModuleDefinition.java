@@ -31,6 +31,7 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.tools.ContributionTools;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.Preferences;
 
@@ -60,6 +61,23 @@ public class ModuleDefinition {
 	/** Module icon parameter name. */
 	private static final String ICON = "icon";
 
+	/**
+	 * Retrieve the module definition for a given module instance.
+	 *
+	 * @param module
+	 *            module instance to look up
+	 * @return module definition or <code>null</code>
+	 */
+	public static ModuleDefinition getDefinition(Object module) {
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
+			if (definition.getModuleClass().equals(module.getClass()))
+				return definition;
+		}
+
+		return null;
+	}
+
 	/** Main configuration element for module. */
 	private final IConfigurationElement fConfig;
 
@@ -79,7 +97,7 @@ public class ModuleDefinition {
 	 * @return collection of required module ids
 	 */
 	public Collection<String> getDependencies() {
-		Set<String> dependencies = new HashSet<String>();
+		final Set<String> dependencies = new HashSet<String>();
 
 		for (final IConfigurationElement element : fConfig.getChildren(DEPENDENCY))
 			dependencies.add(element.getAttribute(CONFIG_DEPENDENCY_ID));
@@ -88,25 +106,25 @@ public class ModuleDefinition {
 	}
 
 	/**
-	 * Get the class definition of the provided module. Will not create an instance of this class, but look up the class definition directly.
+	 * Get the class definition of the provided module. Will not (by default) create an instance of this class, but look up the class definition directly.
 	 *
 	 * @return class definition of module contribution
 	 */
 	public Class<?> getModuleClass() {
-		Bundle bundle = Platform.getBundle(fConfig.getDeclaringExtension().getContributor().getName());
+		final Bundle bundle = Platform.getBundle(fConfig.getDeclaringExtension().getContributor().getName());
 		if (bundle != null) {
 			try {
-				String className = fConfig.getAttribute(CLASS);
+				final String className = fConfig.getAttribute(CLASS);
 				return Platform.getBundle(fConfig.getDeclaringExtension().getContributor().getName()).loadClass(className);
-			} catch (InvalidRegistryObjectException e) {
+			} catch (final InvalidRegistryObjectException e) {
 				// ignore
-			} catch (ClassNotFoundException e) {
+			} catch (final ClassNotFoundException e) {
 				// ignore
 			}
 		}
 
 		// we could not locate the class, try to create instance
-		Object instance = createModuleInstance();
+		final Object instance = createModuleInstance();
 		if (instance != null)
 			return createModuleInstance().getClass();
 
@@ -121,7 +139,7 @@ public class ModuleDefinition {
 	public Object createModuleInstance() {
 		try {
 			return fConfig.createExecutableExtension(CLASS);
-		} catch (CoreException e) {
+		} catch (final CoreException e) {
 			// could not create class, ignore
 		}
 
@@ -135,8 +153,8 @@ public class ModuleDefinition {
 	 * @return <code>true</code> when visible
 	 */
 	public boolean isVisible() {
-		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-		Preferences node = prefs.node("modules");
+		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+		final Preferences node = prefs.node("modules");
 		return node.getBoolean(getPath().toString(), Boolean.parseBoolean(fConfig.getAttribute(VISIBLE)));
 	}
 
@@ -147,8 +165,8 @@ public class ModuleDefinition {
 	 *            <code>true</code> to make visible
 	 */
 	public void setVisible(final boolean visible) {
-		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-		Preferences node = prefs.node("modules");
+		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+		final Preferences node = prefs.node("modules");
 		node.putBoolean(getPath().toString(), visible);
 	}
 
@@ -156,8 +174,8 @@ public class ModuleDefinition {
 	 * Reset visibility to defaults.
 	 */
 	public void resetVisible() {
-		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-		Preferences node = prefs.node("modules");
+		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+		final Preferences node = prefs.node("modules");
 		node.remove(getPath().toString());
 	}
 
@@ -174,7 +192,7 @@ public class ModuleDefinition {
 
 			String categoryID = fConfig.getAttribute(CATEGORY);
 			while (categoryID != null) {
-				ModuleCategoryDefinition definition = scriptService.getAvailableModuleCategories().get(categoryID);
+				final ModuleCategoryDefinition definition = scriptService.getAvailableModuleCategories().get(categoryID);
 				if (definition != null) {
 					fPath = new Path(definition.getName()).append(fPath);
 					categoryID = definition.getParentId();
@@ -200,7 +218,6 @@ public class ModuleDefinition {
 	}
 
 	public String getBundleID() {
-
 		return fConfig.getContributor().getName();
 	}
 
@@ -210,5 +227,16 @@ public class ModuleDefinition {
 
 	public List<Field> getFields() {
 		return ModuleHelper.getFields(getModuleClass());
+	}
+
+	/**
+	 * Provide the help location for a given topic. Returns the help URI needed to open the according help page.
+	 * 
+	 * @param topic
+	 *            help topic within module
+	 * @return link to help
+	 */
+	public String getHelpLocation(String topic) {
+		return "/" + getBundleID() + "/help/module_" + getName().toLowerCase() + ".html#" + topic;
 	}
 }

@@ -27,6 +27,7 @@ import org.eclipse.ease.debug.ITracingConstant;
 import org.eclipse.ease.debug.Tracer;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * The Environment provides base functions for all script interpreters. It is automatically loaded by any interpreter upon startup.
@@ -236,5 +237,97 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 		if (location instanceof URL)
 			getScriptEngine().registerJar((URL) location);
+	}
+
+	/**
+	 * Open help page on addressed topic.
+	 *
+	 * @param topic
+	 *            help topic to open (typically a function name)
+	 */
+	@WrapToScript
+	public void help(@ScriptParameter(defaultValue = ScriptParameter.NULL) String topic) {
+
+		if (PlatformUI.isWorkbenchRunning()) {
+			if (topic != null) {
+				for (final Object module : getModules()) {
+					final ModuleDefinition definition = ModuleDefinition.getDefinition(module);
+					if (definition != null) {
+						// look for matching method
+						for (final Method method : definition.getMethods()) {
+							if (matchesMethod(method, topic)) {
+								// method found, display help
+
+								final String link = definition.getHelpLocation(method.getName());
+								PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(link);
+
+								// done
+								return;
+							}
+						}
+
+						for (final Field field : definition.getFields()) {
+							if (matchesField(field, topic)) {
+								// field found, display help
+
+								final String link = definition.getHelpLocation(field.getName());
+								PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(link);
+
+								// done
+								return;
+							}
+						}
+					}
+				}
+			}
+
+			// TODO display default help book
+		}
+	}
+
+	/**
+	 * Verify that a given name matches the field name or one of its aliases.
+	 *
+	 * @param field
+	 *            field to query
+	 * @param name
+	 *            name to match
+	 * @return <code>true</code> on match
+	 */
+	private boolean matchesField(Field field, String name) {
+		if (name.equalsIgnoreCase(field.getName()))
+			return true;
+
+		final WrapToScript wrapAnnotation = field.getAnnotation(WrapToScript.class);
+		if (wrapAnnotation != null) {
+			for (final String alias : wrapAnnotation.alias().split(WrapToScript.DELIMITER))
+				if (name.equalsIgnoreCase(alias.trim()))
+					return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Verify that a given name matches the method name or one of its aliases.
+	 *
+	 * @param method
+	 *            method to query
+	 * @param name
+	 *            name to match
+	 * @return <code>true</code> on match
+	 */
+	private boolean matchesMethod(Method method, String name) {
+		if (name.equalsIgnoreCase(method.getName()))
+			return true;
+
+		final WrapToScript wrapAnnotation = method.getAnnotation(WrapToScript.class);
+		if (wrapAnnotation != null) {
+			for (final String alias : wrapAnnotation.alias().split(WrapToScript.DELIMITER))
+				if (name.equalsIgnoreCase(alias.trim()))
+					return true;
+		}
+
+		return false;
 	}
 }
