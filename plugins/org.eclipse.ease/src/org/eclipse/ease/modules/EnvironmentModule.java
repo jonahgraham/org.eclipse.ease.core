@@ -27,6 +27,7 @@ import org.eclipse.ease.debug.ITracingConstant;
 import org.eclipse.ease.debug.Tracer;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 /**
@@ -259,7 +260,13 @@ public class EnvironmentModule extends AbstractEnvironment {
 								// method found, display help
 
 								final String link = definition.getHelpLocation(method.getName());
-								PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(link);
+								Display.getDefault().asyncExec(new Runnable() {
+
+									@Override
+									public void run() {
+										PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(link);
+									}
+								});
 
 								// done
 								return;
@@ -271,7 +278,13 @@ public class EnvironmentModule extends AbstractEnvironment {
 								// field found, display help
 
 								final String link = definition.getHelpLocation(field.getName());
-								PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(link);
+								Display.getDefault().asyncExec(new Runnable() {
+
+									@Override
+									public void run() {
+										PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(link);
+									}
+								});
 
 								// done
 								return;
