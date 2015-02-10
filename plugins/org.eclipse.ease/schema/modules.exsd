@@ -127,7 +127,7 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  Unique id of this module.As a recommendation use the pluginID followed by a unique category name.
+                  Unique id of this category. Use &lt;plugin-id&gt;.category.&lt;your.category.name&gt; here to allow for automatic build of help files. Not following this scheme will break help pages for modules references.
                </documentation>
             </annotation>
          </attribute>
