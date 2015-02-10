@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
@@ -108,7 +109,8 @@ public class ModuleDoclet extends Doclet {
 		return fDocletPath;
 	}
 
-	private Map<String, IMemento> fLookupTable;
+	/** Maps module.class.name to module definition XML memento. */
+	private Map<String, IMemento> fModuleNodes;
 	private File fDocletPath;
 	private File fRootFolder = null;
 	private final Collection<IMemento> fCategoryNodes = new HashSet<IMemento>();
@@ -152,17 +154,10 @@ public class ModuleDoclet extends Doclet {
 					// some files were created, update project, ...
 
 					// create module TOC files
-					createModuleTOCFiles();
+					Set<String> tocFiles = createModuleTOCFiles();
 
 					// update plugin.xml
-					Collection<String> tocs = new HashSet<String>();
-					for (IMemento node : fLookupTable.values())
-						tocs.add("help/modules_" + extractCategoryName(node.getString("category")) + ".xml");
-
-					for (IMemento node : fCategoryNodes)
-						tocs.add("help/" + createCategoryFileName(node.getString("id")));
-
-					updatePluginXML(fRootFolder, tocs);
+					updatePluginXML(fRootFolder, tocFiles);
 
 					// update MANIFEST.MF
 					updateManifest(fRootFolder);
@@ -214,13 +209,14 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private static String createCategoryLink(final String categoryId) {
+		String pluginID = "org.eclipse.ease.help";
 		if (categoryId != null) {
 			int index = categoryId.indexOf(".category.");
 			if (index != -1)
-				return "../" + categoryId.substring(0, index) + "/help/" + createCategoryFileName(categoryId) + "#modules_anchor";
+				pluginID = categoryId.substring(0, index);
 		}
 
-		return "../org.eclipse.ease.help/help/scripting_book.xml#modules_anchor";
+		return "../" + pluginID + "/help/" + createCategoryFileName(categoryId) + "#modules_anchor";
 	}
 
 	private static String createCategoryFileName(final String categoryId) {
@@ -287,9 +283,12 @@ public class ModuleDoclet extends Doclet {
 		for (IMemento extensionNode : memento.getChildren("extension")) {
 			String extensionPoint = extensionNode.getString("point");
 			if ("org.eclipse.help.toc".equals(extensionPoint)) {
-				// a help topic is registered
-				for (IMemento tocNode : extensionNode.getChildren("toc"))
-					toDo.remove(tocNode.getString("file"));
+				// a help topic is already registered
+				for (IMemento tocNode : extensionNode.getChildren("toc")) {
+					String tocLocation = tocNode.getString("file");
+					if (tocLocation.length() > 5)
+						toDo.remove(tocLocation.substring(5));
+				}
 			}
 		}
 
@@ -298,7 +297,7 @@ public class ModuleDoclet extends Doclet {
 			IMemento extensionNode = memento.createChild("extension");
 			extensionNode.putString("point", "org.eclipse.help.toc");
 			IMemento tocNode = extensionNode.createChild("toc");
-			tocNode.putString("file", fileLocation);
+			tocNode.putString("file", "help/" + fileLocation);
 			tocNode.putBoolean("primary", false);
 
 		}
@@ -308,28 +307,58 @@ public class ModuleDoclet extends Doclet {
 			writeFile(pluginFile, memento.toString().replace("&#x0A;", "\n"));
 	}
 
-	private void createModuleTOCFiles() throws IOException {
+	private Set<String> createModuleTOCFiles() throws IOException {
 		Map<String, IMemento> tocDefinitions = new HashMap<String, IMemento>();
-		for (IMemento moduleDefinition : fLookupTable.values()) {
-			String category = moduleDefinition.getString("category");
-			if (!tocDefinitions.containsKey(category)) {
-				XMLMemento memento = XMLMemento.createWriteRoot("toc");
-				memento.putString("label", "Modules");
-				memento.putString("link_to", createCategoryLink(category));
-				tocDefinitions.put(category, memento);
-			}
 
-			IMemento memento = tocDefinitions.get(category);
+		// create categories
+		for (IMemento categoryDefinition : fCategoryNodes) {
+			XMLMemento memento = XMLMemento.createWriteRoot("toc");
+			memento.putString("label", categoryDefinition.getString("name"));
+			memento.putString("link_to", createCategoryLink(categoryDefinition.getString("parent")));
+
 			IMemento topicNode = memento.createChild("topic");
-			topicNode.putString("href", "help/module_" + escape(moduleDefinition.getString("name")) + ".html");
-			topicNode.putString("label", moduleDefinition.getString("name"));
+			topicNode.putString("label", categoryDefinition.getString("name"));
+			topicNode.putBoolean("sort", true);
+
+			topicNode.createChild("anchor").putString("id", "modules_anchor");
+			tocDefinitions.put(createCategoryFileName(categoryDefinition.getString("id")), memento);
+		}
+
+		// create modules
+		if (!fModuleNodes.isEmpty()) {
+
+			for (IMemento moduleDefinition : fModuleNodes.values()) {
+				String categoryID = moduleDefinition.getString("category");
+				String fileName = createCategoryFileName(categoryID).replace("category_", "modules_");
+
+				IMemento memento;
+				if (tocDefinitions.containsKey(fileName))
+					memento = tocDefinitions.get(fileName);
+
+				else {
+					memento = XMLMemento.createWriteRoot("toc");
+					memento.putString("label", "Modules");
+					memento.putString("link_to", createCategoryLink(categoryID));
+
+					tocDefinitions.put(fileName, memento);
+				}
+
+				IMemento topicNode = memento.createChild("topic");
+				topicNode.putString("href", "help/" + createHTMLFileName(moduleDefinition));
+				topicNode.putString("label", moduleDefinition.getString("name"));
+			}
 		}
 
 		for (Entry<String, IMemento> entry : tocDefinitions.entrySet()) {
-
-			File targetFile = getChild(getChild(fRootFolder, "help"), createCategoryFileName(entry.getKey()).replace("category_", "modules_"));
+			File targetFile = getChild(getChild(fRootFolder, "help"), entry.getKey());
 			writeFile(targetFile, entry.getValue().toString());
 		}
+
+		return tocDefinitions.keySet();
+	}
+
+	private static String createHTMLFileName(final IMemento moduleDefinition) {
+		return "module_" + escape(moduleDefinition.getString("id")) + ".html";
 	}
 
 	private boolean createHTMLFiles(final ClassDoc[] classes) throws IOException {
@@ -338,7 +367,7 @@ public class ModuleDoclet extends Doclet {
 		for (final ClassDoc clazz : classes) {
 
 			// only add classes which are registered in our modules lookup table
-			if (fLookupTable.containsKey(clazz.qualifiedName())) {
+			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
 				StringBuffer buffer = new StringBuffer();
 				File headerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "header.txt");
@@ -346,7 +375,7 @@ public class ModuleDoclet extends Doclet {
 
 				// header
 				buffer.append("\t<h1>Module ");
-				buffer.append(fLookupTable.get(clazz.qualifiedName()).getString("name"));
+				buffer.append(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
 				buffer.append("</h1>");
 				buffer.append(LINE_DELIMITER);
 
@@ -478,8 +507,7 @@ public class ModuleDoclet extends Doclet {
 				buffer.append(readResourceFile(footerFile));
 
 				// write document
-				File targetFile = getChild(getChild(fRootFolder, "help"), "module_"
-						+ escape(fLookupTable.get(clazz.qualifiedName()).getString("name") + ".html"));
+				File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName())));
 				writeFile(targetFile, buffer.toString());
 				createdFiles = true;
 			}
@@ -492,7 +520,7 @@ public class ModuleDoclet extends Doclet {
 		for (Entry<Pattern, String> entry : fExternalAPIDocs.entrySet()) {
 			if (entry.getKey().matcher(qualifiedName).matches())
 				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + "\" title=\"" + qualifiedName + "\">"
-				+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
+						+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
 		}
 
 		return qualifiedName;
@@ -564,12 +592,12 @@ public class ModuleDoclet extends Doclet {
 		writer.close();
 	}
 
-	private String escape(final String data) {
+	private static String escape(final String data) {
 		return data.replace(' ', '_').toLowerCase();
 	}
 
 	private void createModuleLookupTable() {
-		fLookupTable = new HashMap<String, IMemento>();
+		fModuleNodes = new HashMap<String, IMemento>();
 
 		// read plugin.xml
 		final File pluginXML = getChild(fRootFolder, "plugin.xml");
@@ -579,7 +607,7 @@ public class ModuleDoclet extends Doclet {
 			for (final IMemento extensionNode : root.getChildren("extension")) {
 				if ("org.eclipse.ease.modules".equals(extensionNode.getString("point"))) {
 					for (final IMemento instanceNode : extensionNode.getChildren("module"))
-						fLookupTable.put(instanceNode.getString("class"), instanceNode);
+						fModuleNodes.put(instanceNode.getString("class"), instanceNode);
 
 					for (final IMemento instanceNode : extensionNode.getChildren("category"))
 						fCategoryNodes.add(instanceNode);
