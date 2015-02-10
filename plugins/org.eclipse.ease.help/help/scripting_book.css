@@ -1,18 +1,40 @@
-h1					{ }
-h2					{ background-color: #d0d0ff; padding: 5px 0px 5px 10px }
-h3					{ margin-top: 20px; background-color: #f0f0ff; padding: 5px 0px 5px 10px}
+body				{ margin-left: 50px; }
+
+h1					{ margin-left: -30px; padding: 10px 20px 10px 20px;
+						text-transform: uppercase; font-family: "Sans-serif";
+ 						background-color: #443685; color: white;
+ 						border: 1px solid #443685; border-radius: 10px; 
+    				}
+h2					{ margin-left: -30px; margin-top: 50px; padding: 5px 0px 5px 10px;
+						font-family: "Sans-serif";
+						background-color: #f7941e;  color: white;
+						border: 1px solid #f7941e; border-radius: 5px;
+					}
+h3					{ margin-top: 50px; padding: 5px 0px 5px 10px;
+						font-family: "Sans-serif";
+						background-color: #f0f0ff; 
+						border-top: 1px solid black; border-bottom: 1px solid black;
+					}
+table				{ border-spacing: 0px; border-collapse: collapse; }
+th					{ background-color: #000000; color: #FFFFFF;
+						text-align: left; vertical-align: top;
+						font-weight: normal; padding: 5px 6px 5px 6px;
+						font-weight: bold; border: 1px solid white; font-family: "Sans-serif";
+					}
+td					{ padding: 5px 10px 5px 20px; border: 1px solid white; }
+tr:nth-child(even)	{ background-color: #eeeeee; }
+tr:nth-child(odd)	{ background-color: #cccccc; }
+
 h3:after			{ content: "()"}
-table.functions  	{ margin-left: 50px; border-spacing: 10px }
-.functions th		{ background-color: #f5f5ff; text-align: left; vertical-align: top; font-weight: normal; padding: 3px 6px 3px 6px}
 .functions a		{ text-decoration: none; }
 .functions a:hover	{ text-decoration: underline; }
 
-table.constants  	{ margin-left: 50px; border-spacing: 10px }
-.constants th		{ background-color: #f5f5ff; text-align: left; vertical-align: top; font-weight: normal; padding: 3px 6px 3px 6px}
-
 .description  		{ margin-left: 50px;  }
-.synopsis  			{ margin-left: 50px; font-style: italic }
+.synopsis  			{ margin-left: 50px; font-style: normal; color: #660000; font-family: "Sans-serif"; font-weight: bold}
 .synonyms  			{ margin-left: 50px;  }
-table.parameters  	{ margin-left: 80px; border-spacing: 5px; border: 1px solid #000088; }
-.parameters th  	{ background-color: #000088; color: #ffffff; text-align: left; padding: 3px 6px 3px 6px}
+
+table.parameters  	{ margin-left: 80px; }
+
+
 .return  			{ margin-left: 80px;  }
+.return em  		{ font-weight: bold; font-style: normal; margin-right: 20px; }

@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -361,6 +363,14 @@ public class ModuleDoclet extends Doclet {
 		return "module_" + escape(moduleDefinition.getString("id")) + ".html";
 	}
 
+	private static void addLine(final StringBuffer buffer, final Object text) {
+		buffer.append(text).append(LINE_DELIMITER);
+	}
+
+	private static void addText(final StringBuffer buffer, final Object text) {
+		buffer.append(text);
+	}
+
 	private boolean createHTMLFiles(final ClassDoc[] classes) throws IOException {
 		boolean createdFiles = false;
 
@@ -371,32 +381,31 @@ public class ModuleDoclet extends Doclet {
 				// class found to create help for
 				StringBuffer buffer = new StringBuffer();
 				File headerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "header.txt");
-				buffer.append(readResourceFile(headerFile));
+				addLine(buffer, readResourceFile(headerFile));
 
 				// header
-				buffer.append("\t<h1>Module ");
-				buffer.append(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
-				buffer.append("</h1>");
-				buffer.append(LINE_DELIMITER);
+				addText(buffer, "\t<h1>");
+				addText(buffer, fModuleNodes.get(clazz.qualifiedName()).getString("name"));
+				addLine(buffer, " Module</h1>");
 
 				// class description
-				buffer.append("\t<p>");
+				addText(buffer, "\t<p>");
 				final String classComment = clazz.commentText();
-				if ((classComment != null) && (!classComment.isEmpty()))
-					buffer.append(clazz.commentText());
+				if (classComment != null)
+					addText(buffer, clazz.commentText());
 
-				buffer.append("</p>");
-				buffer.append(LINE_DELIMITER);
+				addLine(buffer, "</p>");
 
 				// constants
-				buffer.append(createConstantsSection(clazz));
+				addLine(buffer, createConstantsSection(clazz));
 
 				// function overview
-				buffer.append(LINE_DELIMITER);
-				buffer.append("\t<h2>Function Overview</h2>");
-				buffer.append(LINE_DELIMITER);
-				buffer.append("\t<table class=\"functions\">");
-				buffer.append(LINE_DELIMITER);
+				addLine(buffer, "\t<h2>Method Overview</h2>");
+				addLine(buffer, "\t<table class=\"functions\">");
+				addLine(buffer, "\t\t<tr>");
+				addLine(buffer, "\t\t\t<th>Method</th>");
+				addLine(buffer, "\t\t\t<th>Description</th>");
+				addLine(buffer, "\t\t</tr>");
 
 				List<Overview> overview = new ArrayList<Overview>();
 				for (final MethodDoc method : clazz.methods()) {
@@ -409,102 +418,92 @@ public class ModuleDoclet extends Doclet {
 				Collections.sort(overview);
 
 				for (Overview entry : overview) {
-					buffer.append("\t\t<tr>");
-					buffer.append(LINE_DELIMITER);
-					buffer.append("\t\t\t<th><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a></th>");
-					buffer.append(LINE_DELIMITER);
-					buffer.append("\t\t\t<td>" + entry.fDescription + "</td>");
-					buffer.append(LINE_DELIMITER);
-					buffer.append("\t\t</tr>");
-					buffer.append(LINE_DELIMITER);
+					addLine(buffer, "\t\t<tr>");
+					addLine(buffer, "\t\t\t<td><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
+					addLine(buffer, "\t\t\t<td>" + getFirstSentence(entry.fDescription) + "</td>");
+					addLine(buffer, "\t\t</tr>");
 				}
 
-				buffer.append("\t</table>");
-				buffer.append(LINE_DELIMITER);
-				buffer.append(LINE_DELIMITER);
+				addLine(buffer, "\t</table>");
+				addLine(buffer, "");
 
 				// function details
-				buffer.append("\t<h2>Functions</h2>");
-				buffer.append(LINE_DELIMITER);
+				addLine(buffer, "\t<h2>Methods</h2>");
 
-				for (final MethodDoc method : clazz.methods()) {
+				List<MethodDoc> methods = new ArrayList<MethodDoc>(Arrays.asList(clazz.methods()));
+				Collections.sort(methods, new Comparator<MethodDoc>() {
+
+					@Override
+					public int compare(final MethodDoc o1, final MethodDoc o2) {
+						return o1.name().compareTo(o2.name());
+					}
+				});
+
+				for (final MethodDoc method : methods) {
 					if (isExported(method)) {
-						buffer.append(LINE_DELIMITER);
-						buffer.append("\t<h3><a id=\"" + method.name() + "\">" + method.name() + "</a></h3>");
-						buffer.append(LINE_DELIMITER);
+						addLine(buffer, "\t<h3><a id=\"" + method.name() + "\">" + method.name() + "</a></h3>");
 
 						// synopsis
-						buffer.append("\t<p class=\"synopsis\">");
-						buffer.append(createClassText(method.returnType().qualifiedTypeName()));
-						buffer.append(" ");
-						buffer.append(method.name());
-						buffer.append("(");
+						addText(buffer, "\t<p class=\"synopsis\">");
+						addText(buffer, createClassText(method.returnType().qualifiedTypeName()));
+						addText(buffer, " ");
+						addText(buffer, method.name());
+						addText(buffer, "(");
 						for (Parameter parameter : method.parameters()) {
-							buffer.append(createClassText(parameter.type().qualifiedTypeName()));
-							buffer.append(" ");
-							buffer.append(parameter.name());
-							buffer.append(", ");
+							addText(buffer, createClassText(parameter.type().qualifiedTypeName()));
+							addText(buffer, " ");
+							addText(buffer, parameter.name());
+							addText(buffer, ", ");
 						}
 						if (method.parameters().length > 0)
 							buffer.delete(buffer.length() - 2, buffer.length());
 
-						buffer.append(")");
-						buffer.append("</p>");
-						buffer.append(LINE_DELIMITER);
+						addText(buffer, ")");
+						addLine(buffer, "</p>");
 
 						// main description
-						buffer.append("\t<p class=\"description\">" + method.commentText() + "</p>");
-						buffer.append(LINE_DELIMITER);
+						addLine(buffer, "\t<p class=\"description\">" + method.commentText() + "</p>");
 
 						Collection<String> aliases = getFunctionAliases(method);
 						if (!aliases.isEmpty()) {
-							buffer.append("\t<p class=\"synonyms\">");
+							addLine(buffer, "\t<p class=\"synonyms\">");
 
 							for (String alias : aliases)
-								buffer.append(alias).append(" ");
+								addText(buffer, alias + " ");
 
-							buffer.append("</p>");
-							buffer.append(LINE_DELIMITER);
+							addLine(buffer, "</p>");
 						}
 
 						if (method.parameters().length > 0) {
 							File parameterHeaderFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "parameters_header.txt");
-							buffer.append(readResourceFile(parameterHeaderFile));
+							addLine(buffer, readResourceFile(parameterHeaderFile));
 							for (Parameter parameter : method.parameters()) {
-								buffer.append("\t\t<tr>");
-								buffer.append(LINE_DELIMITER);
-								buffer.append("\t\t\t<td>" + parameter.name() + "</td>");
-								buffer.append(LINE_DELIMITER);
-								buffer.append("\t\t\t<td>" + createClassText(parameter.type().qualifiedTypeName()) + "</td>");
-								buffer.append(LINE_DELIMITER);
-								buffer.append("\t\t\t<td>" + findComment(method, parameter.name()) + "</td>");
-								buffer.append(LINE_DELIMITER);
+								addLine(buffer, "\t\t<tr>");
+								addLine(buffer, "\t\t\t<td>" + parameter.name() + "</td>");
+								addLine(buffer, "\t\t\t<td>" + findComment(method, parameter.name()) + "</td>");
 								// TODO add default value
-								buffer.append("\t\t</tr>");
-								buffer.append(LINE_DELIMITER);
+								addLine(buffer, "\t\t</tr>");
 							}
-							buffer.append("\t</table>");
-							buffer.append(LINE_DELIMITER);
+							addLine(buffer, "\t</table>");
 						}
 
 						if (!"void".equals(method.returnType().qualifiedTypeName())) {
-							buffer.append("\t<p class=\"return\">");
-							buffer.append(createClassText(method.returnType().qualifiedTypeName()));
+							addText(buffer, "\t<p class=\"return\"><em>Returns:</em>");
+							addText(buffer, createClassText(method.returnType().qualifiedTypeName()));
 
 							Tag[] tags = method.tags("return");
 							if (tags.length > 0) {
-								buffer.append(" ... ");
-								buffer.append(tags[0].text());
+								addText(buffer, " ... ");
+								addText(buffer, tags[0].text());
 							}
 
-							buffer.append("</p>");
-							buffer.append(LINE_DELIMITER);
+							addLine(buffer, "</p>");
 						}
 					}
 				}
 
 				File footerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "footer.txt");
-				buffer.append(readResourceFile(footerFile));
+				addLine(buffer, readResourceFile(footerFile));
 
 				// write document
 				File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName())));
@@ -516,11 +515,17 @@ public class ModuleDoclet extends Doclet {
 		return createdFiles;
 	}
 
+	private static String getFirstSentence(final String description) {
+		int pos = description.indexOf('.');
+
+		return (pos > 0) ? description.substring(0, pos + 1) : description;
+	}
+
 	private Object createClassText(final String qualifiedName) {
 		for (Entry<Pattern, String> entry : fExternalAPIDocs.entrySet()) {
 			if (entry.getKey().matcher(qualifiedName).matches())
-				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + "\" title=\"" + qualifiedName + "\">"
-						+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
+				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + ".html\" title=\"" + qualifiedName + "\">"
+				+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
 		}
 
 		return qualifiedName;
@@ -535,26 +540,23 @@ public class ModuleDoclet extends Doclet {
 		}
 
 		if (!constants.isEmpty()) {
-			buffer.append(LINE_DELIMITER);
-			buffer.append("\t<h2>Constants</h2>");
-			buffer.append(LINE_DELIMITER);
-			buffer.append("\t<table class=\"constants\">");
-			buffer.append(LINE_DELIMITER);
+			addLine(buffer, "");
+			addLine(buffer, "\t<h2>Constants</h2>");
+			addLine(buffer, "\t<table class=\"constants\">");
+			addLine(buffer, "\t\t<tr>");
+			addLine(buffer, "\t\t\t<th>Constant</th>");
+			addLine(buffer, "\t\t\t<th>Description</th>");
+			addLine(buffer, "\t\t</tr>");
 
 			for (Entry<String, String> entry : constants.entrySet()) {
-				buffer.append("\t\t<tr>");
-				buffer.append(LINE_DELIMITER);
-				buffer.append("\t\t\t<th>" + entry.getKey() + "</th>");
-				buffer.append(LINE_DELIMITER);
-				buffer.append("\t\t\t<td>" + entry.getValue() + "</td>");
-				buffer.append(LINE_DELIMITER);
-				buffer.append("\t\t</tr>");
-				buffer.append(LINE_DELIMITER);
+				addLine(buffer, "\t\t<tr>");
+				addLine(buffer, "\t\t\t<td>" + entry.getKey() + "</td>");
+				addLine(buffer, "\t\t\t<td>" + entry.getValue() + "</td>");
+				addLine(buffer, "\t\t</tr>");
 			}
 
-			buffer.append("\t</table>");
-			buffer.append(LINE_DELIMITER);
-			buffer.append(LINE_DELIMITER);
+			addLine(buffer, "\t</table>");
+			addLine(buffer, "");
 		}
 
 		return buffer;
