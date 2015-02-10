@@ -25,6 +25,7 @@ import org.eclipse.ease.debugging.events.ResumedEvent;
 import org.eclipse.ease.debugging.events.ScriptReadyEvent;
 import org.eclipse.ease.debugging.events.StackFramesEvent;
 import org.eclipse.ease.debugging.events.SuspendedEvent;
+import org.eclipse.ease.debugging.events.TerminateRequest;
 
 public abstract class AbstractScriptDebugger implements IEventProcessor, IExecutionListener {
 	private EventDispatchJob fDispatcher;
@@ -169,6 +170,9 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 
 		} else if (event instanceof GetStackFramesRequest) {
 			fireDispatchEvent(new StackFramesEvent(getStacktrace(), ((AbstractScriptEngine) fEngine).getThread()));
+
+		} else if (event instanceof TerminateRequest) {
+			fEngine.terminate();
 		}
 	}
 
