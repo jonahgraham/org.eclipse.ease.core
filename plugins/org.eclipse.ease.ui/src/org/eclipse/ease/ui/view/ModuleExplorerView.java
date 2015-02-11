@@ -14,6 +14,9 @@ package org.eclipse.ease.ui.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
@@ -25,21 +28,136 @@ import org.eclipse.ease.ui.modules.ui.ModulesComposite;
 import org.eclipse.ease.ui.modules.ui.ModulesFilter;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.UIJob;
 
 public class ModuleExplorerView extends ViewPart implements IPreferenceChangeListener {
 
 	public static final String ID = "org.eclipse.ease.ui.view.ModulesExplorerView"; //$NON-NLS-1$
-	private ModulesComposite fModulesComposite;
 
-	public ModuleExplorerView() {
+	/**
+	 * Job to update the tree filter settings. Decoupled to trigger after some delay.
+	 */
+	private class UpdateTreeJob extends UIJob {
 
+		/** Default delay until UI update job is triggered. */
+		private static final long UI_DELAY_MS = 300L;
+
+		private String fFilterText;
+
+		public UpdateTreeJob() {
+			super("Update Modules Explorer");
+		}
+
+		@Override
+		public IStatus runInUIThread(final IProgressMonitor monitor) {
+			for (ViewerFilter filter : fModulesComposite.getTreeViewer().getFilters()) {
+				if (filter instanceof TextViewerFilter) {
+					((TextViewerFilter) filter).setFilter(fFilterText);
+
+					fModulesComposite.getTreeViewer().refresh();
+
+					if ((fFilterText != null) && (!fFilterText.isEmpty()))
+						fModulesComposite.getTreeViewer().expandAll();
+
+					return Status.OK_STATUS;
+				}
+			}
+
+			// filter not set yet
+			fModulesComposite.getTreeViewer().addFilter(new TextViewerFilter(fFilterText));
+
+			if ((fFilterText != null) && (!fFilterText.isEmpty()))
+				fModulesComposite.getTreeViewer().expandAll();
+
+			return Status.OK_STATUS;
+		}
+
+		/**
+		 * Called when filter text is to be updated.
+		 *
+		 * @param filterText
+		 *            new filter text
+		 */
+		public synchronized void update(final String filterText) {
+			fFilterText = filterText;
+
+			schedule(UI_DELAY_MS);
+		}
 	}
+
+	/**
+	 * Viewer filter to display only elements that contain a certain text. Also displays parents when they contain a child element that contains the specified
+	 * filter text.
+	 */
+	private class TextViewerFilter extends ViewerFilter {
+		private String fFilterText;
+
+		public TextViewerFilter(final String filterText) {
+			fFilterText = filterText;
+		}
+
+		@Override
+		public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
+			if ((fFilterText == null) || (fFilterText.isEmpty()) || (isVisible(element)))
+				return true;
+
+			return isChildVisible(element);
+		}
+
+		/**
+		 * Detect a child element that contains specified filter text.
+		 *
+		 * @param element
+		 *            parent element
+		 * @return <code>true</code> when filtertext is detected
+		 */
+		private boolean isChildVisible(final Object element) {
+			ITreeContentProvider contentProvider = (ITreeContentProvider) fModulesComposite.getTreeViewer().getContentProvider();
+			for (Object child : contentProvider.getChildren(element)) {
+				if (isVisible(child) || isChildVisible(child))
+					return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Detect filter text in element representation.
+		 *
+		 * @param element
+		 *            element to look at
+		 * @return <code>true</code> when filtertext is detected
+		 */
+		private boolean isVisible(final Object element) {
+			ILabelProvider labelProvider = (ILabelProvider) fModulesComposite.getTreeViewer().getLabelProvider();
+			String label = labelProvider.getText(element);
+			return (label.toLowerCase().contains(fFilterText));
+		}
+
+		private void setFilter(final String filterText) {
+			fFilterText = filterText;
+		}
+	}
+
+	private ModulesComposite fModulesComposite;
+	private Text ftext;
+
+	private UpdateTreeJob fUpdateJob = null;
 
 	/**
 	 * Create contents of the view part.
@@ -48,8 +166,28 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
+		GridLayout gl_parent = new GridLayout(1, false);
+		gl_parent.verticalSpacing = 3;
+		gl_parent.marginWidth = 0;
+		gl_parent.marginHeight = 0;
+		gl_parent.horizontalSpacing = 0;
+		parent.setLayout(gl_parent);
+
+		ftext = new Text(parent, SWT.BORDER);
+		ftext.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		ftext.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyReleased(final KeyEvent e) {
+				if (fUpdateJob == null)
+					fUpdateJob = new UpdateTreeJob();
+
+				fUpdateJob.update(ftext.getText().toLowerCase());
+			}
+		});
 
 		fModulesComposite = new ModulesComposite(parent, SWT.NONE, false);
+		fModulesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		fModulesComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		fModulesComposite.addFilter(ModulesFilter.visible(fModulesComposite));

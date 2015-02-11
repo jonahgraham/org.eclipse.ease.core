@@ -139,7 +139,7 @@ public abstract class AbstractVirtualTreeProvider implements ITreeContentProvide
 	 * @param element
 	 *            replacement
 	 */
-	public void registerNodeReplacement(IPath path, Object element) {
+	public void registerNodeReplacement(final IPath path, final Object element) {
 		if (element instanceof IPath)
 			throw new RuntimeException("Cannot replace a path with another path");
 
@@ -152,7 +152,7 @@ public abstract class AbstractVirtualTreeProvider implements ITreeContentProvide
 	 * @param showRoot
 	 *            <code>true</code> to display the root node
 	 */
-	public void setShowRoot(boolean showRoot) {
+	public void setShowRoot(final boolean showRoot) {
 		fShowRoot = showRoot;
 	}
 
@@ -163,9 +163,9 @@ public abstract class AbstractVirtualTreeProvider implements ITreeContentProvide
 	 *            elements to parse for replacements
 	 * @return array with same size as elements containing replacements
 	 */
-	private Object[] replaceElements(Collection<Object> elements) {
+	private Object[] replaceElements(final Collection<Object> elements) {
 		if (elements == null)
-			return null;
+			return new Object[0];
 
 		final HashSet<Object> result = new HashSet<Object>(elements);
 		for (final Object element : elements) {
@@ -185,7 +185,7 @@ public abstract class AbstractVirtualTreeProvider implements ITreeContentProvide
 	 *            replacement element to look up
 	 * @return original path element or replacement, if not found
 	 */
-	private Object findPathForReplacement(Object replacement) {
+	private Object findPathForReplacement(final Object replacement) {
 		if (replacement instanceof IPath)
 			return replacement;
 
