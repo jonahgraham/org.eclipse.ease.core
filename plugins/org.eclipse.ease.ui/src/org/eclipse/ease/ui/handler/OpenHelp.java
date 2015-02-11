@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Bernhard Wedl - initial API and implementation
+ *     Christian Pontesegger - fixed help lookup
  *******************************************************************************/
 package org.eclipse.ease.ui.handler;
 
@@ -37,28 +38,17 @@ public class OpenHelp extends AbstractHandler implements IHandler {
 			Object element = ((IStructuredSelection) selection).getFirstElement();
 			if (element instanceof ModuleDefinition) {
 				ModuleDefinition module = (ModuleDefinition) element;
-				PlatformUI.getWorkbench().getHelpSystem()
-						.displayHelpResource("/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html");
+				PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(module.getHelpLocation(null));
 
 			} else if (element instanceof Method) {
 				ModuleDefinition module = ModulesTools.getDeclaringModule((Method) element);
-				if (module != null) {
-					PlatformUI
-							.getWorkbench()
-							.getHelpSystem()
-							.displayHelpResource(
-									"/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html#" + ((Method) element).getName());
-				}
+				if (module != null)
+					PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(module.getHelpLocation(((Method) element).getName()));
 
 			} else if (element instanceof Field) {
 				ModuleDefinition module = ModulesTools.getDeclaringModule((Field) element);
-				if (module != null) {
-					PlatformUI
-							.getWorkbench()
-							.getHelpSystem()
-							.displayHelpResource(
-									"/" + module.getBundleID() + "/help/module_" + module.getName().toLowerCase() + ".html#" + ((Field) element).getName());
-				}
+				if (module != null)
+					PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(module.getHelpLocation(((Field) element).getName()));
 			}
 		}
 

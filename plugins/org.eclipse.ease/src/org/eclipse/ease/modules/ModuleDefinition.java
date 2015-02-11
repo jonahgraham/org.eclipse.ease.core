@@ -237,6 +237,6 @@ public class ModuleDefinition {
 	 * @return link to help
 	 */
 	public String getHelpLocation(final String topic) {
-		return "/" + getBundleID() + "/help/module_" + getId().replace(' ', '_').toLowerCase() + ".html#" + topic;
+		return "/" + getBundleID() + "/help/module_" + getId().replace(' ', '_').toLowerCase() + ".html" + ((topic != null) ? "#" + topic : "");
 	}
 }
