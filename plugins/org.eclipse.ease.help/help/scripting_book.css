@@ -1,17 +1,17 @@
 body				{ margin-left: 50px; }
 
 h1					{ margin-left: -30px; padding: 10px 20px 10px 20px;
-						text-transform: uppercase; font-family: "Sans-serif";
+						text-transform: uppercase; font-family: "Arial";
  						background-color: #443685; color: white;
  						border: 1px solid #443685; border-radius: 10px; 
     				}
 h2					{ margin-left: -30px; margin-top: 50px; padding: 5px 0px 5px 10px;
-						font-family: "Sans-serif";
+						font-family: "Arial";
 						background-color: #f7941e;  color: white;
 						border: 1px solid #f7941e; border-radius: 5px;
 					}
 h3					{ margin-top: 50px; padding: 5px 0px 5px 10px;
-						font-family: "Sans-serif";
+						font-family: "Arial";
 						background-color: #f0f0ff; 
 						border-top: 1px solid black; border-bottom: 1px solid black;
 					}
@@ -19,7 +19,7 @@ table				{ border-spacing: 0px; border-collapse: collapse; }
 th					{ background-color: #000000; color: #FFFFFF;
 						text-align: left; vertical-align: top;
 						font-weight: normal; padding: 5px 6px 5px 6px;
-						font-weight: bold; border: 1px solid white; font-family: "Sans-serif";
+						font-weight: bold; border: 1px solid white; font-family: "Arial";
 					}
 td					{ padding: 5px 10px 5px 20px; border: 1px solid white; }
 tr:nth-child(even)	{ background-color: #eeeeee; }
@@ -30,7 +30,7 @@ h3:after			{ content: "()"}
 .functions a:hover	{ text-decoration: underline; }
 
 .description  		{ margin-left: 50px;  }
-.synopsis  			{ margin-left: 50px; font-style: normal; color: #660000; font-family: "Sans-serif"; font-weight: bold}
+.synopsis  			{ margin-left: 50px; font-style: normal; color: #660000; font-family: "Arial"; font-weight: bold}
 .synonyms  			{ margin-left: 50px;  }
 
 table.parameters  	{ margin-left: 80px; }
