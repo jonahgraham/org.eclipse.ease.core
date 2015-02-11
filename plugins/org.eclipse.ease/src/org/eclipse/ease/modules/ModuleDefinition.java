@@ -68,7 +68,7 @@ public class ModuleDefinition {
 	 *            module instance to look up
 	 * @return module definition or <code>null</code>
 	 */
-	public static ModuleDefinition getDefinition(Object module) {
+	public static ModuleDefinition getDefinition(final Object module) {
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
 			if (definition.getModuleClass().equals(module.getClass()))
@@ -231,12 +231,12 @@ public class ModuleDefinition {
 
 	/**
 	 * Provide the help location for a given topic. Returns the help URI needed to open the according help page.
-	 * 
+	 *
 	 * @param topic
 	 *            help topic within module
 	 * @return link to help
 	 */
-	public String getHelpLocation(String topic) {
-		return "/" + getBundleID() + "/help/module_" + getName().toLowerCase() + ".html#" + topic;
+	public String getHelpLocation(final String topic) {
+		return "/" + getBundleID() + "/help/module_" + getId().replace(' ', '_').toLowerCase() + ".html#" + topic;
 	}
 }

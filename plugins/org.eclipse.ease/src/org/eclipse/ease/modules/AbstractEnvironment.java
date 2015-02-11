@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
@@ -47,21 +48,21 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	@WrapToScript
 	public final Object loadModule(final String identifier) {
 		// resolve identifier
-		String moduleName = ModuleHelper.resolveName(identifier);
+		final String moduleName = ModuleHelper.resolveName(identifier);
 
 		Object module = getModule(moduleName);
 		if (module == null) {
 			// not loaded yet
 			final IScriptService scriptService = ScriptService.getService();
-			Map<String, ModuleDefinition> availableModules = scriptService.getAvailableModules();
+			final Map<String, ModuleDefinition> availableModules = scriptService.getAvailableModules();
 
-			ModuleDefinition definition = availableModules.get(moduleName);
+			final ModuleDefinition definition = availableModules.get(moduleName);
 			if (definition != null) {
 				// module exists
 
 				// load dependencies; always load to bring dependencies on top of modules stack
-				for (String dependencyId : definition.getDependencies()) {
-					ModuleDefinition requiredModule = scriptService.getModuleDefinition(dependencyId);
+				for (final String dependencyId : definition.getDependencies()) {
+					final ModuleDefinition requiredModule = scriptService.getModuleDefinition(dependencyId);
 					if ((requiredModule == null) || (loadModule(requiredModule.getPath().toString()) == null)) {
 						Logger.logError("Dependency \"" + dependencyId + "\" could not be resolved.");
 						// could not load dependency, bail out
@@ -77,10 +78,10 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 
 				// scripts changing functions force reloading of the whole module stack
 				if (module instanceof IScriptFunctionModifier) {
-					List<Object> reverseList = new ArrayList<Object>(fModules);
+					final List<Object> reverseList = new ArrayList<Object>(fModules);
 					Collections.reverse(reverseList);
 
-					for (Object loadedModule : reverseList)
+					for (final Object loadedModule : reverseList)
 						wrap(loadedModule);
 				}
 			}
@@ -102,6 +103,14 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 		return module;
 	}
 
+	@Override
+	public void initialize(IScriptEngine engine, IEnvironment environment) {
+		super.initialize(engine, environment);
+
+		fModules.add(this);
+		fModuleNames.put(EnvironmentModule.MODULE_NAME, this);
+	}
+
 	/**
 	 * List all available (visible) modules. Returns a list of visible modules. Loaded modules are indicated.
 	 *
@@ -110,8 +119,8 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	@WrapToScript
 	public final String listModules() {
 
-		IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		Collection<ModuleDefinition> modules = scriptService.getAvailableModules().values();
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final Collection<ModuleDefinition> modules = scriptService.getAvailableModules().values();
 
 		final StringBuilder output = new StringBuilder();
 
@@ -191,7 +200,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	}
 
 	protected void fireModuleEvent(final Object module, final int type) {
-		for (Object listener : fModuleListeners.getListeners())
+		for (final Object listener : fModuleListeners.getListeners())
 			((IModuleListener) listener).notifyModule(module, type);
 	}
 
