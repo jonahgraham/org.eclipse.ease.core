@@ -136,7 +136,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 *            code to be interpreted
 	 * @return result of code execution
 	 */
-	@WrapToScript(alias = "eval")
+	@WrapToScript
 	public final Object execute(final Object data) {
 		return getScriptEngine().inject(data);
 	}
@@ -247,7 +247,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 *            help topic to open (typically a function name)
 	 */
 	@WrapToScript
-	public void help(@ScriptParameter(defaultValue = ScriptParameter.NULL) String topic) {
+	public void help(@ScriptParameter(defaultValue = ScriptParameter.NULL) final String topic) {
 
 		if (PlatformUI.isWorkbenchRunning()) {
 			if (topic != null) {
@@ -307,7 +307,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 *            name to match
 	 * @return <code>true</code> on match
 	 */
-	private boolean matchesField(Field field, String name) {
+	private boolean matchesField(final Field field, final String name) {
 		if (name.equalsIgnoreCase(field.getName()))
 			return true;
 
@@ -330,7 +330,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 *            name to match
 	 * @return <code>true</code> on match
 	 */
-	private boolean matchesMethod(Method method, String name) {
+	private boolean matchesMethod(final Method method, final String name) {
 		if (name.equalsIgnoreCase(method.getName()))
 			return true;
 
