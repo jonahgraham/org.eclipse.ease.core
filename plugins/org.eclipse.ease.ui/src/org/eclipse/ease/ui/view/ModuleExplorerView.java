@@ -47,7 +47,7 @@ import org.eclipse.ui.progress.UIJob;
 
 public class ModuleExplorerView extends ViewPart implements IPreferenceChangeListener {
 
-	public static final String ID = "org.eclipse.ease.ui.view.ModulesExplorerView"; //$NON-NLS-1$
+	public static final String VIEW_ID = "org.eclipse.ease.ui.views.modulesExplorer"; //$NON-NLS-1$
 
 	/**
 	 * Job to update the tree filter settings. Decoupled to trigger after some delay.

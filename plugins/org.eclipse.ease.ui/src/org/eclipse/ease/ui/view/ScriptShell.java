@@ -90,7 +90,7 @@ import org.osgi.service.prefs.Preferences;
  */
 public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyChangeListener, IScriptEngineProvider, IExecutionListener {
 
-	public static final String VIEW_ID = "org.eclipse.ease.views.scriptShell";
+	public static final String VIEW_ID = "org.eclipse.ease.ui.views.scriptShell";
 
 	private static final String XML_HISTORY_NODE = "history";
 

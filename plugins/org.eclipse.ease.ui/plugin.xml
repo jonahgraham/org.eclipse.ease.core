@@ -10,7 +10,7 @@
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ScriptShell"
             icon="icons/eview16/script_shell.png"
-            id="org.eclipse.ease.views.scriptShell"
+            id="org.eclipse.ease.ui.views.scriptShell"
             name="Script Shell"
             restorable="true">
       </view>
@@ -22,7 +22,7 @@
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ScriptExplorerView"
             icon="icons/eview16/script_explorer.png"
-            id="org.eclipse.ease.ui.view.ScriptEplorerView"
+            id="org.eclipse.ease.ui.views.scriptEplorerView"
             name="Script Explorer">
       </view>
       <view
@@ -30,7 +30,7 @@
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ModuleExplorerView"
             icon="icons/eview16/modules_explorer.png"
-            id="org.eclipse.ease.ui.view.ModulesExplorerView"
+            id="org.eclipse.ease.ui.views.modulesExplorer"
             name="Modules Explorer"
             restorable="true">
       </view>
@@ -186,7 +186,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="toolbar:org.eclipse.ease.views.scriptShell">
+            locationURI="toolbar:org.eclipse.ease.ui.views.scriptShell">
          <separator
                name="top"
                visible="false">
@@ -253,7 +253,7 @@
          </separator>
       </menuContribution>
       <menuContribution
-            locationURI="toolbar:org.eclipse.ease.ui.view.ScriptEplorerView">
+            locationURI="toolbar:org.eclipse.ease.ui.views.scriptEplorerView">
          <separator
                name="top"
                visible="false">
@@ -319,7 +319,7 @@
       </menuContribution>
       <menuContribution
             allPopups="true"
-            locationURI="popup:org.eclipse.ease.ui.view.ModulesExplorerView">
+            locationURI="popup:org.eclipse.ease.ui.views.modulesExplorer">
          <separator
                name="top"
                visible="false">

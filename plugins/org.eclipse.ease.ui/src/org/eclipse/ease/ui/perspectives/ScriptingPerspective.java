@@ -7,16 +7,19 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.perspectives;
+ *******************************************************************************/
+package org.eclipse.ease.ui.perspectives;
 
+import org.eclipse.ease.ui.view.ModuleExplorerView;
+import org.eclipse.ease.ui.view.ScriptExplorerView;
+import org.eclipse.ease.ui.view.ScriptShell;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 
 /**
- * This class is meant to serve as an example for how various contributions are made to a perspective. Note that some of the extension point id's are referred
- * to as API constants while others are hardcoded and may be subject to change.
+ * Default perspective for scripting.
  */
 public class ScriptingPerspective implements IPerspectiveFactory {
 
@@ -28,14 +31,17 @@ public class ScriptingPerspective implements IPerspectiveFactory {
 		left.addView("org.eclipse.ease.ui.view.ScriptEplorerView");
 
 		IFolderLayout top = factory.createFolder("top", IPageLayout.TOP, 0.3f, factory.getEditorArea());
-		top.addView("org.eclipse.ease.views.scriptShell");
+		top.addView(ScriptShell.VIEW_ID);
+
+		IFolderLayout topRight = factory.createFolder("topRight", IPageLayout.RIGHT, 0.8f, ScriptShell.VIEW_ID);
+		topRight.addView(ModuleExplorerView.VIEW_ID);
 
 		IFolderLayout bottomRight = factory.createFolder("bottom", IPageLayout.BOTTOM, 0.7f, factory.getEditorArea());
 		bottomRight.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 		bottomRight.addView(IPageLayout.ID_PROBLEM_VIEW);
 
-		factory.addShowViewShortcut("org.eclipse.ease.ui.view.ScriptEplorerView");
-		factory.addShowViewShortcut("org.eclipse.ease.views.scriptShell");
+		factory.addShowViewShortcut(ScriptExplorerView.VIEW_ID);
+		factory.addShowViewShortcut(ScriptShell.VIEW_ID);
 		factory.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		factory.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
 		factory.addShowViewShortcut(IPageLayout.ID_OUTLINE);
