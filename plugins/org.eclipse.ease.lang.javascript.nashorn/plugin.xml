@@ -8,7 +8,7 @@
             debugger="false"
             id="org.eclipse.ease.javascript.nashorn"
             name="JavaScript (Nashorn)"
-            priority="20">
+            priority="5">
          <binding
                scriptType="JavaScript">
          </binding>
