@@ -28,7 +28,7 @@ public class ScriptingPerspective implements IPerspectiveFactory {
 
 		IFolderLayout left = factory.createFolder("left", IPageLayout.LEFT, 0.25f, factory.getEditorArea());
 		left.addView(IPageLayout.ID_PROJECT_EXPLORER);
-		left.addView("org.eclipse.ease.ui.view.ScriptEplorerView");
+		left.addView(ScriptExplorerView.VIEW_ID);
 
 		IFolderLayout top = factory.createFolder("top", IPageLayout.TOP, 0.3f, factory.getEditorArea());
 		top.addView(ScriptShell.VIEW_ID);
