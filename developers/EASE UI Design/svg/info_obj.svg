@@ -14,7 +14,7 @@
    height="16"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.48.0 r9654"
    sodipodi:docname="info_tsk.svg">
   <defs
      id="defs4">
@@ -85,8 +85,8 @@
      showgrid="true"
      inkscape:window-width="1171"
      inkscape:window-height="959"
-     inkscape:window-x="735"
-     inkscape:window-y="57"
+     inkscape:window-x="1387"
+     inkscape:window-y="399"
      inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -103,7 +103,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
