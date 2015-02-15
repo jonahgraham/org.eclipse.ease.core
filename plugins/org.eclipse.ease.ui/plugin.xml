@@ -22,7 +22,7 @@
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ScriptExplorerView"
             icon="icons/eview16/script_explorer.png"
-            id="org.eclipse.ease.ui.views.scriptEplorerView"
+            id="org.eclipse.ease.ui.views.scriptExplorerView"
             name="Script Explorer">
       </view>
       <view
