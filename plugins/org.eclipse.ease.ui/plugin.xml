@@ -253,7 +253,7 @@
          </separator>
       </menuContribution>
       <menuContribution
-            locationURI="toolbar:org.eclipse.ease.ui.views.scriptEplorerView">
+            locationURI="toolbar:org.eclipse.ease.ui.views.scriptExplorerView">
          <separator
                name="top"
                visible="false">
