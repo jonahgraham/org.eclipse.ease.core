@@ -16,11 +16,13 @@ import java.util.HashSet;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferenceNodeVisitor;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.Logger;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.repository.IScriptLocation;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * Helper methods to access script storage preferences.
@@ -49,35 +51,15 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Get the storage location for recorded/imported scripts as set by the user. If the user did not explicitely set a location, <code>null</code> is returned
+	 * Get the storage location for recorded/imported scripts as set by the user. If the user did not explicitly set a location, <code>null</code> is returned.
 	 *
 	 * @return user provided storage location or <code>null</code>
 	 */
 	public static String getUserScriptStorageLocation() {
-		final StringBuilder location = new StringBuilder();
-
-		final IEclipsePreferences rootNode = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-		try {
-			rootNode.accept(new IPreferenceNodeVisitor() {
-
-				@Override
-				public boolean visit(final IEclipsePreferences node) throws BackingStoreException {
-					if (rootNode.equals(node))
-						return true;
-
-					else {
-						if (node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false))
-							location.replace(0, location.length(), node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, ""));
-
-						return false;
-					}
-				}
-			});
-		} catch (BackingStoreException e) {
+		for (IScriptLocation location : getLocations()) {
+			if (location.isDefault())
+				return location.getLocation();
 		}
-
-		if (location.length() > 0)
-			return location.toString();
 
 		return null;
 	}
@@ -111,13 +93,8 @@ public final class PreferencesHelper {
 
 					else {
 						String location = node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, "");
-						if (!location.isEmpty()) {
-							IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
-							entry.setLocation(location);
-							entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
-							entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, true));
-							locations.add(entry);
-						}
+						if (!location.isEmpty())
+							locations.add(getLocationForNode(node));
 
 						return false;
 					}
@@ -128,6 +105,27 @@ public final class PreferencesHelper {
 		}
 
 		return locations;
+	}
+
+	/**
+	 * Create a location for a given preferences node. Reads preferences data to recreate the node.
+	 *
+	 * @param node
+	 *            preferences node to read
+	 * @return script location
+	 */
+	public static IScriptLocation getLocationForNode(final Preferences node) {
+		IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
+		try {
+			entry.setLocation(node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, ""));
+			entry.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, true));
+			entry.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
+		} catch (IllegalStateException e) {
+			// preferences node is deleted, we cannot recreate all its content
+			entry.setLocation(node.name().replace('|', '/'));
+		}
+
+		return entry;
 	}
 
 	/**
@@ -145,46 +143,20 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Add a script storage location to the preferences.
+	 * Remove a script storage location from preferences.
 	 *
-	 * @param location
+	 * @param locationURI
 	 *            location of storage
-	 * @param defaultLocation
-	 *            whether this location should be used as default location for scripts
-	 * @param recursive
-	 *            if location should be parsed recursively
 	 */
-	public static void addLocation(final String location, final boolean defaultLocation, final boolean recursive) {
-		IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
-		entry.setLocation(location);
-		entry.setRecursive(recursive);
-		entry.setDefault(defaultLocation);
-
-		addLocation(entry);
-
-	}
-
-	/**
-	 * Remove all script locations from the preferences.
-	 *
-	 * @throws BackingStoreException
-	 *             on invalid preferences access
-	 */
-	public static void clearLocations() throws BackingStoreException {
-		// remove existing child nodes
-		final IEclipsePreferences rootNode = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-		rootNode.accept(new IPreferenceNodeVisitor() {
-
-			@Override
-			public boolean visit(final IEclipsePreferences node) throws BackingStoreException {
-				if (rootNode.equals(node))
-					return true;
-
-				else {
-					node.removeNode();
-					return false;
-				}
+	public static void removeLocation(final String locationURI) {
+		String path = locationURI.replace('/', '|');
+		IEclipsePreferences node = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID + "/" + path);
+		if (node != null) {
+			try {
+				node.removeNode();
+			} catch (BackingStoreException e) {
+				Logger.logError("Could not remove storage location for \"" + locationURI + "\"", e);
 			}
-		});
+		}
 	}
 }

@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.repository.IRawLocation;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
@@ -57,7 +56,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
-import org.osgi.service.prefs.BackingStoreException;
 
 public class LocationsPage extends PreferencePage implements IWorkbenchPreferencePage {
 	private TableViewer tableViewer;
@@ -315,7 +313,6 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 	@Override
 	protected void performDefaults() {
-
 		fScriptLocations.clear();
 		fScriptLocations.addAll(PreferencesHelper.getLocations());
 
@@ -328,22 +325,24 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 	@Override
 	public boolean performOk() {
+		Collection<IScriptLocation> oldLocations = PreferencesHelper.getLocations();
 
-		// remove existing child nodes
-		try {
-			PreferencesHelper.clearLocations();
-		} catch (BackingStoreException e) {
-			Logger.logError("Could not update script location preferences", e);
-			return false;
+		for (IScriptLocation oldLocation : new HashSet<IScriptLocation>(oldLocations)) {
+			for (IScriptLocation newLocation : new HashSet<IScriptLocation>(fScriptLocations)) {
+				// we need to use ecore to compare objects as we may not override equals()
+				if (oldLocation.getLocation().equals(newLocation.getLocation())) {
+					oldLocations.remove(oldLocation);
+					fScriptLocations.remove(newLocation);
+				}
+			}
 		}
 
-		// add entries
-		for (IScriptLocation entry : fScriptLocations)
-			PreferencesHelper.addLocation(entry);
-
-		// update repository
 		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-		repositoryService.updateLocations();
+		for (IScriptLocation oldLocation : oldLocations)
+			repositoryService.removeLocation(oldLocation.getLocation());
+
+		for (IScriptLocation newLocation : fScriptLocations)
+			repositoryService.addLocation(newLocation.getLocation(), newLocation.isDefault(), newLocation.isRecursive());
 
 		return super.performOk();
 	}

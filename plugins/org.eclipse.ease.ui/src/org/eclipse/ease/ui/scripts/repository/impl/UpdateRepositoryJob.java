@@ -16,12 +16,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -29,65 +23,54 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.repository.IScriptLocation;
 
-public class UpdateRepositoryJob extends Job implements IResourceChangeListener
-// , IScriptListener
-{
+public class UpdateRepositoryJob extends Job {
 
 	private final RepositoryService fRepositoryService;
-
-	private final Collection<IScriptLocation> fEntriesforUpdate = new HashSet<IScriptLocation>();
 
 	public UpdateRepositoryJob(final RepositoryService repositoryService) {
 		super("Updating script repository");
 
 		fRepositoryService = repositoryService;
-		// fRepositoryService.addScriptListener(this);
 	}
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
-		// get locations to be updated
-		Collection<IScriptLocation> locations = new HashSet<IScriptLocation>();
-		synchronized (fEntriesforUpdate) {
-			if (fEntriesforUpdate.isEmpty())
-				locations.addAll(fRepositoryService.getRepository().getEntries());
-			else {
-				locations.addAll(fEntriesforUpdate);
-				fEntriesforUpdate.clear();
+		final Collection<IScriptLocation> locations = fRepositoryService.getLocations();
+
+		for (final IScriptLocation location : locations) {
+			if (location.isUpdatePending()) {
+				// mark scripts to be verified
+				for (final IScript script : location.getScripts())
+					script.setUpdatePending(true);
+
+				// get location base resource
+				final Object content = location.getResource();
+				if ((content instanceof IResource) && (((IResource) content).exists())) {
+					// this is a valid workspace resource
+					new WorkspaceParser().parse((IResource) content, location);
+					// ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
+
+				} else if ((content instanceof File) && (((File) content).exists())) {
+					// this is a valid file system resource
+					new FileSystemParser().parse((File) content, location);
+
+					// } else if (location.getLocation().startsWith("http")) {
+					// // this is a webpage
+					// new HttpParser().parse(location);
+
+				} else if (content instanceof InputStream) {
+					// FIXME can never happen call entry.getInputStream() instead
+					// new InputStreamParser(fRepositoryService).parse(stream, entry);
+					// entry.setTimestamp(System.currentTimeMillis());
+				}
+
+				// remove scripts that were not verified
+				for (final IScript script : new HashSet<IScript>(location.getScripts())) {
+					if (script.isUpdatePending())
+						fRepositoryService.removeScript(script);
+				}
 			}
-		}
-
-		// mark scripts to be verified
-		for (IScriptLocation location : locations) {
-			for (IScript script : location.getScripts())
-				script.setUpdatePending(true);
-		}
-
-		// update locations
-		for (IScriptLocation location : locations) {
-
-			Object content = location.getResource();
-			if ((content instanceof IResource) && (((IResource) content).exists())) {
-				// this is a valid workspace resource
-				new WorkspaceParser(fRepositoryService).parse((IResource) content, location);
-				ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
-
-			} else if ((content instanceof File) && (((File) content).exists())) {
-				// this is a valid file system resource
-				new FileSystemParser(fRepositoryService).parse((File) content, location);
-
-			} else if (content instanceof InputStream) {
-				// FIXME can never happen call entry.getInputStream() instead
-				// new InputStreamParser(fRepositoryService).parse(stream, entry);
-				// entry.setTimestamp(System.currentTimeMillis());
-			}
-		}
-
-		// remove scripts that were not verified
-		for (IScript script : new HashSet<IScript>(fRepositoryService.getScripts())) {
-			if (script.isUpdatePending())
-				fRepositoryService.removeScript(script);
 		}
 
 		// save new state
@@ -96,44 +79,36 @@ public class UpdateRepositoryJob extends Job implements IResourceChangeListener
 		// re schedule job
 		// TODO make this editable by preferences
 		schedule(1000 * 60 * 30);
+
 		return Status.OK_STATUS;
 	}
 
-	public void scheduleUpdate(final long delay) {
-		cancel();
-		schedule(delay);
-	}
-
 	synchronized void update(final IScriptLocation entry) {
-		fEntriesforUpdate.add(entry);
-		scheduleUpdate(300);
+		entry.setUpdatePending(true);
+
+		if (getState() != Job.RUNNING)
+			cancel();
+
+		schedule(300);
 	}
 
-	@Override
-	public void resourceChanged(final IResourceChangeEvent event) {
-		System.out.println("Base: " + ((event.getResource() != null) ? event.getResource().getName() : "null"));
-		// TODO handle resource changes
-		try {
-			event.getDelta().accept(new IResourceDeltaVisitor() {
+	synchronized void update() {
+		for (final IScriptLocation location : fRepositoryService.getLocations())
+			location.setUpdatePending(true);
 
-				@Override
-				public boolean visit(final IResourceDelta delta) throws CoreException {
-					IResource resource = delta.getResource();
-					String location = "workspace:/" + resource.getFullPath();
-					System.out.println(location + ": " + delta.getKind());
-					for (IScriptLocation entry : fRepositoryService.getLocations()) {
-						if (entry.getLocation().equals(location)) {
-							update(entry);
-							return false;
-						}
-					}
+		if (getState() != Job.RUNNING)
+			cancel();
 
-					return true;
-				}
-			});
-		} catch (CoreException e) {
-			// TODO handle this exception (but for now, at least know it happened)
-			throw new RuntimeException(e);
-		}
+		schedule(300);
+	}
+
+	// FIXME does not work yet
+	synchronized void update(final IScript script) {
+		script.setUpdatePending(true);
+
+		if (getState() != Job.RUNNING)
+			cancel();
+
+		schedule(300);
 	}
 }

@@ -12,24 +12,32 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IPreferenceNodeVisitor;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.IHeaderParser;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.preferences.IPreferenceConstants;
+import org.eclipse.ease.ui.preferences.PreferencesHelper;
 import org.eclipse.ease.ui.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.repository.IScriptLocation;
@@ -41,9 +49,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.osgi.service.prefs.BackingStoreException;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.ui.PlatformUI;
 
-public class RepositoryService implements IRepositoryService {
+public class RepositoryService implements IRepositoryService, IResourceChangeListener {
 
 	// TODO find a nice delay value here
 	static final long UPDATE_URI_INTERVAL = 1000; // update daily
@@ -55,7 +64,7 @@ public class RepositoryService implements IRepositoryService {
 	private static final String CACHE_FILE_NAME = "script.repository";
 
 	// TODO find a nice delay value here
-	private static final long DEFAULT_DELAY = 0; // 1 minute
+	private static final long DEFAULT_DELAY = 60 * 1000; // 1 minute
 	public static final long UPDATE_STREAM_INTERVAL = 0;
 
 	/**
@@ -73,20 +82,21 @@ public class RepositoryService implements IRepositoryService {
 	private IStorage fRepository = null;
 
 	private final UpdateRepositoryJob fUpdateJob;
+
 	private final Job fSaveJob = new Job("Save Script Repositories") {
 
 		@Override
 		protected IStatus run(final IProgressMonitor monitor) {
-			IPath path = Activator.getDefault().getStateLocation().append(CACHE_FILE_NAME);
-			File file = path.toFile();
+			final IPath path = Activator.getDefault().getStateLocation().append(CACHE_FILE_NAME);
+			final File file = path.toFile();
 
 			// Obtain a new resource set
-			ResourceSet resSet = new ResourceSetImpl();
-			Resource resource = resSet.createResource(URI.createFileURI(file.getAbsolutePath()));
+			final ResourceSet resSet = new ResourceSetImpl();
+			final Resource resource = resSet.createResource(URI.createFileURI(file.getAbsolutePath()));
 			resource.getContents().add(fRepository);
 			try {
 				resource.save(Collections.emptyMap());
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				Logger.logError("Could not store script repositories");
 			}
 
@@ -103,17 +113,17 @@ public class RepositoryService implements IRepositoryService {
 		RepositoryFactoryImpl.init();
 
 		// load stored data
-		IPath path = Activator.getDefault().getStateLocation().append(CACHE_FILE_NAME);
-		File file = path.toFile();
-		if (file != null) {
+		final IPath path = Activator.getDefault().getStateLocation().append(CACHE_FILE_NAME);
+		final File file = path.toFile();
+		if ((file != null) && (file.exists())) {
 
-			ResourceSet resourceSet = new ResourceSetImpl();
-			Resource resource = resourceSet.createResource(URI.createURI(file.toURI().toString()));
+			final ResourceSet resourceSet = new ResourceSetImpl();
+			final Resource resource = resourceSet.createResource(URI.createURI(file.toURI().toString()));
 			try {
 				resource.load(null);
 				fRepository = (IStorage) resource.getContents().get(0);
 
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// we could not load an existing model, but we will refresh it in a second
 			}
 		}
@@ -129,99 +139,68 @@ public class RepositoryService implements IRepositoryService {
 			updateDelay = DEFAULT_DELAY;
 		}
 
+		// detect script parameter changes and fire change events
+		// fRepository.eAdapters().add(new EContentAdapter() {
+		// @Override
+		// public void notifyChanged(final Notification notification) {
+		// if (IScript.class.isAssignableFrom(notification.getNotifier().getClass())) {
+		// if (IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS == notification.getFeatureID(EReferenceImpl.class)) {
+		// // script parameter changed. triggered by a change to the source file
+		//
+		// final Object oldValue = notification.getOldValue();
+		// final Object newValue = notification.getNewValue();
+		//
+		// final IScript script = (IScript) notification.getNotifier();
+		// if (newValue instanceof ParameterMapImpl) {
+		// if (script.getUserParameters().containsKey(((ParameterMapImpl) newValue).getKey()))
+		// // we have a user override, do nothing
+		// return;
+		// } else if (oldValue instanceof ParameterMapImpl) {
+		// if (script.getUserParameters().containsKey(((ParameterMapImpl) oldValue).getKey()))
+		// // we have a user override, do nothing
+		// return;
+		// }
+		//
+		// fireScriptEvent(new ScriptEvent((IScript) notification.getNotifier(), ScriptEvent.PARAMETER_CHANGE, new ParameterDelta(oldValue,
+		// newValue)));
+		// }
+		// }
+		//
+		// super.notifyChanged(notification);
+		// }
+		//
+		// });
+
 		// apply UI integrations
 		new UIIntegrationJob(this);
 
 		// update repository
 		fUpdateJob = new UpdateRepositoryJob(this);
 		fUpdateJob.schedule(updateDelay);
+
+		// add workspace resource listener in case we have workspace locations registered
+		for (final IScriptLocation location : getLocations()) {
+			if (location.getLocation().startsWith("workspace://")) {
+				ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+				break;
+			}
+		}
 	}
 
 	@Override
 	public void update(final boolean force) {
 
 		if (force) {
-			for (IScript script : getScripts())
+			for (final IScript script : getScripts())
 				script.setTimestamp(0);
 		}
 
-		fUpdateJob.scheduleUpdate(0);
-	}
-
-	@Override
-	public void updateLocations() {
-		// update locations from preferences
-		for (IScriptLocation entry : getLocations())
-			entry.setUpdatePending(true);
-
-		final IEclipsePreferences rootNode = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-		try {
-			rootNode.accept(new IPreferenceNodeVisitor() {
-
-				@Override
-				public boolean visit(final IEclipsePreferences node) throws BackingStoreException {
-					if (rootNode.equals(node))
-						return true;
-
-					else {
-						String storageLocation = node.get(IPreferenceConstants.SCRIPT_STORAGE_LOCATION, "");
-
-						boolean found = false;
-						for (IScriptLocation location : getLocations()) {
-							if (location.getLocation().equals(storageLocation)) {
-								boolean defaultLocation = node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false);
-								if (defaultLocation != location.isDefault()) {
-									location.setDefault(defaultLocation);
-									fUpdateJob.update(location);
-								}
-
-								boolean recursive = node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false);
-								if (recursive != location.isRecursive()) {
-									location.setRecursive(recursive);
-									fUpdateJob.update(location);
-								}
-
-								location.setUpdatePending(false);
-								found = true;
-								break;
-							}
-						}
-
-						if (!found) {
-							IScriptLocation location = IRepositoryFactory.eINSTANCE.createScriptLocation();
-							location.setLocation(storageLocation);
-							location.setDefault(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_DEFAULT, false));
-							location.setRecursive(node.getBoolean(IPreferenceConstants.SCRIPT_STORAGE_RECURSIVE, false));
-
-							fRepository.getEntries().add(location);
-							fUpdateJob.update(location);
-						}
-
-						return false;
-					}
-				}
-			});
-
-			// remove all repositories where update is pending as they are not stored in the preferences
-			for (IScriptLocation entry : new HashSet<IScriptLocation>(getLocations())) {
-				if (entry.isUpdatePending()) {
-					fRepository.getEntries().remove(entry);
-					fUpdateJob.update(entry);
-				}
-			}
-
-		} catch (BackingStoreException e) {
-			Logger.logError("Could not update script repository.", e);
-		}
-	}
-
-	IStorage getRepository() {
-		return fRepository;
+		fUpdateJob.update();
 	}
 
 	@Override
 	public IScript getScript(final String name) {
-		for (IScript script : getRepository().getScripts()) {
+		for (final IScript script : fRepository.getScripts()) {
 			if (name.equals(script.getPath().toString()))
 				return script;
 		}
@@ -234,17 +213,17 @@ public class RepositoryService implements IRepositoryService {
 	 */
 	void save() {
 		fSaveJob.cancel();
-		fSaveJob.schedule(5000);
+		fSaveJob.schedule(500);
 	}
 
-	private void notifyListeners(final ScriptRepositoryEvent event) {
-		for (Object listener : fListeners.getListeners())
+	private void fireScriptEvent(final ScriptEvent event) {
+		for (final Object listener : fListeners.getListeners())
 			((IScriptListener) listener).notify(event);
 	}
 
 	@Override
 	public Collection<IScript> getScripts() {
-		return Collections.unmodifiableCollection(getRepository().getScripts());
+		return Collections.unmodifiableCollection(fRepository.getScripts());
 	}
 
 	@Override
@@ -262,48 +241,169 @@ public class RepositoryService implements IRepositoryService {
 		return Collections.unmodifiableCollection(fRepository.getEntries());
 	}
 
-	void removeScript(final IScript script) {
-		for (IScriptLocation entry : fRepository.getEntries()) {
-			if (entry.getScripts().remove(script))
-				// script removed, do not search any longer
-				break;
+	// void updateScript(final IScript script, final Map<String, String> parameters) {
+	//
+	// // store current parameters
+	// Map<String, String> oldParameters = new HashMap<String, String>(script.getParameters());
+	//
+	// script.getScriptParameters().clear();
+	// script.getScriptParameters().putAll(parameters);
+	//
+	// // get new parameters (merged with user parameters)
+	// Map<String, String> newParameters = new HashMap<String, String>(script.getParameters());
+	//
+	// // now look for changes
+	// if (!oldParameters.equals(newParameters)) {
+	// // some parameters changed
+	// notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.PARAMETER_CHANGE, new ParameterDelta(oldParameters, newParameters)));
+	// }
+	//
+	// script.setUpdatePending(false);
+	// }
+
+	// @Override
+	// public IScriptLocation getDefaultLocation() {
+	// for (IScriptLocation entry : getLocations())
+	// if (entry.isDefault())
+	// return entry;
+	//
+	// return null;
+	// }
+
+	@Override
+	public void updateLocation(final IScriptLocation entry, final String location, final long lastChanged) {
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+
+		final ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(location, null));
+
+		IScript script = getScriptByLocation(location);
+		if (script == null) {
+			// new script detected
+			script = IRepositoryFactory.eINSTANCE.createScript();
+			script.setEntry(entry);
+			script.setLocation(location);
+
+			entry.getScripts().add(script);
+			fireScriptEvent(new ScriptEvent(script, ScriptEvent.ADD, null));
+
+		} else if (script.getTimestamp() == lastChanged) {
+			// no update needed
+			script.setUpdatePending(false);
+			return;
 		}
 
-		notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.DELETE, null));
-	}
+		// update script parameters
+		final Map<String, String> oldParameters = script.getParameters();
 
-	void updateScript(final IScript script, final Map<String, String> parameters) {
-
-		// store current parameters
-		Map<String, String> oldParameters = new HashMap<String, String>(script.getParameters());
-
+		final Map<String, String> parameters = extractParameters(scriptType, script.getInputStream());
 		script.getScriptParameters().clear();
 		script.getScriptParameters().putAll(parameters);
 
-		// get new parameters (merged with user parameters)
-		Map<String, String> newParameters = new HashMap<String, String>(script.getParameters());
+		final Map<String, String> newParameters = script.getParameters();
 
-		// now look for changes
-		if (!oldParameters.equals(newParameters)) {
-			// some parameters changed
-			notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.PARAMETER_CHANGE, new ParameterDelta(oldParameters, newParameters)));
-		}
+		if (!oldParameters.equals(newParameters))
+			fireScriptEvent(new ScriptEvent(script, ScriptEvent.PARAMETER_CHANGE, new ParameterDelta(oldParameters, newParameters)));
 
+		// script is up to date
+		script.setTimestamp(lastChanged);
 		script.setUpdatePending(false);
 	}
 
-	void addScript(final IScript script) {
-		script.setUpdatePending(false);
+	private IScript getScriptByLocation(final String location) {
+		for (final IScript script : getScripts()) {
+			if (script.getLocation().equals(location))
+				return script;
+		}
 
-		notifyListeners(new ScriptRepositoryEvent(script, ScriptRepositoryEvent.ADD, null));
+		return null;
+	}
+
+	private static Map<String, String> extractParameters(final ScriptType type, final InputStream stream) {
+		if (type != null) {
+			final IHeaderParser parser = type.getHeaderParser();
+			if (parser != null)
+				return parser.parse(stream);
+		}
+
+		return Collections.emptyMap();
+	}
+
+	void removeScript(final IScript script) {
+		script.getEntry().getScripts().remove(script);
+		fireScriptEvent(new ScriptEvent(script, ScriptEvent.DELETE, null));
 	}
 
 	@Override
-	public IScriptLocation getDefaultLocation() {
-		for (IScriptLocation entry : getLocations())
-			if (entry.isDefault())
-				return entry;
+	public void resourceChanged(final IResourceChangeEvent event) {
+		try {
+			event.getDelta().accept(new IResourceDeltaVisitor() {
 
-		return null;
+				@Override
+				public boolean visit(final IResourceDelta delta) throws CoreException {
+					// TODO currently we update the whole location on a simple change, just focus on the changed files in future
+					final IResource resource = delta.getResource();
+					final String location = "workspace:/" + resource.getFullPath();
+					for (final IScriptLocation entry : getLocations()) {
+						if (entry.getLocation().equals(location)) {
+							// TODO currently updates a whole repository for eg a small file content change
+							fUpdateJob.update(entry);
+							return false;
+						}
+					}
+
+					return true;
+				}
+			});
+		} catch (final CoreException e) {
+			// TODO handle this exception (but for now, at least know it happened)
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void addLocation(final String locationURI, final boolean defaultLocation, final boolean recursive) {
+		final IScriptLocation entry = IRepositoryFactory.eINSTANCE.createScriptLocation();
+		entry.setLocation(locationURI);
+		entry.setRecursive(recursive);
+		entry.setDefault(defaultLocation);
+
+		for (final IScriptLocation location : new HashSet<IScriptLocation>(getLocations())) {
+			if (location.getLocation().equals(locationURI)) {
+				// already registered, ev. we need to update defaultLocation/recursive?
+				if (!EcoreUtil.equals(location, entry))
+					removeLocation(location.getLocation());
+				else
+					// same location already registered, do not update
+					return;
+			}
+		}
+
+		PreferencesHelper.addLocation(entry);
+
+		fRepository.getEntries().add(entry);
+
+		if (entry.getLocation().startsWith("workspace://"))
+			ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+
+		fUpdateJob.update(entry);
+	}
+
+	@Override
+	public void removeLocation(final String locationURI) {
+		for (final IScriptLocation entry : new HashSet<IScriptLocation>(fRepository.getEntries())) {
+			if (entry.getLocation().equals(locationURI)) {
+				fRepository.getEntries().remove(entry);
+
+				for (final IScript script : entry.getScripts())
+					removeScript(script);
+
+				save();
+
+				// no need to traverse further as locationURIs need to be unique
+				break;
+			}
+		}
+
+		PreferencesHelper.removeLocation(locationURI);
 	}
 }

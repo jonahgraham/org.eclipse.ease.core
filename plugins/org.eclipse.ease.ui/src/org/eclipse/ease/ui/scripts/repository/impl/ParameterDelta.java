@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.scripts.repository.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ParameterDelta {
@@ -18,13 +19,13 @@ public class ParameterDelta {
 	private final Map<String, String> fNewParameters;
 
 	public ParameterDelta(final Map<String, String> oldParameters, final Map<String, String> newParameters) {
-		fOldParameters = oldParameters;
-		fNewParameters = newParameters;
+		fOldParameters = new HashMap<String, String>(oldParameters);
+		fNewParameters = new HashMap<String, String>(newParameters);
 	}
 
 	public boolean isAffected(final String parameter) {
-		String oldValue = fOldParameters.get(parameter);
-		String newValue = fNewParameters.get(parameter);
+		final String oldValue = fOldParameters.get(parameter);
+		final String newValue = fNewParameters.get(parameter);
 
 		return (oldValue != null) ? !oldValue.equals(newValue) : oldValue != newValue;
 	}
@@ -44,5 +45,14 @@ public class ParameterDelta {
 
 	public String getOldParameter(final String parameter) {
 		return fOldParameters.get(parameter);
+	}
+
+	public void merge(final ParameterDelta delta) {
+		for (final String key : delta.fOldParameters.keySet()) {
+			if (!delta.fNewParameters.containsKey(key))
+				fNewParameters.remove(key);
+		}
+
+		fNewParameters.putAll(delta.fNewParameters);
 	}
 }

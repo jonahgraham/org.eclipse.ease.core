@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.scripts.repository;
 
-import org.eclipse.ease.ui.scripts.repository.impl.ScriptRepositoryEvent;
+import org.eclipse.ease.ui.scripts.repository.impl.ScriptEvent;
 
 public interface IScriptListener {
 
@@ -20,5 +20,5 @@ public interface IScriptListener {
 	 * @param event
 	 *            script event
 	 */
-	void notify(ScriptRepositoryEvent event);
+	void notify(ScriptEvent event);
 }

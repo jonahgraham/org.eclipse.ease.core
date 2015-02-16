@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptListener;
-import org.eclipse.ease.ui.scripts.repository.impl.ScriptRepositoryEvent;
+import org.eclipse.ease.ui.scripts.repository.impl.ScriptEvent;
 import org.eclipse.ease.ui.scripts.ui.ScriptPopup;
 import org.eclipse.ease.ui.scripts.ui.ScriptPopupMenu;
 import org.eclipse.jface.action.IContributionItem;
@@ -126,7 +126,7 @@ public final class ScriptContributionFactory extends CompoundContributionItem im
 	}
 
 	@Override
-	public void notify(final ScriptRepositoryEvent event) {
+	public void notify(final ScriptEvent event) {
 		fDirty = true;
 	}
 

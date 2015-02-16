@@ -155,17 +155,15 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 			// user did not select a storage yet, ask for location
 			SelectScriptStorageDialog dialog = new SelectScriptStorageDialog(Display.getDefault().getActiveShell());
 			if (dialog.open() == Window.OK) {
-				PreferencesHelper.addLocation(dialog.getLocation(), true, true);
-
-				// update repository service
 				final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-				repositoryService.updateLocations();
+				repositoryService.addLocation(dialog.getLocation(), true, true);
 			}
 
 			else
 				return null;
 		}
 
+		// FIXME seems awkward! what are we doing here if we return a const anyway
 		return ScriptStorage.createStorage();
 	}
 

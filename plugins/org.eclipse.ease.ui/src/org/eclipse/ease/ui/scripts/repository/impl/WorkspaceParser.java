@@ -10,27 +10,16 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.scripts.repository.impl;
 
-import java.util.Map;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ease.Logger;
-import org.eclipse.ease.service.IScriptService;
-import org.eclipse.ease.service.ScriptType;
-import org.eclipse.ease.tools.ResourceTools;
-import org.eclipse.ease.ui.repository.IRepositoryFactory;
-import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.repository.IScriptLocation;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ui.PlatformUI;
 
 public class WorkspaceParser extends InputStreamParser {
-
-	public WorkspaceParser(final RepositoryService repositoryService) {
-		super(repositoryService);
-	}
 
 	public void parse(final IResource resource, final IScriptLocation entry) {
 		if (resource instanceof IContainer) {
@@ -56,46 +45,9 @@ public class WorkspaceParser extends InputStreamParser {
 		} else if (resource instanceof IFile) {
 			// try to locate registered script
 			String location = "workspace:/" + resource.getFullPath();
-			IScript script = getScriptByLocation(location);
 
-			try {
-				final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-
-				if (script == null) {
-
-					ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
-					if (scriptType != null) {
-						// new script detected
-						script = IRepositoryFactory.eINSTANCE.createScript();
-						script.setEntry(entry);
-						script.setLocation(location);
-
-						Map<String, String> parameters = extractParameters(scriptType, ((IFile) resource).getContents());
-						script.getScriptParameters().clear();
-						script.getScriptParameters().putAll(parameters);
-
-						script.setTimestamp(resource.getModificationStamp());
-
-						getRepositoryService().addScript(script);
-					}
-
-				} else if (script.getTimestamp() != resource.getModificationStamp()) {
-					// script needs updating
-					ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
-					Map<String, String> parameters = extractParameters(scriptType, ((IFile) resource).getContents());
-
-					script.setTimestamp(resource.getModificationStamp());
-
-					getRepositoryService().updateScript(script, parameters);
-
-				} else
-					// script is up to date
-					script.setUpdatePending(false);
-
-			} catch (CoreException e) {
-				// cannot read from script
-				Logger.logError("Cannot read script: " + resource, e);
-			}
+			final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+			repositoryService.updateLocation(entry, location, resource.getModificationStamp());
 		}
 	}
 }

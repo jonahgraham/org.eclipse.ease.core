@@ -12,7 +12,7 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import org.eclipse.ease.ui.repository.IScript;
 
-public class ScriptRepositoryEvent {
+public class ScriptEvent {
 
 	/** Parameter changed. */
 	public static final int PARAMETER_CHANGE = 2;
@@ -37,7 +37,7 @@ public class ScriptRepositoryEvent {
 	 * @param eventData
 	 *            specific event data
 	 */
-	public ScriptRepositoryEvent(final IScript script, final int type, final Object eventData) {
+	public ScriptEvent(final IScript script, final int type, final Object eventData) {
 		fScript = script;
 		fType = type;
 		fEventData = eventData;

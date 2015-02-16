@@ -7,21 +7,19 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.repository.impl;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.ease.IHeaderParser;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
-import org.eclipse.ease.ui.repository.IScript;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ui.PlatformUI;
 
 public class InputStreamParser {
@@ -32,34 +30,11 @@ public class InputStreamParser {
 	/** Regex pattern to detect content-type keywords. */
 	private static final Pattern CONTENT_TYPE_PATTERN = Pattern.compile(".*script-type:\\s*(.*)", Pattern.CASE_INSENSITIVE);
 
-	private final RepositoryService fRepositoryService;
-
-	public InputStreamParser(RepositoryService repositoryService) {
-		fRepositoryService = repositoryService;
+	protected static IRepositoryService getRepositoryService() {
+		return (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 	}
 
-	protected RepositoryService getRepositoryService() {
-		return fRepositoryService;
-	}
-
-	protected IScript getScriptByLocation(final String location) {
-		for (IScript script : getRepositoryService().getScripts()) {
-			if (script.getLocation().equals(location))
-				return script;
-		}
-
-		return null;
-	}
-
-	protected Map<String, String> extractParameters(ScriptType type, InputStream stream) {
-		IHeaderParser parser = type.getHeaderParser();
-		if (parser != null)
-			return parser.parse(stream);
-
-		return Collections.emptyMap();
-	}
-
-	protected ScriptType getScriptType(InputStream contents) {
+	protected static ScriptType getScriptType(final InputStream contents) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(contents));
 
 		// read MAX_LINES looking for a pattern content-type: <some content>

@@ -18,7 +18,7 @@ import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptListener;
 import org.eclipse.ease.ui.scripts.repository.impl.ParameterDelta;
-import org.eclipse.ease.ui.scripts.repository.impl.ScriptRepositoryEvent;
+import org.eclipse.ease.ui.scripts.repository.impl.ScriptEvent;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -164,19 +164,19 @@ public class ScriptComposite extends Composite implements IScriptListener {
 	}
 
 	@Override
-	public void notify(final ScriptRepositoryEvent event) {
+	public void notify(final ScriptEvent event) {
 		switch (event.getType()) {
-		case ScriptRepositoryEvent.PARAMETER_CHANGE:
+		case ScriptEvent.PARAMETER_CHANGE:
 			final ParameterDelta eventData = (ParameterDelta) event.getEventData();
 			if (!eventData.isAffected("name"))
 				return;
 
 			// name changed, fall through
 
-		case ScriptRepositoryEvent.DELETE:
+		case ScriptEvent.DELETE:
 			// fall through
 
-		case ScriptRepositoryEvent.ADD:
+		case ScriptEvent.ADD:
 			// FIXME needs some performance improvements on multiple script updates
 			Display.getDefault().asyncExec(new Runnable() {
 

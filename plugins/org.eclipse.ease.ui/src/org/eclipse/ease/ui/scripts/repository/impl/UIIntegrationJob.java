@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IScriptListener;
 import org.eclipse.ease.ui.tools.LocationImageDescriptor;
@@ -34,6 +35,10 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
 public class UIIntegrationJob extends UIJob implements IScriptListener {
+	private static final String KEYWORD_NAME = "name";
+
+	private static final String KEYWORD_IMAGE = "image";
+
 	private static final String KEYWORD_POPUP = "popup";
 
 	private static final String KEYWORD_MENU = "menu";
@@ -77,7 +82,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 							return;
 						}
 
-						String name = e.getAttribute("name");
+						String name = e.getAttribute(KEYWORD_NAME);
 						if (name.equals(locationID)) {
 							fViewID = id;
 							return;
@@ -101,8 +106,8 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	public UIIntegrationJob(final RepositoryService repositoryService) {
 		super("Update script UI components");
 
-		fAddedScripts.addAll(repositoryService.getScripts());
 		repositoryService.addScriptListener(this);
+		fAddedScripts.addAll(repositoryService.getScripts());
 
 		if (!fAddedScripts.isEmpty())
 			// TODO change fixed delay
@@ -110,7 +115,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	}
 
 	@Override
-	public IStatus runInUIThread(final IProgressMonitor monitor) {
+	public synchronized IStatus runInUIThread(final IProgressMonitor monitor) {
 		if (PlatformUI.getWorkbench().getActiveWorkbenchWindow() == null) {
 			// we might get called before the workbench is loaded.
 			// in that case delay execution until the workbench is ready
@@ -202,7 +207,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 			LocationDescription newLocation = new LocationDescription(scheme, script.getParameters().get(scheme));
 			addViewContribution(newLocation, script);
 
-		} else if (script.getParameters().containsKey(scheme) && (parameterDelta.isAffected("name") || parameterDelta.isAffected("image"))) {
+		} else if (script.getParameters().containsKey(scheme) && (parameterDelta.isAffected(KEYWORD_NAME) || parameterDelta.isAffected(KEYWORD_IMAGE))) {
 			// possibly name changed (depends on specific name element for toolbar entry)
 			LocationDescription location = new LocationDescription(scheme, script.getParameters().get(scheme));
 			if (location.fName == null) {
@@ -222,8 +227,8 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 
 					for (IContributionItem item : contributions) {
 						if ((item instanceof ScriptContributionItem) && (item.getId().equals(script.getLocation()))) {
-							((ScriptContributionItem) item).setLabel(script.getParameters().get("name"));
-							((ScriptContributionItem) item).setIcon(LocationImageDescriptor.createFromLocation(script.getParameters().get("image")));
+							((ScriptContributionItem) item).setLabel(script.getParameters().get(KEYWORD_NAME));
+							((ScriptContributionItem) item).setIcon(LocationImageDescriptor.createFromLocation(script.getParameters().get(KEYWORD_IMAGE)));
 						}
 					}
 
@@ -285,32 +290,43 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	}
 
 	@Override
-	public void notify(final ScriptRepositoryEvent event) {
+	public synchronized void notify(final ScriptEvent event) {
 		Map<String, String> parameters = event.getScript().getParameters();
 		if (parameters.containsKey(KEYWORD_MENU) || parameters.containsKey(KEYWORD_TOOLBAR) || parameters.containsKey(KEYWORD_POPUP)
-				|| (event.getType() == ScriptRepositoryEvent.PARAMETER_CHANGE)) {
+				|| (event.getType() == ScriptEvent.PARAMETER_CHANGE)) {
 			// script with UI integration
 			switch (event.getType()) {
-			case ScriptRepositoryEvent.ADD:
+			case ScriptEvent.ADD:
 				fAddedScripts.add(event.getScript());
-				schedule(300);
+				reschedule(300);
 				break;
 
-			case ScriptRepositoryEvent.DELETE:
+			case ScriptEvent.DELETE:
 				fRemovedScripts.add(event.getScript());
-				schedule(300);
+				reschedule(300);
 				break;
 
-			case ScriptRepositoryEvent.PARAMETER_CHANGE:
+			case ScriptEvent.PARAMETER_CHANGE:
 				ParameterDelta delta = (ParameterDelta) event.getEventData();
-				if (delta.isAffected(KEYWORD_TOOLBAR) || delta.isAffected(KEYWORD_MENU) || delta.isAffected(KEYWORD_POPUP) || delta.isAffected("name")
-						|| delta.isAffected("image")) {
+				if (delta.isAffected(KEYWORD_TOOLBAR) || delta.isAffected(KEYWORD_MENU) || delta.isAffected(KEYWORD_POPUP) || delta.isAffected(KEYWORD_NAME)
+						|| delta.isAffected(KEYWORD_IMAGE)) {
 					// we need to adapt the appearance
-					fChangedScripts.put(event.getScript(), delta);
-					schedule(300);
+					if (fChangedScripts.containsKey(event.getScript()))
+						fChangedScripts.get(event.getScript()).merge(delta);
+					else
+						fChangedScripts.put(event.getScript(), delta);
+
+					reschedule(300);
 				}
 				break;
 			}
 		}
+	}
+
+	private void reschedule(final long delay) {
+		if (getState() != Job.RUNNING)
+			cancel();
+
+		schedule(delay);
 	}
 }
