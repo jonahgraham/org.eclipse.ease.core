@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Scripting User Guide">
+   <topic label="Getting Started">
+      <anchor id="gettingstartedX"/>
+   </topic>
+   <topic label="Concepts">
+      <anchor id="conceptsX"/>
+   </topic>
+   <topic label="Tasks">
+      <anchor id="tasksX"/>
+   </topic>
+   <topic label="Reference">
+      <anchor id="reference"/>
+   </topic>
+   <topic label="Tips and tricks">
+      <anchor id="tipsX"/>
+   </topic>
+</toc>

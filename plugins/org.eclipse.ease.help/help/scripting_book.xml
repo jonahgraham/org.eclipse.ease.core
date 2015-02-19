@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>  
-<toc label="Scripting Guide">  
+<toc label="Scripting Guide" link_to="help/reference.xml#modules_anchor">  
      <topic label="Loadable modules reference" sort="true">
         <anchor id="modules_anchor"/>  
      </topic>  

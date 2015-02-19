@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Reference" link_to="help/main.xml#reference">
+ <topic label="Loadable modules reference">
+    <anchor id="modules_anchor"/>
+ </topic>
+ <link toc="help/api_docs.xml"/>
+</toc>
