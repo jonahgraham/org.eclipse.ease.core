@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="completionProcessor" name="CompletionProcessor" schema="schema/completionProcessor.exsd"/>
-   <extension-point id="dropHandler" name="DropHandler" schema="schema/dropHandler.exsd"/>
+   <extension-point id="shell" name="Shell" schema="schema/shell.exsd"/>
    <extension
          point="org.eclipse.ui.views">
       <view
@@ -564,5 +564,16 @@
             id="org.eclipse.ease.newWizard.category"
             name="Scripting">
       </category>
+   </extension>
+   <extension
+         point="org.eclipse.ease.ui.shell">
+      <dropin
+            class="org.eclipse.ease.ui.view.VariablesDropin"
+            priority="10">
+      </dropin>
+      <dropin
+            class="org.eclipse.ease.ui.view.ScriptDropin"
+            priority="20">
+      </dropin>
    </extension>
 </plugin>

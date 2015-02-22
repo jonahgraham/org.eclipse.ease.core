@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.view;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collections;
+import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.IExecutionListener;
@@ -24,7 +24,6 @@ import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
-import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
@@ -40,21 +39,12 @@ import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.ColorDescriptor;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
@@ -67,7 +57,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -76,8 +65,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -88,7 +75,8 @@ import org.osgi.service.prefs.Preferences;
 /**
  * The JavaScript shell allows to interactively execute JavaScript code.
  */
-public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyChangeListener, IScriptEngineProvider, IExecutionListener {
+public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyChangeListener, IScriptEngineProvider,
+		IExecutionListener {
 
 	public static final String VIEW_ID = "org.eclipse.ease.ui.views.scriptShell";
 
@@ -146,7 +134,6 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 	private IMemento fInitMemento;
 
-	private ScriptComposite fScriptComposite;
 
 	private int fHistoryLength;
 
@@ -157,11 +144,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	private AutoFocus fAutoFocusListener = null;
 
 	private ContentProposalAdapter fContentAssistAdapter = null;
-	private TabItem fTabScripts;
-	private TabItem fTabVariables;
-	private Composite fcomposite;
-	private Tree ftree;
-	private TreeViewer fVariablesTree;
+
+	private Collection<IShellDropin> fDropins = Collections.emptySet();
 
 	/**
 	 * Default constructor.
@@ -170,11 +154,14 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		super();
 
 		// setup Script engine
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench()
+				.getService(IScriptService.class);
 
 		// try to load preferred engine
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
-		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE, IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(
+				IPreferenceConstants.NODE_SHELL);
+		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE,
+				IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
 		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
 
 		if (engineDescription == null) {
@@ -200,7 +187,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	public final void init(final IViewSite site, final IMemento memento) throws PartInitException {
 		super.init(site, memento);
 
-		// cannot restore command history right now, do this in createPartControl()
+		// cannot restore command history right now, do this in
+		// createPartControl()
 		fInitMemento = memento;
 	}
 
@@ -251,147 +239,14 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		final TabFolder tabFolder = new TabFolder(fSashForm, SWT.BOTTOM);
 
-		fTabScripts = new TabItem(tabFolder, SWT.NONE);
-		fTabScripts.setText("Scripts");
-		fScriptComposite = new ScriptComposite(this, getSite(), tabFolder, SWT.NONE);
-		fScriptComposite.setEngine(fScriptEngine.getDescription().getID());
-		fTabScripts.setControl(fScriptComposite);
+		fDropins = getAvailableDropins();
+		for (IShellDropin dropin : fDropins) {
+			dropin.setScriptEngine(fScriptEngine);
 
-		fTabVariables = new TabItem(tabFolder, SWT.NONE);
-		fTabVariables.setText("Variables");
-
-		fcomposite = new Composite(tabFolder, SWT.NONE);
-		fTabVariables.setControl(fcomposite);
-		final TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
-		fcomposite.setLayout(treeColumnLayout);
-
-		fVariablesTree = new TreeViewer(fcomposite, SWT.BORDER);
-		ftree = fVariablesTree.getTree();
-		ftree.setHeaderVisible(true);
-		ftree.setLinesVisible(true);
-
-		fVariablesTree.setFilters(new ViewerFilter[] {
-
-				// filter modules
-				new ViewerFilter() {
-
-					@Override
-					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-						return !((Entry<?, ?>) element).getKey().toString().startsWith(EnvironmentModule.MODULE_PREFIX);
-					}
-				},
-
-				// filter default methods of Object class
-				new ViewerFilter() {
-
-					@Override
-					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-						final Object name = ((Entry<?, ?>) element).getKey();
-						if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name)) || ("equals()".equals(name))
-								|| ("getClass()".equals(name)) || ("hashCode()".equals(name)) || ("toString()".equals(name)))
-							return false;
-
-						return true;
-					}
-				} });
-
-		fVariablesTree.setComparator(new ViewerComparator() {
-			@Override
-			public int category(final Object element) {
-				return (((Entry<?, ?>) element).getKey().toString().endsWith("()")) ? 2 : 1;
-			}
-		});
-
-		fVariablesTree.setContentProvider(new ITreeContentProvider() {
-
-			@Override
-			public void inputChanged(final Viewer viewer, final Object oldInput, final Object newInput) {
-			}
-
-			@Override
-			public void dispose() {
-			}
-
-			@Override
-			public boolean hasChildren(final Object element) {
-				return getChildren(element).length > 0;
-			}
-
-			@Override
-			public Object getParent(final Object element) {
-				return null;
-			}
-
-			@Override
-			public Object[] getElements(final Object inputElement) {
-				return getScriptEngine().getVariables().entrySet().toArray();
-			}
-
-			@Override
-			public Object[] getChildren(final Object parentElement) {
-				final Object parent = ((Entry<?, ?>) parentElement).getValue();
-
-				// use reflection to resolve elements
-				final Map<String, Object> children = new HashMap<String, Object>();
-
-				if (parent != null) {
-					if (!((Entry<?, ?>) parentElement).getKey().toString().endsWith("()")) {
-						// fields
-						for (final Field field : parent.getClass().getFields()) {
-							try {
-								children.put(field.getName(), field.get(parent));
-							} catch (final Exception e) {
-								// ignore, try next
-							}
-						}
-
-						// methods
-						for (final Method method : parent.getClass().getMethods()) {
-							try {
-								children.put(method.getName() + "()", method.getReturnType().getName());
-							} catch (final Exception e) {
-								// ignore, try next
-							}
-						}
-					}
-				}
-
-				return children.entrySet().toArray();
-			}
-		});
-
-		final TreeViewerColumn treeViewerColumn = new TreeViewerColumn(fVariablesTree, SWT.NONE);
-		final TreeColumn column = treeViewerColumn.getColumn();
-		treeColumnLayout.setColumnData(column, new ColumnWeightData(1));
-		column.setText("Variable");
-		treeViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(final Object element) {
-				return ((Entry<?, ?>) element).getKey().toString();
-			}
-
-			@Override
-			public Image getImage(final Object element) {
-				if (((Entry<?, ?>) element).getKey().toString().endsWith("()"))
-					return Activator.getImage(Activator.PLUGIN_ID, Activator.ICON_METHOD, true);
-
-				return Activator.getImage(Activator.PLUGIN_ID, Activator.ICON_FIELD, true);
-			}
-		});
-
-		final TreeViewerColumn treeViewerColumn2 = new TreeViewerColumn(fVariablesTree, SWT.NONE);
-		final TreeColumn column2 = treeViewerColumn2.getColumn();
-		treeColumnLayout.setColumnData(column2, new ColumnWeightData(1));
-		column2.setText("Content");
-		treeViewerColumn2.setLabelProvider(new ColumnLabelProvider() {
-			@Override
-			public String getText(final Object element) {
-				final Object value = ((Entry<?, ?>) element).getValue();
-				return (value != null) ? value.toString() : "[null]";
-			}
-		});
-
-		fVariablesTree.setInput(this);
+			TabItem tab = new TabItem(tabFolder, SWT.NONE);
+			tab.setText(dropin.getTitle());
+			tab.setControl(dropin.createPartControl(getSite(), tabFolder));
+		}
 
 		fSashForm.setWeights(fSashWeights);
 		fInputCombo = new Combo(parent, SWT.NONE);
@@ -428,11 +283,15 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 		setPartName(fScriptEngine.getName() + " " + super.getTitle());
 
 		// read default preferences
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(
+				IPreferenceConstants.NODE_SHELL);
 
-		fHistoryLength = prefs.getInt(IPreferenceConstants.SHELL_HISTORY_LENGTH, IPreferenceConstants.DEFAULT_SHELL_HISTORY_LENGTH);
-		fAutoFocus = prefs.getBoolean(IPreferenceConstants.SHELL_AUTOFOCUS, IPreferenceConstants.DEFAULT_SHELL_AUTOFOCUS);
-		fKeepCommand = prefs.getBoolean(IPreferenceConstants.SHELL_KEEP_COMMAND, IPreferenceConstants.DEFAULT_SHELL_KEEP_COMMAND);
+		fHistoryLength = prefs.getInt(IPreferenceConstants.SHELL_HISTORY_LENGTH,
+				IPreferenceConstants.DEFAULT_SHELL_HISTORY_LENGTH);
+		fAutoFocus = prefs.getBoolean(IPreferenceConstants.SHELL_AUTOFOCUS,
+				IPreferenceConstants.DEFAULT_SHELL_AUTOFOCUS);
+		fKeepCommand = prefs.getBoolean(IPreferenceConstants.SHELL_KEEP_COMMAND,
+				IPreferenceConstants.DEFAULT_SHELL_KEEP_COMMAND);
 
 		if (fAutoFocus) {
 			if (fAutoFocusListener == null)
@@ -451,13 +310,14 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			fContentAssistAdapter.setEnabled(false);
 
 		// get auto completion provider for current engine
-		final ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine.getDescription());
+		final ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine
+				.getDescription());
 
 		if (provider != null) {
 			try {
 				final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
-						provider.getActivationChars());
+				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo,
+						new ComboContentAdapter(), provider, activationKey, provider.getActivationChars());
 				adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 				fContentAssistAdapter = adapter;
 			} catch (final ParseException e) {
@@ -467,7 +327,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	}
 
 	public void runStartupCommands() {
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(
+				IPreferenceConstants.NODE_SHELL);
 
 		for (final ScriptType scriptType : fScriptEngine.getDescription().getSupportedScriptTypes()) {
 			final String initCommands = prefs.get(IPreferenceConstants.SHELL_STARTUP + scriptType.getName(), "").trim();
@@ -477,7 +338,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	}
 
 	/**
-	 * Add a command to the command history. History is stored in a ring buffer, so old entries will drop out once new entries are added. History will be
+	 * Add a command to the command history. History is stored in a ring buffer,
+	 * so old entries will drop out once new entries are added. History will be
 	 * preserved over program sessions.
 	 *
 	 * @param input
@@ -488,7 +350,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			fInputCombo.remove(fInputCombo.getSelectionIndex());
 
 		else {
-			// new element; check if we already have such an element in our history
+			// new element; check if we already have such an element in our
+			// history
 			for (int index = 0; index < fInputCombo.getItemCount(); index++) {
 				if (fInputCombo.getItem(index).equals(input)) {
 					fInputCombo.remove(index);
@@ -550,8 +413,9 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	}
 
 	/**
-	 * Print to the output pane or to console. Text in the output pane may be formatted in different styles depending on the style flag. Printing is executed if
-	 * printLock is turned off or in case of error output.
+	 * Print to the output pane or to console. Text in the output pane may be
+	 * formatted in different styles depending on the style flag. Printing is
+	 * executed if printLock is turned off or in case of error output.
 	 *
 	 * @param text
 	 *            text to print
@@ -611,25 +475,25 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 		switch (style) {
 		case TYPE_RESULT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
-					.getSystemColor(SWT.COLOR_DARK_GRAY)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
+					.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
 			break;
 
 		case TYPE_COMMAND:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
-					.getSystemColor(SWT.COLOR_BLUE)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
+					.getDisplay().getSystemColor(SWT.COLOR_BLUE)));
 			styleRange.fontStyle = SWT.BOLD;
 			break;
 
 		case TYPE_ERROR:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor
-					.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
+					.getDisplay().getSystemColor(SWT.COLOR_RED)));
 			styleRange.fontStyle = SWT.ITALIC;
 			break;
 
 		case TYPE_OUTPUT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
-					.getSystemColor(SWT.COLOR_BLACK)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
+					.getDisplay().getSystemColor(SWT.COLOR_BLACK)));
 			break;
 
 		default:
@@ -640,7 +504,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	}
 
 	/**
-	 * Get the text selected in the output pane. if no text is selected, the whole content will be returned.
+	 * Get the text selected in the output pane. if no text is selected, the
+	 * whole content will be returned.
 	 *
 	 * @return selected text of output pane
 	 */
@@ -720,15 +585,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 
 					// add to content assist
 					if (fContentAssistAdapter != null)
-						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script.getCode());
-
-					// update variables
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							fVariablesTree.refresh();
-						}
-					});
+						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script
+								.getCode());
 				}
 
 				if (fKeepCommand) {
@@ -762,7 +620,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			fScriptEngine.terminate();
 		}
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench()
+				.getService(IScriptService.class);
 		fScriptEngine = scriptService.getEngineByID(id).createEngine();
 
 		if (fScriptEngine != null) {
@@ -779,17 +638,47 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			// register at script engine
 			fScriptEngine.addExecutionListener(this);
 
-			// set script type filter
-			if (fScriptComposite != null)
-				fScriptComposite.setEngine(fScriptEngine.getDescription().getID());
-
 			// start script engine
 			fScriptEngine.schedule();
 
 			// execute startup scripts
-			// TODO currently we cannot run this on the first launch as the UI is not ready yet
+			// TODO currently we cannot run this on the first launch as the UI
+			// is not ready yet
 			if (fInputCombo != null)
 				runStartupCommands();
+			
+			// update drop-ins
+			for (IShellDropin dropin: fDropins)
+				dropin.setScriptEngine(fScriptEngine);
 		}
+	}
+
+	private static final String EXTENSION_SHELL_ID = "org.eclipse.ease.ui.shell";
+	private static final String EXTENSION_DROPIN_ID = "dropin";
+
+	private static final String PROPERTY_DROPIN_CLASS = "class";
+
+	private static Collection<IShellDropin> getAvailableDropins() {
+		List<IShellDropin> dropins = new ArrayList<IShellDropin>();
+
+		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
+				EXTENSION_SHELL_ID);
+		for (final IConfigurationElement e : config) {
+			if (e.getName().equals(EXTENSION_DROPIN_ID)) {
+				// drop-in detected
+				Object dropin;
+				try {
+					dropin = e.createExecutableExtension(PROPERTY_DROPIN_CLASS);
+					if (dropin instanceof IShellDropin) {
+						// TODO sort by priorities
+						dropins.add((IShellDropin) dropin);
+					}
+				} catch (CoreException e1) {
+					Logger.logError("Invalid shell dropin detected: " + e.getAttribute(PROPERTY_DROPIN_CLASS), e1);
+				}
+			}
+		}
+
+		return dropins;
 	}
 }
