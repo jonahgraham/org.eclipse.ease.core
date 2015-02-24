@@ -394,7 +394,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			if (entry.getLocation().equals(locationURI)) {
 				fRepository.getEntries().remove(entry);
 
-				for (final IScript script : entry.getScripts())
+				for (final IScript script : new HashSet<IScript>(entry.getScripts()))
 					removeScript(script);
 
 				save();
