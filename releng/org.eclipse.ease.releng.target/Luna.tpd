@@ -26,6 +26,9 @@ location "http://download.eclipse.org/releases/luna/" {
 	// java module
 	org.eclipse.pde.feature.group
 	org.eclipse.jdt
+	
+	// svn module
+	org.eclipse.team.svn.feature.group
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/" {

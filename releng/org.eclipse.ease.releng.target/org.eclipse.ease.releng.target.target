@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Luna" sequenceNumber="1423475640">
+<target name="Luna" sequenceNumber="1424865265">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.platform.feature.group" version="4.4.0.v20140925-0400"/>
@@ -19,6 +19,7 @@
       <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.1.v201409111852"/>
       <unit id="org.eclipse.pde.feature.group" version="3.10.0.v20140925-0400"/>
       <unit id="org.eclipse.jdt" version="3.10.0.v20140925-0400"/>
+      <unit id="org.eclipse.team.svn.feature.group" version="2.0.1.I20140907-1700"/>
       <repository location="http://download.eclipse.org/releases/luna/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
