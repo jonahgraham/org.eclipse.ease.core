@@ -109,7 +109,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 							scriptCode.append('\n');
 						}
 					} else {
-						Logger.logWarning("Skipped wrapping of field \"" + field.getName() + " \" (module \"" + instance.getClass()
+						Logger.logWarning("Skipped wrapping of field \"" + field.getName() + "\" (module \"" + instance.getClass().getName()
 								+ "\") as variable is already declared.");
 					}
 
