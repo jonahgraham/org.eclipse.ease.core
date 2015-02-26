@@ -44,7 +44,7 @@
       <module
             category="org.eclipse.ease.category.system"
             class="org.eclipse.ease.modules.EnvironmentModule"
-            id="org.eclipse.ease.module.environment"
+            id="org.eclipse.ease.environment"
             name="Environment"
             visible="false">
       </module>
