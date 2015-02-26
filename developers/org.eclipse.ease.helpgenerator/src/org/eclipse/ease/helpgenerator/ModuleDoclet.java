@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationDesc.ElementValuePair;
-import com.sun.javadoc.AnnotationValue;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
@@ -54,22 +53,19 @@ public class ModuleDoclet extends Doclet {
 
 	public static void main(final String[] args) {
 
-		String[] javadocargs = { "-sourcepath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
-				"-root",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform",
-				"-doclet", ModuleDoclet.class.getName(), "-docletpath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
-				"-apiLinks", "java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules.platform" };
+		final String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
+				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
+				ModuleDoclet.class.getName(), "-docletpath",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
+				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules.platform" };
 		com.sun.tools.javadoc.Main.execute(javadocargs);
 
-		String[] javadocargs2 = { "-sourcepath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet",
-				ModuleDoclet.class.getName(), "-docletpath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
-				"-apiLinks", "java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules" };
-		com.sun.tools.javadoc.Main.execute(javadocargs);
+		final String[] javadocargs2 = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet", ModuleDoclet.class.getName(), "-docletpath",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
+				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules" };
+
+		com.sun.tools.javadoc.Main.execute(javadocargs2);
 	}
 
 	private class Overview implements Comparable<Overview> {
@@ -143,8 +139,8 @@ public class ModuleDoclet extends Doclet {
 	private boolean process(final RootDoc root) {
 
 		// parse options
-		String[][] options = root.options();
-		for (String[] option : options) {
+		final String[][] options = root.options();
+		for (final String[] option : options) {
 			if (OPTION_DOCLETPATH.equals(option[0]))
 				fDocletPath = new File(option[1]);
 
@@ -152,18 +148,17 @@ public class ModuleDoclet extends Doclet {
 				fRootFolder = new File(option[1]);
 
 			else if (OPTION_API_LINKS.equals(option[0])) {
-				for (String entry : option[1].split(";")) {
-					String[] tokens = entry.trim().split("\\|");
+				for (final String entry : option[1].split(";")) {
+					final String[] tokens = entry.trim().split("\\|");
 					if (tokens.length == 2)
-						fExternalAPIDocs.put(Pattern.compile(tokens[0]), tokens[1]
-								+ (tokens[1].endsWith("/") ? "" : "/"));
+						fExternalAPIDocs.put(Pattern.compile(tokens[0]), tokens[1] + (tokens[1].endsWith("/") ? "" : "/"));
 				}
 			} else if (OPTION_LINK.equals(option[0])) {
 				try {
 					fExternalDocs.put(new URL(option[1]), parsePackages(new URL(option[1]).openStream()));
-				} catch (MalformedURLException e) {
+				} catch (final MalformedURLException e) {
 					System.out.println("Error: cannot parse external URL " + option[1]);
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					System.out.println("Error: cannot read from " + option[1]);
 
 				}
@@ -171,9 +166,9 @@ public class ModuleDoclet extends Doclet {
 			} else if (OPTION_LINK_OFFLINE.equals(option[0])) {
 				try {
 					fExternalDocs.put(new URL(option[1]), parsePackages(new FileInputStream(option[2])));
-				} catch (MalformedURLException e) {
+				} catch (final MalformedURLException e) {
 					System.out.println("Error: cannot parse external URL " + option[1]);
-				} catch (FileNotFoundException e) {
+				} catch (final FileNotFoundException e) {
 					System.out.println("Error: cannot read from " + option[2]);
 				}
 			}
@@ -197,7 +192,7 @@ public class ModuleDoclet extends Doclet {
 					// some files were created, update project, ...
 
 					// create module TOC files
-					Set<String> tocFiles = createModuleTOCFiles();
+					final Set<String> tocFiles = createModuleTOCFiles();
 
 					// update plugin.xml
 					updatePluginXML(fRootFolder, tocFiles);
@@ -208,7 +203,7 @@ public class ModuleDoclet extends Doclet {
 					// update build.properties
 					updateBuildProperties(fRootFolder);
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// TODO handle this exception (but for now, at least know it
 				// happened)
 				throw new RuntimeException(e);
@@ -222,24 +217,24 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private static Collection<String> parsePackages(InputStream fileInputStream) {
-		Collection<String> packages = new HashSet<String>();
+		final Collection<String> packages = new HashSet<String>();
 		return packages;
 	}
 
 	private boolean createCategories() throws IOException {
 		boolean created = false;
 
-		for (IMemento node : fCategoryNodes) {
-			XMLMemento memento = XMLMemento.createWriteRoot("toc");
+		for (final IMemento node : fCategoryNodes) {
+			final XMLMemento memento = XMLMemento.createWriteRoot("toc");
 			memento.putString("label", node.getString("name"));
 			memento.putString("link_to", createCategoryLink(node.getString("parent")));
 
-			IMemento topicNode = memento.createChild("topic");
+			final IMemento topicNode = memento.createChild("topic");
 			topicNode.putString("label", node.getString("name"));
 			topicNode.putBoolean("sort", true);
 			topicNode.createChild("anchor").putString("id", "modules_anchor");
 
-			File targetFile = getChild(getChild(fRootFolder, "help"), createCategoryFileName(node.getString("id")));
+			final File targetFile = getChild(getChild(fRootFolder, "help"), createCategoryFileName(node.getString("id")));
 			writeFile(targetFile, memento.toString());
 			created = true;
 		}
@@ -249,7 +244,7 @@ public class ModuleDoclet extends Doclet {
 
 	private static String extractCategoryName(final String categoryId) {
 		if (categoryId != null) {
-			int index = categoryId.indexOf(".category.");
+			final int index = categoryId.indexOf(".category.");
 			if (index != -1)
 				return categoryId.substring(index + ".category.".length());
 		}
@@ -260,7 +255,7 @@ public class ModuleDoclet extends Doclet {
 	private static String createCategoryLink(final String categoryId) {
 		String pluginID = "org.eclipse.ease.help";
 		if (categoryId != null) {
-			int index = categoryId.indexOf(".category.");
+			final int index = categoryId.indexOf(".category.");
 			if (index != -1)
 				pluginID = categoryId.substring(0, index);
 		}
@@ -269,7 +264,7 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private static String createCategoryFileName(final String categoryId) {
-		String category = extractCategoryName(categoryId);
+		final String category = extractCategoryName(categoryId);
 		return (category != null) ? "category_" + category + ".xml" : "scripting_book.xml";
 	}
 
@@ -285,11 +280,11 @@ public class ModuleDoclet extends Doclet {
 	private void updateManifest(final File rootFolder) throws IOException {
 		final File manifestFile = getChild(getChild(rootFolder, "META-INF"), "MANIFEST.MF");
 
-		Manifest manifest = new Manifest();
+		final Manifest manifest = new Manifest();
 		manifest.read(new FileInputStream(manifestFile));
 
-		Attributes mainAttributes = manifest.getMainAttributes();
-		String require = mainAttributes.getValue("Require-Bundle");
+		final Attributes mainAttributes = manifest.getMainAttributes();
+		final String require = mainAttributes.getValue("Require-Bundle");
 
 		if ((require == null) || (require.isEmpty()))
 			mainAttributes.putValue("Require-Bundle", "org.eclipse.help;bundle-version=\"[3.5.0,4.0.0)\"");
@@ -301,13 +296,13 @@ public class ModuleDoclet extends Doclet {
 			// manifest contains reference to org.eclipse.help, bail out
 			return;
 
-		FileOutputStream out = new FileOutputStream(manifestFile);
+		final FileOutputStream out = new FileOutputStream(manifestFile);
 		manifest.write(out);
 		out.close();
 	}
 
 	private void updateBuildProperties(final File rootFolder) throws IOException {
-		File buildFile = getChild(rootFolder, "build.properties");
+		final File buildFile = getChild(rootFolder, "build.properties");
 
 		final Properties properties = new Properties();
 		properties.load(new FileInputStream(buildFile));
@@ -318,34 +313,34 @@ public class ModuleDoclet extends Doclet {
 			else
 				properties.setProperty("bin.includes", "help/," + property.trim());
 
-			FileOutputStream out = new FileOutputStream(buildFile);
+			final FileOutputStream out = new FileOutputStream(buildFile);
 			properties.store(out, "");
 			out.close();
 		}
 	}
 
 	private void updatePluginXML(final File rootFolder, final Collection<String> tocs) throws Exception {
-		HashSet<String> toDo = new HashSet<String>(tocs);
+		final HashSet<String> toDo = new HashSet<String>(tocs);
 
-		File pluginFile = getChild(rootFolder, "plugin.xml");
-		XMLMemento memento = XMLMemento.createReadRoot(new InputStreamReader(new FileInputStream(pluginFile)));
-		for (IMemento extensionNode : memento.getChildren("extension")) {
-			String extensionPoint = extensionNode.getString("point");
+		final File pluginFile = getChild(rootFolder, "plugin.xml");
+		final XMLMemento memento = XMLMemento.createReadRoot(new InputStreamReader(new FileInputStream(pluginFile)));
+		for (final IMemento extensionNode : memento.getChildren("extension")) {
+			final String extensionPoint = extensionNode.getString("point");
 			if ("org.eclipse.help.toc".equals(extensionPoint)) {
 				// a help topic is already registered
-				for (IMemento tocNode : extensionNode.getChildren("toc")) {
-					String tocLocation = tocNode.getString("file");
+				for (final IMemento tocNode : extensionNode.getChildren("toc")) {
+					final String tocLocation = tocNode.getString("file");
 					if (tocLocation.length() > 5)
 						toDo.remove(tocLocation.substring(5));
 				}
 			}
 		}
 
-		for (String fileLocation : toDo) {
+		for (final String fileLocation : toDo) {
 			// some TOCs not registered yet
-			IMemento extensionNode = memento.createChild("extension");
+			final IMemento extensionNode = memento.createChild("extension");
 			extensionNode.putString("point", "org.eclipse.help.toc");
-			IMemento tocNode = extensionNode.createChild("toc");
+			final IMemento tocNode = extensionNode.createChild("toc");
 			tocNode.putString("file", "help/" + fileLocation);
 			tocNode.putBoolean("primary", false);
 
@@ -357,15 +352,15 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private Set<String> createModuleTOCFiles() throws IOException {
-		Map<String, IMemento> tocDefinitions = new HashMap<String, IMemento>();
+		final Map<String, IMemento> tocDefinitions = new HashMap<String, IMemento>();
 
 		// create categories
-		for (IMemento categoryDefinition : fCategoryNodes) {
-			XMLMemento memento = XMLMemento.createWriteRoot("toc");
+		for (final IMemento categoryDefinition : fCategoryNodes) {
+			final XMLMemento memento = XMLMemento.createWriteRoot("toc");
 			memento.putString("label", categoryDefinition.getString("name"));
 			memento.putString("link_to", createCategoryLink(categoryDefinition.getString("parent")));
 
-			IMemento topicNode = memento.createChild("topic");
+			final IMemento topicNode = memento.createChild("topic");
 			topicNode.putString("label", categoryDefinition.getString("name"));
 			topicNode.putBoolean("sort", true);
 
@@ -376,9 +371,9 @@ public class ModuleDoclet extends Doclet {
 		// create modules
 		if (!fModuleNodes.isEmpty()) {
 
-			for (IMemento moduleDefinition : fModuleNodes.values()) {
-				String categoryID = moduleDefinition.getString("category");
-				String fileName = createCategoryFileName(categoryID).replace("category_", "modules_");
+			for (final IMemento moduleDefinition : fModuleNodes.values()) {
+				final String categoryID = moduleDefinition.getString("category");
+				final String fileName = createCategoryFileName(categoryID).replace("category_", "modules_");
 
 				IMemento memento;
 				if (tocDefinitions.containsKey(fileName))
@@ -392,14 +387,14 @@ public class ModuleDoclet extends Doclet {
 					tocDefinitions.put(fileName, memento);
 				}
 
-				IMemento topicNode = memento.createChild("topic");
+				final IMemento topicNode = memento.createChild("topic");
 				topicNode.putString("href", "help/" + createHTMLFileName(moduleDefinition.getString("id")));
 				topicNode.putString("label", moduleDefinition.getString("name"));
 			}
 		}
 
-		for (Entry<String, IMemento> entry : tocDefinitions.entrySet()) {
-			File targetFile = getChild(getChild(fRootFolder, "help"), entry.getKey());
+		for (final Entry<String, IMemento> entry : tocDefinitions.entrySet()) {
+			final File targetFile = getChild(getChild(fRootFolder, "help"), entry.getKey());
 			writeFile(targetFile, entry.getValue().toString());
 		}
 
@@ -420,7 +415,7 @@ public class ModuleDoclet extends Doclet {
 
 	/**
 	 * Create HTML help pages for module classes.
-	 * 
+	 *
 	 * @param classes
 	 * @return
 	 * @throws IOException
@@ -433,8 +428,8 @@ public class ModuleDoclet extends Doclet {
 			// only add classes which are registered in our modules lookup table
 			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
-				StringBuffer buffer = new StringBuffer();
-				File headerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "header.txt");
+				final StringBuffer buffer = new StringBuffer();
+				final File headerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "header.txt");
 				addLine(buffer, readResourceFile(headerFile));
 
 				// header
@@ -461,18 +456,17 @@ public class ModuleDoclet extends Doclet {
 				addLine(buffer, "\t\t\t<th>Description</th>");
 				addLine(buffer, "\t\t</tr>");
 
-				List<Overview> overview = new ArrayList<Overview>();
+				final List<Overview> overview = new ArrayList<Overview>();
 				for (final MethodDoc method : clazz.methods()) {
 					if (isExported(method)) {
 						overview.add(new Overview(method.name(), method.name(), method.commentText()));
-						for (String alias : getFunctionAliases(method))
-							overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name()
-									+ "\">" + method.name() + "</a>."));
+						for (final String alias : getFunctionAliases(method))
+							overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>."));
 					}
 				}
 				Collections.sort(overview);
 
-				for (Overview entry : overview) {
+				for (final Overview entry : overview) {
 					addLine(buffer, "\t\t<tr>");
 					addLine(buffer, "\t\t\t<td><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
 					addLine(buffer, "\t\t\t<td>" + insertLinks(clazz, getFirstSentence(entry.fDescription)) + "</td>");
@@ -485,7 +479,7 @@ public class ModuleDoclet extends Doclet {
 				// function details
 				addLine(buffer, "\t<h2>Methods</h2>");
 
-				List<MethodDoc> methods = new ArrayList<MethodDoc>(Arrays.asList(clazz.methods()));
+				final List<MethodDoc> methods = new ArrayList<MethodDoc>(Arrays.asList(clazz.methods()));
 				Collections.sort(methods, new Comparator<MethodDoc>() {
 
 					@Override
@@ -504,8 +498,8 @@ public class ModuleDoclet extends Doclet {
 						addText(buffer, " ");
 						addText(buffer, method.name());
 						addText(buffer, "(");
-						for (Parameter parameter : method.parameters()) {
-							AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
+						for (final Parameter parameter : method.parameters()) {
+							final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
 							if (parameterAnnotation != null)
 								addText(buffer, "[");
 
@@ -524,40 +518,38 @@ public class ModuleDoclet extends Doclet {
 						addLine(buffer, "</p>");
 
 						// main description
-						addLine(buffer, "\t<p class=\"description\">" + insertLinks(clazz, method.commentText())
-								+ "</p>");
+						addLine(buffer, "\t<p class=\"description\">" + insertLinks(clazz, method.commentText()) + "</p>");
 
-						Collection<String> aliases = getFunctionAliases(method);
+						final Collection<String> aliases = getFunctionAliases(method);
 						if (!aliases.isEmpty()) {
 							addLine(buffer, "\t<p class=\"synonyms\">");
 
-							for (String alias : aliases)
+							for (final String alias : aliases)
 								addText(buffer, alias + " ");
 
 							addLine(buffer, "</p>");
 						}
 
 						if (method.parameters().length > 0) {
-							File parameterHeaderFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"),
-									"parameters_header.txt");
+							final File parameterHeaderFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "parameters_header.txt");
 							addLine(buffer, readResourceFile(parameterHeaderFile));
-							for (Parameter parameter : method.parameters()) {
+							for (final Parameter parameter : method.parameters()) {
 								addLine(buffer, "\t\t<tr>");
 								addLine(buffer, "\t\t\t<td>" + parameter.name() + "</td>");
+								addLine(buffer, "\t\t\t<td>" + createClassText(parameter.type().qualifiedTypeName()) + "</td>");
 								addText(buffer, "\t\t\t<td>" + findComment(method, parameter.name()));
 
-								AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
+								final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
 								if (parameterAnnotation != null) {
 									addText(buffer, "<br /><b>Optional:</b> defaults to &lt;<i>");
-									for (ElementValuePair pair : parameterAnnotation.elementValues()) {
-										if ("org.eclipse.ease.modules.ScriptParameter.defaultValue()".equals(pair
-												.element().toString())) {
+									for (final ElementValuePair pair : parameterAnnotation.elementValues()) {
+										if ("org.eclipse.ease.modules.ScriptParameter.defaultValue()".equals(pair.element().toString())) {
 											String defaultValue = pair.value().toString();
 
 											if (!String.class.getName().equals(parameter.type().qualifiedTypeName()))
 												defaultValue = defaultValue.substring(1, defaultValue.length() - 1);
-											
-											if ("\"org.eclipse.ease.modules.ScriptParameter.null\"".equals(defaultValue))
+
+											if (defaultValue.contains("org.eclipse.ease.modules.ScriptParameter.null"))
 												addText(buffer, "null");
 
 											else
@@ -576,7 +568,7 @@ public class ModuleDoclet extends Doclet {
 							addText(buffer, "\t<p class=\"return\"><em>Returns:</em>");
 							addText(buffer, createClassText(method.returnType().qualifiedTypeName()));
 
-							Tag[] tags = method.tags("return");
+							final Tag[] tags = method.tags("return");
 							if (tags.length > 0) {
 								addText(buffer, " ... ");
 								addText(buffer, tags[0].text());
@@ -587,11 +579,10 @@ public class ModuleDoclet extends Doclet {
 					}
 				}
 
-				File footerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "footer.txt");
+				final File footerFile = getChild(getChild(getChild(getDocletPath(), ".."), "templates"), "footer.txt");
 				addLine(buffer, readResourceFile(footerFile));
 				// write document
-				File targetFile = getChild(getChild(fRootFolder, "help"),
-						createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
+				final File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
 				writeFile(targetFile, buffer.toString());
 				createdFiles = true;
 			}
@@ -601,22 +592,22 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	/** Pattern to detect a link token. */
-	private static final Pattern PATTERN_LINK = Pattern.compile("\\{@(link|module)\\s+(.*?)\\}");
+	private static final Pattern PATTERN_LINK = Pattern.compile("\\{@(link|module)\\s+(.*?)\\}", Pattern.DOTALL);
 
 	/** Pattern to parse a link. */
 	private static final Pattern PATTERN_INNER_LINK = Pattern.compile("(\\w+(?:\\.\\w+)*)?(?:#(\\w+)\\((.*?)\\))?");
 
 	private static String insertLinks(ClassDoc clazz, String text) {
 
-		StringBuilder output = new StringBuilder();
+		final StringBuilder output = new StringBuilder();
 		int startPos = 0;
-		Matcher matcher = PATTERN_LINK.matcher(text);
+		final Matcher matcher = PATTERN_LINK.matcher(text);
 
 		while (matcher.find()) {
 			output.append(text.substring(startPos, matcher.start()));
 			startPos = matcher.end();
 
-			Matcher linkMatcher = PATTERN_INNER_LINK.matcher(matcher.group(2));
+			final Matcher linkMatcher = PATTERN_INNER_LINK.matcher(matcher.group(2).replace('\r', ' ').replace('\n', ' '));
 			if (linkMatcher.matches()) {
 				// group 1 = class
 				// group 2 = method (optional)
@@ -630,7 +621,7 @@ public class ModuleDoclet extends Doclet {
 					} else {
 						// external document
 						// TODO fix path
-						String findClass = findClass(linkMatcher.group(1), clazz);
+						final String findClass = findClass(linkMatcher.group(1), clazz);
 						System.out.println("searching " + linkMatcher.group(1) + ", found " + findClass);
 					}
 
@@ -641,9 +632,9 @@ public class ModuleDoclet extends Doclet {
 						output.append("<a href=\"#" + linkMatcher.group(2) + "\">" + linkMatcher.group(2) + "()</a>");
 					} else {
 						// external document
-						String plugin = linkMatcher.group(1).substring(0, linkMatcher.group(1).lastIndexOf('.'));
-						output.append("<a href=\"../../" + plugin + "/help/" + createHTMLFileName(linkMatcher.group(1))
-								+ "#" + linkMatcher.group(2) + "\">" + linkMatcher.group(2) + "()</a>");
+						final String plugin = linkMatcher.group(1).substring(0, linkMatcher.group(1).lastIndexOf('.'));
+						output.append("<a href=\"../../" + plugin + "/help/" + createHTMLFileName(linkMatcher.group(1)) + "#" + linkMatcher.group(2) + "\">"
+								+ linkMatcher.group(2) + "()</a>");
 					}
 				}
 			}
@@ -658,34 +649,34 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private static String findClass(String name, ClassDoc baseClass) {
-		for (ClassDoc doc : baseClass.importedClasses()) {
+		for (final ClassDoc doc : baseClass.importedClasses()) {
 			if (doc.toString().endsWith(name))
 				return doc.toString();
 		}
 
-		ClassDoc target = baseClass.findClass(name);
+		final ClassDoc target = baseClass.findClass(name);
 		return (target != null) ? target.toString() : null;
 	}
 
 	private static String getFirstSentence(final String description) {
-		int pos = description.indexOf('.');
+		final int pos = description.indexOf('.');
 
 		return (pos > 0) ? description.substring(0, pos + 1) : description;
 	}
 
 	private Object createClassText(final String qualifiedName) {
-		for (Entry<Pattern, String> entry : fExternalAPIDocs.entrySet()) {
+		for (final Entry<Pattern, String> entry : fExternalAPIDocs.entrySet()) {
 			if (entry.getKey().matcher(qualifiedName).matches())
-				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + ".html\" title=\""
-						+ qualifiedName + "\">" + qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
+				return "<a href=\"" + entry.getValue() + qualifiedName.replace('.', '/') + ".html\" title=\"" + qualifiedName + "\">"
+				+ qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1) + "</a>";
 		}
 
 		return qualifiedName;
 	}
 
 	private StringBuffer createConstantsSection(final ClassDoc clazz) {
-		StringBuffer buffer = new StringBuffer();
-		HashMap<String, String> constants = new HashMap<String, String>();
+		final StringBuffer buffer = new StringBuffer();
+		final HashMap<String, String> constants = new HashMap<String, String>();
 		for (final FieldDoc field : clazz.fields()) {
 			if (isExported(field))
 				constants.put(field.name(), field.commentText());
@@ -700,7 +691,7 @@ public class ModuleDoclet extends Doclet {
 			addLine(buffer, "\t\t\t<th>Description</th>");
 			addLine(buffer, "\t\t</tr>");
 
-			for (Entry<String, String> entry : constants.entrySet()) {
+			for (final Entry<String, String> entry : constants.entrySet()) {
 				addLine(buffer, "\t\t<tr>");
 				addLine(buffer, "\t\t\t<td><a id=\"" + entry.getKey() + "\">" + entry.getKey() + "</a></td>");
 				addLine(buffer, "\t\t\t<td>" + entry.getValue() + "</td>");
@@ -715,14 +706,14 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private Collection<String> getFunctionAliases(final MethodDoc method) {
-		Collection<String> aliases = new HashSet<String>();
-		AnnotationDesc annotation = getWrapAnnotation(method);
+		final Collection<String> aliases = new HashSet<String>();
+		final AnnotationDesc annotation = getWrapAnnotation(method);
 		if (annotation != null) {
-			for (ElementValuePair pair : annotation.elementValues()) {
+			for (final ElementValuePair pair : annotation.elementValues()) {
 				if ("alias".equals(pair.element().name())) {
 					String candidates = pair.value().toString();
 					candidates = candidates.substring(1, candidates.length() - 1);
-					for (String token : candidates.split("[,;]")) {
+					for (final String token : candidates.split("[,;]")) {
 						if (!token.trim().isEmpty())
 							aliases.add(token.trim());
 					}
@@ -741,7 +732,7 @@ public class ModuleDoclet extends Doclet {
 		if (!file.exists())
 			file.createNewFile();
 
-		FileWriter writer = new FileWriter(file);
+		final FileWriter writer = new FileWriter(file);
 		writer.write(data);
 		writer.close();
 	}
