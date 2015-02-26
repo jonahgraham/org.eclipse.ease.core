@@ -1,6 +1,0 @@
-		<table class="parameters">
-			<tr>
-				<th>Parameter</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
