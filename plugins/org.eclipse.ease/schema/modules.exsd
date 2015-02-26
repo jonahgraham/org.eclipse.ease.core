@@ -71,7 +71,7 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  Unique id of this module.As a recommendation use the pluginID followed by a unique module name.
+                  Unique id of this module. Use &lt;plugin-id&gt;.&lt;someName&gt; here to allow for automatic build of help files. Not following this scheme will break help pages for module references.
                </documentation>
             </annotation>
          </attribute>
@@ -102,7 +102,7 @@
          <attribute name="category" type="string">
             <annotation>
                <documentation>
-                  
+                  Category to file this module. Allows to build hierarchies to structure modules.
                </documentation>
                <appinfo>
                   <meta.attribute kind="identifier" basedOn="org.eclipse.ease.modules/category/@id"/>
@@ -127,7 +127,7 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  Unique id of this category. Use &lt;plugin-id&gt;.category.&lt;your.category.name&gt; here to allow for automatic build of help files. Not following this scheme will break help pages for modules references.
+                  Unique id of this category. Use &lt;plugin-id&gt;.category.&lt;your.category.name&gt; here to allow for automatic build of help files. Not following this scheme will break help pages for module references.
                </documentation>
             </annotation>
          </attribute>
