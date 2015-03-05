@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../ease_help.css">
+<title>Headless script execution</title>
+</head>
+
+<body>
+<h1>Headless Script Execution</h1>
+<p>In headless mode a single script can be launched using a specific application. As no UI is available in that mode, scripts trying to access UI elements will fail.</p>
+
+
+
+<h2>Application org.eclipse.ease.listEngines</h2>
+
+<p>Provides a list of available script engines. No further command line arguments are supported.</p>
+
+<h3>Example</h3>
+<code>eclipsec.exe -application org.eclipse.ease.listEngines</code>
+
+
+
+<h2>Application org.eclipse.ease.runScript</h2>
+
+<p>Allows to execute a single script either from workspace or the file system.</p>
+
+<h3>Command line arguments</h3>
+<dl>
+<dt>-script &lt;script location&gt;</dt>
+<dd>script location to execute from. Either an absolute path or a URI. Accepts <i>workspace://</i> style URIs if a workspace is provided. Needs to be the last parameter provided!</dd>
+<dt>-workspace &lt;workspace location&gt;</dt>
+<dd>OPTIONAL: workspace location to execute from. If not provided, no workspace will be loaded.</dd>
+<dt>-engine &lt;engine ID&gt;</dt>
+<dd>OPTIONAL: Script engine ID to be used for script execution. If not provided, the default engine for the given script source will be used.</dd>
+<dt>-help</dt>
+<dd>OPTIONAL: Prints parameter help to standard output. If set, all other parameters are ignored and no script is executed.</dd>
+</dl>
+<p>Any argument after the script parameter is passed to the script within an <i>argv[]</i> variable of type <i>String[]</i>. <i>argv[0]</i> always contains the name of the script file.</p>
+
+<h3>Example</h3>
+<code>eclipsec.exe -application org.eclipse.ease.runScript -workspace "C:\my workspace location" -script "workspace://Example Project/src/script1.js" param1 param2</code>
+
+</body>
+</html>
