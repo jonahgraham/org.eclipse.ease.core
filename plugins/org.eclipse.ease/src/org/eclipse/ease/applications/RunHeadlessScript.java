@@ -142,6 +142,7 @@ public class RunHeadlessScript implements IApplication {
 			} else if ("-script".equals(arguments[index])) {
 				if ((index + 1) < arguments.length) {
 					parameters.put("script", arguments[index + 1]);
+					((List) parameters.get("args")).add(arguments[index + 1]);
 					index++;
 
 				} else {
