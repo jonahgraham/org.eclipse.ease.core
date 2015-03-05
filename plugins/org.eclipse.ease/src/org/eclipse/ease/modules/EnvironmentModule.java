@@ -241,7 +241,8 @@ public class EnvironmentModule extends AbstractEnvironment {
 	}
 
 	/**
-	 * Open help page on addressed topic.
+	 * Open help page on addressed topic. If the given topic matches a method or field from a loaded module, the definition will be opened. If the topic is
+	 * unknown, a search in the whole eclipse help will be launched.
 	 *
 	 * @param topic
 	 *            help topic to open (typically a function name)
@@ -292,9 +293,25 @@ public class EnvironmentModule extends AbstractEnvironment {
 						}
 					}
 				}
-			}
 
-			// TODO display default help book
+				// nothing found, start a search in help
+				Display.getDefault().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						PlatformUI.getWorkbench().getHelpSystem().search(topic);
+					}
+				});
+			} else {
+				// no topic provided, show main help page
+				Display.getDefault().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						PlatformUI.getWorkbench().getHelpSystem().displayHelp();
+					}
+				});
+			}
 		}
 	}
 

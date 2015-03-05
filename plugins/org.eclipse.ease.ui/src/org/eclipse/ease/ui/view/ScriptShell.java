@@ -34,7 +34,6 @@ import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.scripts.IScriptSupport;
-import org.eclipse.ease.ui.scripts.ui.ScriptComposite;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
@@ -76,7 +75,7 @@ import org.osgi.service.prefs.Preferences;
  * The JavaScript shell allows to interactively execute JavaScript code.
  */
 public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyChangeListener, IScriptEngineProvider,
-		IExecutionListener {
+IExecutionListener {
 
 	public static final String VIEW_ID = "org.eclipse.ease.ui.views.scriptShell";
 
@@ -133,7 +132,6 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 	private IScriptEngine fScriptEngine;
 
 	private IMemento fInitMemento;
-
 
 	private int fHistoryLength;
 
@@ -334,6 +332,8 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			final String initCommands = prefs.get(IPreferenceConstants.SHELL_STARTUP + scriptType.getName(), "").trim();
 			if (!initCommands.isEmpty())
 				fScriptEngine.executeAsync(initCommands);
+			else
+				localPrint("// use help(\"<topic>\") to get more information", TYPE_COMMAND);
 		}
 	}
 
@@ -646,9 +646,9 @@ public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyCh
 			// is not ready yet
 			if (fInputCombo != null)
 				runStartupCommands();
-			
+
 			// update drop-ins
-			for (IShellDropin dropin: fDropins)
+			for (IShellDropin dropin : fDropins)
 				dropin.setScriptEngine(fScriptEngine);
 		}
 	}
