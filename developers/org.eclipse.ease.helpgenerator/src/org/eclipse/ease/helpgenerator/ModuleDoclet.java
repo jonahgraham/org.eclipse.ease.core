@@ -70,7 +70,7 @@ public class ModuleDoclet extends Doclet {
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 				"-apiLinks", "java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules",
 				"-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
+		"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
 
 		// com.sun.tools.javadoc.Main.execute(javadocargs2);
 	}
@@ -399,8 +399,9 @@ public class ModuleDoclet extends Doclet {
 			// only add classes which are registered in our modules lookup table
 			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
-				String content = new HTMLWriter(clazz, fLinkProvider).createContents(fModuleNodes.get(
-						clazz.qualifiedName()).getString("name"));
+				String content = new HTMLWriter(clazz, fLinkProvider, fModuleNodes.get(clazz.qualifiedName())
+						.getChildren("dependency")).createContents(fModuleNodes.get(clazz.qualifiedName()).getString(
+						"name"));
 
 				// write document
 				final File targetFile = getChild(getChild(fRootFolder, "help"),

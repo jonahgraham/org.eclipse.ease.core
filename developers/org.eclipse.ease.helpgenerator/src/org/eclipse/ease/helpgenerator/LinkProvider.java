@@ -178,9 +178,20 @@ public class LinkProvider {
 					} else {
 						// external document
 						final String plugin = linkMatcher.group(1).substring(0, linkMatcher.group(1).lastIndexOf('.'));
-						output.append("<a href=\"../../" + plugin + "/help/"
-								+ ModuleDoclet.createHTMLFileName(linkMatcher.group(1)) + "#" + linkMatcher.group(2)
-								+ "\">" + linkMatcher.group(2) + ((linkMatcher.group(3) != null) ? "()" : "") + "</a>");
+						if (linkMatcher.group(2) != null)
+							output.append("<a href=\"../../" + plugin + "/help/"
+									+ ModuleDoclet.createHTMLFileName(linkMatcher.group(1)) + "#"
+									+ linkMatcher.group(2) + "\">" + linkMatcher.group(2)
+									+ ((linkMatcher.group(3) != null) ? "()" : "") + "</a>");
+						else
+							output.append("<a href=\"../../"
+									+ plugin
+									+ "/help/"
+									+ ModuleDoclet.createHTMLFileName(linkMatcher.group(1))
+									+ "\">"
+									+ capitalizeFirst(linkMatcher.group(1).substring(
+											linkMatcher.group(1).lastIndexOf('.') + 1)) + " module</a>");
+
 					}
 				}
 			}
@@ -192,5 +203,12 @@ public class LinkProvider {
 		output.append(text.substring(startPos));
 
 		return output.toString();
+	}
+
+	private static String capitalizeFirst(final String content) {
+		if (!content.isEmpty())
+			return content.substring(0, 1).toUpperCase() + content.substring(1);
+
+		return content;
 	}
 }

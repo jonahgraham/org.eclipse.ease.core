@@ -47,10 +47,12 @@ public class HTMLWriter {
 
 	private final LinkProvider fLinkProvider;
 	private final ClassDoc fClazz;
+	private final IMemento[] fDependencies;
 
-	public HTMLWriter(final ClassDoc clazz, final LinkProvider linkProvider) {
+	public HTMLWriter(final ClassDoc clazz, final LinkProvider linkProvider, final IMemento[] dependencies) {
 		fClazz = clazz;
 		fLinkProvider = linkProvider;
+		fDependencies = dependencies;
 	}
 
 	public String createContents(final String name) {
@@ -76,6 +78,9 @@ public class HTMLWriter {
 
 		addLine(buffer, "</p>");
 
+		// dependencies
+		addLine(buffer, createDependenciesSection());
+
 		// constants
 		addLine(buffer, createConstantsSection());
 
@@ -89,6 +94,27 @@ public class HTMLWriter {
 		addLine(buffer, "</html>");
 
 		return buffer.toString();
+	}
+
+	private String createDependenciesSection() {
+
+		if (fDependencies.length > 0) {
+
+			StringBuffer buffer = new StringBuffer();
+			addLine(buffer, "\t<h3>Dependencies</h3>");
+			addLine(buffer,
+					"\t<p>This module depends on following other modules which will automatically be loaded.</p>");
+			addLine(buffer, "\t<ul class=\"dependency\">");
+
+			for (IMemento dependency : fDependencies)
+				addLine(buffer, "\t\t<li>{@module " + dependency.getString("module") + "}</li>");
+
+			addLine(buffer, "\t</ul>");
+
+			return fLinkProvider.insertLinks(fClazz, buffer.toString());
+		}
+
+		return "";
 	}
 
 	private Object createDetailSection() {
