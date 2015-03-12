@@ -22,6 +22,7 @@ import org.eclipse.core.internal.expressions.AdaptExpression;
 import org.eclipse.core.internal.expressions.IterateExpression;
 import org.eclipse.core.internal.expressions.WithExpression;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.handler.RunScript;
 import org.eclipse.ease.ui.repository.IScript;
 import org.eclipse.ease.ui.tools.LocationImageDescriptor;
@@ -34,9 +35,13 @@ public class ScriptContributionItem extends CommandContributionItem {
 
 	private static final Pattern ENABLE_PATTERN = Pattern.compile("enableFor\\((.*)\\)");
 
-	private static ImageDescriptor getImageDescriptor(final String imageLocation) {
-		if (imageLocation != null)
-			return LocationImageDescriptor.createFromLocation(imageLocation);
+	private static ImageDescriptor getImageDescriptor(final IScript script) {
+		String location = script.getParameters().get("image");
+		if (location != null) {
+			return LocationImageDescriptor.createFromLocation(ResourceTools.toAbsoluteLocation(location,
+					script.getLocation()));
+
+		}
 
 		return null;
 	}
@@ -52,9 +57,9 @@ public class ScriptContributionItem extends CommandContributionItem {
 	private Expression fVisibleExpression = null;
 
 	public ScriptContributionItem(final IScript script) {
-		super(new CommandContributionItemParameter(PlatformUI.getWorkbench().getActiveWorkbenchWindow(), script.getLocation(), RunScript.COMMAND_ID,
-				getParameters(script), getImageDescriptor(script.getParameters().get("image")), null, null, script.getName(), null, null, STYLE_PUSH, null,
-				true));
+		super(new CommandContributionItemParameter(PlatformUI.getWorkbench().getActiveWorkbenchWindow(),
+				script.getLocation(), RunScript.COMMAND_ID, getParameters(script), getImageDescriptor(script), null,
+				null, script.getName(), null, null, STYLE_PUSH, null, true));
 
 		fScript = script;
 	}
@@ -105,7 +110,8 @@ public class ScriptContributionItem extends CommandContributionItem {
 
 		if (fVisibleExpression != null) {
 			try {
-				final IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
+				final IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(
+						IHandlerService.class);
 				EvaluationResult evaluate = fVisibleExpression.evaluate(handlerService.getCurrentState());
 
 				return Boolean.parseBoolean(evaluate.toString());
