@@ -188,6 +188,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	/**
 	 * Re-implementation as we might not have initialized the engine on the first module load.
 	 */
+	@WrapToScript
 	@Override
 	public IScriptEngine getScriptEngine() {
 
