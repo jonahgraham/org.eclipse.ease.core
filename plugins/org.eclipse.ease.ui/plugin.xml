@@ -575,5 +575,8 @@
             class="org.eclipse.ease.ui.view.ScriptDropin"
             priority="20">
       </dropin>
+      <dropHandler
+            class="org.eclipse.ease.ui.scripts.ui.ShellDropHandler">
+      </dropHandler>
    </extension>
 </plugin>

@@ -61,7 +61,7 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.swt.dnd.DropTargetListener"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ease.ui.dnd.IShellDropHandler"/>
                </appinfo>
             </annotation>
          </attribute>
