@@ -21,7 +21,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 	/**
 	 *
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer# initializeDefaultPreferences()
+	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#
+	 *      initializeDefaultPreferences()
 	 */
 	@Override
 	public final void initializeDefaultPreferences() {
@@ -33,7 +34,5 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		store.setDefault(IPreferenceConstants.SHELL_AUTOFOCUS, true);
 		store.setDefault(IPreferenceConstants.SHELL_KEEP_COMMAND, false);
 		store.setDefault(IPreferenceConstants.SHELL_DEFAULT_ENGINE, "org.eclipse.ease.javascript.rhino");
-
-		store.setDefault(IPreferenceConstants.SCRIPT_STORAGE_SELECTED, false);
 	}
 }

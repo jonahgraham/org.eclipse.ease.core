@@ -11,7 +11,6 @@
 package org.eclipse.ease.ui.perspectives;
 
 import org.eclipse.ease.ui.view.ModuleExplorerView;
-import org.eclipse.ease.ui.view.ScriptExplorerView;
 import org.eclipse.ease.ui.view.ScriptShell;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
@@ -28,7 +27,6 @@ public class ScriptingPerspective implements IPerspectiveFactory {
 
 		IFolderLayout left = factory.createFolder("left", IPageLayout.LEFT, 0.25f, factory.getEditorArea());
 		left.addView(IPageLayout.ID_PROJECT_EXPLORER);
-		left.addView(ScriptExplorerView.VIEW_ID);
 
 		IFolderLayout top = factory.createFolder("top", IPageLayout.TOP, 0.3f, factory.getEditorArea());
 		top.addView(ScriptShell.VIEW_ID);
@@ -40,7 +38,6 @@ public class ScriptingPerspective implements IPerspectiveFactory {
 		bottomRight.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 		bottomRight.addView(IPageLayout.ID_PROBLEM_VIEW);
 
-		factory.addShowViewShortcut(ScriptExplorerView.VIEW_ID);
 		factory.addShowViewShortcut(ScriptShell.VIEW_ID);
 		factory.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		factory.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);

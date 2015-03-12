@@ -33,7 +33,6 @@ import org.eclipse.ease.ui.completion.ModuleCompletionProvider;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
-import org.eclipse.ease.ui.scripts.IScriptSupport;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
@@ -74,8 +73,7 @@ import org.osgi.service.prefs.Preferences;
 /**
  * The JavaScript shell allows to interactively execute JavaScript code.
  */
-public class ScriptShell extends ViewPart implements IScriptSupport, IPropertyChangeListener, IScriptEngineProvider,
-IExecutionListener {
+public class ScriptShell extends ViewPart implements IPropertyChangeListener, IScriptEngineProvider, IExecutionListener {
 
 	public static final String VIEW_ID = "org.eclipse.ease.ui.views.scriptShell";
 
@@ -517,8 +515,7 @@ IExecutionListener {
 		return text;
 	}
 
-	@Override
-	public final void toggleMacroManager() {
+	public final void toggleDropinsPane() {
 		if (fSashForm.getWeights()[1] == 0)
 			fSashForm.setWeights(fSashWeights);
 

@@ -19,13 +19,6 @@
             name="Scripting">
       </category>
       <view
-            category="org.eclipse.ease.ui.views.category.scripting"
-            class="org.eclipse.ease.ui.view.ScriptExplorerView"
-            icon="icons/eview16/script_explorer.png"
-            id="org.eclipse.ease.ui.views.scriptExplorerView"
-            name="Script Explorer">
-      </view>
-      <view
             allowMultiple="false"
             category="org.eclipse.ease.ui.views.category.scripting"
             class="org.eclipse.ease.ui.view.ModuleExplorerView"
@@ -87,89 +80,20 @@
                optional="true">
          </commandParameter>
       </command>
+      <command
+            categoryId="org.eclipse.ease.commands.category.scriptShell"
+            defaultHandler="org.eclipse.ease.ui.handler.ToggleDropinsSection"
+            id="org.eclipse.ease.commands.script.toggleDropinsSection"
+            name="Toggle Dropins Section">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
-      <category
-            id="org.eclipse.ease.commands.category.script"
-            name="Script">
-      </category>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.handler.RunScript"
-            id="org.eclipse.ease.commands.script.run"
-            name="Run Script">
-         <commandParameter
-               id="org.eclipse.ease.commands.script.run.name"
-               name="Script Name"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.handler.ToggleScriptRecording"
-            id="org.eclipse.ease.commands.script.toggleScriptRecording"
-            name="Toggle Script Recording">
-         <state
-               class="org.eclipse.jface.commands.ToggleState"
-               id="STYLE">
-         </state>
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.handler.ToggleScriptPane"
-            id="org.eclipse.ease.commands.script.toggleScriptPane"
-            name="Toggle Script Pane">
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.handler.RenameScript"
-            id="org.eclipse.ease.commands.script.rename"
-            name="Rename Script">
-         <commandParameter
-               id="org.eclipse.ease.commands.script.rename.name"
-               name="Script Name"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.handler.EditScript"
-            id="org.eclipse.ease.commands.script.edit"
-            name="Edit Script">
-         <commandParameter
-               id="org.eclipse.ease.commands.script.edit.name"
-               name="Script Name"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.scriptShell"
-            defaultHandler="org.eclipse.ease.ui.handler.RefreshRepository"
-            id="org.eclipse.ease.commands.scriptShell.refreshRepository"
-            name="Refresh Repository">
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.scriptShell"
-            defaultHandler="org.eclipse.ease.ui.handler.RunScript"
-            id="org.eclipse.ease.commands.scriptShell.runScript"
-            name="Run Script">
-         <commandParameter
-               id="org.eclipse.ease.commands.scriptShell.runScript.name"
-               name="Script Name"
-               optional="true">
-         </commandParameter>
-      </command>
-      <command
-            description="Run the script selected in the Script Explorer View"
-            id="org.eclipse.ease.ui.runSelectedScript"
-            name="Run Selected Script">
-      </command>
       <command
             categoryId="org.eclipse.ease.commands.category.ModulesExplorer"
             defaultHandler="org.eclipse.ease.ui.handler.OpenHelp"
             id="org.eclipse.ease.commands.ModulesExplorer.openHelp"
-            name="open help">
+            name="Open Help">
       </command>
       <category
             id="org.eclipse.ease.commands.category.ModulesExplorer"
@@ -205,6 +129,12 @@
                label="Clear Display"
                style="push">
          </command>
+         <command
+               commandId="org.eclipse.ease.commands.script.toggleDropinsSection"
+               icon="icons/elcl16/dropins_pane.png"
+               label="Toggle Dropins Section"
+               style="push">
+         </command>
          <separator
                name="separator1"
                visible="true">
@@ -228,52 +158,6 @@
                icon="icons/elcl16/new_shell.png"
                id="org.eclipse.ease.commands.scriptShell.newShell.popup"
                label="New shell"
-               style="push">
-         </command>
-         <separator
-               name="separator2"
-               visible="true">
-         </separator>
-         <command
-               commandId="org.eclipse.ease.commands.script.toggleScriptPane"
-               icon="icons/eview16/script_explorer.png"
-               id="org.eclipse.ease.commands.script.toggleScriptPane.popup"
-               label="Script Pane"
-               style="pulldown">
-         </command>
-         <command
-               commandId="org.eclipse.ease.commands.script.toggleScriptRecording"
-               icon="icons/elcl16/start_script_recording.png"
-               label="Toggle Script Recording"
-               style="toggle">
-         </command>
-         <separator
-               name="additions"
-               visible="false">
-         </separator>
-      </menuContribution>
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ease.ui.views.scriptExplorerView">
-         <separator
-               name="top"
-               visible="false">
-         </separator>
-         <command
-               commandId="org.eclipse.ease.commands.scriptShell.runScript"
-               icon="icons/elcl16/run_script.png"
-               label="Run"
-               style="push">
-         </command>
-         <command
-               commandId="org.eclipse.ease.commands.script.edit"
-               icon="icons/elcl16/edit_script.png"
-               label="Edit"
-               style="push">
-         </command>
-         <command
-               commandId="org.eclipse.ease.commands.scriptShell.refreshRepository"
-               icon="icons/elcl16/refresh.png"
-               label="Refresh"
                style="push">
          </command>
          <separator
@@ -304,13 +188,6 @@
          </dynamic>
       </menuContribution>
       <menuContribution
-            locationURI="menu:org.eclipse.ease.commands.script.toggleScriptPane.popup">
-         <dynamic
-               class="org.eclipse.ease.ui.scripts.ScriptContributionFactory"
-               id="org.eclipse.ease.ui.dynamic.scripts">
-         </dynamic>
-      </menuContribution>
-      <menuContribution
             locationURI="menu:org.eclipse.ease.commands.scriptShell.switchEngine.popup">
          <dynamic
                class="org.eclipse.ease.ui.view.EngineContributionFactory"
@@ -335,22 +212,6 @@
                visible="false">
          </separator>
       </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.services">
-      <serviceFactory
-            factoryClass="org.eclipse.ease.ui.scripts.repository.RepositoryServiceFactory">
-         <service
-               serviceClass="org.eclipse.ease.ui.scripts.repository.IRepositoryService">
-         </service>
-      </serviceFactory>
-   </extension>
-   <extension
-         point="org.eclipse.ecf.filetransfer.urlStreamHandlerService">
-      <urlStreamHandlerService
-            protocol="script"
-            serviceClass="org.eclipse.ease.ui.scripts.ScriptURLStreamHandler">
-      </urlStreamHandlerService>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
@@ -381,26 +242,7 @@
          </enablement>
       </consolePageParticipant>
    </extension>
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated ScriptRepository -->
-      <package
-            uri="repository"
-            class="org.eclipse.ease.ui.repository.IRepositoryPackage"
-            genModel="model/ScriptRepository.genmodel"/>
-   </extension>
 
-   <extension point="org.eclipse.emf.ecore.extension_parser">
-      <!-- @generated ScriptRepository -->
-      <parser
-            type="repository"
-            class="org.eclipse.ease.ui.repository.util.RepositoryResourceFactoryImpl"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="org.eclipse.ease.ui.scripts.repository.impl.Startup">
-      </startup>
-   </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -413,12 +255,6 @@
             class="org.eclipse.ease.ui.preferences.ScriptingPage"
             id="org.eclipse.ease.preferences.root"
             name="Scripting">
-      </page>
-      <page
-            category="org.eclipse.ease.preferences.root"
-            class="org.eclipse.ease.ui.preferences.LocationsPage"
-            id="org.eclipse.ease.preferences.scriptLocations"
-            name="Script Locations">
       </page>
       <page
             category="org.eclipse.ease.preferences.root"
@@ -571,12 +407,5 @@
             class="org.eclipse.ease.ui.view.VariablesDropin"
             priority="10">
       </dropin>
-      <dropin
-            class="org.eclipse.ease.ui.view.ScriptDropin"
-            priority="20">
-      </dropin>
-      <dropHandler
-            class="org.eclipse.ease.ui.scripts.ui.ShellDropHandler">
-      </dropHandler>
    </extension>
 </plugin>

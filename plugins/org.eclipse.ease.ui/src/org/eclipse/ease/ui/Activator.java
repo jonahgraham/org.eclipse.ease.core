@@ -16,17 +16,14 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
-import org.eclipse.emf.common.ui.EclipseUIPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.IStartup;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-public class Activator extends EclipseUIPlugin implements IStartup {
+public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ease.ui";
 
@@ -55,7 +52,8 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given plug-in relative path
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path
 	 *
 	 * @param path
 	 *            the path
@@ -110,7 +108,8 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 	// FIXME seems to be obsolete
 	/**
 	 *
-	 * This method returns an <code>org.eclipse.swt.graphics.Image</code> identified by its pluginId and iconPath.<BR>
+	 * This method returns an <code>org.eclipse.swt.graphics.Image</code>
+	 * identified by its pluginId and iconPath.<BR>
 	 */
 	public static Image getPluginIconImage(final String pluginId, final String iconPath) {
 		String key = pluginId + iconPath;
@@ -130,11 +129,5 @@ public class Activator extends EclipseUIPlugin implements IStartup {
 
 	public static ImageDescriptor getLocalImageDescriptor(final String iconPath) {
 		return getImageDescriptor(PLUGIN_ID, iconPath);
-	}
-
-	@Override
-	public void earlyStartup() {
-		// start repository service
-		PlatformUI.getWorkbench().getService(IRepositoryService.class);
 	}
 }
