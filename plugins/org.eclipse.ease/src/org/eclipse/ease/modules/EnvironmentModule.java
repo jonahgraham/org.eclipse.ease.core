@@ -126,7 +126,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 			Tracer.logInfo("[Environement Module] Injecting code:\n" + codeToInject);
 		}
 
-		getScriptEngine().inject(new Script("Wrapping " + instance.toString(), codeToInject));
+		getScriptEngine().inject(new Script("Wrapper(" + instance.getClass().getSimpleName() + ")", codeToInject));
 	}
 
 	/**

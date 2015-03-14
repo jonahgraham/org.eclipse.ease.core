@@ -21,12 +21,12 @@ import org.eclipse.ease.Script;
 public class ScriptDebugFrame implements IScriptDebugFrame {
 
 	private final Script fScript;
-	private final int fLineNumber;
+	private int fLineNumber;
 	private final int fType;
 
 	public ScriptDebugFrame(final Script script, final int lineNumber, final int type) {
 		// deep copy script to get rid of references to the script engine (due to the stored result)
-		fScript = new Script(script.getCommand());
+		fScript = script.clone();
 		fLineNumber = lineNumber;
 		fType = type;
 	}
@@ -58,5 +58,10 @@ public class ScriptDebugFrame implements IScriptDebugFrame {
 	@Override
 	public Map<String, Object> getVariables() {
 		return Collections.emptyMap();
+	}
+
+	@Override
+	public void setLineNumber(final int lineNumber) {
+		fLineNumber = lineNumber;
 	}
 }

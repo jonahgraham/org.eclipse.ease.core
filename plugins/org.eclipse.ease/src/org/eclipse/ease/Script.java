@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -60,6 +61,17 @@ public class Script {
 	 */
 	public Script(final Object command) {
 		this(null, command);
+	}
+
+	/**
+	 * Clones the object as a deep copy.
+	 *
+	 * Initializes the new Script object as if initializing a new Script object with the same parameters as the current one, losing e.g. references to results
+	 * etc.
+	 */
+	@Override
+	public Script clone() {
+		return new Script(fTitle, fCommand);
 	}
 
 	/**
@@ -207,22 +219,32 @@ public class Script {
 
 	@Override
 	public String toString() {
+		return (getTitle() != null) ? getTitle() : "(unknown script source)";
+	}
+
+	/**
+	 * Get the title of this script. Title has to be set by the caller via the constructor. Typically this is used for dynamic code to indicate its purpose. If
+	 * no title is set we try to extract the name of the executed resource.
+	 *
+	 * @return script title or <code>null</code>
+	 */
+	public String getTitle() {
+		if (fTitle != null)
+			return fTitle;
+
 		if (fCommand instanceof IFile)
 			return ((IFile) fCommand).getName();
 
 		if (fCommand instanceof File)
 			return ((File) fCommand).getName();
 
-		return "(unknown script source)";
-	}
+		if (fCommand instanceof URI)
+			return fCommand.toString();
 
-	/**
-	 * Get the title of this script. Title has to be set by the caller via the constructor. Typically this is used for dynamic code to indicate its purpose.
-	 *
-	 * @return script title or <code>null</code>
-	 */
-	public String getTitle() {
-		return fTitle;
+		if (fCommand instanceof URL)
+			return fCommand.toString();
+
+		return null;
 	}
 
 	@Override

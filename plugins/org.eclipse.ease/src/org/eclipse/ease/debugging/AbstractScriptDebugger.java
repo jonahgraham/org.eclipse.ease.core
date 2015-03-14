@@ -220,7 +220,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 	 * @return
 	 */
 	public List<IScriptDebugFrame> getStacktrace() {
-		return (!fStacktrace.isEmpty() || fExceptionStacktrace.isEmpty()) ? fStacktrace : fExceptionStacktrace;
+		return (!fExceptionStacktrace.isEmpty()) ? fExceptionStacktrace : fStacktrace;
 	}
 
 	protected void setStacktrace(final List<IScriptDebugFrame> stacktrace) {
@@ -268,9 +268,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 	}
 
 	protected void setExceptionStacktrace() {
-		// copy current stacktrace. In case this exception
-		fExceptionStacktrace = new ArrayList<IScriptDebugFrame>();
-		for (final IScriptDebugFrame frame : getStacktrace())
-			fExceptionStacktrace.add(new ScriptDebugFrame(frame));
+		// copy current stacktrace
+		fExceptionStacktrace = new ArrayList<IScriptDebugFrame>(getStacktrace());
 	}
 }

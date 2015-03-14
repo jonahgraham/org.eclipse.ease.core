@@ -171,7 +171,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				if (ITracingConstant.MODULE_WRAPPER_TRACING)
 					Tracer.logInfo("Executing (" + script.getTitle() + "):\n" + script.getCode());
 
-				fStackTrace.add(new ScriptDebugFrame(script, 0, IScriptDebugFrame.TYPE_FILE));
+				fStackTrace.add(0, new ScriptDebugFrame(script, 0, IScriptDebugFrame.TYPE_FILE));
 
 				// execution
 				if (notifyListeners)
@@ -189,7 +189,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 			} catch (final Throwable e) {
 				script.setException(e);
-				e.printStackTrace(getErrorStream());
+
+				// only do the printing if this is the last script on the stack
+				// otherwise we will print multiple times for each rethrow
+				if (fStackTrace.size() == 1)
+					e.printStackTrace(getErrorStream());
 
 			} finally {
 				if (notifyListeners)
@@ -534,8 +538,8 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	 * @param uiThread
 	 *            when set to <code>true</code> run code in UI thread
 	 * @return execution result
-	 * @throws Exception
+	 * @throws Throwable
 	 *             any exception thrown during script execution
 	 */
-	protected abstract Object execute(Script script, Object reference, String fileName, boolean uiThread) throws Exception;
+	protected abstract Object execute(Script script, Object reference, String fileName, boolean uiThread) throws Throwable;
 }

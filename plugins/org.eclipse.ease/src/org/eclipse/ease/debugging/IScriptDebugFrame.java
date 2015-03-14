@@ -29,4 +29,6 @@ public interface IScriptDebugFrame {
 	String getName();
 
 	Map<String, Object> getVariables();
+
+	void setLineNumber(int lineNumber);
 }

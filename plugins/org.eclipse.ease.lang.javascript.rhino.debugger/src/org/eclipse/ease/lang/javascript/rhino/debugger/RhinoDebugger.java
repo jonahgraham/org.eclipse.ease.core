@@ -10,15 +10,14 @@
  *******************************************************************************/
 package org.eclipse.ease.lang.javascript.rhino.debugger;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.debugging.AbstractScriptDebugger;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
+import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -28,16 +27,15 @@ import org.mozilla.javascript.debug.Debugger;
 
 public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
-	public class RhinoDebugFrame implements DebugFrame, IScriptDebugFrame {
+	public class RhinoDebugFrame extends ScriptDebugFrame implements DebugFrame, IScriptDebugFrame {
 
-		private int mLineNumber = 0;
-
-		private final DebuggableScript mFnOrScript;
+		private final String fFunctionName;
 
 		private Scriptable fScope;
 
 		public RhinoDebugFrame(final DebuggableScript fnOrScript) {
-			mFnOrScript = fnOrScript;
+			super(RhinoDebugger.this.getScript(fnOrScript), 0, fnOrScript.isFunction() ? TYPE_FUNCTION : TYPE_FILE);
+			fFunctionName = fnOrScript.getFunctionName();
 		}
 
 		@Override
@@ -48,7 +46,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		@Override
 		public void onLineChange(final Context cx, final int lineNumber) {
-			mLineNumber = lineNumber;
+			setLineNumber(lineNumber);
 			if (isTrackedScript(getScript())) {
 				// static code or dynamic code activated
 
@@ -73,42 +71,21 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		}
 
 		@Override
-		public int getLineNumber() {
-			return mLineNumber;
-		}
-
-		@Override
-		public Script getScript() {
-			return RhinoDebugger.this.getScript(mFnOrScript);
-		}
-
-		@Override
-		public int getType() {
-			return mFnOrScript.isFunction() ? TYPE_FUNCTION : TYPE_FILE;
-		}
-
-		@Override
 		public String getName() {
-			if (mFnOrScript.isFunction())
-				return mFnOrScript.getFunctionName() + "()";
+			if (getType() == IScriptDebugFrame.TYPE_FUNCTION) {
+				String title = getScript().getTitle();
+				if (title == null)
+					title = "";
 
-			else {
-				final Object file = getScript().getFile();
-				if (file != null) {
-					if (file instanceof IFile)
-						return ((IFile) file).getName();
+				return title + ":" + fFunctionName + "()";
 
-					else if (file instanceof File)
-						return ((File) file).getName();
+			} else {
+				String title = getScript().getTitle();
+				if (title == null)
+					title = "(Dynamic)";
 
-				} else {
-					// dynamic script
-					final String title = getScript().getTitle();
-					return (title != null) ? "Dynamic: " + title : "(Dynamic)";
-				}
+				return title;
 			}
-
-			return "(unknown source)";
 		}
 
 		@Override
@@ -119,9 +96,9 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		}
 	}
 
-	private final Map<DebuggableScript, Script> mFrameToSource = new HashMap<DebuggableScript, Script>();
+	private final Map<DebuggableScript, Script> fFrameToSource = new HashMap<DebuggableScript, Script>();
 
-	private Script mLastScript = null;
+	private Script fLastScript = null;
 
 	public RhinoDebugger(final IScriptEngine engine, final boolean showDynamicCode) {
 		super(engine, showDynamicCode);
@@ -136,15 +113,15 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		Script script = getScript(fnOrScript);
 		if (script == null)
-			script = mLastScript;
+			script = fLastScript;
 
 		if (script == null)
 			return null;
 
 		// register script source
 		final DebuggableScript parentScript = getParentScript(fnOrScript);
-		if (!mFrameToSource.containsKey(parentScript))
-			mFrameToSource.put(parentScript, script);
+		if (!fFrameToSource.containsKey(parentScript))
+			fFrameToSource.put(parentScript, script);
 
 		// create debug frame
 		final RhinoDebugFrame debugFrame = new RhinoDebugFrame(fnOrScript);
@@ -162,7 +139,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		case SCRIPT_START:
 			// fall through
 		case SCRIPT_INJECTION_START:
-			mLastScript = script;
+			fLastScript = script;
 			break;
 
 		default:
@@ -174,7 +151,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 	}
 
 	private Script getScript(final DebuggableScript rhinoScript) {
-		return mFrameToSource.get(getParentScript(rhinoScript));
+		return fFrameToSource.get(getParentScript(rhinoScript));
 	}
 
 	private static DebuggableScript getParentScript(DebuggableScript rhinoScript) {

@@ -17,19 +17,28 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.ScriptExecutionException;
+import org.eclipse.ease.debugging.IScriptDebugFrame;
+import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.lang.javascript.JavaScriptHelper;
 import org.eclipse.ease.tools.RunnableWithResult;
 import org.eclipse.swt.widgets.Display;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.EcmaError;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -129,10 +138,10 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Exception {
+	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Throwable {
 		if (uiThread) {
 			// run in UI thread
-			final RunnableWithResult<Entry<Object, Exception>> runnable = new RunnableWithResult<Entry<Object, Exception>>() {
+			final RunnableWithResult<Entry<Object, Throwable>> runnable = new RunnableWithResult<Entry<Object, Throwable>>() {
 
 				@Override
 				public void run() {
@@ -141,9 +150,9 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 					// call execute again, now from correct thread
 					try {
-						setResult(new AbstractMap.SimpleEntry<Object, Exception>(internalExecute(script, reference, fileName), null));
-					} catch (final Exception e) {
-						setResult(new AbstractMap.SimpleEntry<Object, Exception>(null, e));
+						setResult(new AbstractMap.SimpleEntry<Object, Throwable>(internalExecute(script, reference, fileName), null));
+					} catch (final Throwable e) {
+						setResult(new AbstractMap.SimpleEntry<Object, Throwable>(null, e));
 					}
 				}
 			};
@@ -151,7 +160,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			Display.getDefault().syncExec(runnable);
 
 			// evaluate result
-			final Entry<Object, Exception> result = runnable.getResult();
+			final Entry<Object, Throwable> result = runnable.getResult();
 			if (result.getValue() != null)
 				throw (result.getValue());
 
@@ -162,7 +171,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			return internalExecute(script, reference, fileName);
 	}
 
-	private Object internalExecute(final Script script, final Object reference, final String fileName) throws Exception {
+	private Object internalExecute(final Script script, final Object reference, final String fileName) throws Throwable {
 		// remove an eventually cached terminate request
 		((ObservingContextFactory) ContextFactory.getGlobal()).cancelTerminate(getContext());
 
@@ -190,8 +199,28 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		} catch (final WrappedException e) {
 			final Throwable wrapped = e.getWrappedException();
-			if (wrapped instanceof Exception)
-				throw ((Exception) wrapped);
+			if (wrapped instanceof ScriptExecutionException)
+				throw wrapped;
+
+			else if (wrapped instanceof Throwable)
+				throw new ScriptExecutionException(wrapped.getMessage(), e.columnNumber(), e.lineSource(), "JavaError", getExceptionStackTrace(script,
+						e.lineNumber()), wrapped);
+
+		} catch (final EcmaError e) {
+			throw new ScriptExecutionException(e.getErrorMessage(), e.columnNumber(), e.lineSource(), e.getName(), getExceptionStackTrace(script,
+					e.lineNumber()), null);
+
+		} catch (final JavaScriptException e) {
+			final String message = (e.getValue() != null) ? e.getValue().toString() : null;
+			throw new ScriptExecutionException(message, e.lineNumber(), e.lineSource(), "ScriptException", getExceptionStackTrace(script, e.lineNumber()), null);
+
+		} catch (final EvaluatorException e) {
+			throw new ScriptExecutionException(e.getMessage(), e.columnNumber(), e.lineSource(), "SyntaxError", getExceptionStackTrace(script, e.lineNumber()),
+					null);
+
+		} catch (final RhinoException e) {
+			throw new ScriptExecutionException("Error running script", e.columnNumber(), e.lineSource(), "Error",
+					getExceptionStackTrace(script, e.lineNumber()), null);
 
 		} finally {
 			try {
@@ -203,6 +232,27 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get a stack trace in case of a script exception. On exceptions a trace might not have picked up the topmost script. So we try to update the trace in case
+	 * we have more accurate information than the script engine itself. Seems the Rhino debugger does not add compilation units to the stack before the
+	 * exception is thrown.
+	 *
+	 * @param script
+	 *            expected topmost script
+	 * @param lineNumber
+	 *            line number of exception root cause
+	 * @return updated stack trace
+	 */
+	protected List<IScriptDebugFrame> getExceptionStackTrace(final Script script, final int lineNumber) {
+		final List<IScriptDebugFrame> stackTrace = new ArrayList<IScriptDebugFrame>(getStackTrace());
+		if ((script != null) && (!script.equals(stackTrace.get(0).getScript()))) {
+			// topmost script is not what we expected, seems it was not put on the stack
+			stackTrace.add(0, new ScriptDebugFrame(script, lineNumber, IScriptDebugFrame.TYPE_FILE));
+		}
+
+		return stackTrace;
 	}
 
 	public Context getContext() {
