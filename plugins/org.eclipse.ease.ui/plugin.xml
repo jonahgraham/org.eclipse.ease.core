@@ -86,6 +86,12 @@
             id="org.eclipse.ease.commands.script.toggleDropinsSection"
             name="Toggle Dropins Section">
       </command>
+      <command
+            categoryId="org.eclipse.ease.commands.category.scriptShell"
+            defaultHandler="org.eclipse.ease.ui.handler.OpenScriptHelp"
+            id="org.eclipse.ease.commands.scriptShell.openScriptHelp"
+            name="Open Script Help">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -164,6 +170,12 @@
                name="additions"
                visible="false">
          </separator>
+         <command
+               commandId="org.eclipse.ease.commands.scriptShell.openScriptHelp"
+               icon="icons/eobj16/help.png"
+               label="Open Script Help"
+               style="push">
+         </command>
       </menuContribution>
       <menuContribution
             allPopups="false"

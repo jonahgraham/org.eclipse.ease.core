@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="Scripting User Guide">
+<toc label="Scripting User Guide" topic="help/html/scripting_guide.html">
    <topic label="Getting Started">
       <anchor id="gettingstartedX"/>
    </topic>
