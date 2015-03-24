@@ -186,7 +186,9 @@ public class EnvironmentModule extends AbstractEnvironment {
 	}
 
 	/**
-	 * Re-implementation as we might not have initialized the engine on the first module load.
+	 * Get the current script engine instance.
+	 * 
+	 * @return {@link IScriptEngine} instance
 	 */
 	@WrapToScript
 	@Override
