@@ -60,8 +60,7 @@ public class HTMLWriter {
 
 		addLine(buffer, "<html>");
 		addLine(buffer, "<head>");
-		addLine(buffer,
-				"	<link rel=\"stylesheet\" type=\"text/css\" href=\"../../org.eclipse.ease.help/help/scripting_book.css\">");
+		addLine(buffer, "	<link rel=\"stylesheet\" type=\"text/css\" href=\"../../org.eclipse.ease.help/help/css/modules_reference.css\">");
 		addLine(buffer, "</head>");
 		addLine(buffer, "<body>");
 
@@ -100,13 +99,12 @@ public class HTMLWriter {
 
 		if (fDependencies.length > 0) {
 
-			StringBuffer buffer = new StringBuffer();
+			final StringBuffer buffer = new StringBuffer();
 			addLine(buffer, "\t<h3>Dependencies</h3>");
-			addLine(buffer,
-					"\t<p>This module depends on following other modules which will automatically be loaded.</p>");
+			addLine(buffer, "\t<p>This module depends on following other modules which will automatically be loaded.</p>");
 			addLine(buffer, "\t<ul class=\"dependency\">");
 
-			for (IMemento dependency : fDependencies)
+			for (final IMemento dependency : fDependencies)
 				addLine(buffer, "\t\t<li>{@module " + dependency.getString("module") + "}</li>");
 
 			addLine(buffer, "\t</ul>");
@@ -118,7 +116,7 @@ public class HTMLWriter {
 	}
 
 	private Object createDetailSection() {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		addLine(buffer, "\t<h2>Methods</h2>");
 
@@ -140,8 +138,7 @@ public class HTMLWriter {
 				addLine(buffer, createSynopsis(method));
 
 				// main description
-				addLine(buffer, "\t<p class=\"description\">" + fLinkProvider.insertLinks(fClazz, method.commentText())
-						+ "</p>");
+				addLine(buffer, "\t<p class=\"description\">" + fLinkProvider.insertLinks(fClazz, method.commentText()) + "</p>");
 
 				// aliases
 				addLine(buffer, createAliases(method));
@@ -158,12 +155,11 @@ public class HTMLWriter {
 	}
 
 	private StringBuffer createReturnValueArea(final MethodDoc method) {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		if (!"void".equals(method.returnType().qualifiedTypeName())) {
 			addText(buffer, "\t<p class=\"return\"><em>Returns:</em>");
-			addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType()
-					.qualifiedTypeName(), fClazz)));
+			addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz)));
 
 			final Tag[] tags = method.tags("return");
 			if (tags.length > 0) {
@@ -178,7 +174,7 @@ public class HTMLWriter {
 	}
 
 	private StringBuffer createParametersTable(final MethodDoc method) {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		if (method.parameters().length > 0) {
 
@@ -192,10 +188,8 @@ public class HTMLWriter {
 			for (final Parameter parameter : method.parameters()) {
 				addLine(buffer, "\t\t<tr>");
 				addLine(buffer, "\t\t\t<td>" + parameter.name() + "</td>");
-				addLine(buffer,
-						"\t\t\t<td>"
-								+ fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type()
-										.qualifiedTypeName(), fClazz)) + "</td>");
+				addLine(buffer, "\t\t\t<td>" + fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz))
+						+ "</td>");
 				addText(buffer, "\t\t\t<td>" + fLinkProvider.insertLinks(fClazz, findComment(method, parameter.name())));
 
 				final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
@@ -205,8 +199,7 @@ public class HTMLWriter {
 						if ("org.eclipse.ease.modules.ScriptParameter.defaultValue()".equals(pair.element().toString())) {
 							String defaultValue = pair.value().toString();
 
-							if ((!String.class.getName().equals(parameter.type().qualifiedTypeName()))
-									&& (defaultValue.length() > 2))
+							if ((!String.class.getName().equals(parameter.type().qualifiedTypeName())) && (defaultValue.length() > 2))
 								// remove quotes from default
 								// value
 								defaultValue = defaultValue.substring(1, defaultValue.length() - 1);
@@ -230,7 +223,7 @@ public class HTMLWriter {
 	}
 
 	private StringBuffer createAliases(final MethodDoc method) {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		final Collection<String> aliases = getFunctionAliases(method);
 		if (!aliases.isEmpty()) {
@@ -246,11 +239,10 @@ public class HTMLWriter {
 	}
 
 	private StringBuffer createSynopsis(final MethodDoc method) {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		addText(buffer, "\t<p class=\"synopsis\">");
-		addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType()
-				.qualifiedTypeName(), fClazz)));
+		addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz)));
 		addText(buffer, " ");
 		addText(buffer, method.name());
 		addText(buffer, "(");
@@ -259,8 +251,7 @@ public class HTMLWriter {
 			if (parameterAnnotation != null)
 				addText(buffer, "[");
 
-			addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type()
-					.qualifiedTypeName(), fClazz)));
+			addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz)));
 			addText(buffer, " ");
 			addText(buffer, parameter.name());
 			if (parameterAnnotation != null)
@@ -278,7 +269,7 @@ public class HTMLWriter {
 	}
 
 	private StringBuffer createOverviewSection() {
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		addLine(buffer, "\t<h2>Method Overview</h2>");
 		addLine(buffer, "\t<table class=\"functions\">");
@@ -292,8 +283,7 @@ public class HTMLWriter {
 			if (isExported(method)) {
 				overview.add(new Overview(method.name(), method.name(), method.commentText()));
 				for (final String alias : getFunctionAliases(method))
-					overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">"
-							+ method.name() + "</a>."));
+					overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>."));
 			}
 		}
 		Collections.sort(overview);
@@ -301,8 +291,7 @@ public class HTMLWriter {
 		for (final Overview entry : overview) {
 			addLine(buffer, "\t\t<tr>");
 			addLine(buffer, "\t\t\t<td><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
-			addLine(buffer, "\t\t\t<td>" + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription))
-					+ "</td>");
+			addLine(buffer, "\t\t\t<td>" + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription)) + "</td>");
 			addLine(buffer, "\t\t</tr>");
 		}
 

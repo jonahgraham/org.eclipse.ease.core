@@ -40,22 +40,15 @@ public class ModuleDoclet extends Doclet {
 
 	public static void main(final String[] args) {
 
-		final String[] javadocargs = {
-				"-sourcepath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
-				"-root",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform",
-				"-doclet",
-				ModuleDoclet.class.getName(),
-				"-docletpath",
+		final String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
+				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
+				ModuleDoclet.class.getName(), "-docletpath",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 
-				"-linkOffline",
-				"http://docs.oracle.com/javase/8/docs/api",
+				"-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8",
 
-				"-linkOffline",
-				"../../platform/isv",
+				"-linkOffline", "../../platform/isv",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/eclipse-luna",
 
 				"org.eclipse.ease.modules.platform"
@@ -63,14 +56,11 @@ public class ModuleDoclet extends Doclet {
 		};
 		com.sun.tools.javadoc.Main.execute(javadocargs);
 
-		final String[] javadocargs2 = { "-sourcepath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet",
-				ModuleDoclet.class.getName(), "-docletpath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
-				"-apiLinks", "java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules",
-				"-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
-		"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
+		final String[] javadocargs2 = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet", ModuleDoclet.class.getName(), "-docletpath",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
+				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules", "-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
+				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
 
 		// com.sun.tools.javadoc.Main.execute(javadocargs2);
 	}
@@ -132,8 +122,7 @@ public class ModuleDoclet extends Doclet {
 
 			} else if (OPTION_LINK_OFFLINE.equals(option[0])) {
 				try {
-					fLinkProvider.registerAddress(option[1], parsePackages(new FileInputStream(option[2]
-							+ File.separator + "package-list")));
+					fLinkProvider.registerAddress(option[1], parsePackages(new FileInputStream(option[2] + File.separator + "package-list")));
 				} catch (final FileNotFoundException e) {
 					System.out.println("Error: cannot read from " + option[2]);
 				}
@@ -185,14 +174,14 @@ public class ModuleDoclet extends Doclet {
 	private static Collection<String> parsePackages(final InputStream inputStream) {
 		final Collection<String> packages = new HashSet<String>();
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
 			String line = reader.readLine();
 			while (line != null) {
 				packages.add(line);
 				line = reader.readLine();
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// could not read, ignore
 		}
 
@@ -212,8 +201,7 @@ public class ModuleDoclet extends Doclet {
 			topicNode.putBoolean("sort", true);
 			topicNode.createChild("anchor").putString("id", "modules_anchor");
 
-			final File targetFile = getChild(getChild(fRootFolder, "help"),
-					createCategoryFileName(node.getString("id")));
+			final File targetFile = getChild(getChild(fRootFolder, "help"), createCategoryFileName(node.getString("id")));
 			writeFile(targetFile, memento.toString());
 			created = true;
 		}
@@ -244,7 +232,7 @@ public class ModuleDoclet extends Doclet {
 
 	private static String createCategoryFileName(final String categoryId) {
 		final String category = extractCategoryName(categoryId);
-		return (category != null) ? "category_" + category + ".xml" : "scripting_book.xml";
+		return (category != null) ? "category_" + category + ".xml" : "reference.xml";
 	}
 
 	private File getChild(final File folder, final String name) {
@@ -399,13 +387,11 @@ public class ModuleDoclet extends Doclet {
 			// only add classes which are registered in our modules lookup table
 			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
-				String content = new HTMLWriter(clazz, fLinkProvider, fModuleNodes.get(clazz.qualifiedName())
-						.getChildren("dependency")).createContents(fModuleNodes.get(clazz.qualifiedName()).getString(
-						"name"));
+				final String content = new HTMLWriter(clazz, fLinkProvider, fModuleNodes.get(clazz.qualifiedName()).getChildren("dependency"))
+						.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
 
 				// write document
-				final File targetFile = getChild(getChild(fRootFolder, "help"),
-						createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
+				final File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
 				writeFile(targetFile, content);
 				createdFiles = true;
 			}
