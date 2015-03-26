@@ -3,6 +3,8 @@
 
 <toc label="Tasks" link_to="help/main.xml#tasks"> 
 	<topic label="Launching Scripts"  href="html/tasks/maintopic.html"> 
-		<topic label="Headless" href="help/html/tasks/launch_headless.html" /> 
+		<topic label="Headless" href="help/html/tasks/launch_headless.html" />
+  <topic href="help/html/tasks/launch_run_target.html" label="Run Targets">
+  </topic> 
 	</topic>
 </toc>
