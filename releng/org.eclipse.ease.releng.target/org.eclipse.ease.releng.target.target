@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Luna" sequenceNumber="1424865265">
+<target name="Luna" sequenceNumber="1427380073">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.platform.feature.group" version="4.4.0.v20140925-0400"/>
-      <unit id="org.eclipse.rcp.feature.group" version="4.4.0.v20140925-0400"/>
-      <unit id="org.eclipse.jdt.feature.group" version="3.10.0.v20140925-0400"/>
+      <unit id="org.eclipse.platform.feature.group" version="4.4.2.v20150204-1700"/>
+      <unit id="org.eclipse.rcp.feature.group" version="4.4.2.v20150204-1700"/>
+      <unit id="org.eclipse.jdt.feature.group" version="3.10.1.v20150204-1700"/>
       <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.0.200.v20140512-1802"/>
-      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="1.6.100.v201409111605"/>
-      <unit id="org.eclipse.emf.sdk.feature.group" version="2.10.1.v20140901-1055"/>
-      <unit id="org.eclipse.papyrus.infra.feature.feature.group" version="1.0.1.v201409170932"/>
-      <unit id="org.eclipse.papyrus.infra.gmfdiag.feature.feature.group" version="1.0.1.v201409170932"/>
-      <unit id="org.eclipse.papyrus.uml.diagram.feature.feature.group" version="1.0.1.v201409170932"/>
-      <unit id="org.eclipse.uml2.uml" version="5.0.1.v20140910-1354"/>
+      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="1.6.100.v201410221502"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="2.10.2.v20150123-0452"/>
+      <unit id="org.eclipse.papyrus.infra.feature.feature.group" version="1.0.2.v201502181349"/>
+      <unit id="org.eclipse.papyrus.infra.gmfdiag.feature.feature.group" version="1.0.2.v201502181349"/>
+      <unit id="org.eclipse.papyrus.uml.diagram.feature.feature.group" version="1.0.2.v201502181349"/>
+      <unit id="org.eclipse.uml2.uml" version="5.0.2.v20150202-0947"/>
       <unit id="org.eclipse.gmf.runtime.diagram.ui" version="1.8.0.201408201453"/>
-      <unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.6.1.v201409111852"/>
-      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.1.v201409111852"/>
-      <unit id="org.eclipse.pde.feature.group" version="3.10.0.v20140925-0400"/>
-      <unit id="org.eclipse.jdt" version="3.10.0.v20140925-0400"/>
-      <unit id="org.eclipse.team.svn.feature.group" version="2.0.1.I20140907-1700"/>
+      <unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.6.3.v201501211904"/>
+      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.6.3.v201501292352"/>
+      <unit id="org.eclipse.pde.feature.group" version="3.10.1.v20150204-1700"/>
+      <unit id="org.eclipse.jdt" version="3.10.1.v20150204-1700"/>
+      <unit id="org.eclipse.team.svn.feature.group" version="2.0.4.I20150123-1700"/>
       <repository location="http://download.eclipse.org/releases/luna/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
@@ -27,6 +27,10 @@
       <unit id="org.mockito" version="1.9.5.v201311280930"/>
       <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
       <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.9.9.201503111318"/>
+      <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
     </location>
   </locations>
 </target>

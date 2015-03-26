@@ -36,3 +36,8 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2014052502125
 	org.mockito [1.9.5,2.0.0)
 	org.hamcrest [1.1.0,2.0.0)
 }
+
+location "http://download.eclipse.org/technology/nebula/snapshot" {
+	// charting module
+	org.eclipse.nebula.visualization.feature.feature.group
+}
