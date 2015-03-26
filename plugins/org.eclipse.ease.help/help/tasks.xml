@@ -3,9 +3,6 @@
 
 <toc label="Tasks" link_to="help/main.xml#tasks"> 
 	<topic label="Launching Scripts"  href="html/tasks/maintopic.html"> 
-		<topic label="Headless" href="html/tasks/subtopic.html" /> 
+		<topic label="Headless" href="help/html/tasks/launch_headless.html" /> 
 	</topic>
-	<topic label="Main Topic 2">
-		<topic label="Sub Topic 2" href="html/tasks/subtopic2.html" /> 
-	</topic> 
 </toc>
