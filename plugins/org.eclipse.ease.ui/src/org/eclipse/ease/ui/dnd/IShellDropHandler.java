@@ -21,11 +21,13 @@ public interface IShellDropHandler {
 	/**
 	 * Verify that object can be handled.
 	 *
+	 * @param scriptEngine
+	 *            script engine to execute drop action
 	 * @param element
 	 *            element to be dropped
 	 * @return <code>true</code> when element can be handled
 	 */
-	boolean accepts(Object element);
+	boolean accepts(IScriptEngine scriptEngine, Object element);
 
 	/**
 	 * Perform the drop action.

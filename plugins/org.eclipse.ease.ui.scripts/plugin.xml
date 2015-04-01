@@ -146,7 +146,7 @@
             priority="20">
       </dropin>
       <dropHandler
-            class="org.eclipse.ease.ui.scripts.ui.ShellDropHandler">
+            class="org.eclipse.ease.ui.scripts.ui.ScriptDropHandler">
       </dropHandler>
    </extension>
    <extension

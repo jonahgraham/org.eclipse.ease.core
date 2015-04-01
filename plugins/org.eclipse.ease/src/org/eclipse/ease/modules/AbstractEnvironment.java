@@ -22,7 +22,6 @@ import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
-import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ui.PlatformUI;
 
 public abstract class AbstractEnvironment extends AbstractScriptModule implements IEnvironment {
@@ -204,7 +203,12 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 			((IModuleListener) listener).notifyModule(module, type);
 	}
 
-	private Object resolveFile(final String filename) {
-		return ResourceTools.resolveFile(filename, getScriptEngine().getExecutedFile(), true);
+	public static IEnvironment getEnvironment(IScriptEngine engine) {
+		for (final Object variable : engine.getVariables().values()) {
+			if (variable instanceof IEnvironment)
+				return (IEnvironment) variable;
+		}
+
+		return null;
 	}
 }

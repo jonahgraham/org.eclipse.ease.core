@@ -10,13 +10,12 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.dnd;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.Logger;
@@ -32,8 +31,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * DND support for JavaScript shell. DND of plain text, files, resources and
- * IDevices is supported.
+ * DND support for JavaScript shell. DND of plain text, files, resources and IDevices is supported.
  */
 public final class ShellDropTarget extends DropTargetAdapter {
 
@@ -42,19 +40,18 @@ public final class ShellDropTarget extends DropTargetAdapter {
 	private static final String PARAMETER_CLASS = "class";
 
 	private static Collection<IShellDropHandler> getDropTargetListeners() {
-		Collection<IShellDropHandler> listeners = new HashSet<IShellDropHandler>();
+		final Collection<IShellDropHandler> listeners = new HashSet<IShellDropHandler>();
 
-		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
-				EXTENSION_DROP_HANDLER_ID);
+		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_DROP_HANDLER_ID);
 		for (final IConfigurationElement e : config) {
 			if (e.getName().equals(DROP_HANDLER)) {
 				// drop listener
 				try {
-					Object executable = e.createExecutableExtension(PARAMETER_CLASS);
+					final Object executable = e.createExecutableExtension(PARAMETER_CLASS);
 					if (executable instanceof IShellDropHandler)
 						listeners.add((IShellDropHandler) executable);
 
-				} catch (CoreException e1) {
+				} catch (final CoreException e1) {
 					Logger.logError("Invalid drop taret listener detected", e1);
 				}
 			}
@@ -69,8 +66,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 	private final IScriptEngineProvider fScriptEngineProvider;
 
 	/**
-	 * Add drop support for various objects. A drop will always be interpreted
-	 * as <i>copy</i>, even if <i>move</i> was requested.
+	 * Add drop support for various objects. A drop will always be interpreted as <i>copy</i>, even if <i>move</i> was requested.
 	 *
 	 * @param parent
 	 *            control accepting drops
@@ -79,8 +75,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 	 */
 	public static void addDropSupport(final Control parent, final IScriptEngineProvider engineProvider) {
 		final DropTarget target = new DropTarget(parent, DND.DROP_COPY | DND.DROP_MOVE);
-		target.setTransfer(new Transfer[] { FileTransfer.getInstance(), TextTransfer.getInstance(),
-				LocalSelectionTransfer.getTransfer() });
+		target.setTransfer(new Transfer[] { FileTransfer.getInstance(), TextTransfer.getInstance(), LocalSelectionTransfer.getTransfer() });
 		target.addDropListener(new ShellDropTarget(engineProvider));
 	}
 
@@ -106,11 +101,48 @@ public final class ShellDropTarget extends DropTargetAdapter {
 
 	@Override
 	public void drop(final DropTargetEvent event) {
-		Object element = event.data;
+
+		final Object element = unpackElement(event.data);
+
+		// first ask registered drop handlers
+		final Collection<IShellDropHandler> listeners = getDropTargetListeners();
+		if (!listeners.isEmpty()) {
+
+			// 1st pass: try to unpack dropped element and pass it to drop handler
+			for (final IShellDropHandler listener : listeners) {
+				if (listener.accepts(fScriptEngineProvider.getScriptEngine(), element)) {
+					listener.performDrop(fScriptEngineProvider.getScriptEngine(), element);
+					return;
+				}
+			}
+
+			// 2nd pass: no listener found for unwrapped object, try with original object
+			for (final IShellDropHandler listener : listeners) {
+				if (listener.accepts(fScriptEngineProvider.getScriptEngine(), event.data)) {
+					listener.performDrop(fScriptEngineProvider.getScriptEngine(), event.data);
+					return;
+				}
+			}
+		}
+
+		// no drop processor found, try generic approaches
+		fScriptEngineProvider.getScriptEngine().executeAsync(element);
+	}
+
+	private Object unpackElement(Object element) {
+		// look for file system files
+		if (element instanceof String[]) {
+			// drop of external files (eg. from explorer)
+			final File[] files = new File[((String[]) element).length];
+			for (int i = 0; i < files.length; i++)
+				files[i] = new File(((String[]) element)[i]);
+
+			element = files;
+		}
 
 		// unpack selections
 		if (element instanceof IStructuredSelection)
-			element = ((IStructuredSelection) event.data).toArray();
+			element = ((IStructuredSelection) element).toArray();
 
 		// unpack arrays with a single element
 		if ((element instanceof Object[]) && (((Object[]) element).length == 1))
@@ -120,54 +152,6 @@ public final class ShellDropTarget extends DropTargetAdapter {
 		if ((element instanceof Collection<?>) && (((Collection<?>) element).size() == 1))
 			element = ((Collection<?>) element).iterator().next();
 
-		// first ask registered drop handlers
-		Collection<IShellDropHandler> listeners = getDropTargetListeners();
-		if (!listeners.isEmpty()) {
-			for (IShellDropHandler listener : listeners) {
-				if (listener.accepts(element)) {
-					listener.performDrop(fScriptEngineProvider.getScriptEngine(), element);
-					return;
-				}
-			}
-		}
-
-		// no drop processor found, try generic approaches
-		if (element instanceof IResource[]) {
-			// drop of IResources
-			for (final IResource resource : (IResource[]) element)
-				execute(resource);
-
-		} else if (element instanceof String[]) {
-			// drop of external files (eg. from explorer)
-			for (final String path : (String[]) element)
-				fScriptEngineProvider.getScriptEngine().executeAsync(
-						"include('file:/" + new Path(path).toString() + "');");
-
-		} else if (element instanceof String) {
-			// drop of plain (multiline) text
-			execute(element);
-
-		} else if (element instanceof Object[]) {
-			// drop of generic things
-			for (final Object object : (Object[]) element)
-				execute(object);
-
-		} else if (element instanceof IStructuredSelection) {
-			for (Object arrayElement : ((IStructuredSelection) element).toArray())
-				execute(arrayElement);
-
-		} else if (element instanceof Object)
-			// don't think this happens as even single objects are dropped as
-			// Object[]
-			execute(element);
-	}
-
-	private void execute(final Object element) {
-		if (element instanceof IResource)
-			fScriptEngineProvider.getScriptEngine().executeAsync(
-					"include('workspace:/" + ((IResource) element).getFullPath().toString() + "');");
-
-		else
-			fScriptEngineProvider.getScriptEngine().executeAsync(element);
+		return element;
 	}
 }
