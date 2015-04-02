@@ -420,7 +420,8 @@
             priority="10">
       </dropin>
       <dropHandler
-            class="org.eclipse.ease.ui.dnd.ResourceDropHandler">
+            class="org.eclipse.ease.ui.dnd.ResourceDropHandler"
+            priority="10">
       </dropHandler>
    </extension>
 </plugin>

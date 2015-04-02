@@ -11,8 +11,12 @@
 package org.eclipse.ease.ui.dnd;
 
 import java.io.File;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -38,18 +42,29 @@ public final class ShellDropTarget extends DropTargetAdapter {
 	private static final String EXTENSION_DROP_HANDLER_ID = "org.eclipse.ease.ui.shell";
 	private static final String DROP_HANDLER = "dropHandler";
 	private static final String PARAMETER_CLASS = "class";
+	protected static final String ATTRIBUTE_PRIORITY = "priority";
 
 	private static Collection<IShellDropHandler> getDropTargetListeners() {
-		final Collection<IShellDropHandler> listeners = new HashSet<IShellDropHandler>();
+
+		final List<AbstractMap.SimpleEntry<Integer, IShellDropHandler>> candidates = new ArrayList<AbstractMap.SimpleEntry<Integer, IShellDropHandler>>();
 
 		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_DROP_HANDLER_ID);
 		for (final IConfigurationElement e : config) {
 			if (e.getName().equals(DROP_HANDLER)) {
-				// drop listener
+				// drop handler
+				// candidates.add(e);
 				try {
 					final Object executable = e.createExecutableExtension(PARAMETER_CLASS);
-					if (executable instanceof IShellDropHandler)
-						listeners.add((IShellDropHandler) executable);
+					if (executable instanceof IShellDropHandler) {
+						int priority = 0;
+						try {
+							priority = Integer.parseInt(e.getAttribute(ATTRIBUTE_PRIORITY));
+						} catch (final NumberFormatException e1) {
+						} catch (final NullPointerException e1) {
+						}
+
+						candidates.add(new AbstractMap.SimpleEntry<Integer, IShellDropHandler>(priority, (IShellDropHandler) executable));
+					}
 
 				} catch (final CoreException e1) {
 					Logger.logError("Invalid drop taret listener detected", e1);
@@ -57,7 +72,20 @@ public final class ShellDropTarget extends DropTargetAdapter {
 			}
 		}
 
-		return listeners;
+		// sort handler by priority
+		Collections.sort(candidates, new Comparator<AbstractMap.SimpleEntry<Integer, IShellDropHandler>>() {
+
+			@Override
+			public int compare(AbstractMap.SimpleEntry<Integer, IShellDropHandler> e1, AbstractMap.SimpleEntry<Integer, IShellDropHandler> e2) {
+				return e2.getKey() - e1.getKey();
+			}
+		});
+
+		final Collection<IShellDropHandler> handler = new ArrayList<IShellDropHandler>(candidates.size());
+		for (final AbstractMap.SimpleEntry<Integer, IShellDropHandler> candidate : candidates)
+			handler.add(candidate.getValue());
+
+		return handler;
 	}
 
 	/**
@@ -108,19 +136,19 @@ public final class ShellDropTarget extends DropTargetAdapter {
 		final Collection<IShellDropHandler> listeners = getDropTargetListeners();
 		if (!listeners.isEmpty()) {
 
-			// 1st pass: try to unpack dropped element and pass it to drop handler
 			for (final IShellDropHandler listener : listeners) {
+				// 1st pass: try to drop unpacked dropped element and pass it to drop handler
 				if (listener.accepts(fScriptEngineProvider.getScriptEngine(), element)) {
 					listener.performDrop(fScriptEngineProvider.getScriptEngine(), element);
 					return;
 				}
-			}
 
-			// 2nd pass: no listener found for unwrapped object, try with original object
-			for (final IShellDropHandler listener : listeners) {
-				if (listener.accepts(fScriptEngineProvider.getScriptEngine(), event.data)) {
-					listener.performDrop(fScriptEngineProvider.getScriptEngine(), event.data);
-					return;
+				if (!event.data.equals(element)) {
+					// 2nd pass: no listener found for unwrapped object, try with original object
+					if (listener.accepts(fScriptEngineProvider.getScriptEngine(), event.data)) {
+						listener.performDrop(fScriptEngineProvider.getScriptEngine(), event.data);
+						return;
+					}
 				}
 			}
 		}

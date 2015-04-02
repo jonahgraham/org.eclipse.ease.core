@@ -65,6 +65,13 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="priority" type="string">
+            <annotation>
+               <documentation>
+                  Priority of this drop-in. The higher the number (integer) the higher the priority.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
