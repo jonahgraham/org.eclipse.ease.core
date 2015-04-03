@@ -49,17 +49,6 @@
 												-link
 												http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
 											</additionalArgument>
-											<additionalArgument>
-												-J-Dhttp.proxyHost=proxy.eclipse.org
-												-J-Dhttp.proxyPort=9898
-												-J-Dhttps.proxyHost=proxy.eclipse.org
-												-J-Dhttps.proxyPort=9898
-												-J-DhttpnonProxyHosts=*.eclipse.org
-												-J-DhttpsnonProxyHosts=*.eclipse.org
-												-J-Dftp.proxyHost=proxy.eclipse.org
-												-J-Dftp.proxyPort=9898
-												-J-DftpnonProxyHosts=*.eclipse.org"
-											</additionalArgument>
 											<additionalArgument>-public</additionalArgument>
 										</additionalArguments>
 									</javadocOptions>
