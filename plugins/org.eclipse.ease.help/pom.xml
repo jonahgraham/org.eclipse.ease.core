@@ -42,14 +42,12 @@
 										<additionalArguments>
 											<additionalArgument>${javadoc-args}</additionalArgument>
 											<additionalArgument>
-												-linkoffline
+												-link
 												http://docs.oracle.com/javase/8/docs/api/
-												${project.basedir}/package-lists/java8/
 											</additionalArgument>
 											<additionalArgument>
-												-linkoffline
-												../../${platform-isv}
-												${project.basedir}/package-lists/eclipse-luna/
+												-link
+												http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
 											</additionalArgument>
 											<additionalArgument>-public</additionalArgument>
 										</additionalArguments>
