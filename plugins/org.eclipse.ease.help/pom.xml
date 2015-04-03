@@ -11,7 +11,7 @@
 	</parent>
 
 	<properties>
-		<platform-isv>org.eclipse.platform.doc.isv/reference/api</platform-isv>
+		<platform.api>org.eclipse.platform.doc.isv/reference/api</platform.api>
 	</properties>
 
 	<profiles>
@@ -48,10 +48,9 @@
 											</additionalArgument>
 											<additionalArgument>
 												-linkoffline
-												../../${platform-isv}
-												${project.basedir}/package-lists/eclipse-luna/
+												../../${platform.api}
+												http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
 											</additionalArgument>
-
 											<additionalArgument>-public</additionalArgument>
 										</additionalArguments>
 									</javadocOptions>
