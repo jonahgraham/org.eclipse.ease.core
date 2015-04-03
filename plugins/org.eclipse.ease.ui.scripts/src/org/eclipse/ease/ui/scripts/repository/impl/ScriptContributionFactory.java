@@ -11,6 +11,8 @@
 package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.ease.ui.scripts.repository.IScript;
@@ -58,7 +60,7 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 		}
 
 		if (getLocation().endsWith(UIIntegrationJob.POPUP_LOCATION)) {
-			for (IScript script : fScripts)
+			for (IScript script : sortScripts(fScripts))
 				additions.addContributionItem(new ScriptContributionItem(script, script.getParameters().get("popup")), null);
 
 		} else {
@@ -77,5 +79,17 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 
 	public void setAffectedContribution(final IContributionManager manager) {
 		fContributionManager = manager;
+	}
+
+	private static List<IScript> sortScripts(final List<IScript> scripts) {
+		Collections.sort(scripts, new Comparator<IScript>() {
+
+			@Override
+			public int compare(final IScript s1, final IScript s2) {
+				return s1.getName().compareToIgnoreCase(s2.getName());
+			}
+		});
+
+		return scripts;
 	}
 }
