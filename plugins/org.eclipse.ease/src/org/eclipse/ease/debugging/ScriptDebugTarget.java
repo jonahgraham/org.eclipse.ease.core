@@ -181,6 +181,9 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 			fireTerminateEvent();
 			for (final ScriptDebugThread thread : getThreads())
 				thread.setTerminated();
+
+			// allow for garbage collection
+			fDispatcher = null;
 		}
 	}
 

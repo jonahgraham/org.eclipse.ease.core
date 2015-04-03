@@ -130,6 +130,7 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 			// allow for garbage collection
 			fEngine.removeExecutionListener(this);
 			fEngine = null;
+			fDispatcher = null;
 			break;
 
 		case SCRIPT_START:

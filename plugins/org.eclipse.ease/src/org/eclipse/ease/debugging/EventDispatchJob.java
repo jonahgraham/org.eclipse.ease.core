@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ease.debugging.events.EngineTerminatedEvent;
 import org.eclipse.ease.debugging.events.IDebugEvent;
 import org.eclipse.ease.debugging.events.IDebuggerEvent;
 import org.eclipse.ease.debugging.events.IModelRequest;
@@ -25,13 +26,17 @@ public class EventDispatchJob extends Job {
 
 	private static final boolean DEBUG = true;
 
+	/** Cached events. */
 	private final List<IDebugEvent> fEvents = new ArrayList<IDebugEvent>();
 
+	/** Flag indicating this job shall be terminated. */
 	private boolean fTerminated = false;
 
-	private final IEventProcessor fHost;
+	/** Debug host. */
+	private IEventProcessor fHost;
 
-	private final IEventProcessor fDebugger;
+	/** Debug engine. */
+	private IEventProcessor fDebugger;
 
 	public EventDispatchJob(final IEventProcessor host, final IEventProcessor debugger) {
 		super(debugger + " event dispatcher");
@@ -45,17 +50,6 @@ public class EventDispatchJob extends Job {
 	public void addEvent(final IDebugEvent event) {
 		synchronized (fEvents) {
 			if (!fEvents.contains(event)) {
-				// TODO use tracing for these sysouts
-				// DEBUG print events
-				if (DEBUG) {
-					if (event instanceof IDebuggerEvent)
-						System.out.println("Debugger ---> " + event);
-
-					else if (event instanceof IModelRequest)
-						System.out.println("Target   ---> " + event);
-				}
-				// end DEBUG
-
 				fEvents.add(event);
 				fEvents.notifyAll();
 			}
@@ -81,17 +75,24 @@ public class EventDispatchJob extends Job {
 			} else
 				terminate();
 
-			// wait for new events
-			// do this after handling events as we might get terminated during wait()
-			synchronized (fEvents) {
-				if (fEvents.isEmpty()) {
-					try {
-						fEvents.wait();
-					} catch (final InterruptedException e) {
+			if (!fTerminated) {
+				// wait for new events
+				// do this after handling events as we might get terminated during wait()
+				synchronized (fEvents) {
+					if (fEvents.isEmpty()) {
+						try {
+							fEvents.wait();
+						} catch (final InterruptedException e) {
+						}
 					}
 				}
 			}
 		}
+
+		// allow for garbage collection
+		fHost = null;
+		fDebugger = null;
+		fEvents.clear();
 
 		return Status.OK_STATUS;
 	}
@@ -102,10 +103,10 @@ public class EventDispatchJob extends Job {
 		// DEBUG print events
 		if (DEBUG) {
 			if (event instanceof IDebuggerEvent)
-				System.out.println("\t\t! Target  : " + event);
+				System.out.println("\t!E>D Engine  : " + event);
 
 			else if (event instanceof IModelRequest)
-				System.out.println("\t\t! Debugger: " + event);
+				System.out.println("\t!E<D Debugger: " + event);
 		}
 		// end DEBUG
 
@@ -118,6 +119,10 @@ public class EventDispatchJob extends Job {
 
 		else
 			throw new RuntimeException("Unknown event detected: " + event);
+
+		// if engine terminates there is no need for further event processing
+		if (event instanceof EngineTerminatedEvent)
+			terminate();
 	}
 
 	public void terminate() {
