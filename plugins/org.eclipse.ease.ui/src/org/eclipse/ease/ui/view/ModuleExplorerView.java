@@ -33,6 +33,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -48,6 +50,8 @@ import org.eclipse.ui.progress.UIJob;
 public class ModuleExplorerView extends ViewPart implements IPreferenceChangeListener {
 
 	public static final String VIEW_ID = "org.eclipse.ease.ui.views.modulesExplorer"; //$NON-NLS-1$
+
+	private static final String SEARCH_DEFAULT_TEXT = "<search modules>";
 
 	/**
 	 * Job to update the tree filter settings. Decoupled to trigger after some delay.
@@ -155,7 +159,7 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 	}
 
 	private ModulesComposite fModulesComposite;
-	private Text ftext;
+	private Text txtSearch;
 
 	private UpdateTreeJob fUpdateJob = null;
 
@@ -173,16 +177,35 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 		gl_parent.horizontalSpacing = 0;
 		parent.setLayout(gl_parent);
 
-		ftext = new Text(parent, SWT.BORDER);
-		ftext.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		ftext.addKeyListener(new KeyAdapter() {
+		txtSearch = new Text(parent, SWT.BORDER);
+		txtSearch.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtSearch.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyReleased(final KeyEvent e) {
 				if (fUpdateJob == null)
 					fUpdateJob = new UpdateTreeJob();
 
-				fUpdateJob.update(ftext.getText().toLowerCase());
+				fUpdateJob.update(txtSearch.getText().toLowerCase());
+			}
+		});
+		txtSearch.setText(SEARCH_DEFAULT_TEXT);
+		txtSearch.addFocusListener(new FocusAdapter() {
+
+			@Override
+			public void focusGained(final FocusEvent e) {
+				super.focusGained(e);
+
+				if (SEARCH_DEFAULT_TEXT.equals(txtSearch.getText()))
+					txtSearch.setText("");
+			}
+
+			@Override
+			public void focusLost(final FocusEvent e) {
+				if (txtSearch.getText().isEmpty())
+					txtSearch.setText(SEARCH_DEFAULT_TEXT);
+
+				super.focusLost(e);
 			}
 		});
 
