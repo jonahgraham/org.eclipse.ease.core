@@ -158,15 +158,15 @@ public final class ResourceTools {
 				final IProject project = ((IResource) parent).getProject();
 				if (project != null) {
 					if (isFolder)
-						return project.getFolder(new Path(reference.substring(PROJECT_SCHEME.length() + 3)));
+						return project.getFolder(new Path(reference.substring(PROJECT_SCHEME.length() + 2)));
 					else
-						return project.getFile(new Path(reference.substring(PROJECT_SCHEME.length() + 3)));
+						return project.getFile(new Path(reference.substring(PROJECT_SCHEME.length() + 2)));
 				}
 			}
 
 		} else if (reference.startsWith(WorkspaceURLConnection.SCHEME)) {
 			// workspace absolute link
-			final Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 3));
+			final Path path = new Path(reference.substring(WorkspaceURLConnection.SCHEME.length() + 2));
 			if (isFolder) {
 				if (path.segmentCount() > 1)
 					return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);

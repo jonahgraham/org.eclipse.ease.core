@@ -105,6 +105,16 @@ public class ResourceToolsTest {
 	}
 
 	@Test
+	public void resolveURIWithOneSlash() {
+		// use a single slash after scheme, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=463790
+		assertEquals(fFile, ResourceTools.resolveFile(URI.create("workspace:/" + PROJECT_NAME + "/" + FOLDER_NAME + "/" + FILE_NAME), null, true));
+		assertEquals(fFile, ResourceTools.resolveFile("workspace:/" + PROJECT_NAME + "/" + FOLDER_NAME + "/" + FILE_NAME, null, true));
+
+		assertEquals(fFile, ResourceTools.resolveFile(URI.create("project:/" + FOLDER_NAME + "/" + FILE_NAME), fFolder, true));
+		assertEquals(fFile, ResourceTools.resolveFile("project:/" + FOLDER_NAME + "/" + FILE_NAME, fFolder, true));
+	}
+
+	@Test
 	public void resolveFileByReference() {
 		// absolute workspace
 		assertEquals(fFile, ResourceTools.resolveFile(fFile, null, true));
