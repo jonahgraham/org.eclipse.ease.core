@@ -35,9 +35,9 @@
 											<url>${project.build.directory}/repository</url>
 										</repository>
 									</source>
-									<append>true</append>
-									<latestVersionOnly>false</latestVersionOnly>
-									<destination>${DESTINATION}</destination>
+									<append>${p2.append}</append>
+									<latestVersionOnly>${p2.keepLatestOnly}</latestVersionOnly>
+									<destination>${p2.destination}</destination>
 								</configuration>
 							</execution>
 						</executions>
