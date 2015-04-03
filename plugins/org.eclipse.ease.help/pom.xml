@@ -39,8 +39,8 @@
 										<mainLabel>EASE Core API</mainLabel>
 									</tocOptions>
 									<javadocOptions>
+										<executable>/opt/public/common/jdk1.6.0_45/jre/../bin/javadoc -Dhttp.proxySet=true</executable>
 										<jvmOptions>
-											<jvmOption>-Dhttp.proxySet=true</jvmOption>
 											<jvmOption>-Dhttp.proxyHost=proxy.eclipse.org</jvmOption>
 											<jvmOption>-Dhttp.proxyPort=9898</jvmOption>
 											<jvmOption>-DhttpnonProxyHosts=*.eclipse.org</jvmOption>
