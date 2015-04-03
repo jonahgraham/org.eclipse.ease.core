@@ -39,22 +39,19 @@
 										<mainLabel>EASE Core API</mainLabel>
 									</tocOptions>
 									<javadocOptions>
-										<executable>/opt/public/common/jdk1.6.0_45/jre/../bin/javadoc -Dhttp.proxySet=true</executable>
-										<jvmOptions>
-											<jvmOption>-Dhttp.proxyHost=proxy.eclipse.org</jvmOption>
-											<jvmOption>-Dhttp.proxyPort=9898</jvmOption>
-											<jvmOption>-DhttpnonProxyHosts=*.eclipse.org</jvmOption>
-										</jvmOptions>
 										<additionalArguments>
 											<additionalArgument>${javadoc-args}</additionalArgument>
 											<additionalArgument>
-												-link
+												-linkoffline
 												http://docs.oracle.com/javase/8/docs/api/
+												${project.basedir}/package-lists/java8/
 											</additionalArgument>
 											<additionalArgument>
-												-link
-												http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
+												-linkoffline
+												../../${platform-isv}
+												${project.basedir}/package-lists/eclipse-luna/
 											</additionalArgument>
+
 											<additionalArgument>-public</additionalArgument>
 										</additionalArguments>
 									</javadocOptions>
