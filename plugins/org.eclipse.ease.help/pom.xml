@@ -36,9 +36,15 @@
 									<outputDirectory>${project.basedir}/help/api-docs/javadoc</outputDirectory>
 									<tocFile>${project.basedir}/help/api_docs.xml</tocFile>
 									<tocOptions>
-										<mainLabel>Core API</mainLabel>
+										<mainLabel>EASE Core API</mainLabel>
 									</tocOptions>
 									<javadocOptions>
+										<jvmOptions>
+											<jvmOption>-Dhttp.proxySet=true</jvmOption>
+											<jvmOption>-Dhttp.proxyHost=proxy.eclipse.org</jvmOption>
+											<jvmOption>-Dhttp.proxyPort=9898</jvmOption>
+											<jvmOption>-DhttpnonProxyHosts=*.eclipse.org</jvmOption>
+										</jvmOptions>
 										<additionalArguments>
 											<additionalArgument>${javadoc-args}</additionalArgument>
 											<additionalArgument>
