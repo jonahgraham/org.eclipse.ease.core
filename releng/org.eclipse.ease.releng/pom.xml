@@ -18,7 +18,7 @@
 
 		<!-- build parameters -->
 		<compiler.compliance>1.6</compiler.compliance>
-		<jacoco.report.path>../../../coverage-report/jacoco.exec</jacoco.report.path>
+		<jacoco.report.path>../coverage-report/jacoco.exec</jacoco.report.path>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -100,7 +100,7 @@
 					<jgit.ignore>
 						pom.xml
 					</jgit.ignore>
-					<format>${build-prefix}yyyyMMddHHmm</format>
+					<format>'${build-prefix}'yyyyMMddHHmm</format>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -150,11 +150,13 @@
 			</activation>
 
 			<properties>
-				<build-prefix>'I'</build-prefix>
+				<build-prefix>I</build-prefix>
 			</properties>
 		</profile>
 
 		<profile>
+			<!-- build help pages for modules using javadoc. Needs variable doclet.path 
+				to be set to the location of the ModuleDoclet bin folder -->
 			<id>module-docs</id>
 
 			<build>
@@ -169,7 +171,12 @@
 							<outputDirectory>${project.build.directory}/../mydocs</outputDirectory>
 							<doclet>org.eclipse.ease.helpgenerator.ModuleDoclet</doclet>
 							<docletPath>../../../../../developers/org.eclipse.ease.helpgenerator/bin</docletPath>
-							<additionalparam>-root ${basedir} -linkOffline http://docs.oracle.com/javase/8/docs/api ${basedir}/../org.eclipse.ease.help/package-lists/java8 -linkOffline /help/topic/org.eclipse.platform.doc.isv/reference/api ${basedir}/../org.eclipse.ease.help/package-lists/eclipse-luna</additionalparam>
+							<additionalparam>-root ${basedir} -linkOffline
+								http://docs.oracle.com/javase/8/docs/api
+								${basedir}/../org.eclipse.ease.help/package-lists/java8
+								-linkOffline
+								/help/topic/org.eclipse.platform.doc.isv/reference/api
+								${basedir}/../org.eclipse.ease.help/package-lists/eclipse-luna</additionalparam>
 							<useStandardDocletOptions>false</useStandardDocletOptions>
 						</configuration>
 						<executions>
@@ -214,6 +221,37 @@
 		</profile>
 
 		<profile>
+			<id>sonar</id>
+
+			<build>
+				<plugins>
+					<!-- enable JaCoCo code coverage -->
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco.version}</version>
+
+						<configuration>
+							<include>org.eclipse.ease.*</include>
+							<destFile>${jacoco.report.path}</destFile>
+							<output>file</output>
+							<append>true</append>
+						</configuration>
+
+						<executions>
+							<execution>
+								<id>jacoco-initialize</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
 			<id>test</id>
 			<modules>
 				<module>../../tests/org.eclipse.ease.test</module>
@@ -257,36 +295,6 @@
 			</build>
 		</profile>
 
-		<profile>
-			<id>sonar</id>
-
-			<build>
-				<plugins>
-					<!-- enable JaCoCo code coverage -->
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>${jacoco.version}</version>
-
-						<configuration>
-							<include>org.eclipse.ease.*</include>
-							<destFile>${jacoco.report.path}</destFile>
-							<output>file</output>
-							<append>true</append>
-						</configuration>
-
-						<executions>
-							<execution>
-								<id>jacoco-initialize</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 
 		<profile>
 			<id>sign</id>

@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.eclipse.ease.releng.p2</artifactId>
 	<packaging>eclipse-repository</packaging>
+
 	<parent>
 		<groupId>org.eclipse.ease</groupId>
 		<artifactId>org.eclipse.ease.releng</artifactId>
