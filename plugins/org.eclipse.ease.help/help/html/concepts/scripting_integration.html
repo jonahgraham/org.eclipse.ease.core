@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../../css/ease_help.css">
+<title>Scripting Integration</title>
+</head>
+
+<body>
+	<h1>Scripting Integration in Eclipse</h1>
+
+	<h2>Script Engines</h2>
+
+	<p>EASE script engines integrate
+	</p>
+	<ul>
+		<li>Choose <strong>Run &gt;Run As &gt;EASE Script</strong> from
+			the context menu of a file in the workspace.
+		</li>
+		<li>Choose <strong>Run &gt;Run As &gt;EASE Script</strong> from
+			the context menu of an open editor containg script code.
+		</li>
+		<li>Select <a class="command-link"
+			href="javascript:executeCommand(&quot;org.eclipse.debug.ui.commands.OpenRunConfigurations&quot;)"
+			shape="rect"> <img
+				alt="Opens the Run Launch Configurations dialog"
+				src="/help/topic/org.eclipse.help/command_link.png" /> <strong>Run
+					&gt; Run Configurations...</strong></a> or <a class="command-link"
+			href="javascript:executeCommand(&quot;org.eclipse.debug.ui.commands.OpenDebugConfigurations&quot;)"
+			shape="rect"> <img
+				alt="Opens the Debug Launch Configurations dialog"
+				src="/help/topic/org.eclipse.help/command_link.png" /> <strong>Run
+					&gt; Debug Configurations...</strong></a> from the workbench menu bar.
+		</li>
+	</ul>
+
+	<p>The first 2 methods will automatically create a launch
+		configuration and execute the script right away. In some cases, you
+		will want to adjust the launch parameters or specify additional
+		arguments. Therefore you have to choose the third option.</p>
+
+
+
+	<h3>How to create a launch configuration:</h3>
+	<ol>
+		<li>Select <a class="command-link"
+			href="javascript:executeCommand(&quot;org.eclipse.debug.ui.commands.OpenRunConfigurations&quot;)"
+			shape="rect"> <img
+				alt="Opens the Run Launch Configurations dialog"
+				src="/help/topic/org.eclipse.help/command_link.png" /> <strong>Run
+					&gt; Run Configurations...</strong></a> or <a class="command-link"
+			href="javascript:executeCommand(&quot;org.eclipse.debug.ui.commands.OpenDebugConfigurations&quot;)"
+			shape="rect"> <img
+				alt="Opens the Debug Launch Configurations dialog"
+				src="/help/topic/org.eclipse.help/command_link.png" /> <strong>Run
+					&gt; Debug Configurations...</strong></a> from the workbench menu bar.
+		</li>
+		<li>This opens a dialog that lets you create, modify, and delete
+			launch configurations of different types.</li>
+		<li>Select <strong>EASE Script</strong> in the left hand list of
+			launch configuration types, and press the <strong>New</strong> button
+			in the toolbar. This will create a new launch configuration for a
+			script. The tabs on the right hand side allow you control specific
+			aspects of the launch.
+		</li>
+	</ol>
+	<blockquote>
+		<ul>
+			<li>The <strong>Global</strong> tab defines the file to be
+				launched. Either select a workbench file or a system resource here.
+				After the file is selected you may change the <i>script engine</i>
+				to be used. <br /> <i>Script arguments</i> are passed to
+				the script directly as String[] named argv. Enter multiple arguments
+				by separating them with spaces.<br /> <br /> The debug options
+				allow to define which parts of the code get displayed and when to
+				stop execution by default.<br /> <i>Show dynamic script
+					content</i> allows to step into dynamically generated script code such
+				as module loading.<br /> <i>Suspend on startup</i> stops
+				execution in the first line of code.<br /> <i>Susped on
+					script load</i> additionally stops execution whenever a new source file
+				gets executed (such as includes and dynamic code).
+			</li>
+		</ul>
+		<p>
+			For other tabs see <a
+				href="/help/topic/org.eclipse.jdt.doc.user/tasks/tasks-java-local-configuration.htm">Java
+				Launch Configuration</a>.
+		</p>
+	</blockquote>
+
+	<h2>Executing within the Script Shell</h2>
+
+	<p>The script shell view allows to execute script file by using the
+		include command. You may either type it in or directly drag and drop
+		the file into the shell. As scripts are included, they are not spawned
+		as a separate thread and run in the context of th script shell view.
+		Therefore they have full access to the current variable stack. They
+		also will block the shell until execution is terminated.</p>
+
+	<h2>Executing scripts from Script Explorer</h2>
+
+	<p>Scripts fetched from script locations are visible within the
+		Script Explorer view. There they can be executed by a double click and
+		spawn as a separate thread, similar to an <strong>EASE Script</strong> launch configurations</p>
+</body>
+</html>

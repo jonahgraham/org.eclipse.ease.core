@@ -39,12 +39,17 @@
 										<mainLabel>EASE Core API</mainLabel>
 									</tocOptions>
 									<javadocOptions>
+										<jvmOptions>
+											<jvmOption>-Dhttp.proxySet=true</jvmOption>
+											<jvmOption>-Dhttp.proxyHost=proxy.eclipse.org</jvmOption>
+											<jvmOption>-Dhttp.proxyPort=9898</jvmOption>
+											<jvmOption>-DhttpnonProxyHosts=*.eclipse.org</jvmOption>
+										</jvmOptions>
 										<additionalArguments>
 											<additionalArgument>${javadoc-args}</additionalArgument>
 											<additionalArgument>
-												-linkoffline
+												-link
 												http://docs.oracle.com/javase/8/docs/api/
-												${project.basedir}/package-lists/java8/
 											</additionalArgument>
 											<additionalArgument>
 												-linkoffline
