@@ -10,13 +10,10 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.modules.ui;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.ui.tools.AbstractVirtualTreeProvider;
@@ -31,16 +28,6 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 
 	@Override
 	public Object getParent(final Object element) {
-
-		if (element instanceof IPath)
-			return ((IPath) element).removeLastSegments(1);
-		if (element instanceof ModuleDefinition)
-			return ((ModuleDefinition) element).getPath().removeLastSegments(1);
-		if (element instanceof Field)
-			return ModulesTools.getDeclaringModule((Field) element);
-		if (element instanceof Method)
-			return ModulesTools.getDeclaringModule((Method) element);
-
 		return null;
 	}
 
