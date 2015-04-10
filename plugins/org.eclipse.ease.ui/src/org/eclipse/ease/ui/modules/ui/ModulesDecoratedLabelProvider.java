@@ -10,14 +10,26 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.modules.ui;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.tools.DecoratedLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.swt.graphics.TextStyle;
 
 public class ModulesDecoratedLabelProvider extends DecoratedLabelProvider {
+
+	private final Styler fStrikeThroughStyler = new Styler() {
+
+		@Override
+		public void applyStyles(TextStyle textStyle) {
+			textStyle.strikeout = true;
+		}
+	};;
 
 	public ModulesDecoratedLabelProvider(final ILabelProvider commonLabelProvider) {
 		super(commonLabelProvider);
@@ -36,5 +48,24 @@ public class ModulesDecoratedLabelProvider extends DecoratedLabelProvider {
 			return ModulesTools.getSignature((Method) element, true);
 
 		return null;
+	}
+
+	@Override
+	protected StyledString getStyledText(Object element) {
+		final StyledString base = super.getStyledText(element);
+
+		if ((element instanceof AccessibleObject) && (isDeprecated((AccessibleObject) element)))
+			base.setStyle(0, base.length(), fStrikeThroughStyler);
+
+		else if (element instanceof ModuleDefinition) {
+			if (((ModuleDefinition) element).getModuleClass().getAnnotation(Deprecated.class) != null)
+				base.setStyle(0, base.length(), fStrikeThroughStyler);
+		}
+
+		return base;
+	}
+
+	private static boolean isDeprecated(AccessibleObject element) {
+		return element.getAnnotation(Deprecated.class) != null;
 	}
 }
