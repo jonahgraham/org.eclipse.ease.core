@@ -169,8 +169,43 @@ public class HTMLWriter {
 				// return value
 				addLine(buffer, createReturnValueArea(method));
 
+				// examples
+				addLine(buffer, createExampleArea(method));
+
 				addLine(buffer, "\t</div>");
 			}
+		}
+
+		return buffer;
+	}
+
+	private StringBuffer createExampleArea(MethodDoc method) {
+		final StringBuffer buffer = new StringBuffer();
+
+		final Tag[] tags = method.tags("scriptExample");
+		for (final Tag tag : tags) {
+			final String fullText = tag.text();
+
+			// extract end position of example code
+			int pos = fullText.indexOf('(');
+			if (pos > 0) {
+				int open = 1;
+				for (int index = pos + 1; index < fullText.length(); index++) {
+					if (fullText.charAt(index) == ')')
+						open--;
+					else if (fullText.charAt(index) == '(')
+						open++;
+
+					if (open == 0) {
+						pos = index + 1;
+						break;
+					}
+				}
+			}
+			final String codeText = (pos > 0) ? fullText.substring(0, pos) : fullText;
+			final String description = "<br />... " + ((pos > 0) ? fullText.substring(pos) : "");
+
+			addLine(buffer, "		<p class=\"example\"><em>Example:</em><code>" + codeText + "</code>" + description + "</p>");
 		}
 
 		return buffer;
@@ -180,7 +215,7 @@ public class HTMLWriter {
 		final StringBuffer buffer = new StringBuffer();
 
 		if (!"void".equals(method.returnType().qualifiedTypeName())) {
-			addText(buffer, "\t<p class=\"return\"><em>Returns:</em>");
+			addText(buffer, "		<p class=\"return\"><em>Returns:</em>");
 			addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz)));
 
 			final Tag[] tags = method.tags("return");

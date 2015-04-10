@@ -53,3 +53,13 @@ table.parameters  	{ margin-left: 30px; }
 .warning			{ background-image:url("../images/warning.png"); background-repeat: no-repeat;
 						padding-left: 30px;
 					}
+					
+.example  			{ margin-left: 130px;  }
+.example em  		{ font-weight: bold; font-style: normal; margin-right: 20px; margin-left: -100px; }
+
+.example code  		{ margin-right: 20px; padding: 8 15 8 15; margin-bottom: 10px; 
+						border: 1px solid #cccccc; border-radius: 5px;
+						background-color:  #f2f2f2;
+						display: inline-block;
+						min-width: 500px;
+					}
