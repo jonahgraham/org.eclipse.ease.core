@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationDesc.ElementValuePair;
@@ -25,11 +23,19 @@ public class HTMLWriter {
 		private final String fTitle;
 		private final String fLinkID;
 		private final String fDescription;
+		private final boolean fDeprecated;
+		private FieldDoc fField;
 
-		public Overview(final String title, final String linkID, final String description) {
+		public Overview(final String title, final String linkID, final String description, boolean deprecated) {
 			fTitle = title;
 			fLinkID = linkID;
 			fDescription = description;
+			fDeprecated = deprecated;
+		}
+
+		public Overview(final String title, final String linkID, final String description, boolean deprecated, FieldDoc field) {
+			this(title, linkID, description, deprecated);
+			fField = field;
 		}
 
 		@Override
@@ -60,6 +66,7 @@ public class HTMLWriter {
 
 		addLine(buffer, "<html>");
 		addLine(buffer, "<head>");
+		addLine(buffer, "	<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
 		addLine(buffer, "	<link rel=\"stylesheet\" type=\"text/css\" href=\"../../org.eclipse.ease.help/help/css/modules_reference.css\">");
 		addLine(buffer, "</head>");
 		addLine(buffer, "<body>");
@@ -132,13 +139,26 @@ public class HTMLWriter {
 		for (final MethodDoc method : methods) {
 			if (isExported(method)) {
 				// heading
-				addLine(buffer, "\t<h3><a id=\"" + method.name() + "\">" + method.name() + "</a></h3>");
+				addLine(buffer, "\t<h3" + (isDeprecated(method) ? " class=\"deprecatedText\"" : "") + "><a id=\"" + method.name() + "\">" + method.name()
+						+ "</a></h3>");
+				addText(buffer, "\t<div class=\"command");
+				if (isDeprecated(method))
+					addText(buffer, " deprecated");
+				addLine(buffer, "\">");
 
 				// synopsis
 				addLine(buffer, createSynopsis(method));
 
 				// main description
-				addLine(buffer, "\t<p class=\"description\">" + fLinkProvider.insertLinks(fClazz, method.commentText()) + "</p>");
+				addLine(buffer, "\t\t<p class=\"description\">" + fLinkProvider.insertLinks(fClazz, method.commentText()) + "</p>");
+
+				if (isDeprecated(method)) {
+					String deprecationText = method.tags("deprecated")[0].text();
+					if (deprecationText.isEmpty())
+						deprecationText = "This method is deprecated and might be removed in future versions.";
+
+					addLine(buffer, "\t\t<p class=\"warning\"><b>Deprecation warning:</b> " + fLinkProvider.insertLinks(fClazz, deprecationText) + "</p>");
+				}
 
 				// aliases
 				addLine(buffer, createAliases(method));
@@ -148,6 +168,8 @@ public class HTMLWriter {
 
 				// return value
 				addLine(buffer, createReturnValueArea(method));
+
+				addLine(buffer, "\t</div>");
 			}
 		}
 
@@ -178,19 +200,19 @@ public class HTMLWriter {
 
 		if (method.parameters().length > 0) {
 
-			addLine(buffer, "<table class=\"parameters\">");
-			addLine(buffer, "<tr>");
-			addLine(buffer, "	<th>Parameter</th>");
-			addLine(buffer, "	<th>Type</th>");
-			addLine(buffer, "	<th>Description</th>");
-			addLine(buffer, "</tr>");
+			addLine(buffer, "		<table class=\"parameters\">");
+			addLine(buffer, "			<tr>");
+			addLine(buffer, "				<th>Parameter</th>");
+			addLine(buffer, "				<th>Type</th>");
+			addLine(buffer, "				<th>Description</th>");
+			addLine(buffer, "			</tr>");
 
 			for (final Parameter parameter : method.parameters()) {
-				addLine(buffer, "\t\t<tr>");
-				addLine(buffer, "\t\t\t<td>" + parameter.name() + "</td>");
-				addLine(buffer, "\t\t\t<td>" + fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz))
+				addLine(buffer, "			<tr>");
+				addLine(buffer, "				<td>" + parameter.name() + "</td>");
+				addLine(buffer, "				<td>" + fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz))
 						+ "</td>");
-				addText(buffer, "\t\t\t<td>" + fLinkProvider.insertLinks(fClazz, findComment(method, parameter.name())));
+				addText(buffer, "				<td>" + fLinkProvider.insertLinks(fClazz, findComment(method, parameter.name())));
 
 				final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
 				if (parameterAnnotation != null) {
@@ -214,9 +236,9 @@ public class HTMLWriter {
 					addText(buffer, "</i>&gt;.");
 				}
 				addLine(buffer, "</td>");
-				addLine(buffer, "\t\t</tr>");
+				addLine(buffer, "			</tr>");
 			}
-			addLine(buffer, "\t</table>");
+			addLine(buffer, "		</table>");
 		}
 
 		return buffer;
@@ -227,7 +249,7 @@ public class HTMLWriter {
 
 		final Collection<String> aliases = getFunctionAliases(method);
 		if (!aliases.isEmpty()) {
-			addLine(buffer, "\t<p class=\"synonyms\">");
+			addLine(buffer, "		<p class=\"synonyms\">");
 
 			for (final String alias : aliases)
 				addText(buffer, alias + " ");
@@ -241,7 +263,7 @@ public class HTMLWriter {
 	private StringBuffer createSynopsis(final MethodDoc method) {
 		final StringBuffer buffer = new StringBuffer();
 
-		addText(buffer, "\t<p class=\"synopsis\">");
+		addText(buffer, "		<p class=\"synopsis\">");
 		addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz)));
 		addText(buffer, " ");
 		addText(buffer, method.name());
@@ -271,31 +293,40 @@ public class HTMLWriter {
 	private StringBuffer createOverviewSection() {
 		final StringBuffer buffer = new StringBuffer();
 
-		addLine(buffer, "\t<h2>Method Overview</h2>");
-		addLine(buffer, "\t<table class=\"functions\">");
-		addLine(buffer, "\t\t<tr>");
-		addLine(buffer, "\t\t\t<th>Method</th>");
-		addLine(buffer, "\t\t\t<th>Description</th>");
-		addLine(buffer, "\t\t</tr>");
+		addLine(buffer, "	<h2>Method Overview</h2>");
+		addLine(buffer, "	<table class=\"functions\">");
+		addLine(buffer, "		<tr>");
+		addLine(buffer, "			<th>Method</th>");
+		addLine(buffer, "			<th>Description</th>");
+		addLine(buffer, "		</tr>");
 
 		final List<Overview> overview = new ArrayList<Overview>();
 		for (final MethodDoc method : fClazz.methods()) {
 			if (isExported(method)) {
-				overview.add(new Overview(method.name(), method.name(), method.commentText()));
+				overview.add(new Overview(method.name(), method.name(), method.commentText(), isDeprecated(method)));
 				for (final String alias : getFunctionAliases(method))
-					overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>."));
+					overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>.",
+							isDeprecated(method)));
 			}
 		}
 		Collections.sort(overview);
 
 		for (final Overview entry : overview) {
-			addLine(buffer, "\t\t<tr>");
-			addLine(buffer, "\t\t\t<td><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
-			addLine(buffer, "\t\t\t<td>" + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription)) + "</td>");
-			addLine(buffer, "\t\t</tr>");
+			addLine(buffer, "		<tr>");
+			if (!entry.fDeprecated) {
+				addLine(buffer, "			<td><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
+				addLine(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription)) + "</td>");
+
+			} else {
+				addLine(buffer, "			<td class=\"deprecatedText\"><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
+				addLine(buffer,
+						"			<td class=\"deprecatedDescription\"><b>Deprecated:</b> " + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription))
+						+ "</td>");
+			}
+			addLine(buffer, "		</tr>");
 		}
 
-		addLine(buffer, "\t</table>");
+		addLine(buffer, "	</table>");
 		addLine(buffer, "");
 
 		return buffer;
@@ -303,29 +334,45 @@ public class HTMLWriter {
 
 	private StringBuffer createConstantsSection() {
 		final StringBuffer buffer = new StringBuffer();
-		final HashMap<String, String> constants = new HashMap<String, String>();
+		final List<Overview> constants = new ArrayList<Overview>();
 		for (final FieldDoc field : fClazz.fields()) {
 			if (isExported(field))
-				constants.put(field.name(), field.commentText());
+				constants.add(new Overview(field.name(), null, field.commentText(), isDeprecated(field), field));
 		}
 
 		if (!constants.isEmpty()) {
-			addLine(buffer, "");
-			addLine(buffer, "\t<h2>Constants</h2>");
-			addLine(buffer, "\t<table class=\"constants\">");
-			addLine(buffer, "\t\t<tr>");
-			addLine(buffer, "\t\t\t<th>Constant</th>");
-			addLine(buffer, "\t\t\t<th>Description</th>");
-			addLine(buffer, "\t\t</tr>");
+			Collections.sort(constants);
 
-			for (final Entry<String, String> entry : constants.entrySet()) {
+			addLine(buffer, "");
+			addLine(buffer, "	<h2>Constants</h2>");
+			addLine(buffer, "	<table class=\"constants\">");
+			addLine(buffer, "		<tr>");
+			addLine(buffer, "			<th>Constant</th>");
+			addLine(buffer, "			<th>Description</th>");
+			addLine(buffer, "		</tr>");
+
+			for (final Overview constant : constants) {
 				addLine(buffer, "\t\t<tr>");
-				addLine(buffer, "\t\t\t<td><a id=\"" + entry.getKey() + "\">" + entry.getKey() + "</a></td>");
-				addLine(buffer, "\t\t\t<td>" + entry.getValue() + "</td>");
-				addLine(buffer, "\t\t</tr>");
+
+				if (!constant.fDeprecated) {
+					addLine(buffer, "			<td><a id=\"" + constant.fTitle + "\">" + constant.fTitle + "</a></td>");
+					addLine(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, constant.fDescription) + "</td>");
+
+				} else {
+					addLine(buffer, "			<td><a id=\"" + constant.fTitle + "\" class=\"deprecatedText\">" + constant.fTitle + "</a></td>");
+					addText(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, constant.fDescription));
+					String deprecationText = constant.fField.tags("deprecated")[0].text();
+					if (deprecationText.isEmpty())
+						deprecationText = "This constant is deprecated and might be removed in future versions.";
+
+					addText(buffer, "				<div class=\"warning\"><b>Deprecation warning:</b> " + fLinkProvider.insertLinks(fClazz, deprecationText) + "</div>");
+					addLine(buffer, "</td>");
+				}
+
+				addLine(buffer, "		</tr>");
 			}
 
-			addLine(buffer, "\t</table>");
+			addLine(buffer, "	</table>");
 			addLine(buffer, "");
 		}
 
@@ -376,6 +423,16 @@ public class HTMLWriter {
 
 	private static boolean isExported(final MethodDoc method) {
 		return getWrapAnnotation(method) != null;
+	}
+
+	private static boolean isDeprecated(final MethodDoc method) {
+		final Tag[] tags = method.tags("deprecated");
+		return (tags != null) && (tags.length > 0);
+	}
+
+	private static boolean isDeprecated(final FieldDoc field) {
+		final Tag[] tags = field.tags("deprecated");
+		return (tags != null) && (tags.length > 0);
 	}
 
 	private static AnnotationDesc getWrapAnnotation(final MethodDoc method) {

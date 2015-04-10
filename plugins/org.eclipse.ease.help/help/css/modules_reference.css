@@ -34,12 +34,22 @@ ul.dependency		{ list-style-image:url(/help/topic/org.eclipse.ease.help/help/ima
 .dependency a		{ text-decoration: none; }
 .dependency a:hover	{ text-decoration: underline; }
 
-.description  		{ margin-left: 50px;  }
-.synopsis  			{ margin-left: 50px; font-style: normal; color: #660000; font-family: "Arial"; font-weight: bold}
-.synonyms  			{ margin-left: 50px;  }
+.command			{ margin-left: 50px; }
+.deprecated			{ background-color: #fbfbd5;
+						padding: 0px  0px 20px 20px;
+ 						border: 1px solid #f1d657; border-radius: 5px;
+					}
+.deprecatedText		{ text-decoration: line-through; }
 
-table.parameters  	{ margin-left: 80px; }
+.description  		{   }
+.synopsis  			{ font-style: normal; color: #660000; font-family: "Arial"; font-weight: bold}
+.synonyms  			{  }
 
-
-.return  			{ margin-left: 80px;  }
+table.parameters  	{ margin-left: 30px; }
+.return  			{ margin-left: 30px;  }
 .return em  		{ font-weight: bold; font-style: normal; margin-right: 20px; }
+
+
+.warning			{ background-image:url("../images/warning.png"); background-repeat: no-repeat;
+						padding-left: 30px;
+					}
