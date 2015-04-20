@@ -21,6 +21,9 @@
 		<jacoco.report.path>../../coverage-report/jacoco.exec</jacoco.report.path>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- help link to platform documentation -->
+		<platform.api>org.eclipse.platform.doc.isv/reference/api</platform.api>
 	</properties>
 
 
@@ -171,13 +174,20 @@
 							<outputDirectory>${project.build.directory}/../mydocs</outputDirectory>
 							<doclet>org.eclipse.ease.helpgenerator.ModuleDoclet</doclet>
 							<docletPath>../../../../../developers/org.eclipse.ease.helpgenerator/bin</docletPath>
-							<additionalparam>-root ${basedir} -linkOffline
-								http://docs.oracle.com/javase/8/docs/api
-								${basedir}/../org.eclipse.ease.help/package-lists/java8
-								-linkOffline
-								/help/topic/org.eclipse.platform.doc.isv/reference/api
-								${basedir}/../org.eclipse.ease.help/package-lists/eclipse-luna</additionalparam>
+							<additionalparam>-root ${basedir}
+								-link
+								http://docs.oracle.com/javase/8/docs/api/
+								-linkoffline
+								../../${platform.api}
+								http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
+							</additionalparam>
 							<useStandardDocletOptions>false</useStandardDocletOptions>
+							<additionalJOptions>
+								<additionalJOption>-J-Dhttp.proxySet=true</additionalJOption>
+								<additionalJOption>-J-Dhttp.proxyHost=proxy.eclipse.org</additionalJOption>
+								<additionalJOption>-J-Dhttp.proxyPort=9898</additionalJOption>
+								<additionalJOption>-J-DhttpnonProxyHosts=*.eclipse.org</additionalJOption>
+							</additionalJOptions>
 						</configuration>
 						<executions>
 							<execution>
@@ -250,7 +260,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>test</id>
 			<modules>
