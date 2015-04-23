@@ -38,36 +38,40 @@ import com.sun.javadoc.RootDoc;
 
 public class ModuleDoclet extends Doclet {
 
+	/**
+	 * Method to locally test this doclet. Not needed for productive use.
+	 */
 	public static void main(final String[] args) {
 
-		System.out.println(File.separator);
+		String repositoryRoot = new File(System.getProperty("user.dir")).getParentFile().getParent();
+
 		final String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
 				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
 				ModuleDoclet.class.getName(), "-docletpath",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
-
-				"-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8",
-
-				"-linkOffline", "../../platform/isv",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/eclipse-luna",
 
 				"org.eclipse.ease.modules.platform"
 
 		};
 		// com.sun.tools.javadoc.Main.execute(javadocargs);
 
-		final String[] javadocargs2 = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet", ModuleDoclet.class.getName(), "-docletpath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
-				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules", "-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
-		"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
+		final String[] javadocargs2 = { "-sourcepath", repositoryRoot + "/plugins/org.eclipse.ease/src",
 
-		// com.sun.tools.javadoc.Main.execute(javadocargs2);
+				"-root", repositoryRoot + "/plugins/org.eclipse.ease",
+
+				"-doclet", ModuleDoclet.class.getName(),
+
+				"-docletpath", repositoryRoot + "/developers/org.eclipse.ease.helpgenerator/bin",
+
+				"-link", "http://docs.oracle.com/javase/8/docs/api",
+				// "-linkOffline", "http://localhost", "http://docs.oracle.com/javase/8/docs/api",
+
+				"org.eclipse.ease.modules", "org.eclipse.ease" };
+
+		com.sun.tools.javadoc.Main.execute(javadocargs2);
 	}
 
 	private static final String OPTION_PROJECT_ROOT = "-root";
-	private static final String OPTION_DOCLETPATH = "-docletpath";
 	private static final Object OPTION_LINK = "-link";
 	private static final Object OPTION_LINK_OFFLINE = "-linkOffline";
 
@@ -113,7 +117,7 @@ public class ModuleDoclet extends Doclet {
 
 			else if (OPTION_LINK.equals(option[0])) {
 				try {
-					fLinkProvider.registerAddress(option[1], parsePackages(new URL(option[1]).openStream()));
+					fLinkProvider.registerAddress(option[1], parsePackages(new URL(option[1] + "/package-list").openStream()));
 				} catch (final MalformedURLException e) {
 					System.out.println("Error: cannot parse external URL " + option[1]);
 				} catch (final IOException e) {
@@ -124,7 +128,7 @@ public class ModuleDoclet extends Doclet {
 			} else if (OPTION_LINK_OFFLINE.equals(option[0])) {
 
 				try {
-					URL url = new URL(option[2] + File.separator + "package-list");
+					URL url = new URL(option[2] + "/package-list");
 					fLinkProvider.registerAddress(option[1], parsePackages(url.openStream()));
 
 				} catch (MalformedURLException e) {
