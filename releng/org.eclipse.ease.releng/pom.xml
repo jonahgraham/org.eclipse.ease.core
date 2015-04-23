@@ -22,8 +22,9 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- help link to platform documentation -->
+		<!-- help links to integrated help APIs -->
 		<platform.api>org.eclipse.platform.doc.isv/reference/api</platform.api>
+		<ease.api>org.eclipse.ease.help/help/api-docs/javadoc</ease.api>
 	</properties>
 
 
@@ -180,6 +181,9 @@
 								-linkOffline
 								../../${platform.api}
 								http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
+								-linkOffline
+								../../${ease.api}
+								https://hudson.eclipse.org/ease/job/ease-core-nightly/javadoc/
 							</additionalparam>
 							<useStandardDocletOptions>false</useStandardDocletOptions>
 						</configuration>
