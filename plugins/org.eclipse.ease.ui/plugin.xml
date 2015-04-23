@@ -187,7 +187,7 @@
                tooltip="Install EASE Additional Components">
             <parameter
                   name="org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter"
-                  value="http://topcased-mm.gforge.enseeiht.fr/ease_jython/updates/ease_jython_nightly/">
+                  value="https://dl.bintray.com/pontesegger/ease-jython/">
             </parameter>
          </command>
       </menuContribution>
