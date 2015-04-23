@@ -177,19 +177,11 @@
 							<additionalparam>-root ${basedir}
 								-link
 								http://docs.oracle.com/javase/8/docs/api/
-								-linkoffline
+								-linkOffline
 								../../${platform.api}
 								http://help.eclipse.org/luna/topic/org.eclipse.platform.doc.isv/reference/api/
 							</additionalparam>
 							<useStandardDocletOptions>false</useStandardDocletOptions>
-							<!-- 
-							<additionalJOptions>
-								<additionalJOption>-J-Dhttp.proxySet=true</additionalJOption>
-								<additionalJOption>-J-Dhttp.proxyHost=proxy.eclipse.org</additionalJOption>
-								<additionalJOption>-J-Dhttp.proxyPort=9898</additionalJOption>
-								<additionalJOption>-J-DhttpnonProxyHosts=*.eclipse.org</additionalJOption>
-							</additionalJOptions>
-							 -->
 						</configuration>
 						<executions>
 							<execution>
