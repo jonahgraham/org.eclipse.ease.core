@@ -40,6 +40,7 @@ public class ModuleDoclet extends Doclet {
 
 	public static void main(final String[] args) {
 
+		System.out.println(File.separator);
 		final String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
 				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
 				ModuleDoclet.class.getName(), "-docletpath",
@@ -54,13 +55,13 @@ public class ModuleDoclet extends Doclet {
 				"org.eclipse.ease.modules.platform"
 
 		};
-		com.sun.tools.javadoc.Main.execute(javadocargs);
+		// com.sun.tools.javadoc.Main.execute(javadocargs);
 
 		final String[] javadocargs2 = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src", "-root",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease", "-doclet", ModuleDoclet.class.getName(), "-docletpath",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin", "-apiLinks",
 				"java.*|http://docs.oracle.com/javase/8/docs/api", "org.eclipse.ease.modules", "-linkOffline", "http://docs.oracle.com/javase/8/docs/api",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
+		"/data/develop/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease.help/package-lists/java8" };
 
 		// com.sun.tools.javadoc.Main.execute(javadocargs2);
 	}
@@ -121,9 +122,21 @@ public class ModuleDoclet extends Doclet {
 				}
 
 			} else if (OPTION_LINK_OFFLINE.equals(option[0])) {
+
 				try {
-					fLinkProvider.registerAddress(option[1], parsePackages(new FileInputStream(option[2] + File.separator + "package-list")));
-				} catch (final FileNotFoundException e) {
+					URL url = new URL(option[2] + File.separator + "package-list");
+					fLinkProvider.registerAddress(option[1], parsePackages(url.openStream()));
+
+				} catch (MalformedURLException e) {
+					// invalid URI
+
+					try {
+						// try to read from local file
+						fLinkProvider.registerAddress(option[1], parsePackages(new FileInputStream(option[2] + File.separator + "package-list")));
+					} catch (final FileNotFoundException e1) {
+						System.out.println("Error: cannot read from " + option[2]);
+					}
+				} catch (IOException e) {
 					System.out.println("Error: cannot read from " + option[2]);
 				}
 			}
@@ -388,7 +401,7 @@ public class ModuleDoclet extends Doclet {
 			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
 				final String content = new HTMLWriter(clazz, fLinkProvider, fModuleNodes.get(clazz.qualifiedName()).getChildren("dependency"))
-						.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
+				.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
 
 				// write document
 				final File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
