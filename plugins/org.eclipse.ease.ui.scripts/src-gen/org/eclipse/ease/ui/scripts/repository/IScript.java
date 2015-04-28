@@ -19,16 +19,15 @@ import org.eclipse.ease.service.ScriptType;
 import org.eclipse.emf.common.util.EMap;
 
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Script</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Script</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getTimestamp <em>Timestamp</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getScriptParameters <em>Script Parameters</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getUserParameters <em>User Parameters</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getTimestamp <em>Timestamp</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getScriptParameters <em>Script Parameters</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScript#getUserParameters <em>User Parameters</em>}</li>
  * </ul>
  * </p>
  *
@@ -38,14 +37,12 @@ import org.eclipse.emf.common.util.EMap;
  */
 public interface IScript extends IRawLocation {
 	/**
-	 * Returns the value of the '<em><b>Timestamp</b></em>' attribute.
-	 * The default value is <code>"-1"</code>.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Timestamp</b></em>' attribute. The default value is <code>"-1"</code>. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Timestamp</em>' attribute isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of the '<em>Timestamp</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Timestamp</em>' attribute.
 	 * @see #setTimestamp(long)
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_Timestamp()
@@ -55,11 +52,9 @@ public interface IScript extends IRawLocation {
 	long getTimestamp();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.ease.ui.scripts.repository.IScript#getTimestamp
-	 * <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
-	 * 
+	 * Sets the value of the ' {@link org.eclipse.ease.ui.scripts.repository.IScript#getTimestamp <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 *
 	 * @param value
 	 *            the new value of the '<em>Timestamp</em>' attribute.
 	 * @see #getTimestamp()
@@ -68,14 +63,13 @@ public interface IScript extends IRawLocation {
 	void setTimestamp(long value);
 
 	/**
-	 * Returns the value of the '<em><b>Entry</b></em>' container reference.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#getScripts <em>Scripts</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Entry</b></em>' container reference. It is bidirectional and its opposite is '
+	 * {@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#getScripts <em>Scripts</em>}'. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Entry</em>' reference isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of the '<em>Entry</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Entry</em>' container reference.
 	 * @see #setEntry(IScriptLocation)
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_Entry()
@@ -86,25 +80,24 @@ public interface IScript extends IRawLocation {
 	IScriptLocation getEntry();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}' container reference.
-	 * <!-- begin-user-doc --> <!--
+	 * Sets the value of the '{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}' container reference. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * @param value the new value of the '<em>Entry</em>' container reference.
+	 * 
+	 * @param value
+	 *            the new value of the '<em>Entry</em>' container reference.
 	 * @see #getEntry()
 	 * @generated
 	 */
 	void setEntry(IScriptLocation value);
 
 	/**
-	 * Returns the value of the '<em><b>Script Parameters</b></em>' map.
-	 * The key is of type {@link java.lang.String},
-	 * and the value is of type {@link java.lang.String},
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Script Parameters</b></em>' map. The key is of type {@link java.lang.String}, and the value is of type
+	 * {@link java.lang.String}, <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Script Parameters</em>' map isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of the '<em>Script Parameters</em>' map isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Script Parameters</em>' map.
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_ScriptParameters()
 	 * @model mapType="org.eclipse.ease.ui.scripts.repository.ParameterMap<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>"
@@ -113,15 +106,13 @@ public interface IScript extends IRawLocation {
 	EMap<String, String> getScriptParameters();
 
 	/**
-	 * Returns the value of the '<em><b>User Parameters</b></em>' map.
-	 * The key is of type {@link java.lang.String},
-	 * and the value is of type {@link java.lang.String},
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>User Parameters</b></em>' map. The key is of type {@link java.lang.String}, and the value is of type
+	 * {@link java.lang.String}, <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>User Parameters</em>' map isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of the '<em>User Parameters</em>' map isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>User Parameters</em>' map.
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_UserParameters()
 	 * @model mapType="org.eclipse.ease.ui.scripts.repository.ParameterMap<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>"
@@ -131,6 +122,7 @@ public interface IScript extends IRawLocation {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @model
 	 * @generated
 	 */
@@ -138,6 +130,7 @@ public interface IScript extends IRawLocation {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @model kind="operation"
 	 * @generated
 	 */
@@ -145,13 +138,29 @@ public interface IScript extends IRawLocation {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @model kind="operation" dataType="org.eclipse.ease.ui.scripts.repository.Path"
 	 * @generated
 	 */
 	IPath getPath();
 
+	/**
+	 *
+	 * @generated NOT
+	 */
 	Map<String, String> getParameters();
 
+	/**
+	 *
+	 * @generated NOT
+	 */
 	ScriptType getType();
+
+	/**
+	 * Verify if this is a remote script. Remote scripts are not stored on a local file system.
+	 * 
+	 * @generated NOT
+	 */
+	boolean isRemote();
 
 } // IScript

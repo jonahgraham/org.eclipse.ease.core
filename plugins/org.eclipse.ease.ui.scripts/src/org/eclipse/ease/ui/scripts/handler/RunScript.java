@@ -35,8 +35,7 @@ public class RunScript extends AbstractHandler implements IHandler {
 		final String scriptName = event.getParameter(PARAMETER_NAME);
 		if (scriptName != null) {
 			// script name provided as parameter
-			final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-					IRepositoryService.class);
+			final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 			script = repositoryService.getScript(scriptName);
 
 		} else {
@@ -57,8 +56,7 @@ public class RunScript extends AbstractHandler implements IHandler {
 				// execute in current view
 				// FIXME do not use include command, include script directly =>
 				// check with implementation to avoid continuous loops
-				((IScriptEngineProvider) part).getScriptEngine().executeAsync(
-						"include('script:/" + script.getPath() + "');");
+				((IScriptEngineProvider) part).getScriptEngine().executeAsync("include('script:/" + script.getPath() + "');");
 			else
 				// execute stand-alone
 				script.run();

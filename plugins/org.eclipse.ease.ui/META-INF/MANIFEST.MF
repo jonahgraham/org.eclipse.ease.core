@@ -28,5 +28,6 @@ Export-Package: org.eclipse.ease.ui,
  org.eclipse.ease.ui.console,
  org.eclipse.ease.ui.dnd,
  org.eclipse.ease.ui.launching,
+ org.eclipse.ease.ui.preferences,
  org.eclipse.ease.ui.tools,
  org.eclipse.ease.ui.view

@@ -11,8 +11,10 @@
 package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,6 +22,8 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.Activator;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.EngineDescription;
@@ -27,6 +31,7 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.console.ScriptConsole;
+import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryPackage;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
@@ -42,17 +47,17 @@ import org.eclipse.emf.ecore.util.EcoreEMap;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.prefs.Preferences;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '
- * <em><b>Script</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Script</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getTimestamp <em>Timestamp</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getEntry <em>Entry</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getScriptParameters <em>Script Parameters</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getUserParameters <em>User Parameters</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getTimestamp <em>Timestamp</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getEntry <em>Entry</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getScriptParameters <em>Script Parameters</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getUserParameters <em>User Parameters</em>}</li>
  * </ul>
  * </p>
  *
@@ -60,8 +65,8 @@ import org.eclipse.ui.PlatformUI;
  */
 public class ScriptImpl extends RawLocationImpl implements IScript {
 	/**
-	 * The default value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The default value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #getTimestamp()
 	 * @generated
 	 * @ordered
@@ -69,8 +74,8 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	protected static final long TIMESTAMP_EDEFAULT = -1L;
 
 	/**
-	 * The cached value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #getTimestamp()
 	 * @generated
 	 * @ordered
@@ -78,9 +83,8 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	protected long timestamp = TIMESTAMP_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getScriptParameters() <em>Script Parameters</em>}' map.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * The cached value of the '{@link #getScriptParameters() <em>Script Parameters</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @see #getScriptParameters()
 	 * @generated
 	 * @ordered
@@ -88,9 +92,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	protected EMap<String, String> scriptParameters;
 
 	/**
-	 * The cached value of the '{@link #getUserParameters()
-	 * <em>User Parameters</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * The cached value of the '{@link #getUserParameters() <em>User Parameters</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @see #getUserParameters()
 	 * @generated
@@ -100,6 +102,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	protected ScriptImpl() {
@@ -108,6 +111,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
@@ -117,6 +121,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
@@ -126,10 +131,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public void setTimestamp(long newTimestamp) {
+	public void setTimestamp(final long newTimestamp) {
 		long oldTimestamp = timestamp;
 		timestamp = newTimestamp;
 		if (eNotificationRequired())
@@ -138,224 +144,246 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public IScriptLocation getEntry() {
-		if (eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY) return null;
-		return (IScriptLocation)eInternalContainer();
+		if (eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY)
+			return null;
+		return (IScriptLocation) eInternalContainer();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
-	public NotificationChain basicSetEntry(IScriptLocation newEntry, NotificationChain msgs) {
-		msgs = eBasicSetContainer((InternalEObject)newEntry, IRepositoryPackage.SCRIPT__ENTRY, msgs);
+	public NotificationChain basicSetEntry(final IScriptLocation newEntry, NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject) newEntry, IRepositoryPackage.SCRIPT__ENTRY, msgs);
 		return msgs;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public void setEntry(IScriptLocation newEntry) {
-		if (newEntry != eInternalContainer() || (eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY && newEntry != null)) {
+	public void setEntry(final IScriptLocation newEntry) {
+		if ((newEntry != eInternalContainer()) || ((eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY) && (newEntry != null))) {
 			if (EcoreUtil.isAncestor(this, newEntry))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
 			if (eInternalContainer() != null)
 				msgs = eBasicRemoveFromContainer(msgs);
 			if (newEntry != null)
-				msgs = ((InternalEObject)newEntry).eInverseAdd(this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS, IScriptLocation.class, msgs);
+				msgs = ((InternalEObject) newEntry).eInverseAdd(this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS, IScriptLocation.class, msgs);
 			msgs = basicSetEntry(newEntry, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.SCRIPT__ENTRY, newEntry, newEntry));
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public EMap<String, String> getScriptParameters() {
 		if (scriptParameters == null) {
-			scriptParameters = new EcoreEMap<String,String>(IRepositoryPackage.Literals.PARAMETER_MAP, ParameterMapImpl.class, this, IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS);
+			scriptParameters = new EcoreEMap<String, String>(IRepositoryPackage.Literals.PARAMETER_MAP, ParameterMapImpl.class, this,
+					IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS);
 		}
 		return scriptParameters;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public EMap<String, String> getUserParameters() {
 		if (userParameters == null) {
-			userParameters = new EcoreEMap<String,String>(IRepositoryPackage.Literals.PARAMETER_MAP, ParameterMapImpl.class, this, IRepositoryPackage.SCRIPT__USER_PARAMETERS);
+			userParameters = new EcoreEMap<String, String>(IRepositoryPackage.Literals.PARAMETER_MAP, ParameterMapImpl.class, this,
+					IRepositoryPackage.SCRIPT__USER_PARAMETERS);
 		}
 		return userParameters;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				if (eInternalContainer() != null)
-					msgs = eBasicRemoveFromContainer(msgs);
-				return basicSetEntry((IScriptLocation)otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			return basicSetEntry((IScriptLocation) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				return basicSetEntry(null, msgs);
-			case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-				return ((InternalEList<?>)getScriptParameters()).basicRemove(otherEnd, msgs);
-			case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-				return ((InternalEList<?>)getUserParameters()).basicRemove(otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			return basicSetEntry(null, msgs);
+		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
+			return ((InternalEList<?>) getScriptParameters()).basicRemove(otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
+			return ((InternalEList<?>) getUserParameters()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
+	public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
 		switch (eContainerFeatureID()) {
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				return eInternalContainer().eInverseRemove(this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS, IScriptLocation.class, msgs);
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			return eInternalContainer().eInverseRemove(this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS, IScriptLocation.class, msgs);
 		}
 		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT__TIMESTAMP:
-				return getTimestamp();
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				return getEntry();
-			case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-				if (coreType) return getScriptParameters();
-				else return getScriptParameters().map();
-			case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-				if (coreType) return getUserParameters();
-				else return getUserParameters().map();
+		case IRepositoryPackage.SCRIPT__TIMESTAMP:
+			return getTimestamp();
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			return getEntry();
+		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
+			if (coreType)
+				return getScriptParameters();
+			else
+				return getScriptParameters().map();
+		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
+			if (coreType)
+				return getUserParameters();
+			else
+				return getUserParameters().map();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public void eSet(int featureID, Object newValue) {
+	public void eSet(final int featureID, final Object newValue) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT__TIMESTAMP:
-				setTimestamp((Long)newValue);
-				return;
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				setEntry((IScriptLocation)newValue);
-				return;
-			case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-				((EStructuralFeature.Setting)getScriptParameters()).set(newValue);
-				return;
-			case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-				((EStructuralFeature.Setting)getUserParameters()).set(newValue);
-				return;
+		case IRepositoryPackage.SCRIPT__TIMESTAMP:
+			setTimestamp((Long) newValue);
+			return;
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			setEntry((IScriptLocation) newValue);
+			return;
+		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
+			((EStructuralFeature.Setting) getScriptParameters()).set(newValue);
+			return;
+		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
+			((EStructuralFeature.Setting) getUserParameters()).set(newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public void eUnset(int featureID) {
+	public void eUnset(final int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT__TIMESTAMP:
-				setTimestamp(TIMESTAMP_EDEFAULT);
-				return;
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				setEntry((IScriptLocation)null);
-				return;
-			case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-				getScriptParameters().clear();
-				return;
-			case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-				getUserParameters().clear();
-				return;
+		case IRepositoryPackage.SCRIPT__TIMESTAMP:
+			setTimestamp(TIMESTAMP_EDEFAULT);
+			return;
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			setEntry((IScriptLocation) null);
+			return;
+		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
+			getScriptParameters().clear();
+			return;
+		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
+			getUserParameters().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
+	public boolean eIsSet(final int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.SCRIPT__TIMESTAMP:
-				return timestamp != TIMESTAMP_EDEFAULT;
-			case IRepositoryPackage.SCRIPT__ENTRY:
-				return getEntry() != null;
-			case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-				return scriptParameters != null && !scriptParameters.isEmpty();
-			case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-				return userParameters != null && !userParameters.isEmpty();
+		case IRepositoryPackage.SCRIPT__TIMESTAMP:
+			return timestamp != TIMESTAMP_EDEFAULT;
+		case IRepositoryPackage.SCRIPT__ENTRY:
+			return getEntry() != null;
+		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
+			return (scriptParameters != null) && !scriptParameters.isEmpty();
+		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
+			return (userParameters != null) && !userParameters.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
-	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+	public Object eInvoke(final int operationID, final EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-			case IRepositoryPackage.SCRIPT___RUN:
-				run();
-				return null;
-			case IRepositoryPackage.SCRIPT___GET_NAME:
-				return getName();
-			case IRepositoryPackage.SCRIPT___GET_PATH:
-				return getPath();
+		case IRepositoryPackage.SCRIPT___RUN:
+			run();
+			return null;
+		case IRepositoryPackage.SCRIPT___GET_NAME:
+			return getName();
+		case IRepositoryPackage.SCRIPT___GET_PATH:
+			return getPath();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy())
+			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (timestamp: ");
@@ -377,8 +405,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	@Override
 	public ScriptType getType() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench()
-				.getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		ScriptType type = null;
 
 		// script type as provided in metadata
@@ -425,7 +452,15 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (name != null)
 			return new Path(name).makeAbsolute();
 
-		return new Path(getLocation().substring(getEntry().getLocation().length())).makeAbsolute();
+		String relativePath = getLocation().substring(getEntry().getLocation().length());
+		if (isRemote()) {
+			try {
+				relativePath = URLDecoder.decode(relativePath, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// UTF-8 not available, no pretty print available
+			}
+		}
+		return new Path(relativePath).makeAbsolute();
 	}
 
 	/**
@@ -445,6 +480,19 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			engine.setOutputStream(console.getOutputStream());
 			engine.setErrorStream(console.getErrorStream());
 
+			// check for remote scripts
+			if (isRemote()) {
+				// verify that remote access is allowed
+				final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(Activator.PREFERENCES_NODE_SCRIPTS);
+				final boolean allowRemoteAccess = prefs.getBoolean(IPreferenceConstants.SCRIPTS_ALLOW_REMOTE_ACCESS,
+						IPreferenceConstants.DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS);
+
+				if (!allowRemoteAccess) {
+					engine.getErrorStream().println("Remote script source detected. Access is disabled in preferences.");
+					return;
+				}
+			}
+
 			// set dummy input parameters. Scripts do not have any, but script
 			// source might expect them
 			engine.setVariable("argv", new String[0]);
@@ -461,8 +509,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 * @generated NOT
 	 */
 	private EngineDescription getEngineDescription() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench()
-				.getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		String engineIDs = getParameters().get("script-engine");
 		if (engineIDs == null)
@@ -489,4 +536,16 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		// no suitable engine found
 		return null;
 	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated NOT
+	 */
+	@Override
+	public boolean isRemote() {
+		Object resource = getResource();
+		return (!(resource instanceof IFile)) && (!(resource instanceof File));
+	}
+
 } // ScriptImpl

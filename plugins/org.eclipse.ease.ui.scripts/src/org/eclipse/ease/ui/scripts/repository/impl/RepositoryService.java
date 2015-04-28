@@ -35,7 +35,6 @@ import org.eclipse.ease.IHeaderParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
-import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.scripts.Activator;
 import org.eclipse.ease.ui.scripts.preferences.PreferencesHelper;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryFactory;
@@ -133,7 +132,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			// create an empty repository to start with
 			fRepository = IRepositoryFactory.eINSTANCE.createStorage();
 
-		} else {
+		} else if (!fRepository.getScripts().isEmpty()) {
 			// wait for the workspace to be loaded before updating, we have cached data anyway
 			updateDelay = DEFAULT_DELAY;
 		}
@@ -150,6 +149,10 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 		// update repository
 		fUpdateJob = new UpdateRepositoryJob(this);
+
+		for (final IScriptLocation location : getLocations())
+			location.setUpdatePending(true);
+
 		fUpdateJob.schedule(updateDelay);
 
 		// add workspace resource listener in case we have workspace locations registered
@@ -249,7 +252,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		IScript script = getScriptByLocation(location);
-		final ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(location, null));
+		final ScriptType scriptType = scriptService.getScriptType(location);
 		if (scriptType != null) {
 
 			if (script == null) {

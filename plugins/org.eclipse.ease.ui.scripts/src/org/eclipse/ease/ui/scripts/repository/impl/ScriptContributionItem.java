@@ -38,9 +38,11 @@ public class ScriptContributionItem extends CommandContributionItem {
 	private static ImageDescriptor getImageDescriptor(final IScript script) {
 		String location = script.getParameters().get("image");
 		if (location != null) {
-			return LocationImageDescriptor.createFromLocation(ResourceTools.toAbsoluteLocation(location,
-					script.getLocation()));
+			String imageLocation = ResourceTools.toAbsoluteLocation(location, script.getLocation());
+			if (imageLocation == null)
+				imageLocation = location;
 
+			return LocationImageDescriptor.createFromLocation(imageLocation);
 		}
 
 		return null;
@@ -57,9 +59,8 @@ public class ScriptContributionItem extends CommandContributionItem {
 	private Expression fVisibleExpression = null;
 
 	public ScriptContributionItem(final IScript script) {
-		super(new CommandContributionItemParameter(PlatformUI.getWorkbench().getActiveWorkbenchWindow(),
-				script.getLocation(), RunScript.COMMAND_ID, getParameters(script), getImageDescriptor(script), null,
-				null, script.getName(), null, null, STYLE_PUSH, null, true));
+		super(new CommandContributionItemParameter(PlatformUI.getWorkbench().getActiveWorkbenchWindow(), script.getLocation(), RunScript.COMMAND_ID,
+				getParameters(script), getImageDescriptor(script), null, null, script.getName(), null, null, STYLE_PUSH, null, true));
 
 		fScript = script;
 	}
@@ -110,8 +111,7 @@ public class ScriptContributionItem extends CommandContributionItem {
 
 		if (fVisibleExpression != null) {
 			try {
-				final IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(
-						IHandlerService.class);
+				final IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getService(IHandlerService.class);
 				EvaluationResult evaluate = fVisibleExpression.evaluate(handlerService.getCurrentState());
 
 				return Boolean.parseBoolean(evaluate.toString());

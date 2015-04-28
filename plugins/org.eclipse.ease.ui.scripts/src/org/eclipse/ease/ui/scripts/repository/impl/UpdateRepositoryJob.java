@@ -12,6 +12,8 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -55,9 +57,12 @@ public class UpdateRepositoryJob extends Job {
 					// this is a valid file system resource
 					new FileSystemParser().parse((File) content, location);
 
-					// } else if (location.getLocation().startsWith("http")) {
-					// // this is a webpage
-					// new HttpParser().parse(location);
+				} else if (content instanceof URI) {
+					try {
+						new HttpParser().parse(((URI) content).toURL(), location);
+					} catch (MalformedURLException e) {
+						// not a valid URL, ignore repository
+					}
 
 				} else if (content instanceof InputStream) {
 					// FIXME can never happen call entry.getInputStream() instead
