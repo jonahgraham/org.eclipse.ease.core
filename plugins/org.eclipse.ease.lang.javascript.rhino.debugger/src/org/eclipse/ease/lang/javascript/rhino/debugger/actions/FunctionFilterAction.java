@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease.lang.javascript.rhino.debugger.actions;
 
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.ease.debugging.ScriptDebugVariable;
 import org.eclipse.jface.viewers.Viewer;
 import org.mozilla.javascript.Script;
@@ -24,7 +23,7 @@ public class FunctionFilterAction extends ViewFilterAction {
 	 */
 	@Override
 	protected String getPreferenceKey() {
-		return "org.eclipse.ease.ui.show_functions";
+		return "org.eclipse.ease.ui.rhino.showFunctions";
 	}
 
 	/*
@@ -34,16 +33,19 @@ public class FunctionFilterAction extends ViewFilterAction {
 	 */
 	@Override
 	public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-		if(element instanceof ScriptDebugVariable) {
-			try {
-				Object value = ((ScriptDebugVariable)element).getValue().getValue();
-				if(value instanceof Script)
-					return getValue();
-			} catch (DebugException e) {
-			}
+		if (element instanceof ScriptDebugVariable) {
+			final Object value = ((ScriptDebugVariable) element).getValue().getValue();
+			if (value instanceof Script)
+				return getValue();
 		}
 
 		return true;
+	}
+
+	@Override
+	protected boolean getValue() {
+		System.out.println("Setting is: " + super.getValue());
+		return super.getValue();
 	}
 
 }

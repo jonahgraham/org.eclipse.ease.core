@@ -17,9 +17,9 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
@@ -250,24 +250,37 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected Object internalGetVariable(final String name) {
-		final Object value = getScope().get(name, getScope());
-		if (value instanceof NativeJavaObject)
-			return ((NativeJavaObject) value).unwrap();
-
-		return value;
+		return getVariable(getScope(), name);
 	}
 
 	@Override
 	protected Map<String, Object> internalGetVariables() {
-		final Map<String, Object> result = new HashMap<String, Object>();
+		return getVariables(getScope());
+	}
 
-		for (final Object key : getScope().getIds()) {
-			final Object value = internalGetVariable(key.toString());
+	public static Map<String, Object> getVariables(final Scriptable scope) {
+		final Map<String, Object> result = new TreeMap<String, Object>();
+
+		for (final Object key : scope.getIds()) {
+			final Object value = getVariable(scope, key.toString());
 			if ((value == null) || (!value.getClass().getName().startsWith("org.mozilla.javascript.gen")))
 				result.put(key.toString(), value);
 		}
 
+		// add parent scope
+		final Scriptable parent = scope.getParentScope();
+		if (parent != null)
+			result.putAll(getVariables(parent));
+
 		return result;
+	}
+
+	public static Object getVariable(final Scriptable scope, final String name) {
+		final Object value = scope.get(name, scope);
+		if (value instanceof NativeJavaObject)
+			return ((NativeJavaObject) value).unwrap();
+
+		return value;
 	}
 
 	@Override

@@ -46,6 +46,7 @@
                id="org.eclipse.ease.ui.variableview.show.functions"
                label="Show functions"
                menubarPath="org.eclipse.ease.debug.ui.variableview.menu/ease"
+               state="false"
                style="toggle"
                tooltip="Tooltip text">
          </action>
@@ -55,6 +56,7 @@
                id="org.eclipse.ease.ui.variableview.show.modules"
                label="Show modules"
                menubarPath="org.eclipse.ease.debug.ui.variableview.menu/ease"
+               state="false"
                style="toggle"
                tooltip="Tooltip text">
          </action>

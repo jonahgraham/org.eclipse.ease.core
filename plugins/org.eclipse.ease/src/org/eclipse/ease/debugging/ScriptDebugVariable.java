@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.ease.Activator;
 
 public class ScriptDebugVariable extends ScriptDebugElement implements IVariable {
 
@@ -32,10 +35,12 @@ public class ScriptDebugVariable extends ScriptDebugElement implements IVariable
 
 	@Override
 	public void setValue(final String expression) throws DebugException {
+		throw new DebugException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not implemented"));
 	}
 
 	@Override
 	public void setValue(final IValue value) throws DebugException {
+		throw new DebugException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not implemented"));
 	}
 
 	@Override
@@ -44,12 +49,12 @@ public class ScriptDebugVariable extends ScriptDebugElement implements IVariable
 	}
 
 	@Override
-	public boolean verifyValue(final String expression) throws DebugException {
+	public boolean verifyValue(final String expression) {
 		return false;
 	}
 
 	@Override
-	public boolean verifyValue(final IValue value) throws DebugException {
+	public boolean verifyValue(final IValue value) {
 		return false;
 	}
 
@@ -69,22 +74,32 @@ public class ScriptDebugVariable extends ScriptDebugElement implements IVariable
 	}
 
 	@Override
-	public ScriptDebugValue getValue() throws DebugException {
+	public ScriptDebugValue getValue() {
 		return new ScriptDebugValue(fStackFrame, fValue);
 	}
 
 	@Override
-	public String getName() throws DebugException {
+	public String getName() {
 		return fName;
 	}
 
 	@Override
-	public String getReferenceTypeName() throws DebugException {
+	public String getReferenceTypeName() {
 		return (fValue != null) ? fValue.getClass().getSimpleName() : "";
 	}
 
 	@Override
-	public boolean hasValueChanged() throws DebugException {
+	public boolean hasValueChanged() {
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		try {
+			return getName() + ":" + getValue().getValueString();
+		} catch (final DebugException e) {
+		}
+
+		return super.toString();
 	}
 }

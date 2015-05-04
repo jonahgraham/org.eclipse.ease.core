@@ -19,7 +19,7 @@ import org.eclipse.ease.debugging.ScriptDebugTarget;
 
 public class RhinoDebugTarget extends ScriptDebugTarget {
 
-	public RhinoDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, boolean showDynamicCode) {
+	public RhinoDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, final boolean showDynamicCode) {
 		super(launch, suspendOnStartup, suspendOnScriptLoad, showDynamicCode);
 	}
 
