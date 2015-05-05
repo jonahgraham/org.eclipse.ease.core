@@ -47,4 +47,8 @@ public interface IPreferenceConstants {
 
 	String SHELL_DEFAULT_ENGINE = "shellDefaultEngine";
 	String DEFAULT_SHELL_DEFAULT_ENGINE = "org.eclipse.ease.javascript.rhino";
+
+	String SCRIPTS_ALLOW_REMOTE_ACCESS = "scriptRemoteAccess";
+	boolean DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS = false;
+
 }

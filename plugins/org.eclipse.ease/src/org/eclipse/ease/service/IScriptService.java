@@ -107,7 +107,7 @@ public interface IScriptService {
 	 *
 	 * @param location
 	 *            resource location
-	 * @return script type associated with file extension
+	 * @return script type associated with file extension or <code>null</code>
 	 */
 	ScriptType getScriptType(String location);
 

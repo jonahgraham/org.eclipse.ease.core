@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.preferences;
+ *******************************************************************************/
+package org.eclipse.ease.ui.preferences;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.Activator;
@@ -27,6 +28,7 @@ import org.osgi.service.prefs.Preferences;
 public class ScriptingPage extends PreferencePage implements IWorkbenchPreferencePage {
 
 	private Button btnAllowUIAccess;
+	private Button btnAllowRemoteAccess;
 
 	public ScriptingPage() {
 	}
@@ -42,12 +44,15 @@ public class ScriptingPage extends PreferencePage implements IWorkbenchPreferenc
 		container.setLayout(new GridLayout(1, false));
 
 		Group grpSecurisecurty = new Group(container, SWT.NONE);
-		grpSecurisecurty.setLayout(new FillLayout(SWT.HORIZONTAL));
+		grpSecurisecurty.setLayout(new FillLayout(SWT.VERTICAL));
 		grpSecurisecurty.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		grpSecurisecurty.setText("Security");
 
 		btnAllowUIAccess = new Button(grpSecurisecurty, SWT.CHECK);
 		btnAllowUIAccess.setText("Allow scripts to run code in UI thread");
+
+		btnAllowRemoteAccess = new Button(grpSecurisecurty, SWT.CHECK);
+		btnAllowRemoteAccess.setText("Allow to run remote scripts");
 
 		performDefaults();
 
@@ -61,6 +66,10 @@ public class ScriptingPage extends PreferencePage implements IWorkbenchPreferenc
 		boolean allowUIAccess = prefs.getBoolean(Activator.SCRIPTS_ALLOW_UI_ACCESS, Activator.DEFAULT_SCRIPTS_ALLOW_UI_ACCESS);
 		btnAllowUIAccess.setSelection(allowUIAccess);
 
+		boolean allowRemoteAccess = prefs
+				.getBoolean(IPreferenceConstants.SCRIPTS_ALLOW_REMOTE_ACCESS, IPreferenceConstants.DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS);
+		btnAllowRemoteAccess.setSelection(allowRemoteAccess);
+
 		super.performDefaults();
 	}
 
@@ -69,6 +78,7 @@ public class ScriptingPage extends PreferencePage implements IWorkbenchPreferenc
 		Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(Activator.PREFERENCES_NODE_SCRIPTS);
 
 		prefs.putBoolean(Activator.SCRIPTS_ALLOW_UI_ACCESS, btnAllowUIAccess.getSelection());
+		prefs.putBoolean(IPreferenceConstants.SCRIPTS_ALLOW_REMOTE_ACCESS, btnAllowRemoteAccess.getSelection());
 
 		return super.performOk();
 	}

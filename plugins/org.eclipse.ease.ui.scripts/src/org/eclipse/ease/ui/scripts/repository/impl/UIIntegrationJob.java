@@ -74,8 +74,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 				}
 
 				// try to find a view with matching ID or matching title
-				final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
-						"org.eclipse.ui.views");
+				final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.ui.views");
 				for (final IConfigurationElement e : config) {
 					if ("view".equals(e.getName())) {
 						String id = e.getAttribute("id");
@@ -103,8 +102,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 
 	private final Collection<IScript> fAddedScripts = Collections.synchronizedCollection(new HashSet<IScript>());
 	private final Collection<IScript> fRemovedScripts = Collections.synchronizedCollection(new HashSet<IScript>());
-	private final Map<IScript, ParameterDelta> fChangedScripts = Collections
-			.synchronizedMap(new HashMap<IScript, ParameterDelta>());
+	private final Map<IScript, ParameterDelta> fChangedScripts = Collections.synchronizedMap(new HashMap<IScript, ParameterDelta>());
 
 	public UIIntegrationJob(final RepositoryService repositoryService) {
 		super("Update script UI components");
@@ -210,16 +208,14 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 			LocationDescription newLocation = new LocationDescription(scheme, script.getParameters().get(scheme));
 			addViewContribution(newLocation, script);
 
-		} else if (script.getParameters().containsKey(scheme)
-				&& (parameterDelta.isAffected(KEYWORD_NAME) || parameterDelta.isAffected(KEYWORD_IMAGE))) {
+		} else if (script.getParameters().containsKey(scheme) && (parameterDelta.isAffected(KEYWORD_NAME) || parameterDelta.isAffected(KEYWORD_IMAGE))) {
 			// possibly name changed (depends on specific name element for
 			// toolbar entry)
 			LocationDescription location = new LocationDescription(scheme, script.getParameters().get(scheme));
 			if (location.fName == null) {
 				// name derived from script property "name", refresh label
 
-				IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-						.findView(location.fViewID);
+				IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(location.fViewID);
 				if ((view instanceof ViewPart) && (view.getViewSite() != null)) {
 					// view is already rendered
 
@@ -234,9 +230,11 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 					for (IContributionItem item : contributions) {
 						if ((item instanceof ScriptContributionItem) && (item.getId().equals(script.getLocation()))) {
 							((ScriptContributionItem) item).setLabel(script.getParameters().get(KEYWORD_NAME));
-							((ScriptContributionItem) item).setIcon(LocationImageDescriptor
-									.createFromLocation(ResourceTools.toAbsoluteLocation(
-											script.getParameters().get(KEYWORD_IMAGE), script.getLocation())));
+							String imageLocation = ResourceTools.toAbsoluteLocation(script.getParameters().get(KEYWORD_IMAGE), script.getLocation());
+							if (imageLocation == null)
+								imageLocation = script.getParameters().get(KEYWORD_IMAGE);
+
+							((ScriptContributionItem) item).setIcon(LocationImageDescriptor.createFromLocation(imageLocation));
 						}
 					}
 
@@ -252,8 +250,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 		getContributionFactory(location.getId()).addScript(script);
 
 		if (location.fViewID != null) {
-			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-					.findView(location.fViewID);
+			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(location.fViewID);
 
 			if ((view instanceof ViewPart) && (view.getViewSite() != null)) {
 				// the view is already rendered, contributions will not be
@@ -261,12 +258,10 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 				// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=452203 for
 				// details
 				if (location.fScheme.equals(KEYWORD_TOOLBAR)) {
-					getContributionFactory(location.getId()).setAffectedContribution(
-							view.getViewSite().getActionBars().getToolBarManager());
+					getContributionFactory(location.getId()).setAffectedContribution(view.getViewSite().getActionBars().getToolBarManager());
 					view.getViewSite().getActionBars().getToolBarManager().add(new ScriptContributionItem(script));
 				} else if (location.fScheme.equals(KEYWORD_MENU)) {
-					getContributionFactory(location.getId()).setAffectedContribution(
-							view.getViewSite().getActionBars().getMenuManager());
+					getContributionFactory(location.getId()).setAffectedContribution(view.getViewSite().getActionBars().getMenuManager());
 					view.getViewSite().getActionBars().getMenuManager().add(new ScriptContributionItem(script));
 				}
 
@@ -281,8 +276,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 		getContributionFactory(location.getId()).removeScript(script);
 
 		if (location.fViewID != null) {
-			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-					.findView(location.fViewID);
+			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(location.fViewID);
 			if ((view instanceof ViewPart) && (view.getViewSite() != null)) {
 				// the view is already rendered, contributions will not be
 				// considered anymore so remove item directly
@@ -308,8 +302,8 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	@Override
 	public synchronized void notify(final ScriptEvent event) {
 		Map<String, String> parameters = event.getScript().getParameters();
-		if (parameters.containsKey(KEYWORD_MENU) || parameters.containsKey(KEYWORD_TOOLBAR)
-				|| parameters.containsKey(KEYWORD_POPUP) || (event.getType() == ScriptEvent.PARAMETER_CHANGE)) {
+		if (parameters.containsKey(KEYWORD_MENU) || parameters.containsKey(KEYWORD_TOOLBAR) || parameters.containsKey(KEYWORD_POPUP)
+				|| (event.getType() == ScriptEvent.PARAMETER_CHANGE)) {
 			// script with UI integration
 			switch (event.getType()) {
 			case ScriptEvent.ADD:
@@ -324,8 +318,7 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 
 			case ScriptEvent.PARAMETER_CHANGE:
 				ParameterDelta delta = (ParameterDelta) event.getEventData();
-				if (delta.isAffected(KEYWORD_TOOLBAR) || delta.isAffected(KEYWORD_MENU)
-						|| delta.isAffected(KEYWORD_POPUP) || delta.isAffected(KEYWORD_NAME)
+				if (delta.isAffected(KEYWORD_TOOLBAR) || delta.isAffected(KEYWORD_MENU) || delta.isAffected(KEYWORD_POPUP) || delta.isAffected(KEYWORD_NAME)
 						|| delta.isAffected(KEYWORD_IMAGE)) {
 					// we need to adapt the appearance
 					if (fChangedScripts.containsKey(event.getScript()))

@@ -13,6 +13,7 @@ package org.eclipse.ease.ui.scripts.handler;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -60,8 +61,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 
 					} else if ((content instanceof File) && (((File) content).exists())) {
 						ScriptType type = ((IScript) element).getType();
-						IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry()
-								.getDefaultEditor("foo." + type.getDefaultExtension());
+						IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor("foo." + type.getDefaultExtension());
 						if (descriptor != null) {
 							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 							try {
@@ -79,10 +79,8 @@ public class EditScript extends AbstractHandler implements IHandler {
 										// meaning the editor tried to save data
 										if (IEditorPart.PROP_DIRTY == propId) {
 											if ((editor instanceof AbstractDecoratedTextEditor) && (!editor.isDirty())) {
-												final IDocumentProvider documentProvider = ((AbstractTextEditor) editor)
-														.getDocumentProvider();
-												final String newSource = documentProvider.getDocument(editorInput)
-														.get();
+												final IDocumentProvider documentProvider = ((AbstractTextEditor) editor).getDocumentProvider();
+												final String newSource = documentProvider.getDocument(editorInput).get();
 
 												FileOutputStream outputStream = null;
 												try {
@@ -102,8 +100,8 @@ public class EditScript extends AbstractHandler implements IHandler {
 												}
 
 												// refresh script in repository
-												final IRepositoryService repositoryService = (IRepositoryService) PlatformUI
-														.getWorkbench().getService(IRepositoryService.class);
+												final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
+														IRepositoryService.class);
 												// FIXME we should only update
 												// this one resource instead of
 												// all scripts
@@ -112,6 +110,20 @@ public class EditScript extends AbstractHandler implements IHandler {
 										}
 									}
 								});
+
+							} catch (PartInitException e) {
+								Logger.logError("Could not open editor for file " + content);
+							}
+						}
+
+					} else if (content instanceof URI) {
+						ScriptType type = ((IScript) element).getType();
+						IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor("foo." + type.getDefaultExtension());
+						if (descriptor != null) {
+							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+							try {
+								final ScriptEditorInput editorInput = new ScriptEditorInput((IScript) element);
+								final IEditorPart editor = page.openEditor(editorInput, descriptor.getId());
 
 							} catch (PartInitException e) {
 								Logger.logError("Could not open editor for file " + content);

@@ -71,7 +71,7 @@ public class ScriptEditorInput implements IStorageEditorInput {
 
 			@Override
 			public boolean isReadOnly() {
-				return false;
+				return fScript.isRemote();
 			}
 
 			@Override

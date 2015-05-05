@@ -12,90 +12,96 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.HashSet;
 
+import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
-import org.eclipse.ui.IMemento;
-import org.eclipse.ui.WorkbenchException;
-import org.eclipse.ui.XMLMemento;
+import org.eclipse.ease.ui.tools.StringTools;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.ui.PlatformUI;
 
 public class HttpParser extends InputStreamParser {
 
-	public void parse(final IScriptLocation location) {
-		InputStream stream = location.getInputStream();
-		if (stream != null) {
+	public void parse(final URL location, final IScriptLocation entry) {
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		ScriptType scriptType = scriptService.getScriptType(location.toString());
+		if (scriptType != null) {
+			// register script
+			final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+			repositoryService.updateLocation(entry, location.toExternalForm(), System.currentTimeMillis());
 
+		} else {
 			try {
-				IMemento memento = XMLMemento.createReadRoot(new InputStreamReader(stream));
+				InputStream stream = location.openStream();
+				if (stream != null) {
+					String content = StringTools.toString(stream);
 
-				List<IMemento> anchorNodes = new ArrayList<IMemento>();
-				extractAnchors(memento, anchorNodes);
-				Map<URI, String> links = convertAnchors(anchorNodes);
-				links = filterExternals(URI.create(location.getLocation()), links);
-				System.out.println(links);
+					try {
+						stream.close();
+					} catch (IOException e) {
+					}
 
-			} catch (WorkbenchException e1) {
-				// TODO handle this exception (but for now, at least know it happened)
-				throw new RuntimeException(e1);
+					Collection<URL> anchors = extractAnchors(location, content);
+					// make sure we do not recursive load the same page over and over
+					anchors.remove(location);
 
-			}
+					for (URL subLocation : anchors)
+						parse(subLocation, entry);
+				}
 
-			try {
-				stream.close();
 			} catch (IOException e) {
-
+				// cannot read content, ignore location
 			}
 		}
 	}
 
-	private Map<URI, String> filterExternals(final URI base, final Map<URI, String> links) {
-		Map<URI, String> filtered = new HashMap<URI, String>();
+	private Collection<URL> extractAnchors(final URL base, final String content) {
+		Collection<URL> anchorNodes = new HashSet<URL>();
 
-		for (Entry<URI, String> entry : links.entrySet()) {
-			URI link = entry.getKey();
-			if (!link.isAbsolute())
-				link = base.resolve(link);
-
-			if (link.toString().startsWith(base.toString()))
-				// this is a link bekow the base link
-				filtered.put(link, entry.getValue());
+		URI baseURI = URI.createURI(base.toString());
+		if (baseURI.fileExtension() != null) {
+			// base refers to a file, not a folder
+			baseURI = baseURI.trimSegments(1);
 		}
 
-		return filtered;
-	}
+		if (baseURI.hasTrailingPathSeparator())
+			baseURI = baseURI.trimSegments(1);
 
-	private Map<URI, String> convertAnchors(final List<IMemento> anchorNodes) {
-		Map<URI, String> links = new HashMap<URI, String>();
+		int pos = content.indexOf(" href=");
+		do {
+			if (pos != -1) {
+				int endpos = content.indexOf(content.charAt(pos + 6), pos + 7);
+				try {
+					if (content.charAt(pos + 7) != '#') {
+						URI candidate = URI.createURI(content.substring(pos + 7, endpos));
+						if (candidate.isRelative())
+							candidate = candidate.resolve(baseURI);
 
-		for (IMemento node : anchorNodes)
-			links.put(URI.create(node.getString("href")), extractText(node));
+						if (candidate.hasTrailingPathSeparator())
+							candidate = candidate.trimSegments(1);
 
-		return links;
-	}
+						if (candidate.toString().startsWith(baseURI.toString())) {
+							// candidate is stored below the base
 
-	private String extractText(final IMemento node) {
-		StringBuilder text = new StringBuilder();
-		text.append(node.getTextData());
+							if (candidate.segmentCount() > baseURI.segmentCount())
+								anchorNodes.add(new URL(candidate.toString()));
+						}
+					}
 
-		for (IMemento child : node.getChildren())
-			text.append(extractText(child));
+				} catch (MalformedURLException e) {
+					// ignore invalid URLs
+				}
+			}
 
-		return text.toString();
-	}
+			pos = content.indexOf(" href=", pos + 1);
 
-	private void extractAnchors(final IMemento memento, final List<IMemento> anchorNodes) {
-		for (IMemento child : memento.getChildren()) {
-			if (child.getType().equals("a"))
-				anchorNodes.add(child);
+		} while (pos != -1);
 
-			else
-				extractAnchors(child, anchorNodes);
-		}
+		return anchorNodes;
 	}
 }

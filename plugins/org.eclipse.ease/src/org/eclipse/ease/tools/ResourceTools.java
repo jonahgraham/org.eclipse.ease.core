@@ -243,6 +243,16 @@ public final class ResourceTools {
 		return null;
 	}
 
+	/**
+	 * Resolve a given location to an absolute location URI. When <i>location</i> is not a string, we create an absolute string representation of the given
+	 * location.
+	 *
+	 * @param location
+	 *            (relative) location
+	 * @param parent
+	 *            parent object to resolve from
+	 * @return resolved location string or <code>null</code>
+	 */
 	public static String toAbsoluteLocation(final Object location, final Object parent) {
 		// try to resolve file
 		final Object file = resolveFile(location, parent, true);
@@ -260,7 +270,7 @@ public final class ResourceTools {
 		else if (folder instanceof File)
 			return ((File) folder).toURI().toASCIIString();
 
-		// nothing to resolve, return location
+		// nothing to resolve, return null
 		return null;
 	}
 
