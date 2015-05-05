@@ -12,13 +12,13 @@ package org.eclipse.ease.ui.scripts.ui;
 
 import java.util.HashMap;
 
-import org.eclipse.ease.ui.scripts.Activator;
 import org.eclipse.ease.ui.scripts.handler.RunScript;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ease.ui.tools.AbstractPopupItem;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class ScriptPopup extends AbstractPopupItem {
 
@@ -30,8 +30,8 @@ public class ScriptPopup extends AbstractPopupItem {
 
 	@Override
 	public CommandContributionItemParameter getContributionParameter() {
-		final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(null, null,
-				RunScript.COMMAND_ID, CommandContributionItem.STYLE_PUSH);
+		final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(null, null, RunScript.COMMAND_ID,
+				CommandContributionItem.STYLE_PUSH);
 
 		final HashMap<String, String> parameters = new HashMap<String, String>();
 		parameters.put(RunScript.PARAMETER_NAME, fScript.getPath().toString());
@@ -48,6 +48,6 @@ public class ScriptPopup extends AbstractPopupItem {
 
 	@Override
 	protected ImageDescriptor getImageDescriptor() {
-		return Activator.getImageDescriptor("/icons/eobj16//script.png");
+		return AbstractUIPlugin.imageDescriptorFromPlugin(org.eclipse.ease.ui.Activator.PLUGIN_ID, "/images/eobj16/script.gif");
 	}
 }

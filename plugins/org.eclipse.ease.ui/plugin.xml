@@ -236,13 +236,6 @@
       </propertyTester>
    </extension>
    <extension
-         point="org.eclipse.debug.core.launchConfigurationTypes">
-      <launchConfigurationType
-            id="org.eclipse.ease.ui.launchConfigurationType1"
-            name="name">
-      </launchConfigurationType>
-   </extension>
-   <extension
          point="org.eclipse.ui.console.consolePageParticipants">
       <consolePageParticipant
             class="org.eclipse.ease.ui.console.ScriptConsolePageParticipant"

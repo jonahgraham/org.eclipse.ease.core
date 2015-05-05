@@ -22,6 +22,7 @@ import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IStorageEditorInput;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class ScriptEditorInput implements IStorageEditorInput {
 
@@ -102,7 +103,7 @@ public class ScriptEditorInput implements IStorageEditorInput {
 
 	@Override
 	public final ImageDescriptor getImageDescriptor() {
-		return Activator.getImageDescriptor("/images/script.gif");
+		return AbstractUIPlugin.imageDescriptorFromPlugin(org.eclipse.ease.ui.Activator.PLUGIN_ID, "/images/eobj16/script.gif");
 	}
 
 	@Override
