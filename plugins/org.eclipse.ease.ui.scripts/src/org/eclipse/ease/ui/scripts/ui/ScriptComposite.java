@@ -72,8 +72,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 	 * @param style
 	 *            composite style flags
 	 */
-	public ScriptComposite(final IScriptEngineProvider engineProvider, final IWorkbenchPartSite site,
-			final Composite parent, final int style) {
+	public ScriptComposite(final IScriptEngineProvider engineProvider, final IWorkbenchPartSite site, final Composite parent, final int style) {
 		super(parent, style);
 		fEngineProvider = engineProvider;
 
@@ -99,8 +98,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 					return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/folder.png", true);
 
 				if (element instanceof IScript)
-					return Activator.getImage(org.eclipse.ease.ui.scripts.Activator.PLUGIN_ID,
-							"/icons/eobj16/script.png", true);
+					return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/script.png", true);
 
 				return super.getImage(element);
 			}
@@ -114,8 +112,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 			}
 		});
 
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-				IRepositoryService.class);
+		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 		treeViewer.setInput(repositoryService);
 
 		if (fDoubleClickListener != null)
@@ -150,8 +147,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 
 	@Override
 	public void dispose() {
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-				IRepositoryService.class);
+		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 		repositoryService.removeScriptListener(this);
 
 		super.dispose();
