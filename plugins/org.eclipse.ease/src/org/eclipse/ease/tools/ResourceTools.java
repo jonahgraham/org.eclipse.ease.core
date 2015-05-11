@@ -142,7 +142,9 @@ public final class ResourceTools {
 			try {
 				location = new File((URI) location);
 			} catch (final Exception e) {
-				// URI scheme is not "file"
+				// URI scheme is not "file" or contains an authority
+				if (location.toString().startsWith("file:"))
+					location = new File(location.toString().substring(5));
 			}
 		}
 
