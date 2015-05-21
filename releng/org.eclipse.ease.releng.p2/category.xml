@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.ease.feature_0.2.0.qualifier.jar" id="org.eclipse.ease.feature" version="0.2.0.qualifier">
+   <feature url="features/org.eclipse.ease.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.feature" version="0.3.0.qualifier">
       <category name="Core"/>
    </feature>
-   <feature url="features/org.eclipse.ease.ui.feature_0.2.0.qualifier.jar" id="org.eclipse.ease.ui.feature" version="0.2.0.qualifier">
+   <feature url="features/org.eclipse.ease.ui.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.ui.feature" version="0.3.0.qualifier">
       <category name="Core"/>
    </feature>
-   <feature url="features/org.eclipse.ease.javascript.feature_0.2.0.qualifier.jar" id="org.eclipse.ease.javascript.feature" version="0.2.0.qualifier">
+   <feature url="features/org.eclipse.ease.javascript.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.javascript.feature" version="0.3.0.qualifier">
       <category name="Lang"/>
    </feature>
-   <feature url="features/org.eclipse.ease.python.feature_0.2.0.qualifier.jar" id="org.eclipse.ease.python.feature" version="0.2.0.qualifier">
+   <feature url="features/org.eclipse.ease.python.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.python.feature" version="0.3.0.qualifier">
       <category name="Lang"/>
    </feature>
    <category-def name="Core" label="Core"/>
