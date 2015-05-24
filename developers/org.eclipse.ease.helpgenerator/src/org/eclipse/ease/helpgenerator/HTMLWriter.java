@@ -26,14 +26,14 @@ public class HTMLWriter {
 		private final boolean fDeprecated;
 		private FieldDoc fField;
 
-		public Overview(final String title, final String linkID, final String description, boolean deprecated) {
+		public Overview(final String title, final String linkID, final String description, final boolean deprecated) {
 			fTitle = title;
 			fLinkID = linkID;
 			fDescription = description;
 			fDeprecated = deprecated;
 		}
 
-		public Overview(final String title, final String linkID, final String description, boolean deprecated, FieldDoc field) {
+		public Overview(final String title, final String linkID, final String description, final boolean deprecated, final FieldDoc field) {
 			this(title, linkID, description, deprecated);
 			fField = field;
 		}
@@ -67,17 +67,20 @@ public class HTMLWriter {
 		addLine(buffer, "<html>");
 		addLine(buffer, "<head>");
 		addLine(buffer, "	<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
-		addLine(buffer, "	<link rel=\"stylesheet\" type=\"text/css\" href=\"../../org.eclipse.ease.help/help/css/modules_reference.css\">");
+		addLine(buffer, "	<link rel=\"stylesheet\" type=\"text/css\" href=\"../../org.eclipse.ease.help/help/css/modules_reference.css\" />");
 		addLine(buffer, "</head>");
 		addLine(buffer, "<body>");
+		addText(buffer, "	<div class=\"module\" title=\"");
+		addText(buffer, name);
+		addLine(buffer, " Module\">");
 
 		// header
-		addText(buffer, "\t<h1>");
+		addText(buffer, "		<h1>");
 		addText(buffer, name);
 		addLine(buffer, " Module</h1>");
 
 		// class description
-		addText(buffer, "\t<p>");
+		addText(buffer, "		<p>");
 		final String classComment = fClazz.commentText();
 		if (classComment != null)
 			addText(buffer, fLinkProvider.insertLinks(fClazz, fClazz.commentText()));
@@ -86,6 +89,8 @@ public class HTMLWriter {
 
 		// dependencies
 		addLine(buffer, createDependenciesSection());
+
+		addLine(buffer, "	</div>");
 
 		// constants
 		addLine(buffer, createConstantsSection());
@@ -139,12 +144,15 @@ public class HTMLWriter {
 		for (final MethodDoc method : methods) {
 			if (isExported(method)) {
 				// heading
-				addLine(buffer, "\t<h3" + (isDeprecated(method) ? " class=\"deprecatedText\"" : "") + "><a id=\"" + method.name() + "\">" + method.name()
-						+ "</a></h3>");
 				addText(buffer, "\t<div class=\"command");
 				if (isDeprecated(method))
 					addText(buffer, " deprecated");
+				addText(buffer, "\" title=\"");
+				addText(buffer, method.name());
 				addLine(buffer, "\">");
+
+				addLine(buffer, "\t\t<h3" + (isDeprecated(method) ? " class=\"deprecatedText\"" : "") + "><a id=\"" + method.name() + "\">" + method.name()
+						+ "</a></h3>");
 
 				// synopsis
 				addLine(buffer, createSynopsis(method));
@@ -179,7 +187,7 @@ public class HTMLWriter {
 		return buffer;
 	}
 
-	private StringBuffer createExampleArea(MethodDoc method) {
+	private StringBuffer createExampleArea(final MethodDoc method) {
 		final StringBuffer buffer = new StringBuffer();
 
 		final Tag[] tags = method.tags("scriptExample");
@@ -356,7 +364,7 @@ public class HTMLWriter {
 				addLine(buffer, "			<td class=\"deprecatedText\"><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
 				addLine(buffer,
 						"			<td class=\"deprecatedDescription\"><b>Deprecated:</b> " + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription))
-						+ "</td>");
+								+ "</td>");
 			}
 			addLine(buffer, "		</tr>");
 		}

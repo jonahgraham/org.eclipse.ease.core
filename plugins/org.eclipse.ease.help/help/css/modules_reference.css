@@ -35,6 +35,7 @@ ul.dependency		{ list-style-image:url(/help/topic/org.eclipse.ease.help/help/ima
 .dependency a:hover	{ text-decoration: underline; }
 
 .command			{ margin-left: 50px; }
+.command h3			{ margin-left: -50px; }
 .deprecated			{ background-color: #fbfbd5;
 						padding: 0px  0px 20px 20px;
  						border: 1px solid #f1d657; border-radius: 5px;
