@@ -11,6 +11,7 @@
 package org.eclipse.ease.ui.modules.ui;
 
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
@@ -42,10 +43,13 @@ public class ModulesDecoratedLabelProvider extends DecoratedLabelProvider {
 			return null;
 
 		if (element instanceof ModuleDefinition)
-			return ((ModuleDefinition) element).getBundleID();
+			return ModuleHelp.getModuleHelpTip(element);
 
 		if (element instanceof Method)
-			return ModulesTools.getSignature((Method) element, true);
+			return ModuleHelp.getMethodHelpTip(element);
+
+		if (element instanceof Field)
+			return ModuleHelp.getConstantHelpTip(element);
 
 		return null;
 	}
