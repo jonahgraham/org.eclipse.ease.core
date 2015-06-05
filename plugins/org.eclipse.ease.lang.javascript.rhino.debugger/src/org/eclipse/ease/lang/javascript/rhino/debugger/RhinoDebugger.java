@@ -58,11 +58,17 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		@Override
 		public void onExceptionThrown(final Context cx, final Throwable ex) {
 			setExceptionStacktrace();
+
+			// we do not need the scope any longer
+			fScope = null;
 		}
 
 		@Override
 		public void onExit(final Context cx, final boolean byThrow, final Object resultOrException) {
 			getStacktrace().remove(this);
+
+			// we do not need the scope any longer
+			fScope = null;
 		}
 
 		@Override
@@ -96,7 +102,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		}
 	}
 
-	private final Map<DebuggableScript, Script> fFrameToSource = new HashMap<DebuggableScript, Script>();
+	private final Map<Integer, Script> fFrameToSource = new HashMap<Integer, Script>();
 
 	private Script fLastScript = null;
 
@@ -120,8 +126,8 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 
 		// register script source
 		final DebuggableScript parentScript = getParentScript(fnOrScript);
-		if (!fFrameToSource.containsKey(parentScript))
-			fFrameToSource.put(parentScript, script);
+		if (!fFrameToSource.containsKey(parentScript.hashCode()))
+			fFrameToSource.put(parentScript.hashCode(), script);
 
 		// create debug frame
 		final RhinoDebugFrame debugFrame = new RhinoDebugFrame(fnOrScript);
@@ -142,6 +148,11 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 			fLastScript = script;
 			break;
 
+		case ENGINE_END:
+			fFrameToSource.clear();
+			fLastScript = null;
+			break;
+
 		default:
 			// unknown event
 			break;
@@ -151,7 +162,7 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 	}
 
 	private Script getScript(final DebuggableScript rhinoScript) {
-		return fFrameToSource.get(getParentScript(rhinoScript));
+		return fFrameToSource.get(getParentScript(rhinoScript).hashCode());
 	}
 
 	private static DebuggableScript getParentScript(DebuggableScript rhinoScript) {

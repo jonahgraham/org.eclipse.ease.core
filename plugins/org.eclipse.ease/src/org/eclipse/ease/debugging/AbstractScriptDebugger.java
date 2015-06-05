@@ -131,6 +131,8 @@ public abstract class AbstractScriptDebugger implements IEventProcessor, IExecut
 			fEngine.removeExecutionListener(this);
 			fEngine = null;
 			fDispatcher = null;
+			fStacktrace.clear();
+			fExceptionStacktrace.clear();
 			break;
 
 		case SCRIPT_START:

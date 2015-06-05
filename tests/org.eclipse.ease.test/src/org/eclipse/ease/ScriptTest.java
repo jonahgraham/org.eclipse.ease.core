@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -139,15 +138,5 @@ public class ScriptTest {
 
 		script.setException(new Exception());
 		assertTrue(script.getResult().hasException());
-	}
-	
-	@Test
-	public void testClone() throws Exception {
-		final Script source = new Script("name", "code");
-		final Script target = source.clone();
-		
-		assertEquals(source.getTitle(), target.getTitle());
-		assertEquals(source.getCode(), target.getCode());
-		assertNotEquals(source.getResult(), target.getResult());
 	}
 }

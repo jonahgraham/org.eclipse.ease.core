@@ -25,8 +25,7 @@ public class ScriptDebugFrame implements IScriptDebugFrame {
 	private final int fType;
 
 	public ScriptDebugFrame(final Script script, final int lineNumber, final int type) {
-		// deep copy script to get rid of references to the script engine (due to the stored result)
-		fScript = script.clone();
+		fScript = script;
 		fLineNumber = lineNumber;
 		fType = type;
 	}

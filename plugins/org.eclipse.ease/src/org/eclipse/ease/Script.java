@@ -64,17 +64,6 @@ public class Script {
 	}
 
 	/**
-	 * Clones the object as a deep copy.
-	 *
-	 * Initializes the new Script object as if initializing a new Script object with the same parameters as the current one, losing e.g. references to results
-	 * etc.
-	 */
-	@Override
-	public Script clone() {
-		return new Script(fTitle, fCommand);
-	}
-
-	/**
 	 * Get the scriptable data as {@link InputStream}. The caller needs to close the stream when it is not used anymore. Calling this method multiple times will
 	 * return different streams with the same text content.
 	 *

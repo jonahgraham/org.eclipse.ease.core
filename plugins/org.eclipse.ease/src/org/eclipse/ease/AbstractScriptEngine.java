@@ -289,6 +289,10 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			} catch (final Exception e) {
 			}
 		}
+
+		fOutputStream = null;
+		fErrorStream = null;
+		fInputStream = null;
 	}
 
 	@Override

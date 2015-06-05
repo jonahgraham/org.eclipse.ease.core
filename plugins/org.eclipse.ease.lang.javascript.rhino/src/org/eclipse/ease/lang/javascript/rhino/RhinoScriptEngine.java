@@ -69,7 +69,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	public static final String ENGINE_ID = "org.eclipse.ease.javascript.rhino";
 
 	/** Rhino Scope. Created when interpreter is initialized */
-	protected ScriptableObject mScope;
+	private ScriptableObject mScope;
 
 	private Context mContext;
 
@@ -130,6 +130,8 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		// cleanup context
 		Context.exit();
+		mContext = null;
+		mScope = null;
 
 		// unregister from classloader
 		RhinoClassLoader.unregisterEngine(this);
@@ -146,7 +148,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 				@Override
 				public void run() {
 					// initialize scope
-					getContext().initStandardObjects(getScope());
+					getContext().initStandardObjects(mScope);
 
 					// call execute again, now from correct thread
 					try {
@@ -180,20 +182,23 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			final Object result;
 
 			if (script.getCommand() instanceof NativeFunction)
-				result = ((NativeFunction) script.getCommand()).call(getContext(), getScope(), getScope(), ScriptRuntime.emptyArgs);
+				result = ((NativeFunction) script.getCommand()).call(getContext(), mScope, mScope, ScriptRuntime.emptyArgs);
 
 			else if (script.getCommand() instanceof org.mozilla.javascript.Script)
 				// execute anonymous functions
-				result = ((org.mozilla.javascript.Script) script.getCommand()).exec(getContext(), getScope());
+				result = ((org.mozilla.javascript.Script) script.getCommand()).exec(getContext(), mScope);
 
 			else
-				result = getContext().evaluateReader(getScope(), codeReader, fileName, 1, null);
+				result = getContext().evaluateReader(mScope, codeReader, fileName, 1, null);
 
 			if (result instanceof Undefined)
 				return null;
 
 			else if (result instanceof NativeJavaObject)
 				return ((NativeJavaObject) result).unwrap();
+
+			else if (result.getClass().getName().equals("org.mozilla.javascript.InterpretedFunction"))
+				return null;
 
 			return result;
 
@@ -280,10 +285,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		return mDebugger;
 	}
 
-	public ScriptableObject getScope() {
-		return mScope;
-	}
-
 	@Override
 	public synchronized void registerJar(final URL url) {
 		RhinoClassLoader.registerURL(this, url);
@@ -300,12 +301,12 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected Object internalGetVariable(final String name) {
-		return getVariable(getScope(), name);
+		return getVariable(mScope, name);
 	}
 
 	@Override
 	protected Map<String, Object> internalGetVariables() {
-		return getVariables(getScope());
+		return getVariables(mScope);
 	}
 
 	public static Map<String, Object> getVariables(final Scriptable scope) {
@@ -335,7 +336,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected boolean internalHasVariable(final String name) {
-		final Object value = getScope().get(name, getScope());
+		final Object value = mScope.get(name, mScope);
 		return !Scriptable.NOT_FOUND.equals(value);
 	}
 
@@ -344,7 +345,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		if (!JavaScriptHelper.isSaveName(name))
 			throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
 
-		final Scriptable scope = getScope();
+		final Scriptable scope = mScope;
 
 		final Object jsOut = internaljavaToJS(content, scope);
 		scope.put(name, scope, jsOut);
@@ -353,7 +354,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	@Override
 	protected Object internalRemoveVariable(final String name) {
 		final Object result = getVariable(name);
-		getScope().delete(name);
+		mScope.delete(name);
 
 		return result;
 	}
