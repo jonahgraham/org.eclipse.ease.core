@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.modules.ModuleDefinition;
@@ -64,12 +65,59 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 		return null;
 	}
 
-	private final Collection<ModuleDefinition> fLoadedModules = new HashSet<ModuleDefinition>();
+	protected final Collection<ModuleDefinition> fLoadedModules = new HashSet<ModuleDefinition>();
 
 	public ModuleCompletionProvider() {
 		// add environment module
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		fLoadedModules.add(scriptService.getAvailableModules().get(EnvironmentModule.MODULE_NAME));
+	}
+	
+	/**
+	 * Gets human readable description of method for completion UI.
+	 * 
+	 * @param method
+	 *            Method to get description from.
+	 * @param module
+	 *            Module for method.
+	 * @return Human readable description of method.
+	 */
+	protected String getDescription(Method method, ModuleDefinition module) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Public method of module ");
+		sb.append(module.getName());
+		sb.append(".");
+		sb.append("\n");
+		sb.append("Signature and Overloads:\n");
+		for (Method overload : module.getMethods()) {
+			if (overload.getName().equals(method.getName())) {
+				sb.append(overload.toGenericString());
+				sb.append("\n");
+			}
+		}
+		
+		return sb.toString();
+	}
+	
+	/**
+	 * Gets human readable description of member for completion UI.
+	 * 
+	 * @param field
+	 *            Field to get description from.
+	 * @param clazz
+	 *            Class for method.
+	 * @return Human readable description of field.
+	 */
+	protected String getDescription(Field field, ModuleDefinition module) {
+		// Get field modifiers.
+		StringBuilder sb = new StringBuilder();
+		sb.append("Public ");
+		sb.append("member of class ");
+		sb.append(module.getName());
+		sb.append(" of type ");
+		sb.append(field.getType().getName());
+		sb.append(".");
+		return sb.toString();
 	}
 
 	@Override
@@ -87,13 +135,13 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 					// add fields from modules
 					for (Field field : definition.getFields()) {
 						if ((field.getName().startsWith(matcher.group(2))) && (matcher.group(2).length() < field.getName().length()))
-							proposals.add(new ContentProposal(field.getName().substring(matcher.group(2).length()), field.getName(), null));
+							proposals.add(new ContentProposal(field.getName().substring(matcher.group(2).length()), field.getName(), getDescription(field, definition)));
 					}
 
 					// add methods from modules
 					for (Method method : definition.getMethods()) {
 						if ((method.getName().startsWith(matcher.group(2))) && (matcher.group(2).length() < method.getName().length()))
-							proposals.add(new ContentProposal(method.getName().substring(matcher.group(2).length()) + "()", method.getName() + "()", null));
+							proposals.add(new ContentProposal(method.getName().substring(matcher.group(2).length()) + "()", method.getName() + "()", getDescription(method, definition)));
 					}
 				}
 			}
@@ -122,7 +170,7 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	}
 
 	@Override
-	public void addCode(final String code) {
+	public void addCode(final String code, IScriptEngine engine) {
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		Collection<String> modules = getModuleNames(code);
