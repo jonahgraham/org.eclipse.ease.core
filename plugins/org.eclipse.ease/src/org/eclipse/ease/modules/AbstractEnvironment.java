@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.ease.IScriptEngine;
-import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ui.PlatformUI;
@@ -62,10 +61,14 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 				// load dependencies; always load to bring dependencies on top of modules stack
 				for (final String dependencyId : definition.getDependencies()) {
 					final ModuleDefinition requiredModule = scriptService.getModuleDefinition(dependencyId);
-					if ((requiredModule == null) || (loadModule(requiredModule.getPath().toString()) == null)) {
-						Logger.logError("Dependency \"" + dependencyId + "\" could not be resolved.");
-						// could not load dependency, bail out
-						return null;
+
+					if (requiredModule == null)
+						throw new RuntimeException("Could not resolve module dependency \"" + dependencyId + "\"");
+
+					try {
+						loadModule(requiredModule.getPath().toString());
+					} catch (final RuntimeException e) {
+						throw new RuntimeException("Could not load module dependency \"" + requiredModule.getPath().toString() + "\"", e);
 					}
 				}
 
@@ -83,21 +86,17 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 					for (final Object loadedModule : reverseList)
 						wrap(loadedModule);
 				}
-			}
+			} else
+				throw new RuntimeException("Could not find module \"" + identifier + "\"");
 		}
 
-		if (module == null)
-			getScriptEngine().getErrorStream().append("Unable to find module \"" + moduleName + "\"");
+		// first take care that module is tracked as it might modify itself implementing IScriptFunctionModifier
+		// move module up to first position
+		fModules.remove(module);
+		fModules.add(0, module);
 
-		else {
-			// first take care that module is tracked as it might modify itself implementing IScriptFunctionModifier
-			// move module up to first position
-			fModules.remove(module);
-			fModules.add(0, module);
-
-			// create function wrappers
-			wrap(module);
-		}
+		// create function wrappers
+		wrap(module);
 
 		return module;
 	}
