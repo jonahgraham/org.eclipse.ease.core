@@ -95,18 +95,10 @@ public class RhinoScriptEngineTest {
 	}
 
 	private ScriptResult executeCode(final Object code) {
-		ScriptResult result = fEngine.executeAsync(code);
-		fEngine.schedule();
-		synchronized (result) {
-			while (!result.isReady()) {
-				try {
-					result.wait();
-				} catch (InterruptedException e) {
-					return null;
-				}
-			}
+		try {
+			return fEngine.executeSync(code);
+		} catch (InterruptedException e) {
+			return null;
 		}
-
-		return result;
 	}
 }

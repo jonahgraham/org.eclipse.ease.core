@@ -105,9 +105,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	public final ScriptResult executeSync(final Object content) throws InterruptedException {
 
 		if (getState() == NONE)
-			throw new RuntimeException("Engine is not started yet, cannot run code");
+			// automatically schedule engine as it is not started yet
+			schedule();
 
 		final ScriptResult result = executeAsync(content);
+
 		synchronized (result) {
 			while (!result.isReady())
 				result.wait();
