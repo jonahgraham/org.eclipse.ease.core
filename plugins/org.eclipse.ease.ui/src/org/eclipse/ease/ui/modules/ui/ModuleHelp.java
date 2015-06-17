@@ -38,45 +38,12 @@ public class ModuleHelp {
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 
 			try {
-				XMLMemento rootNode = null;
-				XMLMemento bodyNode = null;
 
-				rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				bodyNode = (XMLMemento) rootNode.getChild("body");
-
-				if (bodyNode.getChild("div").getChild("h1").getTextData() != null) {
-					moduleToolTip = bodyNode.getChild("div").getChild("h1").getTextData();
-				}
-				if (bodyNode.getChild("div").getChild("p").getTextData() != null) {
-					moduleToolTip += "\n\n" + bodyNode.getChild("div").getChild("p").getTextData();
-				}
-				IMemento[] bodyChildNodes = bodyNode.getChildren();
-				int lengthBodyChildNodes = bodyChildNodes.length;
-				int lengthModuleChildNodes = 0;
-				for (int i = 0; i < lengthBodyChildNodes; i++) {
-					if (bodyChildNodes[i].getTextData().equalsIgnoreCase("Methods")) {
-						lengthModuleChildNodes = i;
-						break;
-					}
-				}
-				for (int i = 1; i < lengthModuleChildNodes; i++) {
-					if (bodyChildNodes[i].getTextData() != null && !bodyChildNodes[i].getType().equalsIgnoreCase("table")) {
-						moduleToolTip += "\n\n" + bodyChildNodes[i].getTextData();
-					} else if (bodyChildNodes[i].getType().equalsIgnoreCase("table")) {
-						IMemento[] tableChildNodes = bodyChildNodes[i].getChildren();
-						moduleToolTip += "\n" + "--------------------";
-						int lengthTableChildNodes = tableChildNodes.length;
-						for (int j = 1; j < lengthTableChildNodes; j++) {
-							IMemento[] tdNodes = tableChildNodes[j].getChildren("td");
-							String theName = tdNodes[0].getChild("a").getTextData();
-							String description = tdNodes[1].getTextData();
-							moduleToolTip += "\n" + theName.trim() + "    -    " + description.trim();
-						}
-					}
-				}
-
+				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
+				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
+				moduleToolTip = bodyNode.toString();
 			} catch (Exception e) {
-				moduleToolTip = "Cannot find the module help page";
+				return null;
 			}
 		}
 		return moduleToolTip;
@@ -100,12 +67,10 @@ public class ModuleHelp {
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 
 			try {
-				XMLMemento rootNode = null;
-				XMLMemento bodyNode = null;
-				XMLMemento theMethodNode = null;
 
-				rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				bodyNode = (XMLMemento) rootNode.getChild("body");
+				XMLMemento theMethodNode = null;
+				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
+				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
 				boolean found = false;
 				IMemento[] bodyChildNodes = bodyNode.getChildren();
 				int lengthBodyChildNodes = bodyChildNodes.length;
@@ -129,36 +94,13 @@ public class ModuleHelp {
 				}
 
 				if (found) {
-					IMemento[] methodChildNodes = theMethodNode.getChildren();
-					if (methodChildNodes[1].getTextData() != null && methodChildNodes[1].getType().equalsIgnoreCase("p")) {
-						methodToolTip += "\n\nSynopsis\n" + "--------------\n" + methodChildNodes[1].getTextData();
-					}
-					if (methodChildNodes[2].getTextData() != null && methodChildNodes[2].getType().equalsIgnoreCase("p")) {
-						methodToolTip += "\n\nDescription\n" + "--------------\n" + methodChildNodes[2].getTextData();
-					}
-					if (methodChildNodes.length > 3 && methodChildNodes[3].getType().equalsIgnoreCase("table")) {
-						IMemento[] parameterTableNodes = methodChildNodes[3].getChildren();
-						methodToolTip += "\n\nParameters\n" + "--------------\n";
-						int lengthParameterTableNodes = parameterTableNodes.length;
-						for (int j = 1; j < lengthParameterTableNodes; j++) {
-							IMemento[] tableTdNodes = parameterTableNodes[j].getChildren();
-							methodToolTip += tableTdNodes[0].getTextData() + "\t" + tableTdNodes[1].getTextData() + "\t" + tableTdNodes[2].getTextData() + "\n";
-						}
-					}
-					if (methodChildNodes.length > 4 && methodChildNodes[4].getType().equalsIgnoreCase("p")) {
-						methodToolTip += "\nReturns\n" + "--------------\n" + methodChildNodes[4].getTextData();
-						if (methodChildNodes[4].getChild("code") != null) {
-							methodToolTip += methodChildNodes[4].getChild("code").getTextData();
-						} else if (methodChildNodes[4].getChild("i") != null) {
-							methodToolTip += methodChildNodes[4].getChild("i").getTextData();
-						}
-					}
+					methodToolTip = theMethodNode.toString();
 				} else {
-					methodToolTip = "Cannot find the method help content";
+					return null;
 				}
 
 			} catch (Exception e) {
-				methodToolTip = "Cannot find the method help page";
+				return null;
 			}
 		}
 		return methodToolTip;
@@ -182,21 +124,17 @@ public class ModuleHelp {
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 
 			try {
-				XMLMemento rootNode = null;
-				XMLMemento bodyNode = null;
-				XMLMemento tableNode = null;
 
-				rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				bodyNode = (XMLMemento) rootNode.getChild("body");
+				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
+				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
 				boolean constantFound = false;
 
 				for (IMemento node : bodyNode.getChildren()) {
 					if (constantFound) {
-						tableNode = (XMLMemento) node;
+						XMLMemento tableNode = (XMLMemento) node;
 						for (IMemento rowNode : tableNode.getChildren()) {
 							if (rowNode.getChild("td") != null && rowNode.getChild("td").getChild("a").getTextData().equalsIgnoreCase(fieldName)) {
-								IMemento[] tdNodes = rowNode.getChildren("td");
-								constantToolTip = tdNodes[0].getChild("a").getTextData() + "\n" + tdNodes[1].getTextData();
+								constantToolTip = "<table class=\"constants\"><tr><th>Constant</th><th>Description</th></tr>" + rowNode.toString() + "</table>";
 								break;
 							}
 						}
@@ -212,7 +150,7 @@ public class ModuleHelp {
 				}
 
 			} catch (Exception e) {
-				constantToolTip = "Cannot find the field help page";
+				return null;
 			}
 		}
 		return constantToolTip;

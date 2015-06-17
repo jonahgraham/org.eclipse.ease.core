@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -45,7 +44,8 @@ public class ModulesComposite extends Composite {
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		treeViewer.getTree().setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		ColumnViewerToolTipSupport.enableFor(treeViewer);
+		// ColumnViewerToolTipSupport.enableFor(treeViewer);
+		ModuleToolTipDecorator.enableFor(treeViewer);
 
 		// use a decorated label provider
 		treeViewer.setLabelProvider(new ModulesDecoratedLabelProvider(new ModulesLabelProvider()));
