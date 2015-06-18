@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.Logger;
-import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -33,6 +32,7 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.part.ResourceTransfer;
 
 /**
  * DND support for JavaScript shell. DND of plain text, files, resources and IDevices is supported.
@@ -76,7 +76,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 		Collections.sort(candidates, new Comparator<AbstractMap.SimpleEntry<Integer, IShellDropHandler>>() {
 
 			@Override
-			public int compare(AbstractMap.SimpleEntry<Integer, IShellDropHandler> e1, AbstractMap.SimpleEntry<Integer, IShellDropHandler> e2) {
+			public int compare(final AbstractMap.SimpleEntry<Integer, IShellDropHandler> e1, final AbstractMap.SimpleEntry<Integer, IShellDropHandler> e2) {
 				return e2.getKey() - e1.getKey();
 			}
 		});
@@ -103,7 +103,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 	 */
 	public static void addDropSupport(final Control parent, final IScriptEngineProvider engineProvider) {
 		final DropTarget target = new DropTarget(parent, DND.DROP_COPY | DND.DROP_MOVE);
-		target.setTransfer(new Transfer[] { FileTransfer.getInstance(), TextTransfer.getInstance(), LocalSelectionTransfer.getTransfer() });
+		target.setTransfer(new Transfer[] { FileTransfer.getInstance(), TextTransfer.getInstance(), ResourceTransfer.getInstance() });
 		target.addDropListener(new ShellDropTarget(engineProvider));
 	}
 
