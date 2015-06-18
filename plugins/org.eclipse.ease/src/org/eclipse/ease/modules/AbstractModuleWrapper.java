@@ -266,4 +266,29 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 	protected String getFalseString() {
 		return Boolean.FALSE.toString();
 	}
+
+	@Override
+	public String createFunctionCall(final Method method, final Object... parameters) {
+		StringBuilder code = new StringBuilder();
+
+		code.append(method.getName()).append('(');
+
+		// TODO scan for optional parameters and compare with input parameter length
+		for (Object parameter : parameters) {
+			if (parameter instanceof String)
+				code.append('"').append(((String) parameter).replace("\"", "\\\"")).append('"');
+			else
+				code.append(parameter.toString());
+
+			code.append(", ");
+		}
+
+		// remove last comma separator
+		if (parameters.length > 0)
+			code.delete(code.length() - 2, code.length());
+
+		code.append(");");
+
+		return code.toString();
+	}
 }
