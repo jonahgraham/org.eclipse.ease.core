@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,7 +28,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -43,6 +44,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.pde.core.project.IBundleProjectDescription;
 import org.eclipse.pde.core.project.IBundleProjectService;
 import org.eclipse.pde.core.project.IRequiredBundleDescription;
@@ -111,23 +113,61 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 	@Override
 	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Exception {
 
-		// as script cannot natively run in UI code, java scripts can never be
-		// launched in UI mode directly, so we can ignore this flag
+		Class<?> clazz = loadClass(reference);
+		if (clazz != null) {
+
+			Method mainMethod = clazz.getMethod("main", String[].class);
+			if (mainMethod != null) {
+
+				ClassLoader localClassLoader = Thread.currentThread().getContextClassLoader();
+				Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
+
+				try {
+					// before we run main, we try to initialize the class
+					try {
+						Method initialize = clazz.getMethod("initialize", InputStream.class, PrintStream.class, PrintStream.class);
+						initialize.invoke(null, getInputStream(), getOutputStream(), getErrorStream());
+					} catch (NoSuchMethodException e) {
+						// initialize method not available, to be ignored
+					}
+
+					Object result = mainMethod.invoke(null, internalGetVariable("argv"));
+					return result;
+
+				} finally {
+					Thread.currentThread().setContextClassLoader(localClassLoader);
+				}
+			}
+		}
+
+		throw new ClassNotFoundException();
+	}
+
+	/**
+	 * Loads a class definition for a given source file.
+	 *
+	 * @param reference
+	 *            file name or {@link IFile} instance of the source file.
+	 * @return class definition
+	 * @throws ClassNotFoundException
+	 *             If the class was not found
+	 */
+	public static Class<?> loadClass(final Object reference) throws JavaModelException, MalformedURLException, ClassNotFoundException {
+		Object file = ResourceTools.resolveFile(reference, null, true);
 
 		// find source project and resolve dependencies
-		SimpleEntry<IFile, IBundleProjectDescription> pair = getBundleProjectDescription(reference, fileName);
+		SimpleEntry<IFile, IBundleProjectDescription> pair = getBundleProjectDescription(file);
 		if (pair != null) {
 			IFile sourceFile = pair.getKey();
 			IBundleProjectDescription scriptBundleProject = pair.getValue();
 			List<URL> urls = new ArrayList<URL>();
-			IProject p = scriptBundleProject.getProject();
-			IJavaProject javaP = JavaCore.create(p);
+			IProject project = scriptBundleProject.getProject();
+			IJavaProject javaProject = JavaCore.create(project);
 
-			IWorkspace ws = ResourcesPlugin.getWorkspace();
-			IWorkspaceRoot root = ws.getRoot();
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 
-			IClasspathEntry[] cpEntries = javaP.getRawClasspath();
-			if (cpEntries != null)
+			IClasspathEntry[] cpEntries = javaProject.getRawClasspath();
+			if (cpEntries != null) {
 				for (IClasspathEntry cpEntry : cpEntries) {
 					// The script bundle project may have a ".classpath"
 					// dependency on another
@@ -146,8 +186,9 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 						}
 					}
 				}
+			}
 
-			IPath output = javaP.getOutputLocation();
+			IPath output = javaProject.getOutputLocation();
 			IResource bin = root.findMember(output);
 			IPath binPath = bin.getRawLocation();
 			URL url = binPath.toFile().toURI().toURL();
@@ -158,7 +199,7 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 
 			IRequiredBundleDescription[] requiredBundles = scriptBundleProject.getRequiredBundles();
 			List<Bundle> bundles = new ArrayList<Bundle>();
-			if (requiredBundles != null)
+			if (requiredBundles != null) {
 				for (IRequiredBundleDescription requiredBundle : requiredBundles) {
 					String id = requiredBundle.getName();
 					Bundle b = Platform.getBundle(id);
@@ -184,11 +225,11 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 						}
 					}
 				}
+			}
 
-			URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
-
+			URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), JVMCompiledScriptEngine.class.getClassLoader());
 			try {
-				IJavaElement wsElement = javaP.findElement(wsSource);
+				IJavaElement wsElement = javaProject.findElement(wsSource);
 				if (wsElement instanceof ICompilationUnit) {
 					ICompilationUnit u = (ICompilationUnit) wsElement;
 					String uName = u.getElementName();
@@ -204,32 +245,7 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 						uParent = uParent.getParent();
 					}
 
-					Class<?> clazz = cl.loadClass(qName);
-					if (clazz != null) {
-
-						Method mainMethod = clazz.getMethod("main", String[].class);
-						if (mainMethod != null) {
-
-							ClassLoader localClassLoader = Thread.currentThread().getContextClassLoader();
-							Thread.currentThread().setContextClassLoader(cl);
-
-							try {
-								// before we run main, we try to initialize the class
-								try {
-									Method initialize = clazz.getMethod("initialize", InputStream.class, PrintStream.class, PrintStream.class);
-									initialize.invoke(null, getInputStream(), getOutputStream(), getErrorStream());
-								} catch (NoSuchMethodException e) {
-									// initialize method not available, to be ignored
-								}
-
-								Object result = mainMethod.invoke(null, internalGetVariable("argv"));
-								return result;
-
-							} finally {
-								Thread.currentThread().setContextClassLoader(localClassLoader);
-							}
-						}
-					}
+					return cl.loadClass(qName);
 				}
 			} finally {
 				// TODO needs Java 1.7
@@ -239,7 +255,7 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 		return null;
 	}
 
-	private AbstractMap.SimpleEntry<IFile, IBundleProjectDescription> getBundleProjectDescription(final Object reference, final String fileName) {
+	private static AbstractMap.SimpleEntry<IFile, IBundleProjectDescription> getBundleProjectDescription(final Object reference) {
 
 		IFile sourceFile = null;
 
