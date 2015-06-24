@@ -191,7 +191,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			else
 				result = getContext().evaluateReader(mScope, codeReader, fileName, 1, null);
 
-			if (result instanceof Undefined)
+			if ((result == null) || (result instanceof Undefined))
 				return null;
 
 			else if (result instanceof NativeJavaObject)
