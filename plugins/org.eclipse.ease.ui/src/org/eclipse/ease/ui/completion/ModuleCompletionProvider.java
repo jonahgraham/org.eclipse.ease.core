@@ -161,7 +161,137 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	 * 
 	 * Used by {@link #parseCallChain(String)} to only get necessary information about items in call chain.
 	 */
-	protected static final List<String> CODE_DELIMITERS = new ArrayList<String>(Arrays.asList("=", "+", "-", "*", "/", "|", "&", "^", ",", " "));
+	protected static List<String> CODE_DELIMITERS = new ArrayList<String>(Arrays.asList("=", "+", "-", "*", "/", "|", "&", "^", ",", " "));
+
+	/**
+	 * Analyzes a given line of code and removes everything that is not part of the current parentheses' scope. Further performs check if still in opened String
+	 * literal -> do not use autocompletion.
+	 * 
+	 * @param code
+	 *            Line of code to be analyzed.
+	 * @return String with everything in current parentheses' scope, <code>null</code> if String contains invalid syntax or String literal opened.
+	 */
+	protected static String getCurrentParentheses(String code) {
+		Stack<Integer> parantheses = new Stack<Integer>();
+		boolean inString = false;
+		boolean stringEscape = false;
+		for (int i = 0; i < code.length(); i++) {
+			switch (code.charAt(i)) {
+			case '(':
+				if (!inString) {
+					parantheses.push(i);
+				}
+				stringEscape = false;
+				break;
+			case ')':
+				if (!inString) {
+					try {
+						parantheses.pop();
+					} catch (EmptyStackException e) {
+						// Invalid syntax, no completion possible
+						return null;
+					}
+				}
+				stringEscape = false;
+				break;
+			case '"':
+				if (!stringEscape) {
+					inString = !inString;
+				}
+				stringEscape = false;
+				break;
+			case '\\':
+				if (inString) {
+					stringEscape = !stringEscape;
+				}
+				break;
+			default:
+				stringEscape = false;
+				break;
+			}
+		}
+
+		// Check if still in string
+		if (inString) {
+			return null;
+		}
+
+		if (parantheses.isEmpty()) {
+			return code;
+		} else {
+			return code.substring(parantheses.pop() + 1);
+		}
+	}
+
+	/**
+	 * Removes parameters in method calls because they are not necessary for completion. Java overloads must all have same return type so parameters can be
+	 * ignored.
+	 * 
+	 * @param code
+	 *            Piece of code to remove call parameters from.
+	 * @return code with parameters removed from calls.
+	 */
+	protected String removeParameters(String code) {
+		StringBuilder sb = new StringBuilder();
+
+		int level = 0;
+		boolean inString = false;
+		boolean stringEscape = false;
+
+		for (int i = 0; i < code.length(); i++) {
+			switch (code.charAt(i)) {
+			case '(':
+				if (!inString) {
+					if (level == 0) {
+						sb.append('(');
+					}
+					level++;
+				}
+				stringEscape = false;
+				break;
+			case ')':
+				if (!inString) {
+					if (level == 1) {
+						sb.append(')');
+					}
+					level--;
+				}
+				stringEscape = false;
+				break;
+			case '\\':
+				if (inString) {
+					stringEscape = !stringEscape;
+				}
+				break;
+			case '"':
+				if (!stringEscape) {
+					inString = !inString;
+				}
+			default:
+				if (level == 0) {
+					sb.append(code.charAt(i));
+				}
+				stringEscape = false;
+				break;
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Removes everything that is not necessary for evaluation from given piece of code.
+	 *
+	 * @param code
+	 *            Piece of code to be "trimmed".
+	 * @return Code with everything not necessary for code completion removed.
+	 */
+	protected String removeUnnecessaryCode(String code) {
+		// Remove everything up to all code delimiters
+		for (String delimiter : CODE_DELIMITERS) {
+			code = ltrim(code, delimiter);
+		}
+		return code;
+	}
 
 	/**
 	 * Splits the given line of code into a list of expressions to be evaluated one after the other.
@@ -173,39 +303,16 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	protected Queue<String> parseCallChain(String code) {
 
 		// Remove everything that is not part of current parentheses
-		Stack<Integer> parantheses = new Stack<Integer>();
-		for (int i = 0; i < code.length(); i++) {
-			switch (code.charAt(i)) {
-			case '(':
-				parantheses.push(i);
-				break;
-			case ')':
-				try {
-					parantheses.pop();
-				} catch (EmptyStackException e) {
-					// Invalid syntax, no completion possible
-					return null;
-				}
-				break;
-			}
-		}
-		try {
-			// Recursively call with part of interest
-			return parseCallChain(code.substring(parantheses.pop() + 1));
-		} catch (EmptyStackException e) {
-			// ignore
+		code = getCurrentParentheses(code);
+		if (code == null) {
+			return null;
 		}
 
-		// Check if code ends with a call
-		if (code.endsWith(").")) {
-			// HACK: works because empty parentheses do not contain CODE_DELIMITERS
-			code = rtrim(code, "(") + "().";
-		}
+		// Remove parameters in calls (not used)
+		code = removeParameters(code);
 
-		// Remove everything up to all code delimiters
-		for (String delimiter : CODE_DELIMITERS) {
-			code = ltrim(code, delimiter);
-		}
+		// Remove everything that can be ignored during evaluation
+		code = removeUnnecessaryCode(code);
 
 		// In case code ends with '.' add a space to match against everything.
 		if (code.endsWith(".")) {
@@ -221,42 +328,14 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	}
 
 	/**
-	 * Checks if a given piece of code contains a method call.
+	 * Checks if a given piece of code contains a method call. Since parameters are removed from calls before this check has become very simple.
 	 * 
 	 * @param code
 	 *            piece of code to be analyzed.
 	 * @return <code>true</code> if code-piece contains method call, <code>false</code> otherwise.
 	 */
 	protected boolean isCall(String code) {
-		// Code has to contain at least one (pair of) bracket
-		if (!code.contains("(")) {
-			return false;
-		}
-
-		int openedBrackets = 0;
-		for (Character c : code.toCharArray()) {
-			switch (c) {
-			case '(':
-				openedBrackets++;
-				break;
-			case ')':
-				openedBrackets--;
-				break;
-			}
-
-			// Negative bracket count means more closed than opened brackets
-			if (openedBrackets < 0) {
-				return false;
-			}
-		}
-
-		// Code must not start with opening bracket but must end with closing bracket
-		if (code.startsWith("(") || !code.endsWith(")")) {
-			return false;
-		}
-
-		// Code must contain same amount of opening and closing brackets
-		return openedBrackets == 0;
+		return code.endsWith("()");
 	}
 
 	/**
@@ -352,7 +431,6 @@ public abstract class ModuleCompletionProvider implements ICompletionProvider {
 	 */
 	@Override
 	public IContentProposal[] getProposals(final String contents, final int position) {
-
 		List<ContentProposal> proposals = new ArrayList<ContentProposal>();
 
 		// Split string into all substrings to be parsed
