@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.Logger;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -103,7 +104,8 @@ public final class ShellDropTarget extends DropTargetAdapter {
 	 */
 	public static void addDropSupport(final Control parent, final IScriptEngineProvider engineProvider) {
 		final DropTarget target = new DropTarget(parent, DND.DROP_COPY | DND.DROP_MOVE);
-		target.setTransfer(new Transfer[] { FileTransfer.getInstance(), TextTransfer.getInstance(), ResourceTransfer.getInstance() });
+		target.setTransfer(new Transfer[] { FileTransfer.getInstance(), ResourceTransfer.getInstance(), LocalSelectionTransfer.getTransfer(),
+				TextTransfer.getInstance() });
 		target.addDropListener(new ShellDropTarget(engineProvider));
 	}
 
