@@ -36,12 +36,23 @@ public class ModuleHelp {
 		if (module != null) {
 			String helpLocation = module.getHelpLocation(module.getName());
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
-
 			try {
 
 				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
 				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
-				moduleToolTip = bodyNode.toString();
+
+				IMemento[] bodyChildNodes = bodyNode.getChildren();
+				int lengthBodyChildNodes = bodyChildNodes.length;
+				for (int i = 0; i < lengthBodyChildNodes; i++) {
+					if (bodyChildNodes[i].getTextData().equalsIgnoreCase("Method Overview") || bodyChildNodes[i].getTextData().equalsIgnoreCase("Constants")) {
+						break;
+					}
+					moduleToolTip += bodyChildNodes[i].toString();
+				}
+
+				String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
+				moduleToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>" + moduleToolTip + "</body>";
+
 			} catch (Exception e) {
 				return null;
 			}
@@ -94,7 +105,9 @@ public class ModuleHelp {
 				}
 
 				if (found) {
-					methodToolTip = theMethodNode.toString();
+					String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
+					methodToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>" + theMethodNode.toString()
+							+ "</body>";
 				} else {
 					return null;
 				}
@@ -134,7 +147,11 @@ public class ModuleHelp {
 						XMLMemento tableNode = (XMLMemento) node;
 						for (IMemento rowNode : tableNode.getChildren()) {
 							if (rowNode.getChild("td") != null && rowNode.getChild("td").getChild("a").getTextData().equalsIgnoreCase(fieldName)) {
-								constantToolTip = "<table class=\"constants\"><tr><th>Constant</th><th>Description</th></tr>" + rowNode.toString() + "</table>";
+								String theconstantToolTip = "<table class=\"constants\"><tr><th>Constant</th><th>Description</th></tr>" + rowNode.toString()
+										+ "</table>";
+								String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
+								constantToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>"
+										+ theconstantToolTip + "</body>";
 								break;
 							}
 						}

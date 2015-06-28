@@ -1,0 +1,66 @@
+body				{ margin-left: 50px; }
+
+a:visited			{ color: blue; }
+h1					{ margin-left: -30px; padding: 10px 20px 10px 20px;
+						text-transform: uppercase; font-family: "Arial";
+ 						background-color: #443685; color: white;
+ 						border: 1px solid #443685; border-radius: 10px; 
+    				}
+h2					{ margin-left: -30px; margin-top: 50px; padding: 5px 0px 5px 10px;
+						font-family: "Arial";
+						background-color: #f7941e;  color: white;
+						border: 1px solid #f7941e; border-radius: 5px;
+					}
+h3					{ margin-top: 50px; padding: 5px 0px 5px 10px;
+						font-family: "Arial";
+						background-color: #f0f0ff; 
+						border-top: 1px solid black; border-bottom: 1px solid black;
+					}
+table				{ border-spacing: 0px; border-collapse: collapse; }
+th					{ background-color: #000000; color: #FFFFFF;
+						text-align: left; vertical-align: top;
+						font-weight: normal; padding: 5px 6px 5px 6px;
+						font-weight: bold; border: 1px solid white; font-family: "Arial";
+					}
+td					{ padding: 5px 10px 5px 20px; border: 1px solid white; }
+tr:nth-child(even)	{ background-color: #eeeeee; }
+tr:nth-child(odd)	{ background-color: #cccccc; }
+
+h3 a:after			{ content: "()"}
+.functions a		{ text-decoration: none; }
+.functions a:hover	{ text-decoration: underline; }
+
+ul.dependency		{ list-style-image:url(/help/topic/org.eclipse.ease.help/help/images/module.png); }
+.dependency a		{ text-decoration: none; }
+.dependency a:hover	{ text-decoration: underline; }
+
+.command			{ margin-left: 50px; }
+.command h3			{ margin-left: -50px; }
+.deprecated			{ background-color: #fbfbd5;
+						padding: 0px  0px 20px 20px;
+ 						border: 1px solid #f1d657; border-radius: 5px;
+					}
+.deprecatedText		{ text-decoration: line-through; }
+
+.description  		{   }
+.synopsis  			{ font-style: normal; color: #660000; font-family: "Arial"; font-weight: bold}
+.synonyms  			{  }
+
+table.parameters  	{ margin-left: 30px; }
+.return  			{ margin-left: 30px;  }
+.return em  		{ font-weight: bold; font-style: normal; margin-right: 20px; }
+
+
+.warning			{ background-image:url("../images/warning.png"); background-repeat: no-repeat;
+						padding-left: 30px;
+					}
+					
+.example  			{ margin-left: 130px;  }
+.example em  		{ font-weight: bold; font-style: normal; margin-right: 20px; margin-left: -100px; }
+
+.example code  		{ margin-right: 20px; padding: 8 15 8 15; margin-bottom: 10px; 
+						border: 1px solid #cccccc; border-radius: 5px;
+						background-color:  #f2f2f2;
+						display: inline-block;
+						min-width: 500px;
+					}

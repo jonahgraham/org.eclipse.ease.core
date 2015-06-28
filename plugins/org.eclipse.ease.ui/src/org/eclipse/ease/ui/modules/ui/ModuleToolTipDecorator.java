@@ -57,8 +57,8 @@ public class ModuleToolTipDecorator extends ColumnViewerToolTipSupport {
 		composite.setLayout(gridLayout);
 
 		browser = new Browser(composite, SWT.NONE);
-		String theText = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><link rel=\"stylesheet\" type=\"text/css\" href=\"../../org.eclipse.ease.help/help/css/modules_reference.css\" /></head><body>"
-				+ getText(event) + "</body></html>";
+		String theText = "<html>" + getText(event) + "</html>";
+
 		browser.setText(theText);
 
 		java.awt.Point location = MouseInfo.getPointerInfo().getLocation();
