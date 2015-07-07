@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.ease.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.feature" version="0.3.0.qualifier">
+   <feature id="org.eclipse.ease.feature" version="0.3.0.qualifier">
       <category name="Core"/>
    </feature>
-   <feature url="features/org.eclipse.ease.ui.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.ui.feature" version="0.3.0.qualifier">
+   <feature id="org.eclipse.ease.ui.feature" version="0.3.0.qualifier">
       <category name="Core"/>
    </feature>
-   <feature url="features/org.eclipse.ease.javascript.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.javascript.feature" version="0.3.0.qualifier">
+   <feature id="org.eclipse.ease.javascript.feature" version="0.3.0.qualifier">
       <category name="Lang"/>
    </feature>
-   <feature url="features/org.eclipse.ease.python.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.python.feature" version="0.3.0.qualifier">
+   <feature id="org.eclipse.ease.python.feature" version="0.3.0.qualifier">
       <category name="Lang"/>
    </feature>
-   <feature url="features/org.eclipse.ease.lang.jvm.feature_0.3.0.qualifier.jar" id="org.eclipse.ease.lang.jvm.feature" version="0.3.0.qualifier">
+   <feature id="org.eclipse.ease.lang.jvm.feature" version="0.3.0.qualifier">
       <category name="Lang"/>
    </feature>
-   <category-def name="Core" label="Core"/>
-   <category-def name="Lang" label="Lang"/>
+   <category-def name="Core" label="EASE Core">
+      <description>
+         Core scripting framework components.
+      </description>
+   </category-def>
+   <category-def name="Lang" label="EASE Language Support">
+      <description>
+         Support for various scripting languages.
+      </description>
+   </category-def>
 </site>
