@@ -20,16 +20,20 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class SwitchEngine extends AbstractHandler implements IHandler {
 
-    public static final String COMMAND_ID = "org.eclipse.ease.commands.scriptShell.switchEngine";
-    public static final String PARAMETER_ID = COMMAND_ID + ".id";
+	public static final String COMMAND_ID = "org.eclipse.ease.commands.scriptShell.switchEngine";
+	public static final String PARAMETER_ID = COMMAND_ID + ".id";
 
-    @Override
-    public Object execute(final ExecutionEvent event) throws ExecutionException {
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
-        IWorkbenchPart part = HandlerUtil.getActivePart(event);
-        if (part instanceof ScriptShell)
-            ((ScriptShell) part).setEngine(event.getParameter(PARAMETER_ID));
+		String targetEngine = event.getParameter(PARAMETER_ID);
 
-        return null;
-    }
+		if (targetEngine != null) {
+			IWorkbenchPart part = HandlerUtil.getActivePart(event);
+			if (part instanceof ScriptShell)
+				((ScriptShell) part).setEngine(event.getParameter(PARAMETER_ID));
+		}
+
+		return null;
+	}
 }
