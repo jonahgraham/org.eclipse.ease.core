@@ -78,6 +78,9 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 
 				fModuleNames.put(moduleName, module);
 
+				// we need to track this module already as we need it in case we want to manipulate functions of already loaded modules
+				fModules.add(module);
+
 				// scripts changing functions force reloading of the whole module stack
 				if (module instanceof IScriptFunctionModifier) {
 					final List<Object> reverseList = new ArrayList<Object>(fModules);
