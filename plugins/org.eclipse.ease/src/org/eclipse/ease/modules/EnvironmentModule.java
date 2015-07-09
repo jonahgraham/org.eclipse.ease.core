@@ -53,7 +53,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 	@WrapToScript
 	public void wrap(final Object toBeWrapped) {
 		// register new variable in script engine
-		final String identifier = getScriptEngine().getSaveVariableName(MODULE_PREFIX + toBeWrapped.toString());
+		final String identifier = getScriptEngine().getSaveVariableName(getWrappedVariableName(toBeWrapped));
 
 		final boolean reloaded = getScriptEngine().hasVariable(identifier);
 		getScriptEngine().setVariable(identifier, toBeWrapped);
@@ -68,6 +68,10 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 		// notify listeners
 		fireModuleEvent(toBeWrapped, reloaded ? IModuleListener.RELOADED : IModuleListener.LOADED);
+	}
+
+	public static final String getWrappedVariableName(final Object toBeWrapped) {
+		return (MODULE_PREFIX + toBeWrapped.getClass().getName()).replace('.', '_');
 	}
 
 	/**
@@ -187,7 +191,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 	/**
 	 * Get the current script engine instance.
-	 * 
+	 *
 	 * @return {@link IScriptEngine} instance
 	 */
 	@WrapToScript
