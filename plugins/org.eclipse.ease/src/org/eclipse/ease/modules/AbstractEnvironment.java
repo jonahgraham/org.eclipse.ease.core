@@ -181,10 +181,27 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 		return Collections.unmodifiableList(fModules);
 	}
 
+	/**
+	 * Write a message to the output stream of the script engine.
+	 *
+	 * @param text
+	 *            message to write
+	 */
 	@Override
 	@WrapToScript
 	public final void print(final @ScriptParameter(defaultValue = "") Object text) {
 		getScriptEngine().getOutputStream().println(text);
+	}
+
+	/**
+	 * Write a message to the error stream of the script engine.
+	 *
+	 * @param text
+	 *            message to write
+	 */
+	@WrapToScript
+	public final void printError(final @ScriptParameter(defaultValue = "") Object text) {
+		getScriptEngine().getErrorStream().println(text);
 	}
 
 	@Override
