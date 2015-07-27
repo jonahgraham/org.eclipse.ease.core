@@ -150,14 +150,11 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		super();
 
 		// setup Script engine
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench()
-				.getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		// try to load preferred engine
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(
-				IPreferenceConstants.NODE_SHELL);
-		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE,
-				IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
+		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE, IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
 		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
 
 		if (engineDescription == null) {
@@ -236,10 +233,10 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		final TabFolder tabFolder = new TabFolder(fSashForm, SWT.BOTTOM);
 
 		fDropins = getAvailableDropins();
-		for (IShellDropin dropin : fDropins) {
+		for (final IShellDropin dropin : fDropins) {
 			dropin.setScriptEngine(fScriptEngine);
 
-			TabItem tab = new TabItem(tabFolder, SWT.NONE);
+			final TabItem tab = new TabItem(tabFolder, SWT.NONE);
 			tab.setText(dropin.getTitle());
 			tab.setControl(dropin.createPartControl(getSite(), tabFolder));
 		}
@@ -279,15 +276,11 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		setPartName(fScriptEngine.getName() + " " + super.getTitle());
 
 		// read default preferences
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(
-				IPreferenceConstants.NODE_SHELL);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
 
-		fHistoryLength = prefs.getInt(IPreferenceConstants.SHELL_HISTORY_LENGTH,
-				IPreferenceConstants.DEFAULT_SHELL_HISTORY_LENGTH);
-		fAutoFocus = prefs.getBoolean(IPreferenceConstants.SHELL_AUTOFOCUS,
-				IPreferenceConstants.DEFAULT_SHELL_AUTOFOCUS);
-		fKeepCommand = prefs.getBoolean(IPreferenceConstants.SHELL_KEEP_COMMAND,
-				IPreferenceConstants.DEFAULT_SHELL_KEEP_COMMAND);
+		fHistoryLength = prefs.getInt(IPreferenceConstants.SHELL_HISTORY_LENGTH, IPreferenceConstants.DEFAULT_SHELL_HISTORY_LENGTH);
+		fAutoFocus = prefs.getBoolean(IPreferenceConstants.SHELL_AUTOFOCUS, IPreferenceConstants.DEFAULT_SHELL_AUTOFOCUS);
+		fKeepCommand = prefs.getBoolean(IPreferenceConstants.SHELL_KEEP_COMMAND, IPreferenceConstants.DEFAULT_SHELL_KEEP_COMMAND);
 
 		if (fAutoFocus) {
 			if (fAutoFocusListener == null)
@@ -295,6 +288,10 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 			fOutputText.addKeyListener(fAutoFocusListener);
 		}
+
+		final TextSelectionProvider selectionProvider = new TextSelectionProvider();
+		fOutputText.addSelectionListener(selectionProvider);
+		getSite().setSelectionProvider(selectionProvider);
 
 		// run startup commands, do this for all supported script types
 		runStartupCommands();
@@ -306,14 +303,13 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fContentAssistAdapter.setEnabled(false);
 
 		// get auto completion provider for current engine
-		final ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine
-				.getDescription());
+		final ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine.getDescription());
 
 		if (provider != null) {
 			try {
 				final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo,
-						new ComboContentAdapter(), provider, activationKey, provider.getActivationChars());
+				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
+						provider.getActivationChars());
 				adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 				fContentAssistAdapter = adapter;
 			} catch (final ParseException e) {
@@ -323,8 +319,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	}
 
 	public void runStartupCommands() {
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(
-				IPreferenceConstants.NODE_SHELL);
+		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
 
 		for (final ScriptType scriptType : fScriptEngine.getDescription().getSupportedScriptTypes()) {
 			final String initCommands = prefs.get(IPreferenceConstants.SHELL_STARTUP + scriptType.getName(), "").trim();
@@ -336,8 +331,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	}
 
 	/**
-	 * Add a command to the command history. History is stored in a ring buffer,
-	 * so old entries will drop out once new entries are added. History will be
+	 * Add a command to the command history. History is stored in a ring buffer, so old entries will drop out once new entries are added. History will be
 	 * preserved over program sessions.
 	 *
 	 * @param input
@@ -411,9 +405,8 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	}
 
 	/**
-	 * Print to the output pane or to console. Text in the output pane may be
-	 * formatted in different styles depending on the style flag. Printing is
-	 * executed if printLock is turned off or in case of error output.
+	 * Print to the output pane or to console. Text in the output pane may be formatted in different styles depending on the style flag. Printing is executed if
+	 * printLock is turned off or in case of error output.
 	 *
 	 * @param text
 	 *            text to print
@@ -473,25 +466,25 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 		switch (style) {
 		case TYPE_RESULT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
-					.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
 			break;
 
 		case TYPE_COMMAND:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
-					.getDisplay().getSystemColor(SWT.COLOR_BLUE)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE)));
 			styleRange.fontStyle = SWT.BOLD;
 			break;
 
 		case TYPE_ERROR:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
-					.getDisplay().getSystemColor(SWT.COLOR_RED)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
 			styleRange.fontStyle = SWT.ITALIC;
 			break;
 
 		case TYPE_OUTPUT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell()
-					.getDisplay().getSystemColor(SWT.COLOR_BLACK)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLACK)));
 			break;
 
 		default:
@@ -502,8 +495,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	}
 
 	/**
-	 * Get the text selected in the output pane. if no text is selected, the
-	 * whole content will be returned.
+	 * Get the text selected in the output pane. if no text is selected, the whole content will be returned.
 	 *
 	 * @return selected text of output pane
 	 */
@@ -582,8 +574,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 					// add to content assist
 					if (fContentAssistAdapter != null)
-						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script
-								.getCode(), engine);
+						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script.getCode(), engine);
 				}
 
 				if (fKeepCommand) {
@@ -617,8 +608,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fScriptEngine.terminate();
 		}
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench()
-				.getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		fScriptEngine = scriptService.getEngineByID(id).createEngine();
 
 		if (fScriptEngine != null) {
@@ -645,7 +635,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 				runStartupCommands();
 
 			// update drop-ins
-			for (IShellDropin dropin : fDropins)
+			for (final IShellDropin dropin : fDropins)
 				dropin.setScriptEngine(fScriptEngine);
 		}
 	}
@@ -656,10 +646,9 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	private static final String PROPERTY_DROPIN_CLASS = "class";
 
 	private static Collection<IShellDropin> getAvailableDropins() {
-		List<IShellDropin> dropins = new ArrayList<IShellDropin>();
+		final List<IShellDropin> dropins = new ArrayList<IShellDropin>();
 
-		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(
-				EXTENSION_SHELL_ID);
+		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_SHELL_ID);
 		for (final IConfigurationElement e : config) {
 			if (e.getName().equals(EXTENSION_DROPIN_ID)) {
 				// drop-in detected
@@ -670,7 +659,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 						// TODO sort by priorities
 						dropins.add((IShellDropin) dropin);
 					}
-				} catch (CoreException e1) {
+				} catch (final CoreException e1) {
 					Logger.logError("Invalid shell dropin detected: " + e.getAttribute(PROPERTY_DROPIN_CLASS), e1);
 				}
 			}
