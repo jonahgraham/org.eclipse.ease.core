@@ -1,0 +1,54 @@
+target "Mars for Developers"
+
+// target platform containing all necessary sources for EASE core and EASE module developers
+
+with source requirements
+
+include "Mars.tpd"
+
+location "http://pydev.org/updates/" {
+	org.python.pydev.feature.feature.group
+}
+
+location "http://download.eclipse.org/releases/mars/" eclipse-mars {
+	org.eclipse.mylyn.gerrit.feature.feature.group
+	org.eclipse.mylyn.git.feature.group
+	org.eclipse.mylyn.commons.feature.group
+	org.eclipse.mylyn.team_feature.feature.group
+	org.eclipse.mylyn.commons.repositories.feature.group
+	org.eclipse.mylyn.ide_feature.feature.group
+
+	// modeling modules
+	org.eclipse.papyrus.infra.feature.feature.group
+	org.eclipse.papyrus.infra.gmfdiag.feature.feature.group
+	org.eclipse.papyrus.sysml.feature.feature.group
+	org.eclipse.papyrus.uml.diagram.feature.feature.group
+	org.eclipse.uml2.uml
+	org.eclipse.gmf.runtime.diagram.ui
+	org.eclipse.emf.emfstore.client.ui.feature.feature.group
+	org.eclipse.ocl.examples.classic.feature.group
+	org.eclipse.ocl.examples.feature.group
+
+	// unit test modules
+	org.eclipse.wst.xml_core.feature.feature.group
+	org.eclipse.wst.xml_ui.feature.feature.group
+	
+	// svn module
+	org.eclipse.team.svn.feature.group
+	
+	// git module
+	org.eclipse.egit.feature.group
+	org.eclipse.jgit.feature.group
+}
+
+location "http://download.eclipse.org/ease/update/nightly" {
+	// EASE core dependencies
+	org.eclipse.ease.feature.feature.group lazy
+	org.eclipse.ease.ui.feature.feature.group lazy
+	org.eclipse.ease.javascript.feature.feature.group lazy
+}
+
+location "http://download.eclipse.org/technology/nebula/snapshot" {
+	// charting module
+	org.eclipse.nebula.visualization.feature.feature.group lazy
+}
