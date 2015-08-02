@@ -18,6 +18,7 @@ import java.net.URL;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.XMLMemento;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.Logger;
 import org.eclipse.ui.PlatformUI;
 
 public class ModuleHelp {
@@ -28,18 +29,24 @@ public class ModuleHelp {
 	 * @param element
 	 * @return module tool tip
 	 */
-	public static String getModuleHelpTip(final Object element) {
+	public static String getModuleHelpTip(final ModuleDefinition module) {
 
-		ModuleDefinition module = (ModuleDefinition) element;
-		String moduleToolTip = "";
+		String moduleToolTip = null;
+		XMLMemento bodyNode = null;
 
 		if (module != null) {
+			moduleToolTip = "";
 			String helpLocation = module.getHelpLocation(module.getName());
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 			try {
 
 				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
+
+				if (rootNode.getChild("body") != null) {
+					bodyNode = (XMLMemento) rootNode.getChild("body");
+				} else {
+					return null;
+				}
 
 				IMemento[] bodyChildNodes = bodyNode.getChildren();
 				int lengthBodyChildNodes = bodyChildNodes.length;
@@ -54,6 +61,7 @@ public class ModuleHelp {
 				moduleToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>" + moduleToolTip + "</body>";
 
 			} catch (Exception e) {
+				Logger.logError("Cannot find the module help content ", e);
 				return null;
 			}
 		}
@@ -66,14 +74,15 @@ public class ModuleHelp {
 	 * @param element
 	 * @return method tool tip
 	 */
-	public static String getMethodHelpTip(final Object element) {
+	public static String getMethodHelpTip(final Method method) {
 
-		ModuleDefinition module = ModulesTools.getDeclaringModule((Method) element);
-		Method method = (Method) element;
-		String methodToolTip = "";
+		ModuleDefinition module = ModulesTools.getDeclaringModule(method);
+		String methodToolTip = null;
 		String methodName = method.getName();
+		XMLMemento bodyNode = null;
 
 		if (module != null) {
+			methodToolTip = "";
 			String helpLocation = module.getHelpLocation(module.getName());
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 
@@ -81,7 +90,13 @@ public class ModuleHelp {
 
 				XMLMemento theMethodNode = null;
 				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
+
+				if (rootNode.getChild("body") != null) {
+					bodyNode = (XMLMemento) rootNode.getChild("body");
+				} else {
+					return null;
+				}
+
 				boolean found = false;
 				IMemento[] bodyChildNodes = bodyNode.getChildren();
 				int lengthBodyChildNodes = bodyChildNodes.length;
@@ -95,8 +110,12 @@ public class ModuleHelp {
 				}
 
 				for (int i = indexOfFirstMethodNode; i < lengthBodyChildNodes; i++) {
-					if (bodyChildNodes[i].getChild("h3").getChild("a") != null
-							&& bodyChildNodes[i].getChild("h3").getChild("a").getTextData().equalsIgnoreCase(methodName)) {
+
+					if (isNull(bodyChildNodes[i], bodyChildNodes[i].getChild("h3"), bodyChildNodes[i].getChild("h3").getChild("a"))) {
+						return null;
+					}
+
+					if (bodyChildNodes[i].getChild("h3").getChild("a").getTextData().equalsIgnoreCase(methodName)) {
 						methodToolTip = bodyChildNodes[i].getChild("h3").getChild("a").getTextData();
 						theMethodNode = (XMLMemento) bodyChildNodes[i];
 						found = true;
@@ -113,6 +132,7 @@ public class ModuleHelp {
 				}
 
 			} catch (Exception e) {
+				Logger.logError("Cannot find the method help content ", e);
 				return null;
 			}
 		}
@@ -125,28 +145,48 @@ public class ModuleHelp {
 	 * @param element
 	 * @return constant tool tip
 	 */
-	public static String getConstantHelpTip(final Object element) {
+	public static String getConstantHelpTip(final Field field) {
 
-		ModuleDefinition module = ModulesTools.getDeclaringModule((Field) element);
-		Field field = (Field) element;
-		String constantToolTip = "";
+		ModuleDefinition module = ModulesTools.getDeclaringModule(field);
+		String constantToolTip = null;
 		String fieldName = field.getName();
+		XMLMemento bodyNode = null;
 
 		if (module != null) {
+			constantToolTip = "";
 			String helpLocation = module.getHelpLocation(module.getName());
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 
 			try {
 
 				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				XMLMemento bodyNode = (XMLMemento) rootNode.getChild("body");
+				if (rootNode.getChild("body") != null) {
+					bodyNode = (XMLMemento) rootNode.getChild("body");
+				} else {
+					return null;
+				}
+
 				boolean constantFound = false;
 
 				for (IMemento node : bodyNode.getChildren()) {
 					if (constantFound) {
-						XMLMemento tableNode = (XMLMemento) node;
+						XMLMemento tableNode = null;
+						if (node != null) {
+							tableNode = (XMLMemento) node;
+						} else {
+							return null;
+						}
+
+						boolean isFirst = true;
 						for (IMemento rowNode : tableNode.getChildren()) {
-							if (rowNode.getChild("td") != null && rowNode.getChild("td").getChild("a").getTextData().equalsIgnoreCase(fieldName)) {
+							if (isFirst) {
+								isFirst = false;
+								continue;
+							}
+							if (isNull(rowNode, rowNode.getChild("td"), rowNode.getChild("td").getChild("a"))) {
+								return null;
+							}
+							if (rowNode.getChild("td").getChild("a").getTextData().equalsIgnoreCase(fieldName)) {
 								String theconstantToolTip = "<table class=\"constants\"><tr><th>Constant</th><th>Description</th></tr>" + rowNode.toString()
 										+ "</table>";
 								String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
@@ -167,10 +207,23 @@ public class ModuleHelp {
 				}
 
 			} catch (Exception e) {
+				Logger.logError("Cannot find the constant help content", e);
 				return null;
 			}
 		}
 		return constantToolTip;
+	}
+
+	/**
+	 * Check whether HTML nodes are null
+	 * 
+	 * @return true if a null node is found, false otherwise
+	 */
+	private static boolean isNull(IMemento node1, IMemento node2, IMemento node3) {
+		if (node1 == null || node2 == null || node3 == null) {
+			return true;
+		}
+		return false;
 	}
 
 }
