@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.ease.IScriptEngineLaunchExtension;
+import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.modules.IModuleWrapper;
 import org.eclipse.ease.modules.ModuleCategoryDefinition;
 import org.eclipse.ease.modules.ModuleDefinition;
@@ -71,6 +72,15 @@ public interface IScriptService {
 	 * @return module wrapper or <code>null</code>
 	 */
 	IModuleWrapper getModuleWrapper(String engineID);
+
+	/**
+	 * Get the unique completion analyzer for a dedicated script engine.
+	 * 
+	 * @param engineID
+	 *            engine identifier
+	 * @return completion analyzer or <code>null</code>
+	 */
+	ICompletionAnalyzer getCompletionAnalyzer(String engineID);
 
 	/**
 	 * Get a map of available modules. Keys contain the full module name, values contain its descriptor.

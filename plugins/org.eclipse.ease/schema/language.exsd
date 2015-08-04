@@ -21,6 +21,7 @@
             <element ref="engine" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="launchExtension" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="moduleWrapper" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="completionAnalyzer" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -209,6 +210,36 @@
                </documentation>
                <appinfo>
                   <meta.attribute kind="identifier" basedOn="org.eclipse.ease.scriptType/scriptType/@name"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="completionAnalyzer">
+      <annotation>
+         <documentation>
+            Language specific line analyzer to give context for code completion.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="engineID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Engine id to help mapping to correct instance at runtime.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.ease.language/engine/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Actuall class implementing the ICompletionAnalyzer interface.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ease.completion.ICompletionAnalyzer"/>
                </appinfo>
             </annotation>
          </attribute>
