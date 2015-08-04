@@ -308,8 +308,12 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		if (provider != null) {
 			try {
 				final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
+/*				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
 						provider.getActivationChars());
+*/
+				final ContentProposalAdapter adapter = new ContentProposalModifier(fInputCombo,
+						new ComboContentAdapter(), provider, activationKey, provider.getActivationChars());
+				
 				adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 				fContentAssistAdapter = adapter;
 			} catch (final ParseException e) {

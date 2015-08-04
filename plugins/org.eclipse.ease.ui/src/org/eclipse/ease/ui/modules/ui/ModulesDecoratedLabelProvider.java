@@ -43,13 +43,13 @@ public class ModulesDecoratedLabelProvider extends DecoratedLabelProvider {
 			return null;
 
 		if (element instanceof ModuleDefinition)
-			return ModuleHelp.getModuleHelpTip(element);
+			return ModuleHelp.getModuleHelpTip((ModuleDefinition) element);
 
 		if (element instanceof Method)
-			return ModuleHelp.getMethodHelpTip(element);
+			return ModuleHelp.getMethodHelpTip((Method) element);
 
 		if (element instanceof Field)
-			return ModuleHelp.getConstantHelpTip(element);
+			return ModuleHelp.getConstantHelpTip((Field) element);
 
 		return null;
 	}

@@ -10,8 +10,9 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Hannes Erven <hannes@erven.at> - Bug 293841 - [FieldAssist] NumLock keyDown event should not close the proposal popup [with patch]
+ *     Vidura Mudalige - update content area to display HTML content
  *******************************************************************************/
-package org.eclipse.jface.fieldassist;
+package org.eclipse.ease.ui.view;
 
 import java.util.ArrayList;
 
@@ -19,11 +20,19 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalListener;
+import org.eclipse.jface.fieldassist.IContentProposalListener2;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
+import org.eclipse.jface.fieldassist.IControlContentAdapter2;
 import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
@@ -35,6 +44,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -44,7 +54,6 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 
 /**
  * ContentProposalAdapter can be used to attach content proposal behavior to a
@@ -62,7 +71,7 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @since 3.2
  */
-public class ContentProposalAdapter {
+public class ContentProposalModifier extends ContentProposalAdapter {
 
 	/*
 	 * The lightweight popup used to show content proposals for a text field. If
@@ -418,9 +427,9 @@ public class ContentProposalAdapter {
 		private class InfoPopupDialog extends PopupDialog {
 
 			/*
-			 * The text control that displays the text.
+			 * The browser control that displays the text.
 			 */
-			private Text text;
+			private Browser fBrowser;
 
 			/*
 			 * The String shown in the popup.
@@ -439,26 +448,26 @@ public class ContentProposalAdapter {
 			 * Create a text control for showing the info about a proposal.
 			 */
 			@Override
+			// TODO WORKING AREA ********************************************************************************************************************************************************************
 			protected Control createDialogArea(Composite parent) {
-				text = new Text(parent, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP
-						| SWT.NO_FOCUS);
 
-				// Use the compact margins employed by PopupDialog.
-				GridData gd = new GridData(GridData.BEGINNING
-						| GridData.FILL_BOTH);
-				gd.horizontalIndent = PopupDialog.POPUP_HORIZONTALSPACING;
-				gd.verticalIndent = PopupDialog.POPUP_VERTICALSPACING;
-				text.setLayoutData(gd);
-				text.setText(contents);
+				GridLayout gridLayout = new GridLayout(1, true);
+				final Composite composite = new Composite(parent, SWT.NONE);
+				composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				composite.setLayout(gridLayout);
+				fBrowser = new Browser(composite, SWT.NONE);
+				fBrowser.setText("<html>" + contents + "</html>");
 
 				// since SWT.NO_FOCUS is only a hint...
-				text.addFocusListener(new FocusAdapter() {
+				fBrowser.addFocusListener(new FocusAdapter() {
+
 					@Override
 					public void focusGained(FocusEvent event) {
 						ContentProposalPopup.this.close();
 					}
 				});
-				return text;
+
+				return fBrowser;
 			}
 
 			/*
@@ -536,8 +545,8 @@ public class ContentProposalAdapter {
 					newContents = EMPTY;
 				}
 				this.contents = newContents;
-				if (text != null && !text.isDisposed()) {
-					text.setText(contents);
+				if (fBrowser != null && !fBrowser.isDisposed()) {
+					fBrowser.setText("<html>" + contents + "</html>");
 				}
 			}
 
@@ -545,11 +554,10 @@ public class ContentProposalAdapter {
 			 * Return whether the popup has focus.
 			 */
 			boolean hasFocus() {
-				if (text == null || text.isDisposed()) {
+				if (fBrowser == null || fBrowser.isDisposed()) {
 					return false;
 				}
-				return text.getShell().isFocusControl()
-						|| text.isFocusControl();
+				return fBrowser.getShell().isFocusControl() || fBrowser.isFocusControl();
 			}
 		}
 
@@ -1314,11 +1322,11 @@ public class ContentProposalAdapter {
 	 *            <code>null</code>, then all alphanumeric characters will
 	 *            auto-activate content proposal.
 	 */
-	public ContentProposalAdapter(Control control,
+	public ContentProposalModifier(Control control,
 			IControlContentAdapter controlContentAdapter,
 			IContentProposalProvider proposalProvider, KeyStroke keyStroke,
 			char[] autoActivationCharacters) {
-		super();
+		super(control, controlContentAdapter, proposalProvider, keyStroke, autoActivationCharacters);
 		// We always assume the control and content adapter are valid.
 		Assert.isNotNull(control);
 		Assert.isNotNull(controlContentAdapter);

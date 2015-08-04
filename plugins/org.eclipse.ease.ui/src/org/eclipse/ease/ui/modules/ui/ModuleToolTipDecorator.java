@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tracker;
 
 public class ModuleToolTipDecorator extends ColumnViewerToolTipSupport {
-	Browser browser;
+	Browser fBrowser;
 
 	/**
 	 * @param viewer
@@ -56,10 +56,10 @@ public class ModuleToolTipDecorator extends ColumnViewerToolTipSupport {
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		composite.setLayout(gridLayout);
 
-		browser = new Browser(composite, SWT.NONE);
+		fBrowser = new Browser(composite, SWT.NONE);
 		String theText = "<html>" + getText(event) + "</html>";
 
-		browser.setText(theText);
+		fBrowser.setText(theText);
 
 		java.awt.Point location = MouseInfo.getPointerInfo().getLocation();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -74,7 +74,7 @@ public class ModuleToolTipDecorator extends ColumnViewerToolTipSupport {
 		}
 
 		composite.getShell().setBounds(x, y, 616, 216);
-		browser.setSize(600, 170);
+		fBrowser.setSize(600, 170);
 
 		composite.getShell().open();
 
@@ -89,7 +89,7 @@ public class ModuleToolTipDecorator extends ColumnViewerToolTipSupport {
 				if (tracker.open()) {
 					Rectangle after = tracker.getRectangles()[0];
 					composite.getShell().setSize(after.width + 20, after.height + 20);
-					browser.setSize(after.width + 20 - 16, after.height + 20 - 46);
+					fBrowser.setSize(after.width + 20 - 16, after.height + 20 - 46);
 				}
 				tracker.dispose();
 			}

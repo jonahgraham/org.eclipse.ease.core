@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     kloeschmartin - initial API and implementation
+ *     Vidura Mudalige - link with ModuleHelp to get improved tooltips
  *******************************************************************************/
 
 package org.eclipse.ease.ui.completion;
@@ -16,6 +17,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.modules.ui.ModuleHelp;
 
 /**
  * Static string formatting class to describe code completion suggestions.
@@ -27,7 +29,10 @@ import org.eclipse.ease.modules.ModuleDefinition;
 public class CompletionDescriptionFormatter {
 
 	public static String format(Field field, ModuleDefinition module) {
-		return String.format("Public member of module %s with type %s.", module.getName(), field.getType().getName());
+		if (ModuleHelp.getConstantHelpTip(field) == null) {
+			return String.format("Public member of module %s with type %s.", module.getName(), field.getType().getName());
+		} else
+			return ModuleHelp.getConstantHelpTip(field);
 	}
 
 	public static String format(Field field, Class clazz) {
@@ -43,16 +48,20 @@ public class CompletionDescriptionFormatter {
 	}
 
 	public static String format(Method method, ModuleDefinition module) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("Public method of module %s.\n", module.getName()));
-		sb.append("Signature and overloads:\n");
-		for (Method overload : module.getMethods()) {
-			if (overload.getName().equals(method.getName())) {
-				sb.append(overload.toGenericString());
-				sb.append("\n");
+
+		if (ModuleHelp.getMethodHelpTip(method) == null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("Public method of module %s.\n", module.getName()));
+			sb.append("Signature and overloads:\n");
+			for (Method overload : module.getMethods()) {
+				if (overload.getName().equals(method.getName())) {
+					sb.append(overload.toGenericString());
+					sb.append("\n");
+				}
 			}
-		}
-		return sb.toString();
+			return sb.toString();
+		} else
+			return ModuleHelp.getMethodHelpTip(method);
 	}
 
 	public static String format(Method method, Class clazz) {
