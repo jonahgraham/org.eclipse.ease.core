@@ -9,7 +9,7 @@
  *     Martin Kloesch - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.modules;
+package org.eclipse.ease.completion;
 
 /**
  * Interface to create basis for language specific completion context.
