@@ -9,14 +9,14 @@
  *     Martin Kloesch - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.modules;
+package org.eclipse.ease.completion;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ease.modules.ICompletionSource.SourceType;
+import org.eclipse.ease.completion.ICompletionSource.SourceType;
 
 /**
  * Simple data-storage implementation of {@link ICompletionContext}.

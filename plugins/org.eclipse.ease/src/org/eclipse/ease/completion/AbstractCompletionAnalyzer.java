@@ -9,14 +9,14 @@
  *     Martin Kloesch - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.modules;
+package org.eclipse.ease.completion;
 
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
 
-import org.eclipse.ease.modules.ICompletionSource.SourceType;
+import org.eclipse.ease.completion.ICompletionSource.SourceType;
 
 /**
  * Abstract base implementation for {@link ICompletionAnalyzer}.

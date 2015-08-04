@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.ease.modules.AbstractCompletionAnalyzer;
-import org.eclipse.ease.modules.CompletionSource;
-import org.eclipse.ease.modules.ICompletionSource;
-import org.eclipse.ease.modules.ICompletionSource.SourceType;
+import org.eclipse.ease.completion.AbstractCompletionAnalyzer;
+import org.eclipse.ease.completion.CompletionSource;
+import org.eclipse.ease.completion.ICompletionSource;
+import org.eclipse.ease.completion.ICompletionSource.SourceType;
 
 /**
  * @author Martin Kloesch
@@ -31,7 +31,7 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 	 * 
 	 * Used by {@link #parseCallChain(String)} to only get necessary information about items in call chain.
 	 */
-	private static List<String> CODE_DELIMITERS = new ArrayList<String>(Arrays.asList("=", "+", "-", "*", "/", "|", "&", "^", ","));
+	private static List<String> CODE_DELIMITERS = new ArrayList<String>(Arrays.asList("=", "+", "-", "*", "/", "|", "&", "^", ",", "{", "}", "[", "]", ";"));
 
 	/**
 	 * Special case of {@link #removeUnnecessaryCode(String)}.

@@ -9,7 +9,7 @@
  *     Martin Kloesch - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.modules;
+package org.eclipse.ease.completion;
 
 /**
  * Interface to describe a single item in a "call-chain".

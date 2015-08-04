@@ -14,7 +14,7 @@ package org.eclipse.ease.ui.completion;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.ease.modules.ICompletionContext;
+import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
