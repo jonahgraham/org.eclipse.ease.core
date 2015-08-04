@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.modules.IModuleWrapper;
 import org.eclipse.ease.modules.ModuleCategoryDefinition;
 import org.eclipse.ease.modules.ModuleDefinition;
@@ -55,6 +56,8 @@ public class ScriptService implements IScriptService {
 	private static final String LAUNCH_EXTENSION = "launchExtension";
 
 	private static final String MODULE_WRAPPER = "moduleWrapper";
+	
+	private static final String COMPLETION_ANALYZER = "completionAnalyzer";
 
 	private static ScriptService fInstance = null;
 
@@ -79,6 +82,8 @@ public class ScriptService implements IScriptService {
 	private Map<String, EngineDescription> fEngineDescriptions = null;
 
 	private Map<String, IModuleWrapper> fModuleWrappers = null;
+	
+	private Map<String, ICompletionAnalyzer> fCompletionAnalyzers = null;
 
 	private Map<String, ScriptType> fScriptTypes = null;
 
@@ -191,6 +196,37 @@ public class ScriptService implements IScriptService {
 			}
 		}
 		return fModuleWrappers;
+	}
+	
+	
+	@Override
+	public ICompletionAnalyzer getCompletionAnalyzer(final String engineID) {
+		return getCompletionAnalyzers().get(engineID);
+	}
+	
+	private Map<String, ICompletionAnalyzer> getCompletionAnalyzers() {
+		if (fCompletionAnalyzers == null) {
+			fCompletionAnalyzers = new HashMap<String, ICompletionAnalyzer>();
+			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_LANGUAGE_ID);
+
+			for (final IConfigurationElement e : config) {
+				try {
+					if (COMPLETION_ANALYZER.equals(e.getName())) {
+						final Object extension = e.createExecutableExtension("class");
+						String engineID = e.getAttribute(ENGINE_ID);
+						if ((extension instanceof ICompletionAnalyzer) && (engineID != null)) {
+							if (fCompletionAnalyzers.containsKey(engineID))
+								Logger.logError("The engine id " + engineID + " is already used");
+							else
+								fCompletionAnalyzers.put(engineID, (ICompletionAnalyzer) extension);
+						}
+					}
+				} catch (final InvalidRegistryObjectException e1) {
+				} catch (final CoreException e1) {
+				}
+			}
+		}
+		return fCompletionAnalyzers;
 	}
 
 	@Override
