@@ -20,6 +20,10 @@
             class="org.eclipse.ease.modules.BootStrapper"
             engineID="org.eclipse.ease.javascript.rhinoDebugger">
       </launchExtension>
+      <completionAnalyzer
+            class="org.eclipse.ease.lang.javascript.JavaScriptCompletionAnalyzer"
+            engineID="org.eclipse.ease.javascript.rhinoDebugger">
+      </completionAnalyzer>
    </extension>
    <extension
          point="org.eclipse.debug.ui.debugModelPresentations">

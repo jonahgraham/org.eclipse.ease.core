@@ -21,6 +21,10 @@
             class="org.eclipse.ease.modules.BootStrapper"
             engineID="org.eclipse.ease.javascript.rhino">
       </launchExtension>
+      <completionAnalyzer
+            class="org.eclipse.ease.lang.javascript.JavaScriptCompletionAnalyzer"
+            engineID="org.eclipse.ease.javascript.rhino">
+      </completionAnalyzer>
    </extension>
    <extension
          point="org.eclipse.ease.ui.completionProcessor">
