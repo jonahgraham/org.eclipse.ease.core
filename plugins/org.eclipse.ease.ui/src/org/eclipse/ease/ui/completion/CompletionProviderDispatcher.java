@@ -14,6 +14,7 @@ package org.eclipse.ease.ui.completion;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -31,6 +32,21 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
  *
  */
 public class CompletionProviderDispatcher implements IContentProposalProvider {
+	/**
+	 * Static code analyzer to split given line of code to base {@link ICompletionContext} for {@link ICompletionProvider#refineContext(ICompletionContext)}.
+	 */
+	private ICompletionAnalyzer fAnalyzer;
+
+	/**
+	 * Setter method for ICompletionAnalyzer.
+	 * 
+	 * @param analyzer
+	 *            {@link ICompletionAnalyzer} for completion calculation.
+	 */
+	public void setAnalyzer(ICompletionAnalyzer analyzer) {
+		fAnalyzer = analyzer;
+	}
+
 	/**
 	 * Set of all registered {@link ICompletionProvider} objects.
 	 * 
@@ -71,6 +87,35 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 *            Code to be added and parsed by {@link ICompletionProvider} objects.
 	 */
 	public void addCode(String code) {
+	}
+	
+	/**
+	 * Overload for {@link #getContext(String, int)} with default parameter for position.
+	 * @see #getContext(String, int)
+	 */
+	public ICompletionContext getContext(String contents) {
+		if (contents != null) {
+			return getContext(contents, contents.length());
+		}
+		return null;
+	}
+
+	/**
+	 * Parses a given String to an {@link ICompletionContext} using {@link ICompletionAnalyzer} and {@link ICompletionProvider} interfaces.
+	 * 
+	 * @param contents
+	 *            String with contents to be parsed to completion context.
+	 * @param position
+	 *            End position of contents. (default: contents.length())
+	 * @return {@link ICompletionContext} for given input, <code>null</code> in case of error.
+	 */
+	public ICompletionContext getContext(String contents, int position) {
+		ICompletionContext context = null;
+		if (fAnalyzer != null) {
+			context = fAnalyzer.getContext(contents, position);
+			// TODO: Refine context
+		}
+		return context;
 	}
 
 	/*

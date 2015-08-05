@@ -221,6 +221,9 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 		// Remove everything that can be ignored during evaluation
 		parsedCode = removeUnnecessaryCode(parsedCode);
 
+		// Remove leading / trailing whitespace
+		parsedCode = parsedCode.trim();
+		
 		// In case code ends with '.' add a space to match against everything.
 		if (parsedCode.endsWith(".")) {
 			parsedCode += " ";
@@ -231,7 +234,7 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 		String[] splitCode = parsedCode.split("\\.");
 
 		if (splitCode.length == 1) {
-			return new CompletionContext(code, splitCode[0], callStack);
+			return new CompletionContext(code, splitCode[0].trim(), callStack);
 		}
 
 		// Parse all elements in call stack to ICompletionSource
