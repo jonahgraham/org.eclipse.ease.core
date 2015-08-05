@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
+import org.eclipse.ease.completion.ICompletionSource;
+import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
@@ -90,7 +92,7 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 * @param provider
 	 *            {@link ICompletionProvider} to be registered.
 	 */
-	public void registerContextProvider(ICompletionProvider provider) {
+	public void registerCompletionProvider(ICompletionProvider provider) {
 		fCompletionProviders.add(provider);
 	}
 
@@ -100,8 +102,15 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 * @param provider
 	 *            {@link ICompletionProvider} to be unregistered.
 	 */
-	public void unregisterContextProvider(ICompletionProvider provider) {
+	public void unregisterCompletionProvider(ICompletionProvider provider) {
 		fCompletionProviders.remove(provider);
+	}
+
+	/**
+	 * Clears the list of registered completion providers.
+	 */
+	public void clearCompletionProviders() {
+		fCompletionProviders.clear();
 	}
 
 	public char[] getActivationChars() {
@@ -127,6 +136,9 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 *            Code to be added and parsed by {@link ICompletionProvider} objects.
 	 */
 	public void addCode(String code) {
+		for (ICompletionProvider provider : fCompletionProviders) {
+			provider.addCode(code);
+		}
 	}
 
 	/**
@@ -142,6 +154,31 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	}
 
 	/**
+	 * Creates a list of matches for given {@link ICompletionContext}.
+	 * 
+	 * These matches can be used for different completion provider extensions like ScriptShell or JavaScript editor.
+	 * 
+	 * @param context
+	 *            The {@link ICompletionContext} with necessary information to get matches.
+	 * @return List of matching proposals.
+	 */
+	public Collection<ICompletionSource> calculateProposals(ICompletionContext context) {
+		List<ICompletionSource> proposals = new ArrayList<ICompletionSource>();
+		if (context != null) {
+			// Actually add the proposals
+			Collection<ICompletionSource> currentProposals;
+			for (ICompletionProvider provider : fCompletionProviders) {
+				currentProposals = provider.getProposals(context);
+				if (currentProposals != null) {
+					proposals.addAll(currentProposals);
+				}
+			}
+
+		}
+		return proposals;
+	}
+
+	/**
 	 * Parses a given String to an {@link ICompletionContext} using {@link ICompletionAnalyzer} and {@link ICompletionProvider} interfaces.
 	 * 
 	 * @param contents
@@ -154,7 +191,15 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 		ICompletionContext context = null;
 		if (fAnalyzer != null) {
 			context = fAnalyzer.getContext(contents, position);
-			// TODO: Refine context
+			if (context != null) {
+				ICompletionContext refinedContext = null;
+				for (ICompletionProvider provider : fCompletionProviders) {
+					refinedContext = provider.refineContext(context);
+					if (refinedContext != null) {
+						context = refinedContext;
+					}
+				}
+			}
 		}
 		return context;
 	}
@@ -166,7 +211,14 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 */
 	@Override
 	public IContentProposal[] getProposals(String contents, int position) {
-		return new IContentProposal[0];
+		List<IContentProposal> proposals = new ArrayList<IContentProposal>();
+		ICompletionContext context = getContext(contents, position);
+		if (context != null) {
+			for (ICompletionSource src : calculateProposals(context)) {
+				proposals.add(new ContentProposal(src.getName().substring(context.getFilter().length()), src.getName(), ""));
+			}
+		}
+		return proposals.toArray(new IContentProposal[proposals.size()]);
 	}
 
 	/**
