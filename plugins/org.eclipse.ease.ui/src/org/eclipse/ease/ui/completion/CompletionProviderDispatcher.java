@@ -11,9 +11,15 @@
 
 package org.eclipse.ease.ui.completion;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
@@ -33,6 +39,27 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
  *
  */
 public class CompletionProviderDispatcher implements IContentProposalProvider {
+
+	/**
+	 * String constant for completionProcessor extension point.
+	 */
+	public static final String COMPLETION_PROCESSOR = "org.eclipse.ease.ui.completionProcessor";
+
+	/**
+	 * String constant for script engine attribute of completionProcessor extension.
+	 */
+	public static final String ENGINE_ID_ATTRIBUTE = "engineID";
+
+	/**
+	 * String constant for completion type attribute of completionProcessor extension.
+	 */
+	public static final String COMPLETION_TYPE_ATTRIBUTE = "completionType";
+
+	/**
+	 * String constant for class attribute of completionProcessor extension.
+	 */
+	public static final String CLASS_ATTRIBUTE = "class";
+
 	/**
 	 * Static code analyzer to split given line of code to base {@link ICompletionContext} for {@link ICompletionProvider#refineContext(ICompletionContext)}.
 	 */
@@ -140,5 +167,36 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	@Override
 	public IContentProposal[] getProposals(String contents, int position) {
 		return new IContentProposal[0];
+	}
+
+	/**
+	 * Static method to get all {@link ICompletionProvider} matching given engine.
+	 * 
+	 * @param engineID
+	 *            engine ID to help filter completion providers.
+	 * @return List of all matching {@link ICompletionProvider}.
+	 */
+	public static Collection<ICompletionProvider> getProviders(String engineID) {
+		List<ICompletionProvider> providers = new ArrayList<ICompletionProvider>();
+
+		IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(COMPLETION_PROCESSOR);
+
+		for (IConfigurationElement elem : elements) {
+			try {
+				// Check if completion processor works with current engine
+				if (elem.getAttribute(ENGINE_ID_ATTRIBUTE) == null || elem.getAttribute(ENGINE_ID_ATTRIBUTE).equals(engineID)) {
+					Object o = elem.createExecutableExtension(CLASS_ATTRIBUTE);
+
+					// Actually create completion processor
+					if (o instanceof ICompletionProvider) {
+						ICompletionProvider provider = (ICompletionProvider) o;
+						providers.add(provider);
+					}
+				}
+			} catch (CoreException e) {
+			}
+		}
+
+		return providers;
 	}
 }
