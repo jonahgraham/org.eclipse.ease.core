@@ -26,13 +26,5 @@
             engineID="org.eclipse.ease.javascript.rhino">
       </completionAnalyzer>
    </extension>
-   <extension
-         point="org.eclipse.ease.ui.completionProcessor">
-      <completionProcessor
-            class="org.eclipse.ease.lang.javascript.rhino.completion.RhinoCompletionProvider"
-            engineID="org.eclipse.ease.javascript.rhino">
-      </completionProcessor>
-   </extension>
-
 </plugin>
 

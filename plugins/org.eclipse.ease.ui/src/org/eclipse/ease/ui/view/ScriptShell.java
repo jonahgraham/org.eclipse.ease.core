@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
+ *     Martin Kloesch - extensions
  *******************************************************************************/
 package org.eclipse.ease.ui.view;
 
@@ -28,8 +29,8 @@ import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.Activator;
+import org.eclipse.ease.ui.completion.CompletionProviderDispatcher;
 import org.eclipse.ease.ui.completion.ICompletionProvider;
-import org.eclipse.ease.ui.completion.ModuleCompletionProvider;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
@@ -140,6 +141,8 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	private AutoFocus fAutoFocusListener = null;
 
 	private ContentProposalAdapter fContentAssistAdapter = null;
+
+	private final CompletionProviderDispatcher fCompletionDispatcher = new CompletionProviderDispatcher();;
 
 	private Collection<IShellDropin> fDropins = Collections.emptySet();
 
@@ -302,23 +305,19 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		if (fContentAssistAdapter != null)
 			fContentAssistAdapter.setEnabled(false);
 
-		// get auto completion provider for current engine
-		final ICompletionProvider provider = ModuleCompletionProvider.getCompletionProvider(fScriptEngine.getDescription());
+		try {
+			final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
+			/*
+			 * final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
+			 * provider.getActivationChars());
+			 */
+			final ContentProposalAdapter adapter = new ContentProposalModifier(fInputCombo, new ComboContentAdapter(), fCompletionDispatcher, activationKey,
+					fCompletionDispatcher.getActivationChars());
 
-		if (provider != null) {
-			try {
-				final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-/*				final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
-						provider.getActivationChars());
-*/
-				final ContentProposalAdapter adapter = new ContentProposalModifier(fInputCombo,
-						new ComboContentAdapter(), provider, activationKey, provider.getActivationChars());
-				
-				adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
-				fContentAssistAdapter = adapter;
-			} catch (final ParseException e) {
-				Logger.logError("Cannot create content assist", e);
-			}
+			adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+			fContentAssistAdapter = adapter;
+		} catch (final ParseException e) {
+			Logger.logError("Cannot create content assist", e);
 		}
 	}
 
@@ -470,25 +469,25 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 		switch (style) {
 		case TYPE_RESULT:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
+					.getSystemColor(SWT.COLOR_DARK_GRAY)));
 			break;
 
 		case TYPE_COMMAND:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
+					.getSystemColor(SWT.COLOR_BLUE)));
 			styleRange.fontStyle = SWT.BOLD;
 			break;
 
 		case TYPE_ERROR:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor
+					.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
 			styleRange.fontStyle = SWT.ITALIC;
 			break;
 
 		case TYPE_OUTPUT:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLACK)));
+			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
+					.getSystemColor(SWT.COLOR_BLACK)));
 			break;
 
 		default:
@@ -578,7 +577,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 					// add to content assist
 					if (fContentAssistAdapter != null)
-						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script.getCode(), engine);
+						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script.getCode());
 				}
 
 				if (fKeepCommand) {

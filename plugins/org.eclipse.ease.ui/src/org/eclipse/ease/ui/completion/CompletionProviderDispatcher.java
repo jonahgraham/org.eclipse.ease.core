@@ -14,6 +14,7 @@ package org.eclipse.ease.ui.completion;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -81,6 +82,18 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	}
 
 	/**
+	 * Sets the given script engine for all registered completion providers. Calls {@link ICompletionProvider#setScriptEngine(IScriptEngine)}.
+	 * 
+	 * @param engine
+	 *            {@link IScriptEngine} to be set.
+	 */
+	public void setScriptEngine(IScriptEngine engine) {
+		for (ICompletionProvider provider : fCompletionProviders) {
+			provider.setScriptEngine(engine);
+		}
+	}
+
+	/**
 	 * Dispatches the given piece of code to all registered {@link ICompletionProvider} objects for them to parse relevant information from.
 	 * 
 	 * @param code
@@ -88,9 +101,10 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 */
 	public void addCode(String code) {
 	}
-	
+
 	/**
 	 * Overload for {@link #getContext(String, int)} with default parameter for position.
+	 * 
 	 * @see #getContext(String, int)
 	 */
 	public ICompletionContext getContext(String contents) {
