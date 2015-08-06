@@ -425,4 +425,12 @@
             class="org.eclipse.ease.ui.completion.LoadedModuleCompletionProvider">
       </completionProcessor>
    </extension>
+   <extension
+         id="scriptShellCompletionProvider"
+         name="Script shell completion provider"
+         point="org.eclipse.ease.ui.completionProcessor">
+      <completionProcessor
+            class="org.eclipse.ease.ui.completion.ScriptShellCompletionProvider">
+      </completionProcessor>
+   </extension>
 </plugin>
