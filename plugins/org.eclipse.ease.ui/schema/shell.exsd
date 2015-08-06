@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.ease.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.eclipse.ease.ui" id="dropHandler" name="DropHandler"/>
+         <meta.schema plugin="org.eclipse.ease.ui" id="shell" name="Shell"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
