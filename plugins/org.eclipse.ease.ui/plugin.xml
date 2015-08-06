@@ -433,4 +433,12 @@
             class="org.eclipse.ease.ui.completion.ScriptShellCompletionProvider">
       </completionProcessor>
    </extension>
+   <extension
+         id="sourceStackCompletionProvider"
+         name="Source stack completion analyzer"
+         point="org.eclipse.ease.ui.completionProcessor">
+      <completionProcessor
+            class="org.eclipse.ease.ui.completion.SourceStackCompletionProvider">
+      </completionProcessor>
+   </extension>
 </plugin>
