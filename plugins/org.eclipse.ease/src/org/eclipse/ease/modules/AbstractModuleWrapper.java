@@ -269,14 +269,15 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 
 	@Override
 	public String createFunctionCall(final Method method, final Object... parameters) {
-		StringBuilder code = new StringBuilder();
+		final StringBuilder code = new StringBuilder();
 
 		code.append(method.getName()).append('(');
 
-		// TODO scan for optional parameters and compare with input parameter length
-		for (Object parameter : parameters) {
+		for (final Object parameter : parameters) {
 			if (parameter instanceof String)
 				code.append('"').append(((String) parameter).replace("\"", "\\\"")).append('"');
+			else if (parameter == null)
+				code.append(getNullString());
 			else
 				code.append(parameter.toString());
 
