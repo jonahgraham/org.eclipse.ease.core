@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.eclipse.ease.modules.ModuleDefinition;
-import org.eclipse.ease.ui.modules.ui.ModuleHelp;
+import org.eclipse.ease.ui.help.hovers.ModuleHelp;
 
 /**
  * Static string formatting class to describe code completion suggestions.

@@ -25,6 +25,8 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.eclipse.ease.ui.help.hovers.ModuleToolTipDecorator;;
+
 public class ModulesComposite extends Composite {
 	private final TreeViewer treeViewer;
 

@@ -33,6 +33,7 @@ import org.eclipse.ease.ui.completion.CompletionProviderDispatcher;
 import org.eclipse.ease.ui.completion.ICompletionProvider;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
+import org.eclipse.ease.ui.help.hovers.EditorToolTipDecorator;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
@@ -54,6 +55,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -61,7 +63,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IMemento;
@@ -257,7 +261,35 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 				fScriptEngine.executeAsync(input);
 			}
 		});
+		
+		
+		
+		//TODO WORKING AREA ***************************************************************************************
+		fInputCombo.addMouseListener(new MouseListener() {
 
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+
+				EditorToolTipDecorator decorator = new EditorToolTipDecorator((Control) e.widget);
+				decorator.setInputCombo(fInputCombo);
+				decorator.createToolTipContentArea((Event) e.getSource(), parent);
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+
+		});
+		
+		
+
+		
+		
+		
 		fInputCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		// restore command history
 		if (fInitMemento != null) {

@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.help.hovers.ModuleHelp;
 import org.eclipse.ease.ui.tools.DecoratedLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.StyledString;

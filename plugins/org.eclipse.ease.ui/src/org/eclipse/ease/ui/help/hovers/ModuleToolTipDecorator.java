@@ -9,7 +9,7 @@
  *     Vidura Mudalige - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.ui.modules.ui;
+package org.eclipse.ease.ui.help.hovers;
 
 import java.awt.Dimension;
 import java.awt.MouseInfo;

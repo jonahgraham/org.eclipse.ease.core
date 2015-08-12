@@ -8,7 +8,7 @@
  * Contributors:
  *     Vidura Mudalige - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.modules.ui;
+package org.eclipse.ease.ui.help.hovers;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -18,6 +18,7 @@ import java.net.URL;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.XMLMemento;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.modules.ui.ModulesTools;
 import org.eclipse.ease.Logger;
 import org.eclipse.ui.PlatformUI;
 
