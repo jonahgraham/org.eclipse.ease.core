@@ -417,4 +417,12 @@
             priority="10">
       </dropHandler>
    </extension>
+   <extension
+         id="loadedModulesCompletionProvider"
+         name="Loaded modules completion provider"
+         point="org.eclipse.ease.ui.completionProcessor">
+      <completionProcessor
+            class="org.eclipse.ease.ui.completion.LoadedModuleCompletionProvider">
+      </completionProcessor>
+   </extension>
 </plugin>

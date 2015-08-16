@@ -24,9 +24,11 @@ import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
+import org.eclipse.ease.service.ScriptService;
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+
 
 /**
  * Dispatcher class create code completion proposals.
@@ -124,6 +126,11 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 	 *            {@link IScriptEngine} to be set.
 	 */
 	public void setScriptEngine(IScriptEngine engine) {
+		// Get completion analyzer
+		if (engine != null) {
+			setAnalyzer(ScriptService.getService().getCompletionAnalyzer(engine.getDescription().getID()));
+		}
+		
 		for (ICompletionProvider provider : fCompletionProviders) {
 			provider.setScriptEngine(engine);
 		}
