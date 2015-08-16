@@ -23,6 +23,17 @@ package org.eclipse.ease.completion;
  */
 public interface ICompletionAnalyzer {
 	/**
+	 * Parse the given input to add all included code. The return is a String with all the code in order. Included code is put instead of the include line.
+	 * 
+	 * @param input
+	 *            Code to be parsed
+	 * @param parent
+	 *            absolute path to parent directory.
+	 * @return All code including imported code.
+	 */
+	String getIncludedCode(String input, String parent);
+
+	/**
 	 * Parse the given piece of code into a language specific {@link ICompletionContext}.
 	 * 
 	 * @param contents
