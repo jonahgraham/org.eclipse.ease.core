@@ -11,12 +11,24 @@
 
 package org.eclipse.ease.completion;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ease.completion.ICompletionSource.SourceType;
+import org.eclipse.ease.tools.ResourceTools;
 
 /**
  * Abstract base implementation for {@link ICompletionAnalyzer}.
@@ -44,7 +56,7 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	}
 
 	/**
-	 * Trims everything from the given input String up to the first occurrence of given delimiter.
+	 * Trims everything from the given input String after the first occurrence of given delimiter.
 	 * 
 	 * @param input
 	 *            String to be trimmed.
@@ -196,6 +208,33 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	 */
 	protected abstract ICompletionSource toCompletionSource(String code);
 
+	/**
+	 * Returns a regular expression to match for includes.
+	 * 
+	 * This pattern must have a single group containing the code to be imported.
+	 * 
+	 * @return Pattern to help find includes.
+	 */
+	protected abstract Pattern getIncludePattern();
+
+	/**
+	 * Reads the given input stream using {@link Scanner} and returns its content.
+	 * 
+	 * @param is
+	 *            {@link InputStream} to be read.
+	 * @return Content of input if successful, <code>null</code> otherwise.
+	 */
+	private static String readStream(InputStream is) {
+		String content = null;
+		if (is != null) {
+			Scanner scanner = new Scanner(is);
+			scanner.useDelimiter("\\A");
+			content = scanner.hasNext() ? scanner.next() : "";
+			scanner.close();
+		}
+		return content;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -223,7 +262,7 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 		// Remove leading / trailing whitespace
 		parsedCode = parsedCode.trim();
-		
+
 		// In case code ends with '.' add a space to match against everything.
 		if (parsedCode.endsWith(".")) {
 			parsedCode += " ";
@@ -259,4 +298,85 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 		return new CompletionContext(code, splitCode[splitCode.length - 1].trim(), callStack);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ease.modules.ICompletionAnalyzer#getIncludedCode(java.lang.String)
+	 */
+	@Override
+	public String getIncludedCode(String input, String parent) {
+		// Get regular expression to find includes
+		Pattern includePattern = getIncludePattern();
+		if (includePattern != null) {
+			Set<String> includedFiles = new HashSet<String>();
+
+			// Code will be called as long as there are includes left
+			boolean updated = true;
+			while (updated) {
+				updated = false;
+
+				// Get all matches in the code
+				Matcher matcher = includePattern.matcher(input);
+				while (matcher.find()) {
+					// get file to be included
+					String includePath = matcher.group(1);
+
+					// Get file path (might be eclipse specific URL)
+					Object included = ResourceTools.resolveFile(includePath, parent, true);
+
+					// Check if file found
+					if (included != null) {
+						String absPath = null;
+						InputStream is = null;
+
+						// Parse information from included File or IFile
+						if (included instanceof IFile) {
+							IFile includedFile = (IFile) included;
+							absPath = includedFile.getFullPath().toOSString();
+							try {
+								is = includedFile.getContents();
+							} catch (CoreException e) {
+								// 404 ignore
+								continue;
+							}
+						} else if (included instanceof File) {
+							File includedFile = (File) included;
+							absPath = includedFile.getAbsolutePath();
+							try {
+								is = new FileInputStream(includedFile);
+							} catch (FileNotFoundException e) {
+								// 404 ignore
+								continue;
+							}
+						} else {
+							// Neither File nor IFile, ignore
+							continue;
+						}
+
+						// Check if file already included
+						if (!includedFiles.contains(absPath)) {
+							updated = true;
+							includedFiles.add(absPath);
+
+							// Get the actual content of the file
+							String includedContent = readStream(is);
+							if (includedContent != null) {
+								StringBuilder sb = new StringBuilder();
+
+								// Create new input code:
+								// o Part before the include statement
+								// o Included code instead of include statement
+								// o Part after the include statement
+								sb.append(input.substring(0, matcher.start()));
+								sb.append(includedContent);
+								sb.append(input.substring(matcher.end()));
+								input = sb.toString();
+							}
+						}
+					}
+				}
+			}
+		}
+		return input;
+	}
 }

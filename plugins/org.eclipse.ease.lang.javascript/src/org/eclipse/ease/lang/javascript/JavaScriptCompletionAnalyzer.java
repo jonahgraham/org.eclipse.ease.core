@@ -14,6 +14,7 @@ package org.eclipse.ease.lang.javascript;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.eclipse.ease.completion.AbstractCompletionAnalyzer;
 import org.eclipse.ease.completion.CompletionSource;
@@ -33,6 +34,11 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 	 */
 	private static List<String> CODE_DELIMITERS = new ArrayList<String>(Arrays.asList("=", "+", "-", "*", "/", "|", "&", "^", ",", "{", "}", "[", "]", ";"));
 
+	/**
+	 * Regex to parse includes from piece of code.
+	 */
+	private static final Pattern INCLUDE_PATTERN = Pattern.compile("include\\((?:'|\")(.*)(?:'|\")\\) *;?");
+	
 	/**
 	 * Special case of {@link #removeUnnecessaryCode(String)}.
 	 * 
@@ -82,5 +88,13 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 			src = new CompletionSource(SourceType.INSTANCE, code, null, null);
 		}
 		return src;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ease.completion.AbstractCompletionAnalyzer#getIncludePattern()
+	 */
+	@Override
+	protected Pattern getIncludePattern() {
+		return INCLUDE_PATTERN;
 	}
 }
