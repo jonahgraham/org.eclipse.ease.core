@@ -306,6 +306,15 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fContentAssistAdapter.setEnabled(false);
 
 		try {
+			// Register matching completion providers
+			fCompletionDispatcher.clearCompletionProviders();
+			for (ICompletionProvider provider : CompletionProviderDispatcher.getProviders(fScriptEngine.getDescription().getID())) {
+				fCompletionDispatcher.registerCompletionProvider(provider);
+			}
+
+			// Set script engine
+			fCompletionDispatcher.setScriptEngine(fScriptEngine);
+
 			final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
 			/*
 			 * final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
@@ -640,6 +649,9 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			// update drop-ins
 			for (final IShellDropin dropin : fDropins)
 				dropin.setScriptEngine(fScriptEngine);
+			
+			// Update script engine for completion proposals
+			fCompletionDispatcher.setScriptEngine(fScriptEngine);
 		}
 	}
 
