@@ -651,6 +651,12 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 				dropin.setScriptEngine(fScriptEngine);
 			
 			// Update script engine for completion proposals
+			fCompletionDispatcher.clearCompletionProviders();
+			for (ICompletionProvider provider : CompletionProviderDispatcher.getProviders(fScriptEngine.getDescription().getID())) {
+				fCompletionDispatcher.registerCompletionProvider(provider);
+			}
+
+			// Set script engine
 			fCompletionDispatcher.setScriptEngine(fScriptEngine);
 		}
 	}
