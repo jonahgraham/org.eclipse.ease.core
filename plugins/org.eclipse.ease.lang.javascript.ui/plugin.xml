@@ -2,17 +2,17 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension point="org.eclipse.wst.jsdt.ui.javaCompletionProposalComputer"
-   id="ease_module_proposals"
-   name="EASE Module Proposals">
+   id="javascript_proposals"
+   name="EASE JavaScript Proposals">
    <proposalCategory/>
  </extension>
 
  <extension point="org.eclipse.wst.jsdt.ui.javaCompletionProposalComputer"
-   id="EASE_Proposals"
-   name="EASE Module Proposals">
+   id="EASE_JS_Proposals"
+   name="EASE JavaScript Proposals">
    <javaCompletionProposalComputer
-      class="org.eclipse.ease.lang.javascript.ui.ModuleCompletionProposal"
-      categoryId="org.eclipse.ease.lang.javascript.ui.ease_module_proposals"
+      class="org.eclipse.ease.lang.javascript.ui.completion.JavaScriptEditorCompletionComputer"
+      categoryId="org.eclipse.ease.lang.javascript.ui.javascript_proposals"
       activate="true">
    </javaCompletionProposalComputer>
  </extension>
