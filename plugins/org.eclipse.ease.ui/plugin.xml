@@ -441,4 +441,10 @@
             class="org.eclipse.ease.ui.completion.SourceStackCompletionProvider">
       </completionProcessor>
    </extension>
+   <extension
+         point="org.eclipse.ease.ui.completionProcessor">
+      <completionProcessor
+            class="org.eclipse.ease.ui.completion.CustomAnnotationCompletionProvider">
+      </completionProcessor>
+   </extension>
 </plugin>
