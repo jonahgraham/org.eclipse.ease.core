@@ -22,6 +22,7 @@ public class CompletionSource implements ICompletionSource {
 	private final String fName;
 	private final Class<?> fClass;
 	private final Object fObject;
+	private final String fDescription;
 
 	/**
 	 * Constructor only stores parameters to members.
@@ -35,11 +36,12 @@ public class CompletionSource implements ICompletionSource {
 	 * @param object
 	 *            the actual object in completion chain.
 	 */
-	public CompletionSource(final SourceType sourceType, final String name, final Class<?> clazz, final Object object) {
+	public CompletionSource(final SourceType sourceType, final String name, final Class<?> clazz, final Object object, final String description) {
 		fSourceType = sourceType;
 		fName = name;
 		fClass = clazz;
 		fObject = object;
+		fDescription = description;
 	}
 
 	/*
@@ -80,6 +82,14 @@ public class CompletionSource implements ICompletionSource {
 	@Override
 	public Object getObject() {
 		return fObject;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ease.completion.ICompletionSource#getDescription()
+	 */
+	@Override
+	public String getDescription() {
+		return fDescription;
 	}
 
 }

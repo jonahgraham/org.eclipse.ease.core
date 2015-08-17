@@ -91,7 +91,7 @@ public class SourceStackCompletionProvider extends AbstractCompletionProvider {
 			if ((field.getName().startsWith(toMatch)) && (toMatch.length() < field.getName().length())) {
 				if (!addedVariables.contains(field.getName())) {
 					addedVariables.add(field.getName());
-					proposals.add(new CompletionSource(SourceType.CLASS_FIELD, field.getName(), clazz, field));
+					proposals.add(new CompletionSource(SourceType.CLASS_FIELD, field.getName(), clazz, field, CompletionDescriptionFormatter.format(field, clazz)));
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class SourceStackCompletionProvider extends AbstractCompletionProvider {
 			if ((method.getName().startsWith(toMatch)) && (toMatch.length() < method.getName().length())) {
 				if (!addedVariables.contains(method.getName())) {
 					addedVariables.add(method.getName());
-					proposals.add(new CompletionSource(SourceType.CLASS_METHOD, method.getName(), clazz, method));
+					proposals.add(new CompletionSource(SourceType.CLASS_METHOD, method.getName(), clazz, method, CompletionDescriptionFormatter.format(method, clazz)));
 				}
 			}
 		}

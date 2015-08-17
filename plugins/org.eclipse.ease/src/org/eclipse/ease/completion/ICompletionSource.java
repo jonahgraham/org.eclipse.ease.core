@@ -133,4 +133,11 @@ public interface ICompletionSource {
 	 * @return the actual object in chain.
 	 */
 	Object getObject();
+	
+	/**
+	 * Getter method for a description of item in call chain.
+	 * 
+	 * @return description of completion source.
+	 */
+	String getDescription();
 }

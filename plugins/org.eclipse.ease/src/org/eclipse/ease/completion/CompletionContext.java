@@ -211,14 +211,14 @@ public class CompletionContext implements ICompletionContext {
 		case CLASS_METHOD:
 			for (Method method : hayStack.getMethods()) {
 				if (method.getName().equals(needle.getName())) {
-					return new CompletionSource(SourceType.CLASS_METHOD, needle.getName(), hayStack, method);
+					return new CompletionSource(SourceType.CLASS_METHOD, needle.getName(), hayStack, method, null);
 				}
 			}
 			break;
 		case CLASS_FIELD:
 			for (Field field : hayStack.getFields()) {
 				if (field.getName().equals(needle.getName())) {
-					return new CompletionSource(SourceType.CLASS_FIELD, needle.getName(), hayStack, field);
+					return new CompletionSource(SourceType.CLASS_FIELD, needle.getName(), hayStack, field, null);
 				}
 			}
 		default:

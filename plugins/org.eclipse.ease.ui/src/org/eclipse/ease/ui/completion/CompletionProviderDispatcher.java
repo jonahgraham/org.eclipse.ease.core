@@ -29,7 +29,6 @@ import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
-
 /**
  * Dispatcher class create code completion proposals.
  * 
@@ -130,7 +129,7 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 		if (engine != null) {
 			setAnalyzer(ScriptService.getService().getCompletionAnalyzer(engine.getDescription().getID()));
 		}
-		
+
 		for (ICompletionProvider provider : fCompletionProviders) {
 			provider.setScriptEngine(engine);
 		}
@@ -222,7 +221,7 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 		ICompletionContext context = getContext(contents, position);
 		if (context != null) {
 			for (ICompletionSource src : calculateProposals(context)) {
-				proposals.add(new ContentProposal(src.getName().substring(context.getFilter().length()), src.getName(), ""));
+				proposals.add(new ContentProposal(src.getName().substring(context.getFilter().length()), src.getName(), src.getDescription(), src.getName().length() - context.getFilter().length()));
 			}
 		}
 		return proposals.toArray(new IContentProposal[proposals.size()]);
@@ -255,7 +254,6 @@ public class CompletionProviderDispatcher implements IContentProposalProvider {
 			} catch (CoreException e) {
 			}
 		}
-
 		return providers;
 	}
 }

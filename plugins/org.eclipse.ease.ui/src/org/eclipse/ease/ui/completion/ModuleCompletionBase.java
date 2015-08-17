@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.ease.completion.CompletionContext;
 import org.eclipse.ease.completion.CompletionSource;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
@@ -73,8 +72,8 @@ public abstract class ModuleCompletionBase extends AbstractCompletionProvider {
 				if ((field.getName().startsWith(toMatch)) && (toMatch.length() < field.getName().length())) {
 					if (!addedVariables.contains(field.getName())) {
 						addedVariables.add(field.getName());
-						
-						proposals.add(new CompletionSource(SourceType.MODULE_FIELD, field.getName(), definition.getModuleClass(), field));
+						proposals.add(new CompletionSource(SourceType.MODULE_FIELD, field.getName(), definition.getModuleClass(), field,
+								CompletionDescriptionFormatter.format(field, definition)));
 					}
 				}
 			}
@@ -84,7 +83,8 @@ public abstract class ModuleCompletionBase extends AbstractCompletionProvider {
 				if ((method.getName().startsWith(toMatch)) && (toMatch.length() < method.getName().length())) {
 					if (!addedVariables.contains(method.getName())) {
 						addedVariables.add(method.getName());
-						proposals.add(new CompletionSource(SourceType.MODULE_METHOD, method.getName(), definition.getModuleClass(), method));
+						proposals.add(new CompletionSource(SourceType.MODULE_METHOD, method.getName(), definition.getModuleClass(), method,
+								CompletionDescriptionFormatter.format(method, definition)));
 					}
 				}
 			}
@@ -107,7 +107,8 @@ public abstract class ModuleCompletionBase extends AbstractCompletionProvider {
 			for (ModuleDefinition module : getModules()) {
 				for (Method method : module.getMethods()) {
 					if (method.getName().equals(src.getName())) {
-						return createCompletionContext(module, method, context);
+						return createRefinedContext(context, new CompletionSource(SourceType.MODULE_METHOD, method.getName(), module.getModuleClass(), method,
+								null));
 					}
 				}
 			}
@@ -115,57 +116,13 @@ public abstract class ModuleCompletionBase extends AbstractCompletionProvider {
 			for (ModuleDefinition module : getModules()) {
 				for (Field field : module.getFields()) {
 					if (field.getName().equals(src.getName())) {
-						return createCompletionContext(module, field, context);
+						return createRefinedContext(context, new CompletionSource(SourceType.MODULE_FIELD, field.getName(), module.getClass(), field, null));
 					}
 				}
 			}
 		}
 
 		return null;
-	}
-
-	/**
-	 * Creates a refined completion context based on the given parameters.
-	 * 
-	 * @param module
-	 *            The module the root element of the source stack belongs to.
-	 * @param method
-	 *            The actual method for the root element of the source stack.
-	 * @param orig
-	 *            The original {@link ICompletionContext} to parse further information from.
-	 * @return new {@link ICompletionContext} if refined source stack could be calculated. <code>null</code> if new source stack cannot be calculated.
-	 */
-	protected ICompletionContext createCompletionContext(ModuleDefinition module, Method method, ICompletionContext orig) {
-		List<ICompletionSource> newStack = orig.getSourceStack();
-		newStack.set(0, new CompletionSource(SourceType.MODULE_METHOD, method.getName(), module.getModuleClass(), method));
-		newStack = CompletionContext.refineSourceStack(newStack);
-		if (newStack == null) {
-			return null;
-		} else {
-			return new CompletionContext(orig.getInput(), orig.getFilter(), newStack);
-		}
-	}
-
-	/**
-	 * Creates a refined completion context based on the given parameters.
-	 * 
-	 * @param module
-	 *            The module the root element of the source stack belongs to.
-	 * @param field
-	 *            The actual field for the root element of the source stack.
-	 * @param orig
-	 *            The original {@link ICompletionContext} to parse further information from.
-	 * @return new {@link ICompletionContext} if refined source stack could be calculated. <code>null</code> if new source stack cannot be calculated.
-	 */
-	protected ICompletionContext createCompletionContext(ModuleDefinition module, Field field, ICompletionContext orig) {
-		List<ICompletionSource> newStack = orig.getSourceStack();
-		newStack.set(0, new CompletionSource(SourceType.MODULE_FIELD, field.getName(), module.getClass(), field));
-		newStack = CompletionContext.refineSourceStack(newStack);
-		if (newStack == null) {
-			return null;
-		} else {
-			return new CompletionContext(orig.getInput(), orig.getFilter(), newStack);
-		}
 	}
 
 	/**

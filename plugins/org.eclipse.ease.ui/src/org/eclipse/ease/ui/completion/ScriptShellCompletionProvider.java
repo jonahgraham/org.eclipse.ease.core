@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.ease.IScriptEngine;
-import org.eclipse.ease.completion.CompletionContext;
 import org.eclipse.ease.completion.CompletionSource;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
@@ -68,9 +67,9 @@ public class ScriptShellCompletionProvider extends AbstractCompletionProvider {
 			if (var.getKey().startsWith(filter)) {
 				if (!addedVariables.contains(var.getKey())) {
 					if (var.getValue() instanceof Method) {
-						proposals.add(new CompletionSource(SourceType.LOCAL_FUNCTION, var.getKey(), null, var));
+						proposals.add(new CompletionSource(SourceType.LOCAL_FUNCTION, var.getKey(), null, var, null));
 					} else {
-						proposals.add(new CompletionSource(SourceType.LOCAL_VARIABLE, var.getKey(), var.getClass(), var));
+						proposals.add(new CompletionSource(SourceType.LOCAL_VARIABLE, var.getKey(), var.getClass(), var, null));
 					}
 				}
 			}
@@ -97,7 +96,7 @@ public class ScriptShellCompletionProvider extends AbstractCompletionProvider {
 		if (fScriptEngine == null) {
 			return null;
 		}
-		
+
 		if (context == null || context.getSourceStack() == null || context.getSourceStack().isEmpty()) {
 			return null;
 		}
@@ -109,20 +108,14 @@ public class ScriptShellCompletionProvider extends AbstractCompletionProvider {
 			return null;
 		}
 
-		List<ICompletionSource> newStack = context.getSourceStack();
 		if (src.getSourceType().equals(SourceType.METHOD)) {
-			newStack.set(0, new CompletionSource(SourceType.LOCAL_FUNCTION, src.getName(), var.getClass(), var));
-		} else if (src.getSourceType().equals(SourceType.INSTANCE)){
-			newStack.set(0, new CompletionSource(SourceType.LOCAL_VARIABLE, src.getName(), var.getClass(), var));
+			return createRefinedContext(context, new CompletionSource(SourceType.LOCAL_FUNCTION, src.getName(), var.getClass(), var,
+					CompletionDescriptionFormatter.format(var)));
+		} else if (src.getSourceType().equals(SourceType.INSTANCE)) {
+			return createRefinedContext(context, new CompletionSource(SourceType.LOCAL_VARIABLE, src.getName(), var.getClass(), var,
+					CompletionDescriptionFormatter.format(var)));
 		} else {
 			return null;
-		}
-
-		newStack = CompletionContext.refineSourceStack(newStack);
-		if (newStack == null) {
-			return null;
-		} else {
-			return new CompletionContext(context.getInput(), context.getFilter(), newStack);
 		}
 	}
 }

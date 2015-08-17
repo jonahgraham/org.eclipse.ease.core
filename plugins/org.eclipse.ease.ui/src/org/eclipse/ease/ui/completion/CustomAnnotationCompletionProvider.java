@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.ease.completion.CompletionContext;
 import org.eclipse.ease.completion.CompletionSource;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
@@ -93,14 +92,7 @@ public class CustomAnnotationCompletionProvider extends AbstractCompletionProvid
 
 		// If first element found the rest of the source stack can easily be parsed.
 		if (clazz != null) {
-			List<ICompletionSource> newStack = context.getSourceStack();
-			newStack.set(0, new CompletionSource(SourceType.LOCAL_VARIABLE, src.getName(), clazz, new Object()));
-			newStack = CompletionContext.refineSourceStack(newStack);
-			if (newStack == null) {
-				return null;
-			} else {
-				return new CompletionContext(context.getInput(), context.getFilter(), newStack);
-			}
+			return createRefinedContext(context, new CompletionSource(SourceType.LOCAL_VARIABLE, src.getName(), clazz, new Object(), null));
 		}
 		return null;
 	}
@@ -118,7 +110,8 @@ public class CustomAnnotationCompletionProvider extends AbstractCompletionProvid
 		if (fScriptEngine != null || context != null && (context.getSourceStack() == null || context.getSourceStack().isEmpty())) {
 			for (String varName : fAnnotatedVariables.keySet()) {
 				if (varName.startsWith(context.getFilter())) {
-					proposals.add(new CompletionSource(SourceType.LOCAL_VARIABLE, varName, fAnnotatedVariables.get(varName), new Object()));
+					Class<?> clazz = fAnnotatedVariables.get(varName);
+					proposals.add(new CompletionSource(SourceType.LOCAL_VARIABLE, varName, clazz, new Object(), CompletionDescriptionFormatter.format(clazz)));
 				}
 			}
 		}

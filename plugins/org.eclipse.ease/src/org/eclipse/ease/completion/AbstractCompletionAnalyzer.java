@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
@@ -235,6 +236,17 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 		return content;
 	}
 
+	/**
+	 * Splits the given piece of code into a call chain (strings only).
+	 *
+	 * @param code
+	 *            Code to be split into chain
+	 * @return call chain for given piece of code as list of strings.
+	 */
+	protected List<String> splitChain(String code) {
+		return Arrays.asList(code.split("\\."));
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -270,14 +282,14 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 		// Create call stack
 		List<ICompletionSource> callStack = new ArrayList<ICompletionSource>();
-		String[] splitCode = parsedCode.split("\\.");
+		List<String> splitCode = splitChain(parsedCode);
 
-		if (splitCode.length == 1) {
-			return new CompletionContext(code, splitCode[0].trim(), callStack);
+		if (splitCode.size() == 1) {
+			return new CompletionContext(code, splitCode.get(0).trim(), callStack);
 		}
 
 		// Parse all elements in call stack to ICompletionSource
-		ICompletionSource asSource = toCompletionSource(splitCode[0]);
+		ICompletionSource asSource = toCompletionSource(splitCode.get(0));
 		if (asSource == null) {
 			return null;
 		} else {
@@ -285,8 +297,8 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 		}
 
 		// Iterate over whole call stack (last element is filter)
-		for (int i = 1; i < splitCode.length - 1; i++) {
-			String current = splitCode[i];
+		for (int i = 1; i < splitCode.size() - 1; i++) {
+			String current = splitCode.get(i);
 			asSource = toCompletionSource(current);
 			if (asSource == null || asSource.getSourceType().equals(SourceType.CONSTRUCTOR)) {
 				return null;
@@ -295,7 +307,7 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 			}
 		}
 
-		return new CompletionContext(code, splitCode[splitCode.length - 1].trim(), callStack);
+		return new CompletionContext(code, splitCode.get(splitCode.size() - 1).trim(), callStack);
 	}
 
 	/*
