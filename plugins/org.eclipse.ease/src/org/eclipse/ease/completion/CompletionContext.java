@@ -116,7 +116,7 @@ public class CompletionContext implements ICompletionContext {
 		case JAVA_CONSTRUCTOR:
 		case MODULE_CONSTRUCTOR:
 		case LOCAL_CONSTRUCTOR:
-			classOfInterest = root.getObject().getClass();
+			classOfInterest = root.getClazz();
 			break;
 
 		// For methods and functions we need the return type
@@ -134,7 +134,7 @@ public class CompletionContext implements ICompletionContext {
 		case CLASS_FIELD:
 		case MODULE_FIELD:
 		case LOCAL_VARIABLE:
-			classOfInterest = root.getObject().getClass();
+			classOfInterest = root.getClazz();
 			break;
 
 		case STRING_LITERAL:
@@ -174,7 +174,7 @@ public class CompletionContext implements ICompletionContext {
 					classOfInterest = ((Method) refinedSource.getObject()).getReturnType();
 					break;
 				case CLASS_FIELD:
-					classOfInterest = refinedSource.getObject().getClass();
+					classOfInterest = refinedSource.getClazz();
 					break;
 				default:
 					return null;
@@ -201,6 +201,11 @@ public class CompletionContext implements ICompletionContext {
 	 * @return new {@link ICompletionSource} with parsed information if successful. <code>null</code> if no information could be found.
 	 */
 	private static ICompletionSource getNext(Class<?> hayStack, ICompletionSource needle) {
+		// Avoid NPE
+		if (hayStack == null || needle == null) {
+			return null;
+		}
+		
 		switch (needle.getSourceType()) {
 		case METHOD:
 		case CLASS_METHOD:
@@ -213,7 +218,7 @@ public class CompletionContext implements ICompletionContext {
 		case CLASS_FIELD:
 			for (Field field : hayStack.getFields()) {
 				if (field.getName().equals(needle.getName())) {
-					return new CompletionSource(SourceType.CLASS_FIELD, needle.getName(), field.getClass(), field);
+					return new CompletionSource(SourceType.CLASS_FIELD, needle.getName(), hayStack, field);
 				}
 			}
 		default:
