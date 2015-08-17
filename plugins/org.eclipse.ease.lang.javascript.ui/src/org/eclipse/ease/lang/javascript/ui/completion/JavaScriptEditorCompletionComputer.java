@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
 import org.eclipse.ease.lang.javascript.JavaScriptCompletionAnalyzer;
@@ -65,7 +66,9 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 			IDocument document = context.getDocument();
 			if (document != null) {
 				String content = document.get();
-				
+				ICompletionAnalyzer analyzer = new JavaScriptCompletionAnalyzer();
+				content = analyzer.getIncludedCode(content, null);
+
 				// Add code, ICompletionProviders must check internally if anything changed.
 				fDispatcher.addCode(content);
 
