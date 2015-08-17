@@ -617,8 +617,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 						localPrint("[null]", TYPE_RESULT);
 
 					// add to content assist
-					if (fContentAssistAdapter != null)
-						((ICompletionProvider) fContentAssistAdapter.getContentProposalProvider()).addCode(script.getCode());
+					fCompletionDispatcher.addCode(script.getCode());
 				}
 
 				if (fKeepCommand) {
