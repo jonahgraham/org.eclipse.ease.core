@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.completion.CompletionContext;
 import org.eclipse.ease.completion.CompletionSource;
 import org.eclipse.ease.completion.ICompletionContext;
@@ -36,16 +35,7 @@ import org.eclipse.jface.fieldassist.ContentProposal;
  * @author Martin Kloesch
  *
  */
-public class SourceStackCompletionProvider implements ICompletionProvider {
-
-	/**
-	 * Interface compliance only.
-	 */
-	@Override
-	public void setScriptEngine(IScriptEngine engine) {
-		// Engine not used.
-	}
-	
+public class SourceStackCompletionProvider extends AbstractCompletionProvider {
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -58,7 +48,7 @@ public class SourceStackCompletionProvider implements ICompletionProvider {
 			ICompletionSource parent = context.getSourceStack().get(context.getSourceStack().size() - 1);
 			if (parent.getObject() != null) {
 
-				Class<?> root = parent.getObject().getClass();
+				Class<?> root = parent.getClazz();
 
 				switch (parent.getSourceType()) {
 				case MODULE_METHOD:

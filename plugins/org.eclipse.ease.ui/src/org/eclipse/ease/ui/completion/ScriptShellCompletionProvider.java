@@ -34,17 +34,8 @@ import org.eclipse.ease.completion.ICompletionSource.SourceType;
  * @author Martin Kloesch
  *
  */
-public class ScriptShellCompletionProvider implements ICompletionProvider {
-	private IScriptEngine fEngine;
+public class ScriptShellCompletionProvider extends AbstractCompletionProvider {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ease.ui.completion.ICompletionProvider#setScriptEngine(org.eclipse.ease.IScriptEngine)
-	 */
-	@Override
-	public void setScriptEngine(IScriptEngine engine) {
-		fEngine = engine;
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -55,7 +46,7 @@ public class ScriptShellCompletionProvider implements ICompletionProvider {
 		List<ICompletionSource> proposals = new ArrayList<ICompletionSource>();
 
 		// Only add root level matches
-		if (fEngine != null && context != null && (context.getSourceStack() == null || context.getSourceStack().isEmpty())) {
+		if (fScriptEngine != null && context != null && (context.getSourceStack() == null || context.getSourceStack().isEmpty())) {
 			addMatches(context.getFilter(), proposals);
 		}
 
@@ -73,13 +64,13 @@ public class ScriptShellCompletionProvider implements ICompletionProvider {
 	private void addMatches(String filter, Collection<ICompletionSource> proposals) {
 		Set<String> addedVariables = new HashSet<String>();
 
-		for (Entry<String, Object> var : fEngine.getVariables().entrySet()) {
+		for (Entry<String, Object> var : fScriptEngine.getVariables().entrySet()) {
 			if (var.getKey().startsWith(filter)) {
 				if (!addedVariables.contains(var.getKey())) {
 					if (var.getValue() instanceof Method) {
 						proposals.add(new CompletionSource(SourceType.LOCAL_FUNCTION, var.getKey(), null, var));
 					} else {
-						proposals.add(new CompletionSource(SourceType.LOCAL_VARIABLE, var.getKey(), null, var));
+						proposals.add(new CompletionSource(SourceType.LOCAL_VARIABLE, var.getKey(), var.getClass(), var));
 					}
 				}
 			}
@@ -103,7 +94,7 @@ public class ScriptShellCompletionProvider implements ICompletionProvider {
 	 */
 	@Override
 	public ICompletionContext refineContext(ICompletionContext context) {
-		if (fEngine == null) {
+		if (fScriptEngine == null) {
 			return null;
 		}
 		
@@ -112,7 +103,7 @@ public class ScriptShellCompletionProvider implements ICompletionProvider {
 		}
 
 		ICompletionSource src = context.getSourceStack().get(0);
-		Object var = fEngine.getVariable(src.getName());
+		Object var = fScriptEngine.getVariable(src.getName());
 
 		if (var == null) {
 			return null;
