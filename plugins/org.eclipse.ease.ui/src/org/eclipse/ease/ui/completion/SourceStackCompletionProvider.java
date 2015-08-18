@@ -46,26 +46,24 @@ public class SourceStackCompletionProvider extends AbstractCompletionProvider {
 		List<ICompletionSource> proposals = new ArrayList<ICompletionSource>();
 		if (context != null && context.getSourceStack() != null && !context.getSourceStack().isEmpty()) {
 			ICompletionSource parent = context.getSourceStack().get(context.getSourceStack().size() - 1);
-			if (parent.getObject() != null) {
 
-				Class<?> root = parent.getClazz();
+			Class<?> root = parent.getClazz();
 
-				switch (parent.getSourceType()) {
-				case MODULE_METHOD:
-				case CLASS_METHOD:
-				case LOCAL_FUNCTION:
-					if (parent.getObject() instanceof Method) {
-						root = ((Method) parent.getObject()).getReturnType();
-					} else {
-						root = null;
-					}
-				default:
-					break;
+			switch (parent.getSourceType()) {
+			case MODULE_METHOD:
+			case CLASS_METHOD:
+			case LOCAL_FUNCTION:
+				if (parent.getObject() != null && parent.getObject() instanceof Method) {
+					root = ((Method) parent.getObject()).getReturnType();
+				} else {
+					root = null;
 				}
+			default:
+				break;
+			}
 
-				if (root != null) {
-					addMatches(root, context.getFilter(), proposals);
-				}
+			if (root != null) {
+				addMatches(root, context.getFilter(), proposals);
 			}
 		}
 
@@ -91,7 +89,8 @@ public class SourceStackCompletionProvider extends AbstractCompletionProvider {
 			if ((field.getName().startsWith(toMatch)) && (toMatch.length() < field.getName().length())) {
 				if (!addedVariables.contains(field.getName())) {
 					addedVariables.add(field.getName());
-					proposals.add(new CompletionSource(SourceType.CLASS_FIELD, field.getName(), clazz, field, CompletionDescriptionFormatter.format(field, clazz)));
+					proposals.add(new CompletionSource(SourceType.CLASS_FIELD, field.getName(), clazz, field, CompletionDescriptionFormatter.format(field,
+							clazz)));
 				}
 			}
 		}
@@ -101,7 +100,8 @@ public class SourceStackCompletionProvider extends AbstractCompletionProvider {
 			if ((method.getName().startsWith(toMatch)) && (toMatch.length() < method.getName().length())) {
 				if (!addedVariables.contains(method.getName())) {
 					addedVariables.add(method.getName());
-					proposals.add(new CompletionSource(SourceType.CLASS_METHOD, method.getName(), clazz, method, CompletionDescriptionFormatter.format(method, clazz)));
+					proposals.add(new CompletionSource(SourceType.CLASS_METHOD, method.getName(), clazz, method, CompletionDescriptionFormatter.format(method,
+							clazz)));
 				}
 			}
 		}
