@@ -14,13 +14,13 @@ package org.eclipse.ease.completion;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -51,7 +51,10 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	 */
 	protected static String ltrim(String input, String delimiter) {
 		if (input.contains(delimiter)) {
-			return input.substring(input.lastIndexOf(delimiter) + 1);
+			int splitPoint = input.lastIndexOf(delimiter) + delimiter.length();
+			if (splitPoint < input.length()) {
+				return input.substring(splitPoint);
+			}
 		}
 		return input;
 	}
@@ -219,24 +222,6 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	protected abstract Pattern getIncludePattern();
 
 	/**
-	 * Reads the given input stream using {@link Scanner} and returns its content.
-	 * 
-	 * @param is
-	 *            {@link InputStream} to be read.
-	 * @return Content of input if successful, <code>null</code> otherwise.
-	 */
-	private static String readStream(InputStream is) {
-		String content = null;
-		if (is != null) {
-			Scanner scanner = new Scanner(is);
-			scanner.useDelimiter("\\A");
-			content = scanner.hasNext() ? scanner.next() : "";
-			scanner.close();
-		}
-		return content;
-	}
-
-	/**
 	 * Splits the given piece of code into a call chain (strings only).
 	 *
 	 * @param code
@@ -250,7 +235,7 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionAnalyzer#getContext(java.lang.String, int)
+	 * @see org.eclipse.ease.completion.ICompletionAnalyzer#getContext(java.lang.String, int)
 	 */
 	@Override
 	public ICompletionContext getContext(String contents, int position) {
@@ -313,10 +298,10 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionAnalyzer#getIncludedCode(java.lang.String)
+	 * @see org.eclipse.ease.completion.ICompletionAnalyzer#getIncludedCode(java.lang.String)
 	 */
 	@Override
-	public String getIncludedCode(String input, String parent) {
+	public String getIncludedCode(String input, Object parent) {
 		// Get regular expression to find includes
 		Pattern includePattern = getIncludePattern();
 		if (includePattern != null) {
@@ -371,7 +356,13 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 							includedFiles.add(absPath);
 
 							// Get the actual content of the file
-							String includedContent = readStream(is);
+							String includedContent;
+							try {
+								includedContent = ResourceTools.toString(is);
+							} catch (IOException e) {
+								// Ignore if content could not be read
+								continue;
+							}
 							if (includedContent != null) {
 								StringBuilder sb = new StringBuilder();
 

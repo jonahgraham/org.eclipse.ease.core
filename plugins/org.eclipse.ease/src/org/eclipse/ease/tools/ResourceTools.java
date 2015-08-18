@@ -28,6 +28,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ease.urlhandler.WorkspaceURLConnection;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 
 public final class ResourceTools {
 
@@ -483,5 +488,30 @@ public final class ResourceTools {
 		} while (bytes != -1);
 
 		return out.toString();
+	}
+
+	/**
+	 * Returns the currently active file in the workbench.
+	 * 
+	 * Must be run on UI thread.
+	 * 
+	 * @return Currently active file if successful or <code>null</code> in case of error.
+	 */
+	public static IFile getActiveFile() {
+		IFile file = null;
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		if (workbench != null) {
+			IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+			if (workbenchWindow != null) {
+				IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
+				if (workbenchPage != null) {
+					IEditorPart editor = workbenchPage.getActiveEditor();
+					if (editor != null) {
+						file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
+					}
+				}
+			}
+		}
+		return file;
 	}
 }

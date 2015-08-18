@@ -48,7 +48,7 @@ public class CompletionContext implements ICompletionContext {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionContext#getInput()
+	 * @see org.eclipse.ease.completion.ICompletionContext#getInput()
 	 */
 	@Override
 	public String getInput() {
@@ -58,7 +58,7 @@ public class CompletionContext implements ICompletionContext {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionContext#getFilter()
+	 * @see org.eclipse.ease.completion.ICompletionContext#getFilter()
 	 */
 	@Override
 	public String getFilter() {
@@ -68,7 +68,7 @@ public class CompletionContext implements ICompletionContext {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionContext#getSourceStack()
+	 * @see org.eclipse.ease.completion.ICompletionContext#getSourceStack()
 	 */
 	@Override
 	public List<ICompletionSource> getSourceStack() {
@@ -123,7 +123,7 @@ public class CompletionContext implements ICompletionContext {
 		case CLASS_METHOD:
 		case MODULE_METHOD:
 		case LOCAL_FUNCTION:
-			if (root.getObject() instanceof Method) {
+			if (root.getObject() != null && root.getObject() instanceof Method) {
 				classOfInterest = ((Method) root.getObject()).getReturnType();
 			} else {
 				return null;
@@ -171,7 +171,11 @@ public class CompletionContext implements ICompletionContext {
 			if (refinedSource != null) {
 				switch (refinedSource.getSourceType()) {
 				case CLASS_METHOD:
-					classOfInterest = ((Method) refinedSource.getObject()).getReturnType();
+					if (refinedSource.getObject() != null) {
+						classOfInterest = ((Method) refinedSource.getObject()).getReturnType();
+					} else {
+						return null;
+					}
 					break;
 				case CLASS_FIELD:
 					classOfInterest = refinedSource.getClazz();
@@ -205,7 +209,7 @@ public class CompletionContext implements ICompletionContext {
 		if (hayStack == null || needle == null) {
 			return null;
 		}
-		
+
 		switch (needle.getSourceType()) {
 		case METHOD:
 		case CLASS_METHOD:

@@ -47,7 +47,7 @@ public class CompletionSource implements ICompletionSource {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionSource#getSourceType()
+	 * @see org.eclipse.ease.completion.ICompletionSource#getSourceType()
 	 */
 	@Override
 	public SourceType getSourceType() {
@@ -57,7 +57,7 @@ public class CompletionSource implements ICompletionSource {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionSource#getName()
+	 * @see org.eclipse.ease.completion.ICompletionSource#getName()
 	 */
 	@Override
 	public String getName() {
@@ -67,7 +67,7 @@ public class CompletionSource implements ICompletionSource {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionSource#getClazz()
+	 * @see org.eclipse.ease.completion.ICompletionSource#getClazz()
 	 */
 	@Override
 	public Class<?> getClazz() {
@@ -77,7 +77,7 @@ public class CompletionSource implements ICompletionSource {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ease.modules.ICompletionSource#getObject()
+	 * @see org.eclipse.ease.completion.ICompletionSource#getObject()
 	 */
 	@Override
 	public Object getObject() {

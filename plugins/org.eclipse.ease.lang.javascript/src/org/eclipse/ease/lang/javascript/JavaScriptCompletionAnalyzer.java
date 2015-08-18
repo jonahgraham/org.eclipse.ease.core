@@ -28,9 +28,7 @@ import org.eclipse.ease.completion.ICompletionSource.SourceType;
 public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/**
-	 * List of delimiters that can be ignored for completion.
-	 * 
-	 * Used by {@link #parseCallChain(String)} to only get necessary information about items in call chain.
+	 * List of delimiters that indicate code that can be ignored for completion.
 	 */
 	private static List<String> CODE_DELIMITERS = new ArrayList<String>(Arrays.asList("=", "+", "-", "*", "/", "|", "&", "^", ",", "{", "}", "[", "]", ";"));
 

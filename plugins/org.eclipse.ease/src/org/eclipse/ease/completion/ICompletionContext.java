@@ -18,10 +18,7 @@ import java.util.List;
  * 
  * This context helps ICompletionProvider to simplify completion proposal calculation.
  * 
- * Stores information about:
- * 		o given input.
- * 		o filter for part of interest.
- * 		o Source stack for part of interest.
+ * Stores information about: o given input. o filter for part of interest. o Source stack for part of interest.
  * 
  * @author Martin Kloesch
  *
@@ -34,7 +31,7 @@ public interface ICompletionContext {
 	 */
 	String getInput();
 
-	/**
+/**
 	 * Returns the filter (part of the code that needs completion.)
 	 * 
 	 * In combination with {@link #getSourceStack() this can simplify filtering.
@@ -48,7 +45,7 @@ public interface ICompletionContext {
 	 * 
 	 * The source stack is a list of chained {@link ICompletionSource} objects. The source stack contains the actual "call chain" of the relevant field.
 	 * 
-	 * Example: java.io. -> [JAVA_PACKAGE "java", JAVA_PACKAGE "io"] new String().substring(0).fo -> [JAVA_CLASS "String", JAVA_METHOD "substring"]
+	 * Example: new String().substring(0).fo -> [JAVA_CLASS "String", JAVA_METHOD "substring"]
 	 *
 	 * @return source stack as list.
 	 */

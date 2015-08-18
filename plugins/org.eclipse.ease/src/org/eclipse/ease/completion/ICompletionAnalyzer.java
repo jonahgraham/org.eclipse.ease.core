@@ -31,7 +31,7 @@ public interface ICompletionAnalyzer {
 	 *            absolute path to parent directory.
 	 * @return All code including imported code.
 	 */
-	String getIncludedCode(String input, String parent);
+	String getIncludedCode(String input, Object parent);
 
 	/**
 	 * Parse the given piece of code into a language specific {@link ICompletionContext}.

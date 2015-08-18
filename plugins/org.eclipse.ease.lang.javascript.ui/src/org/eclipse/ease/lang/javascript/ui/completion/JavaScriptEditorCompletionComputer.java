@@ -20,6 +20,7 @@ import org.eclipse.ease.completion.ICompletionAnalyzer;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
 import org.eclipse.ease.lang.javascript.JavaScriptCompletionAnalyzer;
+import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.completion.CompletionProviderDispatcher;
 import org.eclipse.ease.ui.completion.ICompletionProvider;
 import org.eclipse.jface.text.IDocument;
@@ -67,7 +68,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 			if (document != null) {
 				String content = document.get();
 				ICompletionAnalyzer analyzer = new JavaScriptCompletionAnalyzer();
-				content = analyzer.getIncludedCode(content, null);
+				content = analyzer.getIncludedCode(content, ResourceTools.getActiveFile());
 
 				// Add code, ICompletionProviders must check internally if anything changed.
 				fDispatcher.addCode(content);
