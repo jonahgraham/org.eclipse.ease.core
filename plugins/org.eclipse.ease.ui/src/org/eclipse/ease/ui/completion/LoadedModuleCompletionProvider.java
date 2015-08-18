@@ -30,6 +30,7 @@ public class LoadedModuleCompletionProvider extends ModuleCompletionBase {
 	 * List of all currently loaded modules.
 	 */
 	private final Collection<ModuleDefinition> fLoadedModules = new HashSet<ModuleDefinition>();
+	private final static Collection<ModuleDefinition> fStaticLoadedModules = new HashSet<ModuleDefinition>();
 
 	/**
 	 * Constructor only initializes members and adds default modules.
@@ -38,6 +39,14 @@ public class LoadedModuleCompletionProvider extends ModuleCompletionBase {
 		// add environment module
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		fLoadedModules.add(scriptService.getAvailableModules().get(EnvironmentModule.MODULE_NAME));
+		fStaticLoadedModules.add(scriptService.getAvailableModules().get(EnvironmentModule.MODULE_NAME));
+	}
+	
+	/*
+	 *  Return the list of loaded modules
+	 */
+	public static Collection<ModuleDefinition> getStaticLoadedModules() {
+		return fStaticLoadedModules;
 	}
 
 	/*
@@ -58,6 +67,7 @@ public class LoadedModuleCompletionProvider extends ModuleCompletionBase {
 			ModuleDefinition definition = scriptService.getAvailableModules().get(fullName);
 			if (definition != null) {
 				fLoadedModules.add(definition);
+				fStaticLoadedModules.add(definition);
 
 				// add dependencies to list
 				for (String moduleID : definition.getDependencies())

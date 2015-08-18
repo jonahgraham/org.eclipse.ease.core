@@ -12,7 +12,7 @@
  *     Hannes Erven <hannes@erven.at> - Bug 293841 - [FieldAssist] NumLock keyDown event should not close the proposal popup [with patch]
  *     Vidura Mudalige - update content area to display HTML content
  *******************************************************************************/
-package org.eclipse.ease.ui.view;
+package org.eclipse.ease.ui.help.hovers;
 
 import java.util.ArrayList;
 

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2015 VIDURA and others.
+ * Copyright (c) 2015 Vidura Mudalige and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     VIDURA - initial API and implementation
+ *     Vidura Mudalige - initial API and implementation
  *******************************************************************************/
 
 package org.eclipse.ease.ui.help.hovers;
@@ -14,7 +14,6 @@ package org.eclipse.ease.ui.help.hovers;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Toolkit;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
@@ -55,8 +54,11 @@ public class EditorToolTipDecorator extends org.eclipse.jface.window.ToolTip {
 		final String selectedText = input.substring(fInputCombo.getSelection().x, fInputCombo.getSelection().y);
 
 		fBrowser = new Browser(composite, SWT.NONE);
-		String theText = "<html>" + selectedText + "</html>";
 
+		// calculate toolTipText using selected text
+		String toolTipText = EditorToolTipGenerator.getToolTipText(selectedText);
+
+		String theText = "<html>" + toolTipText + "</html>";
 		fBrowser.setText(theText);
 
 		java.awt.Point location = MouseInfo.getPointerInfo().getLocation();

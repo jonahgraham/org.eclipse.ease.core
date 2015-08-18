@@ -33,6 +33,7 @@ import org.eclipse.ease.ui.completion.CompletionProviderDispatcher;
 import org.eclipse.ease.ui.completion.ICompletionProvider;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
+import org.eclipse.ease.ui.help.hovers.ContentProposalModifier;
 import org.eclipse.ease.ui.help.hovers.EditorToolTipDecorator;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.jface.bindings.keys.KeyStroke;
