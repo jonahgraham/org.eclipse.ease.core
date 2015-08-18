@@ -442,9 +442,18 @@
       </completionProcessor>
    </extension>
    <extension
+         id="customAnnotationCompletionProvider"
          point="org.eclipse.ease.ui.completionProcessor">
       <completionProcessor
             class="org.eclipse.ease.ui.completion.CustomAnnotationCompletionProvider">
+      </completionProcessor>
+   </extension>
+   <extension
+         id="javaLookupCompletionProvder"
+         name="Java lookup completion provider"
+         point="org.eclipse.ease.ui.completionProcessor">
+      <completionProcessor
+            class="org.eclipse.ease.ui.completion.JavaLookupCompletionProvider">
       </completionProcessor>
    </extension>
 </plugin>
