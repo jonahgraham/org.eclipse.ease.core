@@ -262,22 +262,19 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 				fScriptEngine.executeAsync(input);
 			}
 		});
-		
-		
-		
-		//TODO WORKING AREA ***************************************************************************************
+
+		// TODO WORKING AREA ***************************************************************************************
 		fInputCombo.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-
-				EditorToolTipDecorator decorator = new EditorToolTipDecorator((Control) e.widget);
-				decorator.setInputCombo(fInputCombo);
-				decorator.createToolTipContentArea((Event) e.getSource(), parent);
 			}
 
 			@Override
 			public void mouseDown(MouseEvent e) {
+				EditorToolTipDecorator decorator = new EditorToolTipDecorator((Control) e.widget);
+				decorator.setInputCombo(fInputCombo);
+				decorator.createToolTipContentArea((Event) e.getSource(), parent);
 			}
 
 			@Override
@@ -285,12 +282,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			}
 
 		});
-		
-		
 
-		
-		
-		
 		fInputCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		// restore command history
 		if (fInitMemento != null) {
