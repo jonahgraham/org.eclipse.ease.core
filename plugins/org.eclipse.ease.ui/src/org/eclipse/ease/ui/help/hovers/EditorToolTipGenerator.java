@@ -32,7 +32,7 @@ public class EditorToolTipGenerator {
 
 			// check fields from modules
 			for (Field field : definition.getFields()) {
-				if (field.getName().equalsIgnoreCase(text)) {
+				if (field.getName().equals(text)) {
 
 					toolTipText = ModuleHelp.getConstantHelpTip(field);
 
@@ -45,7 +45,7 @@ public class EditorToolTipGenerator {
 
 			// check methods from modules
 			for (Method method : definition.getMethods()) {
-				if (method.getName().equalsIgnoreCase(text)) {
+				if (method.getName().equals(text)) {
 
 					toolTipText = ModuleHelp.getMethodHelpTip(method);
 
@@ -64,6 +64,9 @@ public class EditorToolTipGenerator {
 					break;
 				}
 			}
+		}
+		if (toolTipText == "") {
+			return null;
 		}
 		return toolTipText;
 	}

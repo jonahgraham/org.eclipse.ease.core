@@ -50,15 +50,33 @@ public class EditorToolTipDecorator extends org.eclipse.jface.window.ToolTip {
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		composite.setLayout(gridLayout);
 
-		final String input = fInputCombo.getText();
-		final String selectedText = input.substring(fInputCombo.getSelection().x, fInputCombo.getSelection().y);
+		final String input = fInputCombo.getText() + ' ';
+
+		int inputLength = input.length();
+		int textStartPosition = 0;
+		int textEndPosition = inputLength - 1;
+		int caretPosition = fInputCombo.getCaretPosition();
+		
+		for (int i = caretPosition; i >= 0; i--) {
+			if (input.charAt(i) == ' ') {
+				textStartPosition = i;
+				break;
+			}
+		}
+		for (int j = caretPosition; j < inputLength; j++) {
+			if (input.charAt(j) == ' ' || input.charAt(j) == '(') {
+				textEndPosition = j;
+				break;
+			}
+		}
+		final String selectedText = input.substring(textStartPosition, textEndPosition);
 
 		fBrowser = new Browser(composite, SWT.NONE);
 
 		// calculate toolTipText using selected text
-		String toolTipText = EditorToolTipGenerator.getToolTipText(selectedText);
+		final String toolTipText = EditorToolTipGenerator.getToolTipText(selectedText.trim());
 
-		String theText = "<html>" + toolTipText + "</html>";
+		final String theText = "<html>" + toolTipText + "</html>";
 		fBrowser.setText(theText);
 
 		java.awt.Point location = MouseInfo.getPointerInfo().getLocation();
@@ -76,7 +94,9 @@ public class EditorToolTipDecorator extends org.eclipse.jface.window.ToolTip {
 		composite.getShell().setBounds(x, y, 616, 216);
 		fBrowser.setSize(600, 170);
 
-		composite.getShell().open();
+		if (toolTipText != null) {
+			composite.getShell().open();
+		}
 
 		composite.addListener(SWT.MouseDown, new Listener() {
 
