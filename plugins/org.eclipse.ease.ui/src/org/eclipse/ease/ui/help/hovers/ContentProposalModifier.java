@@ -1326,7 +1326,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			IControlContentAdapter controlContentAdapter,
 			IContentProposalProvider proposalProvider, KeyStroke keyStroke,
 			char[] autoActivationCharacters) {
-		super(control, controlContentAdapter, proposalProvider, keyStroke, autoActivationCharacters);
+		super(control, controlContentAdapter, proposalProvider, null, new char[] {(char) 0xFF});
 		// We always assume the control and content adapter are valid.
 		Assert.isNotNull(control);
 		Assert.isNotNull(controlContentAdapter);
