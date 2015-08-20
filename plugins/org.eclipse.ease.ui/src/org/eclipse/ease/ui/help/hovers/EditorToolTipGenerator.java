@@ -17,6 +17,7 @@ import java.util.Collection;
 
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.completion.LoadedModuleCompletionProvider;
+import org.eclipse.swt.widgets.Combo;
 
 /**
  * @author VIDURA
@@ -24,6 +25,38 @@ import org.eclipse.ease.ui.completion.LoadedModuleCompletionProvider;
  */
 public class EditorToolTipGenerator {
 
+	/*
+	 * Calculate the selected token using the input text in the combo
+	 */
+	protected static String getSelectedToken(Combo fInputCombo) {
+		final String input = fInputCombo.getText() + ' ';
+
+		int inputLength = input.length();
+		int textStartPosition = 0;
+		int textEndPosition = inputLength - 1;
+		int caretPosition = fInputCombo.getCaretPosition();
+
+		for (int i = caretPosition; i >= 0; i--) {
+			if (input.charAt(i) == ' ') {
+				textStartPosition = i;
+				break;
+			}
+		}
+		for (int j = caretPosition; j < inputLength; j++) {
+			if (input.charAt(j) == ' ' || input.charAt(j) == '(') {
+				textEndPosition = j;
+				break;
+			}
+		}
+		final String selectedText = input.substring(textStartPosition, textEndPosition);
+		final String selectedToken = selectedText.trim();
+
+		return selectedToken;
+	}
+
+	/*
+	 * Calculate the toolTipText using the selected token
+	 */
 	protected static String getToolTipText(String text) {
 
 		String toolTipText = "";
