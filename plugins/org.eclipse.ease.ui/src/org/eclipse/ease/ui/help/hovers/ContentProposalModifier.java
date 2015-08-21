@@ -448,7 +448,6 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			 * Create a text control for showing the info about a proposal.
 			 */
 			@Override
-			// TODO WORKING AREA ********************************************************************************************************************************************************************
 			protected Control createDialogArea(Composite parent) {
 
 				GridLayout gridLayout = new GridLayout(1, true);

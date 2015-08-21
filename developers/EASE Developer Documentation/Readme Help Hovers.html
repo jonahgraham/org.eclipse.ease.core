@@ -1,0 +1,42 @@
+<html>
+<head>
+	<title>EASE Help Hovers Readme</title> 
+</head>
+<body>
+	<h2>Introduction</h2>
+	<p>The purpose of this document is to give an overview about the newly added help hover features in EASE.</p>
+	
+	<h2>Overview</h2>
+	<p>Help pages for all modules are automatically created by using a customized Javadoc doclet during the build.  
+	Help is available as html pages within the eclipse help. The goal is to identify the correct help topic, extract the relevant html part and display it as a tooltip. 
+	This is similar to the look and feel of help hoovers that get for java code. </p>
+	<p>There are 3 parts of this help hover support.</P>
+	<p>1. Help hovers for modules explorer</p>
+	<p>2. Help hovers for code completion suggestions</p>
+	<p>3. Help hovers over editor content</p>
+	
+	<p>Earlier EASE modules explorer view displayed a very brief tooltip which included only the name of the module or method. In the JS editor there was no tooltip support at all. That was a very unfair experience for a user who works with a certain module for the first time. He had to right click all the methods and modules and had to click "open help" to get every bit of help information.  Otherwise user had no way to get some very basic details such as return type and actual functionality of the method. Normally java users expect some detailed tooltip when they hover on a method. Therefore in the EASE environment when they used java methods in script shell they could not feel it as actual java environment.  
+	
+	<p>Now EASE users can see a very detailed tooltip when they hover on a certain method or module. These tooltips are generated using relevant help topics from the online help pages. Therefore users can edit those tooltips by only changing the relevant html page in Eclipse help system. It is better to change java doc comments and regenerate help pages using help generator. Because it helps to preserve the format of the html pages. But users can change the css properties of the help pages and tooltips as they wish by modifying the "tooltip.css" file in "org.eclipse.ease.help" plugin.</P>   
+	
+	<h2>Code Explanation</h2>
+	<p>All the main classes related to help hovers are located in the "org.eclipse.ease.ui.help.hovers" package in "org.eclipse.ease.ui" plugin. There are 5 classes.</p>
+	
+	<h4>1. ModuleHelp.java</h4>
+		<p>This class includes 3 basic static methods. getModuleHelpTip(), getMethodHelpTip() and getConstantHelpTip(). After passing Module, Method or Field object to the relevant method it will return a string which contains all the html contents of the related tooltip. Within each method first calculate the URL of the help page using the Module, Method or Field object. After that it parse the html content of the page to get the correct html content. For that a pre defined html page format is assumed. After that URL of the css file is calculated and added to the previously calculated html content. Complete tooltip html content is returned as a String.</p>
+		
+	<h4>2. ModuleToolTipDecorator.java</h4>
+		<p>This class is used to modify the appearance of the module explorer tooltips. SWT browser widget is used to display the tooltips. This browser is capable of resizing by drag and dropping the borders. Some AWT tools has been used to get the resolution of the screen and the absolute position of the cursor. It has been used to avoid crossing the border of the screen by the SWT browser. Developers can change the look and feel of module explorer tooltips by simply modifying createViewerToolTipContentArea() method.</p>
+		
+		<h4>3. ContentProposalModifier.java</h4>
+		<p>This class is used to modify the view of the help hovers in code completion suggestions. This class is used to override few methods of ContentProposalAdapter.java class. CreateDialogArea() is one method that has been overridden. SWT browser widget has bought instead of SWT text widget in that class. Then code completion suggestions are capable of displaying html contents as help hovers. Developers can further modify the view of these help hovers by modifying this class.</P>
+		
+		<h4>4. EditorToolTipGenerator.java</h4>
+		<p>This class includes 2 basic methods. After passing the reference to the input combo of the editor, getSelectedToken() method is capable of returning the correct token at the cursor position. After passing that token to the getToolTipText() method, it checks the names of all loaded methods and modules. If a match found it calls to the ModuleHelp.java class by passing the method or field object to get the tooltip.</p>
+		
+		<h4>5. EditorToolTipDecorator.java</h4>
+		<p>This class is used to modify the view of the help hovers in editor. As usual SWT browser widget has been used to display tooltips. Developers can change the look and feel of editor tooltips by simply modifying createToolTipContentArea() method.</p>
+		
+		<p>In addition to above classes small modifications have been done to the "ScriptShell.java" class in "org.eclipse.ease.ui.view" package, "LoadedModuleCompletionProvider.java" class in "org.eclipse.ease.ui.completion" package, "ModulesDecoratedLabelProvider.java" and "ModulesComposite.java" classes in "org.eclipse.ease.ui.modules.ui" package as well.</p>
+</body>
+</html>

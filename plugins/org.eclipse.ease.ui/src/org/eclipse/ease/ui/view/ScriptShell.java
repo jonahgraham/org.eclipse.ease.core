@@ -263,7 +263,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			}
 		});
 
-		// TODO WORKING AREA ***************************************************************************************
 		fInputCombo.addMouseListener(new MouseListener() {
 
 			@Override
