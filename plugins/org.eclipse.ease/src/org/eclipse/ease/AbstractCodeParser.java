@@ -21,8 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ease.completion.ICompletionContext;
 
-public abstract class AbstractHeaderParser implements IHeaderParser {
+public abstract class AbstractCodeParser implements ICodeParser {
 
 	/** Default line break character. */
 	public static final String LINE_DELIMITER = System.getProperty(Platform.PREF_LINE_SEPARATOR);
@@ -151,6 +152,16 @@ public abstract class AbstractHeaderParser implements IHeaderParser {
 		}
 
 		return comment.toString();
+	}
+
+	@Override
+	public String getIncludedCode(final String input, final Object parent) {
+		return "";
+	}
+
+	@Override
+	public ICompletionContext getContext(final String contents, final int position) {
+		return null;
 	}
 
 	protected abstract boolean hasBlockComment();

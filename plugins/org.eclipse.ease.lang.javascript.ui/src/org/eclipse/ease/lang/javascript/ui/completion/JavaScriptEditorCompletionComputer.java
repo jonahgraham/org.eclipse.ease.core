@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ease.completion.ICompletionAnalyzer;
+import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.completion.ICompletionContext;
 import org.eclipse.ease.completion.ICompletionSource;
 import org.eclipse.ease.lang.javascript.JavaScriptCompletionAnalyzer;
@@ -30,9 +30,9 @@ import org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer;
 
 /**
  * {@link IJavaCompletionProposalComputer} for EASE JavaScript.
- * 
+ *
  * Internally uses {@link CompletionProviderDispatcher} and dynamic {@link ICompletionProvider} to create proposals.
- * 
+ *
  * @author Martin Kloesch
  *
  */
@@ -54,20 +54,19 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#computeCompletionProposals(org.eclipse.wst.jsdt.ui.text.java.ContentAssistInvocationContext
-	 * , org.eclipse.core.runtime.IProgressMonitor)
+	 *
+	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#computeCompletionProposals(org.eclipse.wst.jsdt.ui.text.java.
+	 * ContentAssistInvocationContext , org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public List<?> computeCompletionProposals(ContentAssistInvocationContext context, IProgressMonitor arg1) {
+	public List<?> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor arg1) {
 		List<CompletionProposal> proposals = new ArrayList<CompletionProposal>();
 		if (context != null) {
 			// Get content of document
 			IDocument document = context.getDocument();
 			if (document != null) {
 				String content = document.get();
-				ICompletionAnalyzer analyzer = new JavaScriptCompletionAnalyzer();
+				ICodeParser analyzer = new JavaScriptCompletionAnalyzer();
 				content = analyzer.getIncludedCode(content, ResourceTools.getActiveFile());
 
 				// Add code, ICompletionProviders must check internally if anything changed.
@@ -90,20 +89,19 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#computeContextInformation(org.eclipse.wst.jsdt.ui.text.java.ContentAssistInvocationContext
-	 * , org.eclipse.core.runtime.IProgressMonitor)
+	 *
+	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#computeContextInformation(org.eclipse.wst.jsdt.ui.text.java.
+	 * ContentAssistInvocationContext , org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public List<?> computeContextInformation(ContentAssistInvocationContext arg0, IProgressMonitor arg1) {
+	public List<?> computeContextInformation(final ContentAssistInvocationContext arg0, final IProgressMonitor arg1) {
 		// TODO Auto-generated method stub
 		return Collections.EMPTY_LIST;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#getErrorMessage()
 	 */
 	@Override
@@ -114,7 +112,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#sessionEnded()
 	 */
 	@Override
@@ -125,7 +123,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#sessionStarted()
 	 */
 	@Override

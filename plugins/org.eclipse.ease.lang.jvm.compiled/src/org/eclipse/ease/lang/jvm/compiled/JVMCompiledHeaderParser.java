@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.ease.lang.jvm.compiled;
 
-import org.eclipse.ease.AbstractHeaderParser;
+import org.eclipse.ease.AbstractCodeParser;
 
-public class JVMCompiledHeaderParser extends AbstractHeaderParser {
+public class JVMCompiledHeaderParser extends AbstractCodeParser {
 
 	private static final String LINE_COMMENT = "//";
 	private static final String BLOCK_COMMENT_START = "/*";

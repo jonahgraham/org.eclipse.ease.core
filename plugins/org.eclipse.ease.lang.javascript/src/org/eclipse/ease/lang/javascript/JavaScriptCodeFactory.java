@@ -18,11 +18,11 @@ import java.util.List;
 
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.modules.AbstractModuleWrapper;
+import org.eclipse.ease.modules.AbstractCodeFactory;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
 
-public class JavaScriptModuleWrapper extends AbstractModuleWrapper {
+public class JavaScriptCodeFactory extends AbstractCodeFactory {
 
 	public static List<String> RESERVED_KEYWORDS = new ArrayList<String>();
 

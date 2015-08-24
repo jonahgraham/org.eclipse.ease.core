@@ -18,7 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class AbstractModuleWrapper implements IModuleWrapper {
+import org.eclipse.ease.ICodeFactory;
+
+public abstract class AbstractCodeFactory implements ICodeFactory {
 
 	public static class Parameter {
 
@@ -60,7 +62,7 @@ public abstract class AbstractModuleWrapper implements IModuleWrapper {
 		}
 	}
 
-	public AbstractModuleWrapper() {
+	public AbstractCodeFactory() {
 	}
 
 	/**

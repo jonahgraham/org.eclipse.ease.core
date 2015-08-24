@@ -119,7 +119,7 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 						header.put("date-recorded", new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(new Date()));
 
 						buffer.insert(0, "\n");
-						buffer.insert(0, scriptType.getHeaderParser().createHeader(header));
+						buffer.insert(0, scriptType.getCodeParser().createHeader(header));
 
 						if (storage != null) {
 							// store script

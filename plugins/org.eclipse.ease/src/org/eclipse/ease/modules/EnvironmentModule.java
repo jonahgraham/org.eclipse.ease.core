@@ -20,6 +20,7 @@ import java.net.URL;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.ExitException;
+import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
@@ -90,7 +91,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 		// create wrappers for methods
 		for (final Method method : ModuleHelper.getMethods(instance.getClass())) {
-			final String code = getWrapper().createFunctionWrapper(this, identifier, method);
+			final String code = getCodeFactory().createFunctionWrapper(this, identifier, method);
 
 			if ((code != null) && !code.isEmpty()) {
 				scriptCode.append(code);
@@ -105,8 +106,8 @@ public class EnvironmentModule extends AbstractEnvironment {
 				try {
 
 					// only wrap if field is not already declared
-					if (!getScriptEngine().hasVariable(getWrapper().getSaveVariableName(field.getName()))) {
-						final String code = getWrapper().createStaticFieldWrapper(this, identifier, field);
+					if (!getScriptEngine().hasVariable(getCodeFactory().getSaveVariableName(field.getName()))) {
+						final String code = getCodeFactory().createStaticFieldWrapper(this, identifier, field);
 
 						if ((code != null) && !code.isEmpty()) {
 							scriptCode.append(code);
@@ -209,13 +210,12 @@ public class EnvironmentModule extends AbstractEnvironment {
 	}
 
 	/**
-	 * Get the generic script wrapper registered for this script engine.
+	 * Get the generic script code factory registered for this script engine.
 	 *
-	 * @return script wrapper
+	 * @return code factory
 	 */
-	private IModuleWrapper getWrapper() {
-		// use the static access method for the service as we might run without UI (workbench would not be available)
-		return ScriptService.getService().getModuleWrapper(getScriptEngine().getDescription().getID());
+	private ICodeFactory getCodeFactory() {
+		return ScriptService.getCodeFactory(getScriptEngine());
 	}
 
 	/**

@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ease.IHeaderParser;
+import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
@@ -302,7 +302,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 	private static Map<String, String> extractParameters(final ScriptType type, final InputStream stream) {
 		if (type != null) {
-			final IHeaderParser parser = type.getHeaderParser();
+			final ICodeParser parser = type.getCodeParser();
 			if (parser != null)
 				return parser.parse(stream);
 		}

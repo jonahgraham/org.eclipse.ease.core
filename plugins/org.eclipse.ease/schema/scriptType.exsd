@@ -91,13 +91,23 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="headerParser" type="string">
+         <attribute name="codeParser" type="string">
             <annotation>
                <documentation>
-                  Parser to extract header data from a script and to convert it into key/value pairs. Headers are considered to be a comment block before the first line of code. They may contain key value pairs in the following format &quot;key : value&quot;
+                  Parser to extract data from a script source. Extracts comments, loaded modules, includes, variables and more.
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.eclipse.ease.IHeaderParser"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="codeFactory" type="string">
+            <annotation>
+               <documentation>
+                  Factory to create dynamic code for the target script type.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ease.ICodeFactory"/>
                </appinfo>
             </annotation>
          </attribute>

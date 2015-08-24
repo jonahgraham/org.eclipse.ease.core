@@ -9,9 +9,9 @@
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/package org.eclipse.ease.lang.python;
 
-import org.eclipse.ease.AbstractHeaderParser;
+import org.eclipse.ease.AbstractCodeParser;
 
-public class PythonHeaderParser extends AbstractHeaderParser {
+public class PythonHeaderParser extends AbstractCodeParser {
 
 	private static final String LINE_COMMENT = "#";
 

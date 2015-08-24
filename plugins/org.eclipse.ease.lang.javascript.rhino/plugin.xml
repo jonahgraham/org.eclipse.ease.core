@@ -13,10 +13,6 @@
                scriptType="JavaScript">
          </binding>
       </engine>
-      <moduleWrapper
-            class="org.eclipse.ease.lang.javascript.JavaScriptModuleWrapper"
-            engineID="org.eclipse.ease.javascript.rhino">
-      </moduleWrapper>
       <launchExtension
             class="org.eclipse.ease.modules.BootStrapper"
             engineID="org.eclipse.ease.javascript.rhino">

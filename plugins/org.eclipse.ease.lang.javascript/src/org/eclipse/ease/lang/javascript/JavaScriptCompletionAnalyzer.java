@@ -39,14 +39,14 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/**
 	 * Special case of {@link #removeUnnecessaryCode(String)}.
-	 * 
+	 *
 	 * Code before spaces is not necessary for evaluation except when it contains the <code>new</code> keyword.
-	 * 
+	 *
 	 * @param code
 	 *            Piece of code to be "trimmed".
 	 * @return Code with everything not necessary for code completion removed.
 	 */
-	private static String removeSpacesExceptCtor(String code) {
+	private static String removeSpacesExceptCtor(final String code) {
 		if (code.contains("new ")) {
 			// Check if constructor is last occurence of space
 			if ((code.lastIndexOf("new ") + 3) == code.lastIndexOf(" ")) {
@@ -58,7 +58,7 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ease.modules.AbstractCompletionAnalyzer#removeUnnecessaryCode(java.lang.String)
 	 */
 	@Override
@@ -73,9 +73,10 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ease.completion.AbstractCompletionAnalyzer#splitChain(java.lang.String)
 	 */
+	@Override
 	protected List<String> splitChain(String code) {
 		List<String> split = new ArrayList<String>();
 
@@ -100,7 +101,7 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/**
 	 * Base regex for valid identifier. Reused for all other patterns.
-	 * 
+	 *
 	 * Valid identifier must start with alphabetical character or underscore. Afterwards all alpha-numerical characters as well as underscore are allowed.
 	 */
 	private static final String IDENTIFIER_PATTERN = "[a-zA-Z_][a-zA-Z0-9_]*";
@@ -132,11 +133,11 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ease.modules.AbstractCompletionAnalyzer#toCompletionSource(java.lang.String)
 	 */
 	@Override
-	protected ICompletionSource toCompletionSource(String code) {
+	protected ICompletionSource toCompletionSource(final String code) {
 		ICompletionSource src = null;
 		if (code.matches(CTOR_PATTERN)) {
 			src = new CompletionSource(SourceType.CONSTRUCTOR, code.replace("new ", "").replace("()", ""), null, null, null);
@@ -150,7 +151,7 @@ public class JavaScriptCompletionAnalyzer extends AbstractCompletionAnalyzer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ease.completion.AbstractCompletionAnalyzer#getIncludePattern()
 	 */
 	@Override

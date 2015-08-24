@@ -14,7 +14,7 @@ import org.junit.Test;
 public class AbstractHeaderParserTest {
 
 	// classic implementation of a HeaderParser
-	private class HeaderParser extends AbstractHeaderParser {
+	private class HeaderParser extends AbstractCodeParser {
 
 		@Override
 		protected boolean hasBlockComment() {

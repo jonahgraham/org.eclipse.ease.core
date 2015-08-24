@@ -9,9 +9,9 @@
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/package org.eclipse.ease.lang.javascript;
 
-import org.eclipse.ease.AbstractHeaderParser;
+import org.eclipse.ease.AbstractCodeParser;
 
-public class JavaScriptHeaderParser extends AbstractHeaderParser {
+public class JavaScriptCodeParser extends AbstractCodeParser {
 
 	private static final String LINE_COMMENT = "//";
 	private static final String BLOCK_COMMENT_START = "/*";

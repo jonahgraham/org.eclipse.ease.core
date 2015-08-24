@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.ease.modules;
 
+import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
 import org.eclipse.ease.Script;
-import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
 
 /**
@@ -24,20 +24,15 @@ public class BootStrapper implements IScriptEngineLaunchExtension {
 
 	@Override
 	public void createEngine(final IScriptEngine engine) {
-		IModuleWrapper wrapper = getWrapper(engine.getDescription().getID());
-		if (wrapper != null) {
+		ICodeFactory codeFactory = ScriptService.getCodeFactory(engine);
+		if (codeFactory != null) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(wrapper.classInstantiation(EnvironmentModule.class, new String[0]));
+			stringBuilder.append(codeFactory.classInstantiation(EnvironmentModule.class, new String[0]));
 			stringBuilder.append(".loadModule(\"");
 			stringBuilder.append(EnvironmentModule.MODULE_NAME);
 			stringBuilder.append("\");\n");
 
 			engine.executeAsync(new Script("Bootloader", stringBuilder.toString()));
 		}
-	}
-
-	public static IModuleWrapper getWrapper(final String engineID) {
-		final IScriptService scriptService = ScriptService.getService();
-		return scriptService.getModuleWrapper(engineID);
 	}
 }

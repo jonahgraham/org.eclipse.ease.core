@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -28,28 +29,29 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.completion.ICompletionSource.SourceType;
 import org.eclipse.ease.tools.ResourceTools;
 
 /**
  * Abstract base implementation for {@link ICompletionAnalyzer}.
- * 
+ *
  * Handles common logic and offers abstract methods for script languages to modify analysis based on their syntax.
- * 
+ *
  * @author Martin Kloesch
  *
  */
-public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer {
+public abstract class AbstractCompletionAnalyzer implements ICodeParser {
 	/**
 	 * Trims everything from the given input String up to the last occurrence of given delimiter.
-	 * 
+	 *
 	 * @param input
 	 *            String to be trimmed.
 	 * @param delimiter
 	 *            Delimiter for String trimming.
 	 * @return Substring after last occurrence of delimiter.
 	 */
-	protected static String ltrim(String input, String delimiter) {
+	protected static String ltrim(final String input, final String delimiter) {
 		if (input.contains(delimiter)) {
 			int splitPoint = input.lastIndexOf(delimiter) + delimiter.length();
 			if (splitPoint < input.length()) {
@@ -61,14 +63,14 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 	/**
 	 * Trims everything from the given input String after the first occurrence of given delimiter.
-	 * 
+	 *
 	 * @param input
 	 *            String to be trimmed.
 	 * @param delimiter
 	 *            Delimiter for String trimming.
 	 * @return Substring up to first occurrence of delimiter.
 	 */
-	protected static String rtrim(String input, String delimiter) {
+	protected static String rtrim(final String input, final String delimiter) {
 		if (input.contains(delimiter)) {
 			return input.substring(0, input.indexOf(delimiter));
 		}
@@ -78,12 +80,12 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	/**
 	 * Analyzes a given line of code and removes everything that is not part of the current parentheses' scope. Further performs check if still in opened String
 	 * literal -> do not use auto-completion.
-	 * 
+	 *
 	 * @param code
 	 *            Line of code to be analyzed.
 	 * @return String with everything in current parentheses' scope, <code>null</code> if String contains invalid syntax or String literal opened.
 	 */
-	protected static String getCurrentParentheses(String code) {
+	protected static String getCurrentParentheses(final String code) {
 		Stack<Integer> parantheses = new Stack<Integer>();
 		boolean inString = false;
 		boolean stringEscape = false;
@@ -138,12 +140,12 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	/**
 	 * Removes parameters in method calls because they are not necessary for completion. Java overloads must all have same return type so parameters can be
 	 * ignored.
-	 * 
+	 *
 	 * @param code
 	 *            Piece of code to remove call parameters from.
 	 * @return code with parameters removed from calls.
 	 */
-	protected static String removeParameters(String code) {
+	protected static String removeParameters(final String code) {
 		StringBuilder sb = new StringBuilder();
 
 		int level = 0;
@@ -192,9 +194,9 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 	/**
 	 * Removes all part of a given piece of code that is not necessary for completion.
-	 * 
+	 *
 	 * Different scripting languages may have different code to keep/remove.
-	 * 
+	 *
 	 * @param code
 	 *            Piece of code to remove everything not necessary from.
 	 * @return Code with all unnecessary characters removed.
@@ -203,9 +205,9 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 	/**
 	 * Parses a given piece of code to one of the base values of {@link ICompletionSource}.
-	 * 
+	 *
 	 * These base values include constructors, methods and fields.
-	 * 
+	 *
 	 * @param code
 	 *            piece of code to be parsed to {@link ICompletionSource}
 	 * @return {@link ICompletionSource} matching given piece of code if successful, <code>null</code> in case of error.
@@ -214,9 +216,9 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 	/**
 	 * Returns a regular expression to match for includes.
-	 * 
+	 *
 	 * This pattern must have a single group containing the code to be imported.
-	 * 
+	 *
 	 * @return Pattern to help find includes.
 	 */
 	protected abstract Pattern getIncludePattern();
@@ -228,17 +230,17 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 	 *            Code to be split into chain
 	 * @return call chain for given piece of code as list of strings.
 	 */
-	protected List<String> splitChain(String code) {
+	protected List<String> splitChain(final String code) {
 		return Arrays.asList(code.split("\\."));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ease.completion.ICompletionAnalyzer#getContext(java.lang.String, int)
 	 */
 	@Override
-	public ICompletionContext getContext(String contents, int position) {
+	public ICompletionContext getContext(final String contents, final int position) {
 		// Avoid NPE, should not occur but better safe than sorry
 		if (contents == null) {
 			return null;
@@ -282,10 +284,10 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 		}
 
 		// Iterate over whole call stack (last element is filter)
-		for (int i = 1; i < splitCode.size() - 1; i++) {
+		for (int i = 1; i < (splitCode.size() - 1); i++) {
 			String current = splitCode.get(i);
 			asSource = toCompletionSource(current);
-			if (asSource == null || asSource.getSourceType().equals(SourceType.CONSTRUCTOR)) {
+			if ((asSource == null) || asSource.getSourceType().equals(SourceType.CONSTRUCTOR)) {
 				return null;
 			} else {
 				callStack.add(asSource);
@@ -297,11 +299,11 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ease.completion.ICompletionAnalyzer#getIncludedCode(java.lang.String)
 	 */
 	@Override
-	public String getIncludedCode(String input, Object parent) {
+	public String getIncludedCode(String input, final Object parent) {
 		// Get regular expression to find includes
 		Pattern includePattern = getIncludePattern();
 		if (includePattern != null) {
@@ -381,5 +383,17 @@ public abstract class AbstractCompletionAnalyzer implements ICompletionAnalyzer 
 			}
 		}
 		return input;
+	}
+
+	@Override
+	public Map<String, String> parse(final InputStream stream) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String createHeader(final Map<String, String> headerContent) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

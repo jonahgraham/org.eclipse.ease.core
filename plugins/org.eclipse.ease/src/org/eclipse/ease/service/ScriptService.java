@@ -26,10 +26,11 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.ease.ICodeFactory;
+import org.eclipse.ease.ICodeParser;
+import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.completion.ICompletionAnalyzer;
-import org.eclipse.ease.modules.IModuleWrapper;
 import org.eclipse.ease.modules.ModuleCategoryDefinition;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.tools.ResourceTools;
@@ -55,15 +56,11 @@ public class ScriptService implements IScriptService {
 
 	private static final String LAUNCH_EXTENSION = "launchExtension";
 
-	private static final String MODULE_WRAPPER = "moduleWrapper";
-	
-	private static final String COMPLETION_ANALYZER = "completionAnalyzer";
-
 	private static ScriptService fInstance = null;
 
 	public static IScriptService getService() {
 		try {
-			return (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+			return PlatformUI.getWorkbench().getService(IScriptService.class);
 		} catch (IllegalStateException e) {
 			// workbench has not been created yet, might be running in headless mode
 			return ScriptService.getInstance();
@@ -80,10 +77,6 @@ public class ScriptService implements IScriptService {
 	private Map<String, ModuleDefinition> fAvailableModules = null;
 
 	private Map<String, EngineDescription> fEngineDescriptions = null;
-
-	private Map<String, IModuleWrapper> fModuleWrappers = null;
-	
-	private Map<String, ICompletionAnalyzer> fCompletionAnalyzers = null;
 
 	private Map<String, ScriptType> fScriptTypes = null;
 
@@ -155,78 +148,6 @@ public class ScriptService implements IScriptService {
 			}
 		}
 		return fEngineDescriptions;
-	}
-
-	// public Set<ScriptType> getHandleScriptType() {
-	// Set<ScriptType> result = new HashSet<ScriptType>();
-	// for (EngineDescription desc : getEngineDescriptions().values()) {
-	// for (ScriptType scriptType : desc.getSupportedScriptTypes()) {
-	// result.add(scriptType);
-	// }
-	// }
-	// return result;
-	// }
-	//
-
-	@Override
-	public IModuleWrapper getModuleWrapper(final String engineID) {
-		return getModuleWrappers().get(engineID);
-	}
-
-	private Map<String, IModuleWrapper> getModuleWrappers() {
-		if (fModuleWrappers == null) {
-			fModuleWrappers = new HashMap<String, IModuleWrapper>();
-			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_LANGUAGE_ID);
-
-			for (final IConfigurationElement e : config) {
-				try {
-					if (MODULE_WRAPPER.equals(e.getName())) {
-						final Object extension = e.createExecutableExtension("class");
-						String engineID = e.getAttribute(ENGINE_ID);
-						if ((extension instanceof IModuleWrapper) && (engineID != null)) {
-							if (fModuleWrappers.containsKey(engineID))
-								Logger.logError("The engine id " + engineID + " is already used");
-							else
-								fModuleWrappers.put(engineID, (IModuleWrapper) extension);
-						}
-					}
-				} catch (final InvalidRegistryObjectException e1) {
-				} catch (final CoreException e1) {
-				}
-			}
-		}
-		return fModuleWrappers;
-	}
-	
-	
-	@Override
-	public ICompletionAnalyzer getCompletionAnalyzer(final String engineID) {
-		return getCompletionAnalyzers().get(engineID);
-	}
-	
-	private Map<String, ICompletionAnalyzer> getCompletionAnalyzers() {
-		if (fCompletionAnalyzers == null) {
-			fCompletionAnalyzers = new HashMap<String, ICompletionAnalyzer>();
-			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_LANGUAGE_ID);
-
-			for (final IConfigurationElement e : config) {
-				try {
-					if (COMPLETION_ANALYZER.equals(e.getName())) {
-						final Object extension = e.createExecutableExtension("class");
-						String engineID = e.getAttribute(ENGINE_ID);
-						if ((extension instanceof ICompletionAnalyzer) && (engineID != null)) {
-							if (fCompletionAnalyzers.containsKey(engineID))
-								Logger.logError("The engine id " + engineID + " is already used");
-							else
-								fCompletionAnalyzers.put(engineID, (ICompletionAnalyzer) extension);
-						}
-					}
-				} catch (final InvalidRegistryObjectException e1) {
-				} catch (final CoreException e1) {
-				}
-			}
-		}
-		return fCompletionAnalyzers;
 	}
 
 	@Override
@@ -332,6 +253,42 @@ public class ScriptService implements IScriptService {
 		for (ModuleDefinition definition : getAvailableModules().values()) {
 			if (definition.getId().equals(moduleId))
 				return definition;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the default {@link ICodeFactory} for a given script engine.
+	 *
+	 * @param engine
+	 *            script engine to look up
+	 * @return code factory or <code>null</code>
+	 */
+	public static ICodeFactory getCodeFactory(final IScriptEngine engine) {
+		EngineDescription description = engine.getDescription();
+		if (description != null) {
+			List<ScriptType> scriptTypes = description.getSupportedScriptTypes();
+			if (!scriptTypes.isEmpty())
+				return scriptTypes.get(0).getCodeFactory();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the default {@link ICodeParser} for a given script engine.
+	 *
+	 * @param engine
+	 *            script engine to look up
+	 * @return code factory or <code>null</code>
+	 */
+	public static ICodeParser getCodeParser(final IScriptEngine engine) {
+		EngineDescription description = engine.getDescription();
+		if (description != null) {
+			List<ScriptType> scriptTypes = description.getSupportedScriptTypes();
+			if (!scriptTypes.isEmpty())
+				return scriptTypes.get(0).getCodeParser();
 		}
 
 		return null;

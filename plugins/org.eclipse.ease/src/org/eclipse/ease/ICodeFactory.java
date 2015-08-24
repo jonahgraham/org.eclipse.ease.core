@@ -8,12 +8,14 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.modules;
+package org.eclipse.ease;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public interface IModuleWrapper {
+import org.eclipse.ease.modules.IEnvironment;
+
+public interface ICodeFactory {
 
 	String getSaveVariableName(String variableName);
 

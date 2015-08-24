@@ -19,7 +19,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.ease.IHeaderParser;
+import org.eclipse.ease.ICodeFactory;
+import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 
 public class ScriptType {
@@ -27,7 +28,8 @@ public class ScriptType {
 	private static final String NAME = "name";
 	private static final String DEFAULT_EXTENSION = "defaultExtension";
 	private static final String BINDING = "binding";
-	private static final String HEADER_PARSER = "headerParser";
+	private static final String CODE_PARSER = "codeParser";
+	private static final String CODE_FACTORY = "codeFactory";
 	private static final String CONTENT_TYPE = "contentType";
 
 	private final IConfigurationElement fConfigurationElement;
@@ -53,15 +55,29 @@ public class ScriptType {
 		return result;
 	}
 
-	public IHeaderParser getHeaderParser() {
+	public ICodeParser getCodeParser() {
 		try {
-			Object parser = fConfigurationElement.createExecutableExtension(HEADER_PARSER);
-			if (parser instanceof IHeaderParser)
-				return (IHeaderParser) parser;
+			Object parser = fConfigurationElement.createExecutableExtension(CODE_PARSER);
+			if (parser instanceof ICodeParser)
+				return (ICodeParser) parser;
 
 		} catch (CoreException e) {
 			// could not instantiate class
 			Logger.logError("Could not instantiate header parser", e);
+		}
+
+		return null;
+	}
+
+	public ICodeFactory getCodeFactory() {
+		try {
+			Object factory = fConfigurationElement.createExecutableExtension(CODE_FACTORY);
+			if (factory instanceof ICodeFactory)
+				return (ICodeFactory) factory;
+
+		} catch (CoreException e) {
+			// could not instantiate class
+			Logger.logError("Could not instantiate code factory", e);
 		}
 
 		return null;

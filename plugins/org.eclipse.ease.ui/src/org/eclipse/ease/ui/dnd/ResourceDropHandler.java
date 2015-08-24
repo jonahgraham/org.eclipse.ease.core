@@ -15,11 +15,12 @@ import java.lang.reflect.Method;
 import java.net.URI;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.EnvironmentModule;
-import org.eclipse.ease.modules.IModuleWrapper;
 import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ui.PlatformUI;
@@ -36,18 +37,16 @@ public class ResourceDropHandler implements IShellDropHandler {
 
 	@Override
 	public void performDrop(final IScriptEngine scriptEngine, final Object element) {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-
 		try {
-			IModuleWrapper moduleWrapper = scriptService.getModuleWrapper(scriptEngine.getDescription().getID());
+			ICodeFactory codeFactory = ScriptService.getCodeFactory(scriptEngine);
 			Method includeMethod = EnvironmentModule.class.getMethod("include", String.class);
 
 			if ((element instanceof IFile) || (element instanceof File)) {
-				String call = moduleWrapper.createFunctionCall(includeMethod, ResourceTools.toAbsoluteLocation(element, null));
+				String call = codeFactory.createFunctionCall(includeMethod, ResourceTools.toAbsoluteLocation(element, null));
 				scriptEngine.executeAsync(call);
 
 			} else if (element instanceof URI) {
-				String call = moduleWrapper.createFunctionCall(includeMethod, element.toString());
+				String call = codeFactory.createFunctionCall(includeMethod, element.toString());
 				scriptEngine.executeAsync(call);
 
 			} else
@@ -63,7 +62,7 @@ public class ResourceDropHandler implements IShellDropHandler {
 	}
 
 	private static ScriptType getScriptType(final Object element) {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		return scriptService.getScriptType(ResourceTools.toAbsoluteLocation(element, null));
 	}
 }

@@ -15,6 +15,7 @@
    <extension
          point="org.eclipse.ease.scriptType">
       <scriptType
+            codeFactory="org.eclipse.ease.lang.javascript.JavaScriptCodeFactory"
             defaultExtension="js"
             headerParser="org.eclipse.ease.lang.javascript.JavaScriptHeaderParser"
             name="JavaScript">
