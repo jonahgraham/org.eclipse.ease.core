@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="completionProcessor" name="CompletionProcessor" schema="schema/completionProcessor.exsd"/>
+   <extension-point id="codeCompletionProvider" name="CodeCompletionProvider" schema="schema/codeCompletionProvider.exsd"/>
    <extension-point id="shell" name="Shell" schema="schema/shell.exsd"/>
    <extension
          point="org.eclipse.ui.views">
@@ -418,42 +418,15 @@
       </dropHandler>
    </extension>
    <extension
-         id="loadedModulesCompletionProvider"
-         name="Loaded modules completion provider"
-         point="org.eclipse.ease.ui.completionProcessor">
-      <completionProcessor
-            class="org.eclipse.ease.ui.completion.LoadedModuleCompletionProvider">
-      </completionProcessor>
-   </extension>
-   <extension
-         id="scriptShellCompletionProvider"
-         name="Script shell completion provider"
-         point="org.eclipse.ease.ui.completionProcessor">
-      <completionProcessor
-            class="org.eclipse.ease.ui.completion.ScriptShellCompletionProvider">
-      </completionProcessor>
-   </extension>
-   <extension
-         id="sourceStackCompletionProvider"
-         name="Source stack completion analyzer"
-         point="org.eclipse.ease.ui.completionProcessor">
-      <completionProcessor
-            class="org.eclipse.ease.ui.completion.SourceStackCompletionProvider">
-      </completionProcessor>
-   </extension>
-   <extension
-         id="customAnnotationCompletionProvider"
-         point="org.eclipse.ease.ui.completionProcessor">
-      <completionProcessor
-            class="org.eclipse.ease.ui.completion.CustomAnnotationCompletionProvider">
-      </completionProcessor>
-   </extension>
-   <extension
-         id="javaLookupCompletionProvder"
-         name="Java lookup completion provider"
-         point="org.eclipse.ease.ui.completionProcessor">
-      <completionProcessor
-            class="org.eclipse.ease.ui.completion.JavaLookupCompletionProvider">
-      </completionProcessor>
+         point="org.eclipse.ease.ui.codeCompletionProvider">
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completion.provider.LoadedModuleCompletionProvider">
+      </codeCompletionProvider>
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completion.provider.VariablesCompletionProvider">
+      </codeCompletionProvider>
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completion.provider.JavaCompletionProvider">
+      </codeCompletionProvider>
    </extension>
 </plugin>

@@ -136,7 +136,7 @@
 		<!-- Native .class engine -->
 		<module>../../plugins/org.eclipse.ease.lang.jvm.compiled</module>
 		<module>../../features/org.eclipse.ease.lang.jvm.feature</module>
-		
+
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
@@ -333,6 +333,8 @@
 			<modules>
 				<module>../../tests/org.eclipse.ease.test</module>
 				<module>../../tests/org.eclipse.ease.lang.javascript.rhino.test</module>
+				<module>../../tests/org.eclipse.ease.lang.javascript.test</module>
+				<module>../../tests/org.eclipse.ease.ui.test</module>
 			</modules>
 			<build>
 				<plugins>

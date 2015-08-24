@@ -7,11 +7,14 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.lang.javascript;
+ *******************************************************************************/
+package org.eclipse.ease.lang.javascript;
 
-import org.eclipse.ease.AbstractCodeParser;
+import org.eclipse.ease.ICompletionContext;
+import org.eclipse.ease.IScriptEngine;
+import org.eclipse.ease.ui.completion.AbstractCompletionParser;
 
-public class JavaScriptCodeParser extends AbstractCodeParser {
+public class JavaScriptCodeParser extends AbstractCompletionParser {
 
 	private static final String LINE_COMMENT = "//";
 	private static final String BLOCK_COMMENT_START = "/*";
@@ -35,5 +38,13 @@ public class JavaScriptCodeParser extends AbstractCodeParser {
 	@Override
 	protected boolean hasBlockComment() {
 		return true;
+	}
+
+	@Override
+	public ICompletionContext getContext(IScriptEngine scriptEngine, Object resource, String contents, int position, int selectionRange) {
+		final JavaScriptCompletionContext context = new JavaScriptCompletionContext(scriptEngine);
+		context.calculateContext(resource, contents, position, selectionRange);
+
+		return context;
 	}
 }

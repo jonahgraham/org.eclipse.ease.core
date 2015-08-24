@@ -19,9 +19,9 @@ import java.util.HashSet;
 
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.tools.StringTools;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
-import org.eclipse.ease.ui.tools.StringTools;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.ui.PlatformUI;
 

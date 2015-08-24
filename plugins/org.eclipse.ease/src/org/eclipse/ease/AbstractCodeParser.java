@@ -21,7 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ease.completion.ICompletionContext;
 
 public abstract class AbstractCodeParser implements ICodeParser {
 
@@ -155,12 +154,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 	}
 
 	@Override
-	public String getIncludedCode(final String input, final Object parent) {
-		return "";
-	}
-
-	@Override
-	public ICompletionContext getContext(final String contents, final int position) {
+	public ICompletionContext getContext(IScriptEngine scriptEngine, Object resource, String contents, int position, int selectionRange) {
 		return null;
 	}
 

@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.tools;
+package org.eclipse.ease.tools;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -50,14 +50,14 @@ public class ModulesTools {
 	 */
 	public static String getSignature(final Method method, final boolean showDefault) {
 
-		Class<?>[] parameters = method.getParameterTypes();
-		List<Boolean> optional = new ArrayList<Boolean>();
-		List<String> defaultValue = new ArrayList<String>();
+		final Class<?>[] parameters = method.getParameterTypes();
+		final List<Boolean> optional = new ArrayList<Boolean>();
+		final List<String> defaultValue = new ArrayList<String>();
 		int i = 0;
-		for (Annotation[] list : method.getParameterAnnotations()) {
+		for (final Annotation[] list : method.getParameterAnnotations()) {
 			boolean optionalFlag = false;
 			String defaultValueFlag = "";
-			for (Annotation annotation : list) {
+			for (final Annotation annotation : list) {
 				if (annotation.annotationType().equals(ScriptParameter.class)) {
 					optionalFlag = ScriptParameter.Helper.isOptional((ScriptParameter) annotation);
 					defaultValueFlag = ((ScriptParameter) annotation).defaultValue();
@@ -74,12 +74,12 @@ public class ModulesTools {
 			i++;
 
 		}
-		StringBuilder signature = new StringBuilder(method.getName());
+		final StringBuilder signature = new StringBuilder(method.getName());
 
 		if (parameters.length != 0) {
 			signature.append("(");
 			i = 0;
-			for (Class<?> parameter : parameters) {
+			for (final Class<?> parameter : parameters) {
 				if (optional.get(i)) {
 					signature.append("[");
 				}
@@ -116,10 +116,10 @@ public class ModulesTools {
 	 */
 	public static ModuleDefinition getDeclaringModule(final Method method) {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
-		for (ModuleDefinition module : modules) {
+		for (final ModuleDefinition module : modules) {
 			if (module.getModuleClass().equals(method.getDeclaringClass()))
 				return module;
 		}
@@ -136,14 +136,29 @@ public class ModulesTools {
 	 */
 	public static ModuleDefinition getDeclaringModule(final Field field) {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
-		for (ModuleDefinition module : modules) {
+		for (final ModuleDefinition module : modules) {
 			if (module.getModuleClass().equals(field.getDeclaringClass()))
 				return module;
 		}
 
 		return null;
+	}
+
+	public static int getOptionalParameterCount(Method method) {
+		int optional = 0;
+
+		for (final Annotation[] list : method.getParameterAnnotations()) {
+			for (final Annotation annotation : list) {
+				if ((annotation.annotationType().equals(ScriptParameter.class)) && (ScriptParameter.Helper.isOptional((ScriptParameter) annotation))) {
+					optional++;
+					break;
+				}
+			}
+		}
+
+		return optional;
 	}
 }

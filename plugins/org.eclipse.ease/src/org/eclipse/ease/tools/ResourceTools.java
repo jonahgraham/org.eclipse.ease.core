@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.tools;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ease.Logger;
 import org.eclipse.ease.urlhandler.WorkspaceURLConnection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -355,6 +357,26 @@ public final class ResourceTools {
 				return ((URI) resource).toURL().openStream();
 		} catch (final Exception e) {
 			// cannot open stream
+			Logger.logError("Cannot open stream for \"" + location + "\"", e);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Reads from a resource into a string. Does not throw any exceptions, instead returns <code>null</code> in case of errors and logs the error to the system
+	 * logger.
+	 *
+	 * @param location
+	 *            location to look up
+	 * @return content or <code>null</code> in case of error
+	 */
+	public static String resourceToString(final Object location) {
+		try {
+			InputStream inputStream = new BufferedInputStream(getInputStream(location));
+			return StringTools.toString(inputStream);
+		} catch (IOException e) {
+			Logger.logError("Cannot read from resource \"" + location + "\"", e);
 		}
 
 		return null;
@@ -492,9 +514,9 @@ public final class ResourceTools {
 
 	/**
 	 * Returns the currently active file in the workbench.
-	 * 
+	 *
 	 * Must be run on UI thread.
-	 * 
+	 *
 	 * @return Currently active file if successful or <code>null</code> in case of error.
 	 */
 	public static IFile getActiveFile() {
@@ -507,7 +529,7 @@ public final class ResourceTools {
 				if (workbenchPage != null) {
 					IEditorPart editor = workbenchPage.getActiveEditor();
 					if (editor != null) {
-						file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
+						file = editor.getEditorInput().getAdapter(IFile.class);
 					}
 				}
 			}

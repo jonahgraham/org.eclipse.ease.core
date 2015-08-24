@@ -29,15 +29,12 @@ import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.completion.CompletionProviderDispatcher;
-import org.eclipse.ease.ui.completion.ICompletionProvider;
+import org.eclipse.ease.ui.completion.CodeCompletionAggregator;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
 import org.eclipse.ease.ui.help.hovers.ContentProposalModifier;
-import org.eclipse.ease.ui.help.hovers.EditorToolTipDecorator;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.jface.bindings.keys.KeyStroke;
-import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.resource.ColorDescriptor;
@@ -64,9 +61,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IMemento;
@@ -147,7 +142,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 	private ContentProposalAdapter fContentAssistAdapter = null;
 
-	private final CompletionProviderDispatcher fCompletionDispatcher = new CompletionProviderDispatcher();;
+	private final CodeCompletionAggregator fCompletionDispatcher = new CodeCompletionAggregator();;
 
 	private Collection<IShellDropin> fDropins = Collections.emptySet();
 
@@ -158,7 +153,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		super();
 
 		// setup Script engine
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		// try to load preferred engine
 		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
@@ -266,18 +261,18 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		fInputCombo.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseDoubleClick(MouseEvent e) {
+			public void mouseDoubleClick(final MouseEvent e) {
 			}
 
 			@Override
-			public void mouseDown(MouseEvent e) {
-				EditorToolTipDecorator decorator = new EditorToolTipDecorator((Control) e.widget);
-				decorator.setInputCombo(fInputCombo);
-				decorator.createToolTipContentArea((Event) e.getSource(), parent);
+			public void mouseDown(final MouseEvent e) {
+				// EditorToolTipDecorator decorator = new EditorToolTipDecorator((Control) e.widget);
+				// decorator.setInputCombo(fInputCombo);
+				// decorator.createToolTipContentArea((Event) e.getSource(), parent);
 			}
 
 			@Override
-			public void mouseUp(MouseEvent e) {
+			public void mouseUp(final MouseEvent e) {
 			}
 
 		});
@@ -325,33 +320,10 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	}
 
 	private void addAutoCompletion() {
-		// we cannot detach an existing provider, so disable them
-		if (fContentAssistAdapter != null)
-			fContentAssistAdapter.setEnabled(false);
+		fContentAssistAdapter = new ContentProposalModifier(fInputCombo, new ComboContentAdapter(), fCompletionDispatcher, KeyStroke.getInstance(SWT.CTRL, ' '),
+				fCompletionDispatcher.getActivationChars());
 
-		try {
-			// Register matching completion providers
-			fCompletionDispatcher.clearCompletionProviders();
-			for (ICompletionProvider provider : CompletionProviderDispatcher.getProviders(fScriptEngine.getDescription().getID())) {
-				fCompletionDispatcher.registerCompletionProvider(provider);
-			}
-
-			// Set script engine
-			fCompletionDispatcher.setScriptEngine(fScriptEngine);
-
-			final KeyStroke activationKey = KeyStroke.getInstance("Ctrl+Space");
-			/*
-			 * final ContentProposalAdapter adapter = new ContentProposalAdapter(fInputCombo, new ComboContentAdapter(), provider, activationKey,
-			 * provider.getActivationChars());
-			 */
-			final ContentProposalAdapter adapter = new ContentProposalModifier(fInputCombo, new ComboContentAdapter(), fCompletionDispatcher, activationKey,
-					fCompletionDispatcher.getActivationChars());
-
-			adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
-			fContentAssistAdapter = adapter;
-		} catch (final ParseException e) {
-			Logger.logError("Cannot create content assist", e);
-		}
+		fContentAssistAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 	}
 
 	public void runStartupCommands() {
@@ -502,25 +474,25 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 		switch (style) {
 		case TYPE_RESULT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
-					.getSystemColor(SWT.COLOR_DARK_GRAY)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
 			break;
 
 		case TYPE_COMMAND:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
-					.getSystemColor(SWT.COLOR_BLUE)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE)));
 			styleRange.fontStyle = SWT.BOLD;
 			break;
 
 		case TYPE_ERROR:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor
-					.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
 			styleRange.fontStyle = SWT.ITALIC;
 			break;
 
 		case TYPE_OUTPUT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay()
-					.getSystemColor(SWT.COLOR_BLACK)));
+			styleRange.foreground = fResourceManager
+					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLACK)));
 			break;
 
 		default:
@@ -609,7 +581,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 						localPrint("[null]", TYPE_RESULT);
 
 					// add to content assist
-					fCompletionDispatcher.addCode(script.getCode());
+					// fCompletionDispatcher.addCode(script.getCode());
 				}
 
 				if (fKeepCommand) {
@@ -643,7 +615,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fScriptEngine.terminate();
 		}
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		fScriptEngine = scriptService.getEngineByID(id).createEngine();
 
 		if (fScriptEngine != null) {
@@ -672,14 +644,8 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			// update drop-ins
 			for (final IShellDropin dropin : fDropins)
 				dropin.setScriptEngine(fScriptEngine);
-			
-			// Update script engine for completion proposals
-			fCompletionDispatcher.clearCompletionProviders();
-			for (ICompletionProvider provider : CompletionProviderDispatcher.getProviders(fScriptEngine.getDescription().getID())) {
-				fCompletionDispatcher.registerCompletionProvider(provider);
-			}
 
-			// Set script engine
+			// set script engine
 			fCompletionDispatcher.setScriptEngine(fScriptEngine);
 		}
 	}

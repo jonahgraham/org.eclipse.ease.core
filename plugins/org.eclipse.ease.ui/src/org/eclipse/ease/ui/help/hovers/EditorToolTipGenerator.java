@@ -14,9 +14,9 @@ package org.eclipse.ease.ui.help.hovers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.ease.modules.ModuleDefinition;
-import org.eclipse.ease.ui.completion.LoadedModuleCompletionProvider;
 import org.eclipse.swt.widgets.Combo;
 
 /**
@@ -31,10 +31,10 @@ public class EditorToolTipGenerator {
 	protected static String getSelectedToken(Combo fInputCombo) {
 		final String input = fInputCombo.getText() + ' ';
 
-		int inputLength = input.length();
+		final int inputLength = input.length();
 		int textStartPosition = 0;
 		int textEndPosition = inputLength - 1;
-		int caretPosition = fInputCombo.getCaretPosition();
+		final int caretPosition = fInputCombo.getCaretPosition();
 
 		for (int i = caretPosition; i >= 0; i--) {
 			if (input.charAt(i) == ' ') {
@@ -60,11 +60,13 @@ public class EditorToolTipGenerator {
 	protected static String getToolTipText(String text) {
 
 		String toolTipText = "";
-		Collection<ModuleDefinition> fLoadedModules = LoadedModuleCompletionProvider.getStaticLoadedModules();
-		for (ModuleDefinition definition : fLoadedModules) {
+		// FIXME we need to retrieve the loaded modules somehow
+		// Collection<ModuleDefinition> fLoadedModules = LoadedModuleCompletionProvider.getStaticLoadedModules();
+		final Collection<ModuleDefinition> fLoadedModules = Collections.emptyList();
+		for (final ModuleDefinition definition : fLoadedModules) {
 
 			// check fields from modules
-			for (Field field : definition.getFields()) {
+			for (final Field field : definition.getFields()) {
 				if (field.getName().equals(text)) {
 
 					toolTipText = ModuleHelp.getConstantHelpTip(field);
@@ -77,16 +79,16 @@ public class EditorToolTipGenerator {
 			}
 
 			// check methods from modules
-			for (Method method : definition.getMethods()) {
+			for (final Method method : definition.getMethods()) {
 				if (method.getName().equals(text)) {
 
 					toolTipText = ModuleHelp.getMethodHelpTip(method);
 
 					if (toolTipText == null) {
-						StringBuilder sb = new StringBuilder();
+						final StringBuilder sb = new StringBuilder();
 						sb.append(String.format("Public method of module %s.\n", definition.getName()));
 						sb.append("Signature and overloads:\n");
-						for (Method overload : definition.getMethods()) {
+						for (final Method overload : definition.getMethods()) {
 							if (overload.getName().equals(method.getName())) {
 								sb.append(overload.toGenericString());
 								sb.append("\n");

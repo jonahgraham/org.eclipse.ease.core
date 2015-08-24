@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension point="org.eclipse.wst.jsdt.ui.javaCompletionProposalComputer"
-   id="javascript_proposals"
-   name="EASE JavaScript Proposals">
-   <proposalCategory/>
- </extension>
 
  <extension point="org.eclipse.wst.jsdt.ui.javaCompletionProposalComputer"
    id="EASE_JS_Proposals"
@@ -15,6 +10,7 @@
       categoryId="org.eclipse.ease.lang.javascript.ui.javascript_proposals"
       activate="true">
    </javaCompletionProposalComputer>
+   <proposalCategory></proposalCategory>
  </extension>
  <extension
        point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">

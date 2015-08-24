@@ -16,120 +16,99 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.ease.ICodeParser;
-import org.eclipse.ease.completion.ICompletionContext;
-import org.eclipse.ease.completion.ICompletionSource;
-import org.eclipse.ease.lang.javascript.JavaScriptCompletionAnalyzer;
-import org.eclipse.ease.tools.ResourceTools;
-import org.eclipse.ease.ui.completion.CompletionProviderDispatcher;
+import org.eclipse.ease.Logger;
+import org.eclipse.ease.lang.javascript.JavaScriptHelper;
+import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.ui.completion.CodeCompletionAggregator;
 import org.eclipse.ease.ui.completion.ICompletionProvider;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.jsdt.ui.text.java.ContentAssistInvocationContext;
 import org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer;
 
 /**
  * {@link IJavaCompletionProposalComputer} for EASE JavaScript.
  *
- * Internally uses {@link CompletionProviderDispatcher} and dynamic {@link ICompletionProvider} to create proposals.
- *
- * @author Martin Kloesch
- *
+ * Internally uses {@link CodeCompletionAggregator} and dynamic {@link ICompletionProvider} to create proposals. This CompletionComputer is created once for
+ * JSDT JavaScript Editors. So all editors of this type share the same instance.
  */
 public class JavaScriptEditorCompletionComputer implements IJavaCompletionProposalComputer {
 	/**
-	 * {@link CompletionProviderDispatcher} to handle the actual creation of proposals.
+	 * {@link CodeCompletionAggregator} to handle the actual creation of proposals.
 	 */
-	private final CompletionProviderDispatcher fDispatcher = new CompletionProviderDispatcher();
+	private final CodeCompletionAggregator fCompletionAggregator = new CodeCompletionAggregator();
 
 	/**
-	 * Constructor sets up {@link CompletionProviderDispatcher} and loads registered {@link ICompletionProvider}.
+	 * Constructor sets up {@link CodeCompletionAggregator} and loads registered {@link ICompletionProvider}.
 	 */
 	public JavaScriptEditorCompletionComputer() {
-		fDispatcher.setAnalyzer(new JavaScriptCompletionAnalyzer());
-		for (ICompletionProvider provider : CompletionProviderDispatcher.getProviders(null)) {
-			fDispatcher.registerCompletionProvider(provider);
-		}
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final ScriptType scriptType = scriptService.getAvailableScriptTypes().get(JavaScriptHelper.SCRIPT_TYPE_JAVASCRIPT);
+
+		fCompletionAggregator.setScriptType(scriptType);
+		fCompletionAggregator.setCodeParser(scriptType.getCodeParser());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#computeCompletionProposals(org.eclipse.wst.jsdt.ui.text.java.
-	 * ContentAssistInvocationContext , org.eclipse.core.runtime.IProgressMonitor)
-	 */
 	@Override
-	public List<?> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor arg1) {
-		List<CompletionProposal> proposals = new ArrayList<CompletionProposal>();
+	public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
 		if (context != null) {
-			// Get content of document
-			IDocument document = context.getDocument();
+			final List<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
+
+			// get content of document
+			final IDocument document = context.getDocument();
 			if (document != null) {
-				String content = document.get();
-				ICodeParser analyzer = new JavaScriptCompletionAnalyzer();
-				content = analyzer.getIncludedCode(content, ResourceTools.getActiveFile());
 
-				// Add code, ICompletionProviders must check internally if anything changed.
-				fDispatcher.addCode(content);
+				// extract resource
+				Object resource = null;
+				final IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
+				if (activePart instanceof IEditorPart) {
+					final IEditorInput input = ((IEditorPart) activePart).getEditorInput();
+					if (input instanceof FileEditorInput)
+						resource = ((FileEditorInput) input).getFile();
+				}
 
-				// Calculate context for input
-				ICompletionContext ctx = fDispatcher.getContext(content);
-				if (ctx != null) {
-					// Actually add proposals
-					for (ICompletionSource src : fDispatcher.calculateProposals(ctx)) {
-						int offset = ctx.getFilter().length();
-						proposals.add(new CompletionProposal(src.getName(), context.getInvocationOffset() - offset, offset, src.getName().length()));
-					}
+				try {
+					final String relevantText = document.get(0, context.getInvocationOffset());
+
+					final int cursorPosition = context.getInvocationOffset();
+					final int selectionRange = context.getViewer().getSelectedRange().y;
+					return fCompletionAggregator.getCompletionProposals(resource, relevantText, cursorPosition, selectionRange, monitor);
+
+				} catch (final BadLocationException e) {
+					Logger.logError("Failed to calculate proposals for JavaScript editor", e);
 				}
 			}
 		}
 
-		return proposals;
+		return Collections.emptyList();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#computeContextInformation(org.eclipse.wst.jsdt.ui.text.java.
-	 * ContentAssistInvocationContext , org.eclipse.core.runtime.IProgressMonitor)
-	 */
 	@Override
-	public List<?> computeContextInformation(final ContentAssistInvocationContext arg0, final IProgressMonitor arg1) {
-		// TODO Auto-generated method stub
-		return Collections.EMPTY_LIST;
+	public List<IContextInformation> computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+		return Collections.emptyList();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#getErrorMessage()
-	 */
 	@Override
 	public String getErrorMessage() {
-		// TODO Auto-generated method stub
+		// nothing to do
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#sessionEnded()
-	 */
 	@Override
 	public void sessionEnded() {
-		// TODO Auto-generated method stub
-
+		// nothing to do
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.eclipse.wst.jsdt.ui.text.java.IJavaCompletionProposalComputer#sessionStarted()
-	 */
 	@Override
 	public void sessionStarted() {
-		// TODO Auto-generated method stub
-
+		// nothing to do
 	}
-
 }

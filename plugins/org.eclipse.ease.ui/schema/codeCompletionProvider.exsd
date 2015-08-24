@@ -17,9 +17,9 @@
          </appinfo>
       </annotation>
       <complexType>
-         <sequence>
-            <element ref="completionProcessor"/>
-         </sequence>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="codeCompletionProvider"/>
+         </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -47,15 +47,15 @@
       </complexType>
    </element>
 
-   <element name="completionProcessor">
+   <element name="codeCompletionProvider">
       <complexType>
-         <attribute name="engineID" type="string" use="default" value="">
+         <attribute name="scriptType" type="string">
             <annotation>
                <documentation>
-                  Script engine to bind this extension to.
+                  Script type to bind this code completion provider to.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="identifier" basedOn="org.eclipse.ease.language/engine/@id"/>
+                  <meta.attribute kind="identifier" basedOn="org.eclipse.ease.scriptType/scriptType/@name"/>
                </appinfo>
             </annotation>
          </attribute>
