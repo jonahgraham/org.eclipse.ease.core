@@ -16,13 +16,18 @@ import org.eclipse.ease.ui.completion.CompletionContext;
 
 public class JavaScriptCompletionContext extends CompletionContext {
 
-	public JavaScriptCompletionContext(IScriptEngine scriptEngine) {
+	public JavaScriptCompletionContext(final IScriptEngine scriptEngine) {
 		super(scriptEngine, JavaScriptHelper.getScriptType());
 	}
 
 	@Override
-	protected char[] getStringLiteralChars() {
-		return "'\"".toCharArray();
+	protected boolean isLiteral(final char candidate) {
+		for (final char literal : "'\"".toCharArray()) {
+			if (candidate == literal)
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override

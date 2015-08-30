@@ -25,17 +25,17 @@ public class CompletionContextTest {
 		fContext = new CompletionContext(null, null) {
 
 			@Override
-			protected char[] getStringLiteralChars() {
-				return new char[] { '"', '\'' };
+			protected boolean isLiteral(final char candidate) {
+				return (candidate == '"') || (candidate == '\'');
 			}
 		};
 	}
 
 	@Test
 	public void replaceSimpleStringLiterals() {
-		assertEquals("print(\"\")", fContext.replaceStringLiterals("print('')"));
-		assertEquals("print(\"\")", fContext.replaceStringLiterals("print('Hello world')"));
-		assertEquals("print(\"\")", fContext.replaceStringLiterals("print('Hello \" world')"));
+		assertEquals("print('')", fContext.replaceStringLiterals("print('')"));
+		assertEquals("print('')", fContext.replaceStringLiterals("print('Hello world')"));
+		assertEquals("print('')", fContext.replaceStringLiterals("print('Hello \" world')"));
 
 		assertEquals("print(\"\")", fContext.replaceStringLiterals("print(\"\")"));
 		assertEquals("print(\"\")", fContext.replaceStringLiterals("print(\"Hello world\")"));
@@ -44,13 +44,13 @@ public class CompletionContextTest {
 
 	@Test
 	public void replaceEscapedStringLiterals() {
-		assertEquals("print(\"\")", fContext.replaceStringLiterals("print('Hello \\'world')"));
+		assertEquals("print('')", fContext.replaceStringLiterals("print('Hello \\'world')"));
 		assertEquals("print(\"\")", fContext.replaceStringLiterals("print(\"Hello \\\"world\")"));
 	}
 
 	@Test
 	public void replaceMultipleStringLiterals() {
-		assertEquals("print(\"\", \"\")", fContext.replaceStringLiterals("print('', \"\")"));
-		assertEquals("print(\"\", \"\")", fContext.replaceStringLiterals("print('Hello world', \"Hello world\")"));
+		assertEquals("print('', \"\")", fContext.replaceStringLiterals("print('', \"\")"));
+		assertEquals("print('', \"\")", fContext.replaceStringLiterals("print('Hello world', \"Hello world\")"));
 	}
 }

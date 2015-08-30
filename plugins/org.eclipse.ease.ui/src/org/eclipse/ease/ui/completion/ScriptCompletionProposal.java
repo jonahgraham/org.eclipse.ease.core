@@ -28,6 +28,7 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	public static final int ORDER_FIELD = 20;
 	public static final int ORDER_METHOD = 40;
 	public static final int ORDER_PACKAGE = 60;
+	public static final int ORDER_CLASS = 80;
 	public static final int ORDER_DEFAULT = 100;
 
 	private final String fDisplayString;
@@ -37,7 +38,8 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	private StyledString fStyledString;
 	private final int fSortOrder;
 
-	public ScriptCompletionProposal(String displayString, String replacementString, int cursorPosition, ImageDescriptor imageDescriptor, int sortOrder) {
+	public ScriptCompletionProposal(final String displayString, final String replacementString, final int cursorPosition, final ImageDescriptor imageDescriptor,
+			final int sortOrder) {
 		fDisplayString = displayString;
 		fReplacementString = replacementString;
 		fCursorPosition = cursorPosition;
@@ -45,11 +47,12 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 		fSortOrder = sortOrder;
 	}
 
-	public ScriptCompletionProposal(String replacementString, int cursorPosition) {
+	public ScriptCompletionProposal(final String replacementString, final int cursorPosition) {
 		this(replacementString, null, cursorPosition, null, ORDER_DEFAULT);
 	}
 
-	public ScriptCompletionProposal(StyledString styledString, String replacementString, int cursorPosition, ImageDescriptor imageDescriptor, int sortOrder) {
+	public ScriptCompletionProposal(final StyledString styledString, final String replacementString, final int cursorPosition,
+			final ImageDescriptor imageDescriptor, final int sortOrder) {
 		this(styledString.getString(), replacementString, cursorPosition, imageDescriptor, sortOrder);
 		fStyledString = styledString;
 	}
@@ -60,7 +63,7 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	}
 
 	@Override
-	public void apply(IDocument document) {
+	public void apply(final IDocument document) {
 		try {
 			document.replace(fCursorPosition, 0, fReplacementString);
 		} catch (final BadLocationException e) {
@@ -69,7 +72,7 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	}
 
 	@Override
-	public Point getSelection(IDocument document) {
+	public Point getSelection(final IDocument document) {
 		return new Point(fCursorPosition + fReplacementString.length(), 0);
 	}
 
@@ -120,7 +123,7 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 		return getAdditionalProposalInfo();
 	}
 
-	public void setCursorPosition(int cursorPosition) {
+	public void setCursorPosition(final int cursorPosition) {
 		fCursorPosition = cursorPosition;
 	}
 

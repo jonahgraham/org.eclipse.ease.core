@@ -48,12 +48,18 @@ public class JavaScriptCompletionContextTest {
 	public void verifyStringLiteralTypes() {
 		fContext.calculateContext(null, "'Hello", 0, 0);
 		assertEquals(CompletionContext.Type.STRING_LITERAL, fContext.getType());
+		assertEquals("Hello", fContext.getFilter());
+		assertEquals(null, fContext.getCaller());
 
 		fContext.calculateContext(null, "print('Hello", 0, 0);
 		assertEquals(CompletionContext.Type.STRING_LITERAL, fContext.getType());
+		assertEquals("Hello", fContext.getFilter());
+		assertEquals("print", fContext.getCaller());
 
 		fContext.calculateContext(null, "new java.lang.String('", 0, 0);
 		assertEquals(CompletionContext.Type.STRING_LITERAL, fContext.getType());
+		assertEquals("", fContext.getFilter());
+		assertEquals("new java.lang.String", fContext.getCaller());
 	}
 
 	@Test

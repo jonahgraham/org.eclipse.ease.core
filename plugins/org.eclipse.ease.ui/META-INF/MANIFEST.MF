@@ -26,6 +26,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.ease.ui.Activator
 Export-Package: org.eclipse.ease.ui,
  org.eclipse.ease.ui.completion,
+ org.eclipse.ease.ui.completion.provider,
  org.eclipse.ease.ui.console,
  org.eclipse.ease.ui.dnd,
  org.eclipse.ease.ui.launching,

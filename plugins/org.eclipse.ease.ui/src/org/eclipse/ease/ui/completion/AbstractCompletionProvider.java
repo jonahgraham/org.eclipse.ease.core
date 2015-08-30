@@ -20,8 +20,8 @@ import org.eclipse.jface.viewers.StyledString;
 
 public abstract class AbstractCompletionProvider implements ICompletionProvider {
 
-	protected void addProposal(Collection<ScriptCompletionProposal> proposals, ICompletionContext context, StyledString displayString, String replacementString,
-			ImageDescriptor image, int priority) {
+	protected void addProposal(final Collection<ScriptCompletionProposal> proposals, final ICompletionContext context, final StyledString displayString,
+			String replacementString, final ImageDescriptor image, final int priority) {
 
 		if (context.getFilter() != null) {
 			// eventually filter proposal
@@ -36,8 +36,28 @@ public abstract class AbstractCompletionProvider implements ICompletionProvider 
 		proposals.add(new ScriptCompletionProposal(displayString, replacementString, context.getOffset(), image, priority));
 	}
 
+	protected void addProposal(final Collection<ScriptCompletionProposal> proposals, final ICompletionContext context, final String displayString,
+			String replacementString, final ImageDescriptor image, final int priority) {
+
+		if (context.getFilter() != null) {
+			// eventually filter proposal
+			if (!replacementString.startsWith(context.getFilter()))
+				// filter proposal
+				return;
+
+			if (replacementString.equals(context.getFilter()))
+				// proposal equals existing text, do not display anymore
+				return;
+
+			// do not filter, but adapt replacementString
+			replacementString = replacementString.substring(context.getFilter().length());
+		}
+
+		proposals.add(new ScriptCompletionProposal(displayString, replacementString, context.getOffset(), image, priority));
+	}
+
 	@Override
-	public boolean isActive(ICompletionContext context) {
+	public boolean isActive(final ICompletionContext context) {
 		return context.getType() != Type.UNKNOWN;
 	}
 }

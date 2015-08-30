@@ -43,7 +43,7 @@ public class VariablesCompletionProvider extends AbstractCompletionProvider {
 				final StyledString styledString = new StyledString(variable.getKey() + " : " + type);
 				styledString.append(" - " + "Variable");
 
-				addProposal(proposals, context, styledString, variable.getKey(), JavaCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+				addProposal(proposals, context, styledString, variable.getKey(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
 						ScriptCompletionProposal.ORDER_FIELD);
 			}
 		}

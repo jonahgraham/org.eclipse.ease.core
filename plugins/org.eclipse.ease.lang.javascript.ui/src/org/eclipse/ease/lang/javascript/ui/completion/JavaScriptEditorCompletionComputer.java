@@ -11,7 +11,6 @@
 
 package org.eclipse.ease.lang.javascript.ui.completion;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,8 +59,6 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 	@Override
 	public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
 		if (context != null) {
-			final List<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
-
 			// get content of document
 			final IDocument document = context.getDocument();
 			if (document != null) {

@@ -179,7 +179,7 @@ public final class ResourceTools {
 			if (isFolder) {
 				if (path.segmentCount() > 1)
 					return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
-				else
+				else if (path.segmentCount() == 1)
 					return ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
 
 			} else {
@@ -219,17 +219,16 @@ public final class ResourceTools {
 	}
 
 	private static Object resolveRelativeFolder(final Object location, final Object parent, final boolean exists) {
-		final String reference = location.toString();
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
-			final IContainer relativeFolder = ((IContainer) parent).getFolder(new Path(reference));
+			final IContainer relativeFolder = ((IContainer) parent).getFolder(new Path(location.toString()));
 			if ((relativeFolder.exists()) || (!exists))
 				return relativeFolder;
 
 		} else if (parent instanceof File) {
 			// resolve a relative path in the file system
-			final File systemFolder = new File(((File) parent).getAbsolutePath() + File.separator + reference);
+			final File systemFolder = new File(((File) parent).getAbsolutePath() + File.separator + location);
 			if (((systemFolder.exists()) && (systemFolder.isDirectory())) || (!exists))
 				return systemFolder;
 		}

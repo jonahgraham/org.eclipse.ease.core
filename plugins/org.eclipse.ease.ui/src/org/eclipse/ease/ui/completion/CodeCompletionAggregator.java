@@ -116,7 +116,7 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	}
 
 	public char[] getActivationChars() {
-		return null;
+		return new char[] { '.' };
 	}
 
 	/**
@@ -145,8 +145,8 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 * @param i
 	 * @return
 	 */
-	public List<ICompletionProposal> getCompletionProposals(final Object resource, final String relevantText, int insertOffset, int selectionRange,
-			IProgressMonitor monitor) {
+	public List<ICompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset, final int selectionRange,
+			final IProgressMonitor monitor) {
 		final LinkedList<ICompletionProposal> proposals = new LinkedList<ICompletionProposal>();
 
 		final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
@@ -166,7 +166,7 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 * @param insertOffset
 	 * @return
 	 */
-	private ICompletionContext createContext(final Object resource, final String relevantText, int insertOffset, int selectionRange) {
+	private ICompletionContext createContext(final Object resource, final String relevantText, final int insertOffset, final int selectionRange) {
 		if (fCodeParser != null)
 			return fCodeParser.getContext(fScriptEngine, resource, relevantText, insertOffset, selectionRange);
 

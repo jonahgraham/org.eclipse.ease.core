@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Martin Kloesch - initial API and implementation
+ *     Christian Pontesegger - rewrite of implementation
  *******************************************************************************/
 
 package org.eclipse.ease.ui.completion;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +36,7 @@ import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.jface.text.Position;
 
 /**
- * Simple data-storage implementation of {@link ICompletionContext}.
+ * The context evaluates and stores information on the code fragment at a given cursor position.
  */
 public abstract class CompletionContext implements ICompletionContext {
 
@@ -42,7 +44,7 @@ public abstract class CompletionContext implements ICompletionContext {
 
 	private final IScriptEngine fScriptEngine;
 	private Object fResource;
-	private final ScriptType fScriptType;
+	private ScriptType fScriptType;
 	private String fOriginalCode = "";
 
 	private final Map<Object, String> fIncludes = new HashMap<Object, String>();
@@ -50,14 +52,27 @@ public abstract class CompletionContext implements ICompletionContext {
 	private Class<? extends Object> fReferredClazz;
 	private String fFilter = "";
 	private Type fType = Type.UNKNOWN;
-	private CharSequence fPackage;
+	private String fPackage;
+	private String fCaller = null;
+	private int fParameterOffset = -1;
 
 	private int fOffset;
 	private int fSelectionRange;
 
+	/**
+	 * Context constructor. A context is bound to a given script engine or script type.
+	 *
+	 * @param scriptEngine
+	 *            script engine to evaluate
+	 * @param scriptType
+	 *            script type to evaluate
+	 */
 	public CompletionContext(final IScriptEngine scriptEngine, final ScriptType scriptType) {
 		fScriptEngine = scriptEngine;
 		fScriptType = scriptType;
+
+		if ((fScriptType == null) && (fScriptEngine != null))
+			fScriptType = fScriptEngine.getDescription().getSupportedScriptTypes().get(0);
 	}
 
 	@Override
@@ -70,7 +85,19 @@ public abstract class CompletionContext implements ICompletionContext {
 		return fReferredClazz;
 	}
 
-	public void calculateContext(final Object resource, String code, int offset, int selectionRange) {
+	/**
+	 * Calculate a context over a given code fragment.
+	 *
+	 * @param resource
+	 *            base resource (eg. edited file)
+	 * @param code
+	 *            code fragment to evaluate
+	 * @param offset
+	 *            the offset within the provided document (usually code.length())
+	 * @param selectionRange
+	 *            amount of selected characters
+	 */
+	public void calculateContext(final Object resource, String code, final int offset, final int selectionRange) {
 		fOffset = offset;
 		fSelectionRange = selectionRange;
 		fIncludes.clear();
@@ -91,7 +118,10 @@ public abstract class CompletionContext implements ICompletionContext {
 	}
 
 	/**
+	 * Try to evaluate the calling method or class.
+	 *
 	 * @param code
+	 *            code fragment to parse
 	 */
 	protected void parseCode(final String code) {
 
@@ -111,7 +141,7 @@ public abstract class CompletionContext implements ICompletionContext {
 					// maybe we have a package
 					if (JAVA_PACKAGE_PATTERN.matcher(code.subSequence(0, dotDelimiter)).matches()) {
 						fType = Type.PACKAGE;
-						fPackage = code.subSequence(0, dotDelimiter);
+						fPackage = code.subSequence(0, dotDelimiter).toString();
 					}
 				}
 			}
@@ -119,8 +149,9 @@ public abstract class CompletionContext implements ICompletionContext {
 	}
 
 	/**
-	 * @param originalCode
-	 * @return
+	 * Try to remove unnecessary information from code fragment to simplify parsing.
+	 *
+	 * @return simplified code fragment
 	 */
 	protected String simplifyCode() {
 		// only operate on last line
@@ -128,15 +159,25 @@ public abstract class CompletionContext implements ICompletionContext {
 		String code = (lineFeedPosition > 0) ? getOriginalCode().substring(lineFeedPosition) : getOriginalCode();
 		code = code.trim();
 
-		// simplify String literals
-		if (isStringLiteral(code)) {
+		// remove all literals with dummies for simpler parsing: "some 'literal'" -> ""
+		code = replaceStringLiterals(code);
+		if (fType == Type.STRING_LITERAL) {
 			// we are within a string literal, cannot simplify further
-			fType = Type.STRING_LITERAL;
-			return code;
 
-		} else {
-			// remove all literals with dummies for simpler parsing
-			code = replaceStringLiterals(code);
+			// try to detect calling method
+			if (!code.isEmpty()) {
+				int openingBracket = findMatchingBracket(code + ")", code.length());
+				if (openingBracket != -1) {
+					// caller found
+					fCaller = code.substring(0, openingBracket);
+
+					String callerParameters = code.substring(openingBracket + 1);
+					callerParameters = removeMethodCalls(callerParameters);
+					fParameterOffset = callerParameters.split(",").length - 1;
+				}
+			}
+
+			return code;
 		}
 
 		// if we find an opening bracket with no closing bracket, we can forget about everything left from it
@@ -183,6 +224,37 @@ public abstract class CompletionContext implements ICompletionContext {
 		return code;
 	}
 
+	/**
+	 * Remove all brackets from method calls along with their content. Eg. transforms "some(call() + 3, test()), another(4)" to "some, another".
+	 *
+	 * @param code
+	 *            string to parse
+	 * @return transformed string
+	 */
+	private static String removeMethodCalls(String code) {
+		int closingBracket = code.lastIndexOf(')');
+		while (closingBracket != -1) {
+			int openingBracket = findMatchingBracket(code, closingBracket);
+			if (openingBracket != -1)
+				code = code.substring(0, openingBracket) + code.substring(closingBracket + 1);
+			else
+				// error, no opening bracket, giving up
+				return code;
+
+			// find next location
+			closingBracket = code.lastIndexOf(')');
+		}
+
+		return code;
+	}
+
+	/**
+	 * Try to evaluate the class returned from a function or an object.
+	 *
+	 * @param code
+	 *            code to evaluate
+	 * @return class or <code>null</code>
+	 */
 	private Class<? extends Object> getClazz(String code) {
 		code = code.trim();
 		String parameters = null;
@@ -282,14 +354,13 @@ public abstract class CompletionContext implements ICompletionContext {
 	 *            variable name to look up
 	 * @return variable class type
 	 */
-	protected Class<? extends Object> parseVariableType(String name) {
+	protected Class<? extends Object> parseVariableType(final String name) {
 
 		final List<String> sources = new ArrayList<String>();
 		sources.add(getOriginalCode());
 		sources.addAll(getIncludedResources().values());
 
 		final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*$\\s*.*?" + name + "\\s*=", Pattern.MULTILINE);
-		// final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*.?" + name + "\\s*=", Pattern.DOTALL);
 
 		for (final String source : sources) {
 			final Matcher matcher = pattern.matcher(source);
@@ -306,16 +377,14 @@ public abstract class CompletionContext implements ICompletionContext {
 		return null;
 	}
 
-	// public static void main(String[] args) {
-	// final String code = "\\t\\t// @type java.lang.String\\n\\t\\tvar foo = \"foo\";\\n\\t\\ta.";
-	// // final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*.?" + "foo" + "\\s*=", Pattern.DOTALL | Pattern.MULTILINE);
-	// final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*$\\s*.*?foo\\s*=", Pattern.MULTILINE);
-	//
-	// final Matcher matcher = pattern.matcher(code);
-	// System.out.println(matcher.find());
-	// }
-
-	private Method getMethodDefinition(String code) {
+	/**
+	 * Retrieve a method definition from loaded modules.
+	 *
+	 * @param code
+	 *            method call to look up
+	 * @return method definition or <code>null</code>
+	 */
+	private Method getMethodDefinition(final String code) {
 		for (final ModuleDefinition definition : getLoadedModules()) {
 			for (final Method method : definition.getMethods()) {
 				if (method.getName().equals(code))
@@ -326,7 +395,14 @@ public abstract class CompletionContext implements ICompletionContext {
 		return null;
 	}
 
-	private Field getFieldDefinition(String code) {
+	/**
+	 * Retrieve a field definition from loaded modules.
+	 *
+	 * @param code
+	 *            field to look up
+	 * @return field definition or <code>null</code>
+	 */
+	private Field getFieldDefinition(final String code) {
 		for (final ModuleDefinition definition : getLoadedModules()) {
 			for (final Field field : definition.getFields()) {
 				if (field.getName().equals(code))
@@ -337,6 +413,13 @@ public abstract class CompletionContext implements ICompletionContext {
 		return null;
 	}
 
+	/**
+	 * Retrieve a variable from a running script engine.
+	 *
+	 * @param name
+	 *            variable to look up
+	 * @return variable class or <code>null</code>
+	 */
 	protected Class<? extends Object> getVariableClazz(final String name) {
 		if (getScriptEngine() != null) {
 			final Object variable = getScriptEngine().getVariable(name);
@@ -348,9 +431,13 @@ public abstract class CompletionContext implements ICompletionContext {
 	}
 
 	/**
+	 * Find the corresponding opening bracket to a closing bracket. Therefore we search the string to the left.
+	 *
 	 * @param code
-	 * @param i
-	 * @return
+	 *            code fragment to parse
+	 * @param offset
+	 *            offset position of the closing bracket
+	 * @return offset of the corresponding opening bracket or -1
 	 */
 	private static int findMatchingBracket(final String string, int offset) {
 		int openBrackets = 0;
@@ -364,84 +451,67 @@ public abstract class CompletionContext implements ICompletionContext {
 
 		} while ((openBrackets > 0) && (offset >= 0));
 
-		return offset + 1;
+		return (openBrackets > 0) ? -1 : offset + 1;
 	}
 
-	public boolean isStringLiteral(final String code) {
-		final StringBuilder string = new StringBuilder(code);
-
-		int position = 0;
-		int next = -1;
-		Character currentLiteral = null;
-
-		do {
-			// find next literal
-			next = getNextLiteral(string, position);
-
-			if (next >= 0) {
-				position = next + 1;
-				if ((next >= 1) && (string.charAt(next - 1) == '\\'))
-					// ignore as character is escaped
-					continue;
-
-				if (currentLiteral == null)
-					currentLiteral = string.charAt(next);
-
-				else if (currentLiteral == string.charAt(next))
-					currentLiteral = null;
-			}
-
-		} while ((next >= 0) && (position < string.length()));
-
-		return currentLiteral != null;
-	}
-
-	private int getNextLiteral(final StringBuilder string, final int offset) {
-		int next = -1;
-		for (final char literal : getStringLiteralChars()) {
-			final int pos = string.indexOf(Character.toString(literal), offset);
-			if ((pos != -1) && ((next == -1) || (next > pos)))
-				next = pos;
-		}
-
-		return next;
-	}
-
+	/**
+	 * Remove all string literal content and keep empty literals.
+	 *
+	 * @param code
+	 *            code fragment to parse
+	 * @return code fragment with empty string literals
+	 */
 	public String replaceStringLiterals(final String code) {
-		final StringBuilder string = new StringBuilder(code);
+		final StringBuilder simplifiedString = new StringBuilder();
+		final StringBuilder literalContent = new StringBuilder();
 
-		int position = 0;
-		int next = -1;
 		Character currentLiteral = null;
-		int literalStart = -1;
+		for (int index = 0; index < code.length(); index++) {
+			if (isLiteral(code.charAt(index))) {
+				if ((index == 0) || (code.charAt(index - 1) != '\\')) {
+					// not escaped
 
-		do {
-			// find next literal
-			next = getNextLiteral(string, position);
+					if (currentLiteral == null) {
+						// start new literal
+						currentLiteral = code.charAt(index);
 
-			if (next >= 0) {
-				position = next + 1;
-				if ((next >= 1) && (string.charAt(next - 1) == '\\'))
-					// ignore as character is escaped
+					} else if (currentLiteral == code.charAt(index)) {
+						// close literal
+						literalContent.delete(0, literalContent.length());
+
+						simplifiedString.append(currentLiteral);
+						simplifiedString.append(currentLiteral);
+
+						currentLiteral = null;
+					}
+
 					continue;
-
-				if (currentLiteral == null) {
-					currentLiteral = string.charAt(next);
-					literalStart = next;
-
-				} else if (currentLiteral == string.charAt(next)) {
-					currentLiteral = null;
-					string.replace(literalStart, next + 1, Character.toString(getStringLiteralChars()[0]) + Character.toString(getStringLiteralChars()[0]));
-					position = literalStart + 2;
 				}
 			}
 
-		} while ((next >= 0) && (position < string.length()));
+			// process character
+			if (currentLiteral == null)
+				simplifiedString.append(code.charAt(index));
+			else
+				literalContent.append(code.charAt(index));
+		}
 
-		return string.toString();
+		if (currentLiteral != null) {
+			fFilter = literalContent.toString();
+			fType = Type.STRING_LITERAL;
+		}
+
+		return simplifiedString.toString();
 	}
 
-	protected abstract char[] getStringLiteralChars();
+	/**
+	 * See if a character matches a string literal token.
+	 *
+	 * @param candidate
+	 *            character to test
+	 * @return <code>true</code> when character is a string literal token
+	 */
+	protected abstract boolean isLiteral(final char candidate);
 
 	private void addLoadedModules(final String code) {
 		final List<Position> modulePositions = AbstractCompletionParser.findInvocations("loadModule(java.lang.String)", code);
@@ -468,6 +538,12 @@ public abstract class CompletionContext implements ICompletionContext {
 		}
 	}
 
+	/**
+	 * Add a module definition to the list of loaded modules. Will also add module dependencies to the list.
+	 * 
+	 * @param definition
+	 *            module definition to add
+	 */
 	private void addLoadedModule(final ModuleDefinition definition) {
 		fLoadedModules.add(definition);
 
@@ -487,27 +563,31 @@ public abstract class CompletionContext implements ICompletionContext {
 		final List<Position> includePositions = AbstractCompletionParser.findInvocations("include(java.lang.String)", code);
 
 		for (final Position position : includePositions) {
-			final String call = code.substring(position.getOffset(), position.getOffset() + position.getLength());
-			final String[] parameters = AbstractCompletionParser.getParameters(call);
-			if (parameters.length > 0) {
-				final String candidate = parameters[0].trim();
+			try {
+				final String call = code.substring(position.getOffset(), position.getOffset() + position.getLength());
+				final String[] parameters = AbstractCompletionParser.getParameters(call);
+				if (parameters.length > 0) {
+					final String candidate = parameters[0].trim();
 
-				if (candidate.charAt(0) == candidate.charAt(candidate.length() - 1)) {
-					// TODO add string literal characters lookup method
-					if ((candidate.charAt(0) == '"') || (candidate.charAt(0) == '\'')) {
-						// found resource, try to resolve
-						final Object includeResource = ResourceTools.resolveFile(candidate.substring(1, candidate.length() - 1), getResource(), true);
-						if (includeResource != null) {
-							if (!fIncludes.containsKey(includeResource)) {
-								// store object & content, as we need to parse this content multiple times
-								fIncludes.put(includeResource, ResourceTools.resourceToString(includeResource));
+					if (candidate.charAt(0) == candidate.charAt(candidate.length() - 1)) {
+						// TODO add string literal characters lookup method
+						if ((candidate.charAt(0) == '"') || (candidate.charAt(0) == '\'')) {
+							// found resource, try to resolve
+							final Object includeResource = ResourceTools.resolveFile(candidate.substring(1, candidate.length() - 1), getResource(), true);
+							if (includeResource != null) {
+								if (!fIncludes.containsKey(includeResource)) {
+									// store object & content, as we need to parse this content multiple times
+									fIncludes.put(includeResource, ResourceTools.resourceToString(includeResource));
 
-								// recursively process include files
-								addInclude(fIncludes.get(includeResource));
+									// recursively process include files
+									addInclude(fIncludes.get(includeResource));
+								}
 							}
 						}
 					}
 				}
+			} catch (Exception e) {
+				// ignore invalid include locations
 			}
 		}
 	}
@@ -556,6 +636,22 @@ public abstract class CompletionContext implements ICompletionContext {
 				if (includeContent != null)
 					addLoadedModules(includeContent);
 			}
+
+			// add loaded modules from script engine
+			if (getScriptEngine() != null) {
+				for (Entry<String, Object> entry : getScriptEngine().getVariables().entrySet()) {
+					if (entry.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
+						Class<? extends Object> moduleClass = entry.getValue().getClass();
+
+						for (ModuleDefinition definition : scriptService.getAvailableModules().values()) {
+							if (definition.getModuleClass().equals(moduleClass)) {
+								addLoadedModule(definition);
+								break;
+							}
+						}
+					}
+				}
+			}
 		}
 
 		return fLoadedModules;
@@ -579,5 +675,20 @@ public abstract class CompletionContext implements ICompletionContext {
 	@Override
 	public int getSelectionRange() {
 		return fSelectionRange;
+	}
+
+	@Override
+	public String getPackage() {
+		return fPackage;
+	}
+
+	@Override
+	public String getCaller() {
+		return fCaller;
+	}
+
+	@Override
+	public int getParameterOffset() {
+		return fParameterOffset;
 	}
 }

@@ -41,23 +41,23 @@ public class LoadedModuleCompletionProvider extends AbstractCompletionProvider {
 				final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
 				styledString.append(" - " + definition.getName(), StyledString.DECORATIONS_STYLER);
 
-				addProposal(proposals, context, styledString, field.getName(), JavaCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+				addProposal(proposals, context, styledString, field.getName(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
 						ScriptCompletionProposal.ORDER_FIELD);
 			}
 
 			// method proposals
 			for (final Method method : definition.getMethods()) {
 				final StyledString styledString = new StyledString(
-						ModulesTools.getSignature(method) + " : " + JavaCompletionProvider.getMethodReturnType(method));
+						ModulesTools.getSignature(method) + " : " + JavaMethodCompletionProvider.getMethodReturnType(method));
 				styledString.append(" - " + definition.getName(), StyledString.DECORATIONS_STYLER);
 
 				if (method.getParameterTypes().length - ModulesTools.getOptionalParameterCount(method) > 0)
-					addProposal(proposals, context, styledString, method.getName() + "(", JavaCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+					addProposal(proposals, context, styledString, method.getName() + "(", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
 							ScriptCompletionProposal.ORDER_METHOD);
 
 				else
 					addProposal(proposals, context, styledString, method.getName() + "()",
-							JavaCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_METHOD);
+							JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_METHOD);
 			}
 		}
 
