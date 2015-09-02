@@ -215,13 +215,17 @@ public class FileLocationCompletionProvider extends AbstractCompletionProvider {
 
 		} else if (displayResource instanceof File) {
 			// display a file system file
-			for (final File file : ((File) displayResource).listFiles()) {
-				if (showCandidate(context, file)) {
-					if (file.isFile())
-						addProposal(proposals, proposalContext, file.getName(), file.getName(), getImage(file), ORDER_FILE);
+			final File[] dirListing = ((File) displayResource).listFiles();
+			if (dirListing != null) {
+				// sometimes returns null - seems to be related with insufficient rights to access folders
+				for (final File file : dirListing) {
+					if (showCandidate(context, file)) {
+						if (file.isFile())
+							addProposal(proposals, proposalContext, file.getName(), file.getName(), getImage(file), ORDER_FILE);
 
-					else
-						addProposal(proposals, proposalContext, file.getName(), file.getName() + "/", getImage(file), ORDER_FOLDER);
+						else
+							addProposal(proposals, proposalContext, file.getName(), file.getName() + "/", getImage(file), ORDER_FOLDER);
+					}
 				}
 			}
 
