@@ -285,7 +285,15 @@ public class FileLocationCompletionProvider extends AbstractCompletionProvider {
 		return ("file:///".equals(candidate)) || (candidate instanceof File);
 	}
 
-	protected static boolean isFileResource(final Object candidate) {
+	protected static boolean isWorkspaceResource(final Object candidate) {
+		return ("workspace:///".equals(candidate)) || ("project:///".equals(candidate)) || (candidate instanceof IResource);
+	}
+
+	protected static boolean isFile(final Object candidate) {
 		return ((candidate instanceof File) && (((File) candidate).isFile())) || (candidate instanceof IFile);
+	}
+
+	protected static boolean isFolder(final Object candidate) {
+		return ((candidate instanceof File) && (((File) candidate).isDirectory())) || (candidate instanceof IContainer);
 	}
 }
