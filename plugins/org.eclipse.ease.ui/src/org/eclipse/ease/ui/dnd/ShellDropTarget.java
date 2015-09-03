@@ -68,7 +68,8 @@ public final class ShellDropTarget extends DropTargetAdapter {
 					}
 
 				} catch (final CoreException e1) {
-					Logger.logError("Invalid drop taret listener detected", e1);
+
+					Logger.logError("Invalid drop target listener detected in plugin \"" + e.getContributor().getName() + "\"", e1);
 				}
 			}
 		}
