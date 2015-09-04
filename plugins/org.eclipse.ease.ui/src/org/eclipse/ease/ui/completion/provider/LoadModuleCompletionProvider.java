@@ -24,6 +24,7 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
@@ -59,8 +60,12 @@ public class LoadModuleCompletionProvider extends AbstractCompletionProvider {
 				// this is a valid candidate
 				if (searchPath.segmentCount() + 1 == modulePath.segmentCount()) {
 					// add module proposal
-					addProposal(proposals, context, modulePath.lastSegment(), moduleName,
-							Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/module.png"), 0);
+					final StyledString displayString = new StyledString(modulePath.lastSegment());
+					if (!availableModules.get(moduleName).isVisible())
+						displayString.append(" (hidden)", StyledString.DECORATIONS_STYLER);
+
+					addProposal(proposals, context, displayString, moduleName, Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/module.png"),
+							0);
 
 				} else {
 					// add path proposal; collect them first to avoid duplicates

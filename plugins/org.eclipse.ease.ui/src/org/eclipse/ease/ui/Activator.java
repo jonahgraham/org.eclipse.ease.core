@@ -52,8 +52,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given plug-in
-	 * relative path
+	 * Returns an image descriptor for the image file at the given plug-in relative path
 	 *
 	 * @param path
 	 *            the path
@@ -64,8 +63,8 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static ImageDescriptor getImageDescriptor(final String bundleID, final String path) {
-		assert (bundleID != null) : "No bundle defined";
-		assert (path != null) : "No path defined";
+		assert(bundleID != null) : "No bundle defined";
+		assert(path != null) : "No path defined";
 
 		// if the bundle is not ready then there is no image
 		final Bundle bundle = Platform.getBundle(bundleID);
@@ -84,12 +83,12 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static Image getImage(final String bundleID, final String path, final boolean storeToImageRegistry) {
-		assert (bundleID != null) : "No bundle defined";
-		assert (path != null) : "No path defined";
+		assert(bundleID != null) : "No bundle defined";
+		assert(path != null) : "No path defined";
 
 		Image image = getDefault().getImageRegistry().get(bundleID + path);
 		if (image == null) {
-			ImageDescriptor descriptor = getImageDescriptor(bundleID, path);
+			final ImageDescriptor descriptor = getImageDescriptor(bundleID, path);
 			if (descriptor != null) {
 				image = descriptor.createImage();
 
@@ -108,15 +107,14 @@ public class Activator extends AbstractUIPlugin {
 	// FIXME seems to be obsolete
 	/**
 	 *
-	 * This method returns an <code>org.eclipse.swt.graphics.Image</code>
-	 * identified by its pluginId and iconPath.<BR>
+	 * This method returns an <code>org.eclipse.swt.graphics.Image</code> identified by its pluginId and iconPath.<BR>
 	 */
 	public static Image getPluginIconImage(final String pluginId, final String iconPath) {
-		String key = pluginId + iconPath;
-		ImageRegistry registry = getDefault().getImageRegistry();
+		final String key = pluginId + iconPath;
+		final ImageRegistry registry = getDefault().getImageRegistry();
 		Image image = registry.get(key);
 		if (image == null) {
-			ImageDescriptor desc = getImageDescriptor(pluginId, iconPath);
+			final ImageDescriptor desc = getImageDescriptor(pluginId, iconPath);
 			registry.put(key, desc);
 			image = registry.get(key);
 		}

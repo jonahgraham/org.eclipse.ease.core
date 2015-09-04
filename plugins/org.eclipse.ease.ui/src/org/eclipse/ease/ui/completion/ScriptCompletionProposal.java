@@ -130,4 +130,12 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	public int getSortOrder() {
 		return fSortOrder;
 	}
+
+	public static int compare(ScriptCompletionProposal proposal1, ScriptCompletionProposal proposal2) {
+		final int priority = proposal1.getSortOrder() - proposal2.getSortOrder();
+		if (priority != 0)
+			return priority;
+
+		return proposal1.getDisplayString().compareToIgnoreCase(proposal2.getDisplayString());
+	}
 }
