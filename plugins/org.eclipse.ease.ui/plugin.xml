@@ -437,5 +437,8 @@
       <codeCompletionProvider
             class="org.eclipse.ease.ui.completion.provider.FileLocationCompletionProvider">
       </codeCompletionProvider>
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completion.provider.LoadModuleCompletionProvider">
+      </codeCompletionProvider>
    </extension>
 </plugin>
