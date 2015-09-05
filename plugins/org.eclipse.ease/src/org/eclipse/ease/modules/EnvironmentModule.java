@@ -89,16 +89,20 @@ public class EnvironmentModule extends AbstractEnvironment {
 		// script code to inject
 		final StringBuilder scriptCode = new StringBuilder();
 
+		ICodeFactory codeFactory = getCodeFactory();
+		if (null == codeFactory) 
+			return;
+		
 		// create wrappers for methods
 		for (final Method method : ModuleHelper.getMethods(instance.getClass())) {
-			final String code = getCodeFactory().createFunctionWrapper(this, identifier, method);
+			final String code = codeFactory.createFunctionWrapper(this, identifier, method);
 
 			if ((code != null) && !code.isEmpty()) {
 				scriptCode.append(code);
 				scriptCode.append('\n');
 			}
 		}
-
+		
 		// create wrappers for static fields
 		if (!reload) {
 			// this is only done upon initial loading as we try to create constants here
@@ -106,8 +110,8 @@ public class EnvironmentModule extends AbstractEnvironment {
 				try {
 
 					// only wrap if field is not already declared
-					if (!getScriptEngine().hasVariable(getCodeFactory().getSaveVariableName(field.getName()))) {
-						final String code = getCodeFactory().createStaticFieldWrapper(this, identifier, field);
+					if (!getScriptEngine().hasVariable(codeFactory.getSaveVariableName(field.getName()))) {
+						final String code = codeFactory.createStaticFieldWrapper(this, identifier, field);
 
 						if ((code != null) && !code.isEmpty()) {
 							scriptCode.append(code);
