@@ -1,6 +1,6 @@
 /*******************************************************************************
  * copied from org.eclipse.jface.fieldassist.ContentProposalAdapter
- * 
+ *
  * Copyright (c) 2005, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,12 +27,17 @@ import org.eclipse.jface.fieldassist.IContentProposalListener2;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.jface.fieldassist.IControlContentAdapter2;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
+import org.eclipse.jface.internal.text.TableOwnerDrawSupport;
 import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
@@ -56,36 +61,26 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
- * ContentProposalAdapter can be used to attach content proposal behavior to a
- * control. This behavior includes obtaining proposals, opening a popup dialog,
- * managing the content of the control relative to the selections in the popup,
- * and optionally opening up a secondary popup to further describe proposals.
+ * ContentProposalAdapter can be used to attach content proposal behavior to a control. This behavior includes obtaining proposals, opening a popup dialog,
+ * managing the content of the control relative to the selections in the popup, and optionally opening up a secondary popup to further describe proposals.
  * <p>
- * A number of configurable options are provided to determine how the control
- * content is altered when a proposal is chosen, how the content proposal popup
- * is activated, and whether any filtering should be done on the proposals as
- * the user types characters.
+ * A number of configurable options are provided to determine how the control content is altered when a proposal is chosen, how the content proposal popup is
+ * activated, and whether any filtering should be done on the proposals as the user types characters.
  * <p>
- * This class provides some overridable methods to allow clients to manually
- * control the popup. However, most of the implementation remains private.
- * 
+ * This class provides some overridable methods to allow clients to manually control the popup. However, most of the implementation remains private.
+ *
  * @since 3.2
  */
 public class ContentProposalModifier extends ContentProposalAdapter {
 
 	/*
-	 * The lightweight popup used to show content proposals for a text field. If
-	 * additional information exists for a proposal, then selecting that
-	 * proposal will result in the information being displayed in a secondary
-	 * popup.
+	 * The lightweight popup used to show content proposals for a text field. If additional information exists for a proposal, then selecting that proposal will
+	 * result in the information being displayed in a secondary popup.
 	 */
 	class ContentProposalPopup extends PopupDialog {
 		/*
-		 * The listener we install on the popup and related controls to
-		 * determine when to close the popup. Some events (move, resize, close,
-		 * deactivate) trigger closure as soon as they are received, simply
-		 * because one of the registered listeners received them. Other events
-		 * depend on additional circumstances.
+		 * The listener we install on the popup and related controls to determine when to close the popup. Some events (move, resize, close, deactivate) trigger
+		 * closure as soon as they are received, simply because one of the registered listeners received them. Other events depend on additional circumstances.
 		 */
 		private final class PopupCloserListener implements Listener {
 			private boolean scrollbarClicked = false;
@@ -98,10 +93,8 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 				if (e.type == SWT.FocusOut) {
 					scrollbarClicked = false;
 					/*
-					 * Ignore this event if it's only happening because focus is
-					 * moving between the popup shells, their controls, or a
-					 * scrollbar. Do this in an async since the focus is not
-					 * actually switched when this event is received.
+					 * Ignore this event if it's only happening because focus is moving between the popup shells, their controls, or a scrollbar. Do this in an
+					 * async since the focus is not actually switched when this event is received.
 					 */
 					e.display.asyncExec(new Runnable() {
 						@Override
@@ -116,15 +109,11 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 								// the popup shell on the Mac.
 								// Check the active shell.
 								Shell activeShell = e.display.getActiveShell();
-								if (activeShell == getShell()
-										|| (infoPopup != null && infoPopup
-												.getShell() == activeShell)) {
+								if ((activeShell == getShell()) || ((infoPopup != null) && (infoPopup.getShell() == activeShell))) {
 									return;
 								}
 								/*
-								 * System.out.println(e);
-								 * System.out.println(e.display.getFocusControl());
-								 * System.out.println(e.display.getActiveShell());
+								 * System.out.println(e); System.out.println(e.display.getFocusControl()); System.out.println(e.display.getActiveShell());
 								 */
 								close();
 							}
@@ -182,7 +171,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 					getShell().removeListener(SWT.Close, this);
 				}
 
-				if (control != null && !control.isDisposed()) {
+				if ((control != null) && !control.isDisposed()) {
 
 					control.removeListener(SWT.MouseDoubleClick, this);
 					control.removeListener(SWT.MouseDown, this);
@@ -202,7 +191,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		private final class TargetControlListener implements Listener {
 			// Key events from the control
 			@Override
-			public void handleEvent(Event e) {
+			public void handleEvent(final Event e) {
 				if (!isValid()) {
 					return;
 				}
@@ -237,8 +226,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 
 				if (key == 0) {
 					int newSelection = proposalTable.getSelectionIndex();
-					int visibleRows = (proposalTable.getSize().y / proposalTable
-							.getItemHeight()) - 1;
+					int visibleRows = (proposalTable.getSize().y / proposalTable.getItemHeight()) - 1;
 					switch (e.keyCode) {
 					case SWT.ARROW_UP:
 						newSelection -= 1;
@@ -256,7 +244,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 
 					case SWT.ARROW_DOWN:
 						newSelection += 1;
-						if (newSelection > proposalTable.getItemCount() - 1) {
+						if (newSelection > (proposalTable.getItemCount() - 1)) {
 							newSelection = 0;
 						}
 						// Not typical - usually we get this as a Traverse and
@@ -316,11 +304,10 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 							e.doit = false;
 						} else {
 							e.doit = true;
-							String contents = getControlContentAdapter()
-									.getControlContents(getControl());
+							String contents = getControlContentAdapter().getControlContents(getControl());
 							// If there are no contents, changes in cursor
-							// position have no effect. Note also that we do 
-							// not affect the filter text on ARROW_LEFT as 
+							// position have no effect. Note also that we do
+							// not affect the filter text on ARROW_LEFT as
 							// we would with BS.
 							if (contents.length() > 0) {
 								asyncRecomputeProposals(filterText);
@@ -332,11 +319,8 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 					// Modifier keys are explicitly checked and ignored because
 					// they are not complete yet (no character).
 					default:
-						if (e.keyCode != SWT.CAPS_LOCK && e.keyCode != SWT.NUM_LOCK 
-								&& e.keyCode != SWT.MOD1
-								&& e.keyCode != SWT.MOD2
-								&& e.keyCode != SWT.MOD3
-								&& e.keyCode != SWT.MOD4) {
+						if ((e.keyCode != SWT.CAPS_LOCK) && (e.keyCode != SWT.NUM_LOCK) && (e.keyCode != SWT.MOD1) && (e.keyCode != SWT.MOD2)
+								&& (e.keyCode != SWT.MOD3) && (e.keyCode != SWT.MOD4)) {
 							close();
 						}
 						return;
@@ -383,8 +367,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 							return;
 						}
 						// There is filter to back out of
-						filterText = filterText.substring(0, filterText
-								.length() - 1);
+						filterText = filterText.substring(0, filterText.length() - 1);
 						asyncRecomputeProposals(filterText);
 						return;
 					}
@@ -392,8 +375,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 					// clients provide their own filtering based on content.
 					// Recompute the proposals if the cursor position
 					// will change (is not at 0).
-					int pos = getControlContentAdapter().getCursorPosition(
-							getControl());
+					int pos = getControlContentAdapter().getCursorPosition(getControl());
 					// We rely on the fact that the contents and pos do not yet
 					// reflect the result of the BS. If the contents were
 					// already empty, then BS should not cause
@@ -439,16 +421,15 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			/*
 			 * Construct an info-popup with the specified parent.
 			 */
-			InfoPopupDialog(Shell parent) {
-				super(parent, PopupDialog.HOVER_SHELLSTYLE, false, false, false,
-						false, false, null, null);
+			InfoPopupDialog(final Shell parent) {
+				super(parent, PopupDialog.HOVER_SHELLSTYLE, false, false, false, false, false, null, null);
 			}
 
 			/*
 			 * Create a text control for showing the info about a proposal.
 			 */
 			@Override
-			protected Control createDialogArea(Composite parent) {
+			protected Control createDialogArea(final Composite parent) {
 
 				GridLayout gridLayout = new GridLayout(1, true);
 				final Composite composite = new Composite(parent, SWT.NONE);
@@ -461,7 +442,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 				fBrowser.addFocusListener(new FocusAdapter() {
 
 					@Override
-					public void focusGained(FocusEvent event) {
+					public void focusGained(final FocusEvent event) {
 						ContentProposalPopup.this.close();
 					}
 				});
@@ -477,32 +458,22 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 				Rectangle parentBounds = getParentShell().getBounds();
 				Rectangle proposedBounds;
 				// Try placing the info popup to the right
-				Rectangle rightProposedBounds = new Rectangle(parentBounds.x
-						+ parentBounds.width
-						+ PopupDialog.POPUP_HORIZONTALSPACING, parentBounds.y
-						+ PopupDialog.POPUP_VERTICALSPACING,
-						parentBounds.width, parentBounds.height);
+				Rectangle rightProposedBounds = new Rectangle(parentBounds.x + parentBounds.width + PopupDialog.POPUP_HORIZONTALSPACING,
+						parentBounds.y + PopupDialog.POPUP_VERTICALSPACING, parentBounds.width, parentBounds.height);
 				rightProposedBounds = getConstrainedShellBounds(rightProposedBounds);
 				// If it won't fit on the right, try the left
 				if (rightProposedBounds.intersects(parentBounds)) {
-					Rectangle leftProposedBounds = new Rectangle(parentBounds.x
-							- parentBounds.width - POPUP_HORIZONTALSPACING - 1,
-							parentBounds.y, parentBounds.width,
-							parentBounds.height);
+					Rectangle leftProposedBounds = new Rectangle(parentBounds.x - parentBounds.width - POPUP_HORIZONTALSPACING - 1, parentBounds.y,
+							parentBounds.width, parentBounds.height);
 					leftProposedBounds = getConstrainedShellBounds(leftProposedBounds);
 					// If it won't fit on the left, choose the proposed bounds
 					// that fits the best
 					if (leftProposedBounds.intersects(parentBounds)) {
-						if (rightProposedBounds.x - parentBounds.x >= parentBounds.x
-								- leftProposedBounds.x) {
-							rightProposedBounds.x = parentBounds.x
-									+ parentBounds.width
-									+ PopupDialog.POPUP_HORIZONTALSPACING;
+						if ((rightProposedBounds.x - parentBounds.x) >= (parentBounds.x - leftProposedBounds.x)) {
+							rightProposedBounds.x = parentBounds.x + parentBounds.width + PopupDialog.POPUP_HORIZONTALSPACING;
 							proposedBounds = rightProposedBounds;
 						} else {
-							leftProposedBounds.width = parentBounds.x
-									- POPUP_HORIZONTALSPACING
-									- leftProposedBounds.x;
+							leftProposedBounds.width = parentBounds.x - POPUP_HORIZONTALSPACING - leftProposedBounds.x;
 							proposedBounds = leftProposedBounds;
 						}
 					} else {
@@ -515,25 +486,25 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 				}
 				getShell().setBounds(proposedBounds);
 			}
-			
+
 			/*
 			 * (non-Javadoc)
+			 *
 			 * @see org.eclipse.jface.dialogs.PopupDialog#getForeground()
 			 */
 			@Override
 			protected Color getForeground() {
-				return control.getDisplay().
-						getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+				return control.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND);
 			}
-			
+
 			/*
 			 * (non-Javadoc)
+			 *
 			 * @see org.eclipse.jface.dialogs.PopupDialog#getBackground()
 			 */
 			@Override
 			protected Color getBackground() {
-				return control.getDisplay().
-						getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+				return control.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
 			}
 
 			/*
@@ -543,8 +514,8 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 				if (newContents == null) {
 					newContents = EMPTY;
 				}
-				this.contents = newContents;
-				if (fBrowser != null && !fBrowser.isDisposed()) {
+				contents = newContents;
+				if ((fBrowser != null) && !fBrowser.isDisposed()) {
 					fBrowser.setText("<html>" + contents + "</html>");
 				}
 			}
@@ -553,7 +524,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			 * Return whether the popup has focus.
 			 */
 			boolean hasFocus() {
-				if (fBrowser == null || fBrowser.isDisposed()) {
+				if ((fBrowser == null) || fBrowser.isDisposed()) {
 					return false;
 				}
 				return fBrowser.getShell().isFocusControl() || fBrowser.isFocusControl();
@@ -581,8 +552,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		private IContentProposal[] proposals;
 
 		/*
-		 * Secondary popup used to show detailed information about the selected
-		 * proposal..
+		 * Secondary popup used to show detailed information about the selected proposal..
 		 */
 		private InfoPopupDialog infoPopup;
 
@@ -592,21 +562,18 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		private boolean pendingDescriptionUpdate = false;
 
 		/*
-		 * Filter text - tracked while popup is open, only if we are told to
-		 * filter
+		 * Filter text - tracked while popup is open, only if we are told to filter
 		 */
 		private String filterText = EMPTY;
 
 		/**
-		 * Constructs a new instance of this popup, specifying the control for
-		 * which this popup is showing content, and how the proposals should be
-		 * obtained and displayed.
-		 * 
+		 * Constructs a new instance of this popup, specifying the control for which this popup is showing content, and how the proposals should be obtained and
+		 * displayed.
+		 *
 		 * @param infoText
-		 *            Text to be shown in a lower info area, or
-		 *            <code>null</code> if there is no info area.
+		 *            Text to be shown in a lower info area, or <code>null</code> if there is no info area.
 		 */
-		ContentProposalPopup(String infoText, IContentProposal[] proposals) {
+		ContentProposalPopup(final String infoText, final IContentProposal[] proposals) {
 			// IMPORTANT: Use of SWT.ON_TOP is critical here for ensuring
 			// that the target control retains focus on Mac and Linux. Without
 			// it, the focus will disappear, keystrokes will not go to the
@@ -614,49 +581,45 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			// On platforms where SWT.ON_TOP overrides SWT.RESIZE, we will live
 			// with this.
 			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=126138
-			super(control.getShell(), SWT.RESIZE | SWT.ON_TOP, false, false, false,
-					false, false, null, infoText);
+			super(control.getShell(), SWT.RESIZE | SWT.ON_TOP, false, false, false, false, false, null, infoText);
 			this.proposals = proposals;
 		}
 
 		/*
 		 * (non-Javadoc)
+		 *
 		 * @see org.eclipse.jface.dialogs.PopupDialog#getForeground()
 		 */
 		@Override
 		protected Color getForeground() {
-			return JFaceResources.getColorRegistry().get(
-					JFacePreferences.CONTENT_ASSIST_FOREGROUND_COLOR);
+			return JFaceResources.getColorRegistry().get(JFacePreferences.CONTENT_ASSIST_FOREGROUND_COLOR);
 		}
-		
+
 		/*
 		 * (non-Javadoc)
+		 *
 		 * @see org.eclipse.jface.dialogs.PopupDialog#getBackground()
 		 */
 		@Override
 		protected Color getBackground() {
-			return JFaceResources.getColorRegistry().get(
-					JFacePreferences.CONTENT_ASSIST_BACKGROUND_COLOR);
+			return JFaceResources.getColorRegistry().get(JFacePreferences.CONTENT_ASSIST_BACKGROUND_COLOR);
 		}
 
 		/*
-		 * Creates the content area for the proposal popup. This creates a table
-		 * and places it inside the composite. The table will contain a list of
-		 * all the proposals.
-		 * 
-		 * @param parent The parent composite to contain the dialog area; must
-		 * not be <code>null</code>.
+		 * Creates the content area for the proposal popup. This creates a table and places it inside the composite. The table will contain a list of all the
+		 * proposals.
+		 *
+		 * @param parent The parent composite to contain the dialog area; must not be <code>null</code>.
 		 */
 		@Override
 		protected final Control createDialogArea(final Composite parent) {
 			// Use virtual where appropriate (see flag definition).
 			if (USE_VIRTUAL) {
-				proposalTable = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL
-						| SWT.VIRTUAL);
+				proposalTable = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.VIRTUAL);
 
 				Listener listener = new Listener() {
 					@Override
-					public void handleEvent(Event event) {
+					public void handleEvent(final Event event) {
 						handleSetData(event);
 					}
 				};
@@ -672,7 +635,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			proposalTable.addSelectionListener(new SelectionListener() {
 
 				@Override
-				public void widgetSelected(SelectionEvent e) {
+				public void widgetSelected(final SelectionEvent e) {
 					// If a proposal has been selected, show it in the secondary
 					// popup. Otherwise close the popup.
 					if (e.item == null) {
@@ -686,51 +649,50 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 
 				// Default selection was made. Accept the current proposal.
 				@Override
-				public void widgetDefaultSelected(SelectionEvent e) {
+				public void widgetDefaultSelected(final SelectionEvent e) {
 					acceptCurrentProposal();
 				}
 			});
+
+			TableOwnerDrawSupport.install(proposalTable);
+
 			return proposalTable;
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.eclipse.jface.dialogs.PopupDialog.adjustBounds()
 		 */
 		@Override
 		protected void adjustBounds() {
 			// Get our control's location in display coordinates.
-			Point location = control.getDisplay().map(control.getParent(), null, control.getLocation());			
+			Point location = control.getDisplay().map(control.getParent(), null, control.getLocation());
 			int initialX = location.x + POPUP_OFFSET;
 			int initialY = location.y + control.getSize().y + POPUP_OFFSET;
 			// If we are inserting content, use the cursor position to
 			// position the control.
 			if (getProposalAcceptanceStyle() == PROPOSAL_INSERT) {
-				Rectangle insertionBounds = controlContentAdapter
-						.getInsertionBounds(control);
+				Rectangle insertionBounds = controlContentAdapter.getInsertionBounds(control);
 				initialX = initialX + insertionBounds.x;
-				initialY = location.y + insertionBounds.y
-						+ insertionBounds.height;
+				initialY = location.y + insertionBounds.y + insertionBounds.height;
 			}
 
 			// If there is no specified size, force it by setting
 			// up a layout on the table.
 			if (popupSize == null) {
 				GridData data = new GridData(GridData.FILL_BOTH);
-				data.heightHint = proposalTable.getItemHeight()
-						* POPUP_CHAR_HEIGHT;
-				data.widthHint = Math.max(control.getSize().x,
-						POPUP_MINIMUM_WIDTH);
+				data.heightHint = proposalTable.getItemHeight() * POPUP_CHAR_HEIGHT;
+				data.widthHint = Math.max(control.getSize().x, POPUP_MINIMUM_WIDTH);
 				proposalTable.setLayoutData(data);
 				getShell().pack();
 				popupSize = getShell().getSize();
 			}
-			
+
 			// Constrain to the display
 			Rectangle constrainedBounds = getConstrainedShellBounds(new Rectangle(initialX, initialY, popupSize.x, popupSize.y));
-			
-			// If there has been an adjustment causing the popup to overlap 
+
+			// If there has been an adjustment causing the popup to overlap
 			// with the control, then put the popup above the control.
 			if (constrainedBounds.y < initialY)
 				getShell().setBounds(initialX, location.y - popupSize.y, popupSize.x, popupSize.y);
@@ -740,7 +702,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			// Now set up a listener to monitor any changes in size.
 			getShell().addListener(SWT.Resize, new Listener() {
 				@Override
-				public void handleEvent(Event e) {
+				public void handleEvent(final Event e) {
 					popupSize = getShell().getSize();
 					if (infoPopup != null) {
 						infoPopup.adjustBounds();
@@ -750,32 +712,39 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/*
-		 * Handle the set data event. Set the item data of the requested item to
-		 * the corresponding proposal in the proposal cache.
+		 * Handle the set data event. Set the item data of the requested item to the corresponding proposal in the proposal cache.
 		 */
-		private void handleSetData(Event event) {
+		private void handleSetData(final Event event) {
 			TableItem item = (TableItem) event.item;
 			int index = proposalTable.indexOf(item);
 
-			if (0 <= index && index < proposals.length) {
+			if ((0 <= index) && (index < proposals.length)) {
 				IContentProposal current = proposals[index];
 				item.setText(getString(current));
 				item.setImage(getImage(current));
 				item.setData(current);
+
+				// colored labels
+				if (current instanceof ICompletionProposalExtension6) {
+					StyledString styledString = ((ICompletionProposalExtension6) current).getStyledDisplayString();
+					item.setText(styledString.getString());
+					StyleRange[] styleRanges = styledString.getStyleRanges();
+					TableOwnerDrawSupport.storeStyleRanges(item, 0, styleRanges);
+				}
+
 			} else {
 				// this should not happen, but does on win32
 			}
 		}
 
 		/*
-		 * Caches the specified proposals and repopulates the table if it has
-		 * been created.
+		 * Caches the specified proposals and repopulates the table if it has been created.
 		 */
 		private void setProposals(IContentProposal[] newProposals) {
-			if (newProposals == null || newProposals.length == 0) {
+			if ((newProposals == null) || (newProposals.length == 0)) {
 				newProposals = getEmptyProposalArray();
 			}
-			this.proposals = newProposals;
+			proposals = newProposals;
 
 			// If there is a table
 			if (isValid()) {
@@ -813,50 +782,44 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/*
-		 * Get the string for the specified proposal. Always return a String of
-		 * some kind.
+		 * Get the string for the specified proposal. Always return a String of some kind.
 		 */
-		private String getString(IContentProposal proposal) {
+		private String getString(final IContentProposal proposal) {
 			if (proposal == null) {
 				return EMPTY;
 			}
 			if (labelProvider == null) {
-				return proposal.getLabel() == null ? proposal.getContent()
-						: proposal.getLabel();
+				return proposal.getLabel() == null ? proposal.getContent() : proposal.getLabel();
 			}
 			return labelProvider.getText(proposal);
 		}
 
 		/*
-		 * Get the image for the specified proposal. If there is no image
-		 * available, return null.
+		 * Get the image for the specified proposal. If there is no image available, return null.
 		 */
-		private Image getImage(IContentProposal proposal) {
-			if (proposal == null || labelProvider == null) {
+		private Image getImage(final IContentProposal proposal) {
+			if ((proposal == null) || (labelProvider == null)) {
 				return null;
 			}
 			return labelProvider.getImage(proposal);
 		}
 
 		/*
-		 * Return an empty array. Used so that something always shows in the
-		 * proposal popup, even if no proposal provider was specified.
+		 * Return an empty array. Used so that something always shows in the proposal popup, even if no proposal provider was specified.
 		 */
 		private IContentProposal[] getEmptyProposalArray() {
 			return new IContentProposal[0];
 		}
 
 		/*
-		 * Answer true if the popup is valid, which means the table has been
-		 * created and not disposed.
+		 * Answer true if the popup is valid, which means the table has been created and not disposed.
 		 */
 		private boolean isValid() {
-			return proposalTable != null && !proposalTable.isDisposed();
+			return (proposalTable != null) && !proposalTable.isDisposed();
 		}
 
 		/*
-		 * Return whether the receiver has focus. Since 3.4, this includes a
-		 * check for whether the info popup has focus.
+		 * Return whether the receiver has focus. Since 3.4, this includes a check for whether the info popup has focus.
 		 */
 		private boolean hasFocus() {
 			if (!isValid()) {
@@ -865,7 +828,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			if (getShell().isFocusControl() || proposalTable.isFocusControl()) {
 				return true;
 			}
-			if (infoPopup != null && infoPopup.hasFocus()) {
+			if ((infoPopup != null) && infoPopup.hasFocus()) {
 				return true;
 			}
 			return false;
@@ -877,7 +840,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		private IContentProposal getSelectedProposal() {
 			if (isValid()) {
 				int i = proposalTable.getSelectionIndex();
-				if (proposals == null || i < 0 || i >= proposals.length) {
+				if ((proposals == null) || (i < 0) || (i >= proposals.length)) {
 					return null;
 				}
 				return proposals[i];
@@ -888,11 +851,9 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		/*
 		 * Select the proposal at the given index.
 		 */
-		private void selectProposal(int index) {
-			Assert
-					.isTrue(index >= 0,
-							"Proposal index should never be negative"); //$NON-NLS-1$
-			if (!isValid() || proposals == null || index >= proposals.length) {
+		private void selectProposal(final int index) {
+			Assert.isTrue(index >= 0, "Proposal index should never be negative"); //$NON-NLS-1$
+			if (!isValid() || (proposals == null) || (index >= proposals.length)) {
 				return;
 			}
 			proposalTable.setSelection(index);
@@ -902,12 +863,11 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/**
-		 * Opens this ContentProposalPopup. This method is extended in order to
-		 * add the control listener when the popup is opened and to invoke the
-		 * secondary popup if applicable.
-		 * 
+		 * Opens this ContentProposalPopup. This method is extended in order to add the control listener when the popup is opened and to invoke the secondary
+		 * popup if applicable.
+		 *
 		 * @return the return code
-		 * 
+		 *
 		 * @see org.eclipse.jface.window.Window#open()
 		 */
 		@Override
@@ -925,11 +885,9 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/**
-		 * Closes this popup. This method is extended to remove the control
-		 * listener.
-		 * 
-		 * @return <code>true</code> if the window is (or was already) closed,
-		 *         and <code>false</code> if it is still open
+		 * Closes this popup. This method is extended to remove the control listener.
+		 *
+		 * @return <code>true</code> if the window is (or was already) closed, and <code>false</code> if it is still open
 		 */
 		@Override
 		public boolean close() {
@@ -943,8 +901,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/*
-		 * Show the currently selected proposal's description in a secondary
-		 * popup.
+		 * Show the currently selected proposal's description in a secondary popup.
 		 */
 		private void showProposalDescription() {
 			// If we do not already have a pending update, then
@@ -975,22 +932,16 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 									String description = p.getDescription();
 									if (description != null) {
 										if (infoPopup == null) {
-											infoPopup = new InfoPopupDialog(
-													getShell());
+											infoPopup = new InfoPopupDialog(getShell());
 											infoPopup.open();
-											infoPopup
-													.getShell()
-													.addDisposeListener(
-															new DisposeListener() {
-																@Override
-																public void widgetDisposed(
-																		DisposeEvent event) {
-																	infoPopup = null;
-																}
-															});
+											infoPopup.getShell().addDisposeListener(new DisposeListener() {
+												@Override
+												public void widgetDisposed(final DisposeEvent event) {
+													infoPopup = null;
+												}
+											});
 										}
-										infoPopup.setContents(p
-												.getDescription());
+										infoPopup.setContents(p.getDescription());
 									} else if (infoPopup != null) {
 										infoPopup.close();
 									}
@@ -1020,13 +971,12 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/*
-		 * Request the proposals from the proposal provider, and recompute any
-		 * caches. Repopulate the popup if it is open.
+		 * Request the proposals from the proposal provider, and recompute any caches. Repopulate the popup if it is open.
 		 */
-		private void recomputeProposals(String filterText) {
+		private void recomputeProposals(final String filterText) {
 			IContentProposal[] allProposals = getProposals();
 			if (allProposals == null)
-				 allProposals = getEmptyProposalArray();
+				allProposals = getEmptyProposalArray();
 			// If the non-filtered proposal list is empty, we should
 			// close the popup.
 			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=147377
@@ -1040,10 +990,8 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/*
-		 * In an async block, request the proposals. This is used when clients
-		 * are in the middle of processing an event that affects the widget
-		 * content. By using an async, we ensure that the widget content is up
-		 * to date with the event.
+		 * In an async block, request the proposals. This is used when clients are in the middle of processing an event that affects the widget content. By
+		 * using an async, we ensure that the widget content is up to date with the event.
 		 */
 		private void asyncRecomputeProposals(final String filterText) {
 			if (isValid()) {
@@ -1060,11 +1008,9 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 
 		/*
-		 * Filter the provided list of content proposals according to the filter
-		 * text.
+		 * Filter the provided list of content proposals according to the filter text.
 		 */
-		private IContentProposal[] filterProposals(
-				IContentProposal[] proposals, String filterString) {
+		private IContentProposal[] filterProposals(final IContentProposal[] proposals, final String filterString) {
 			if (filterString.length() == 0) {
 				return proposals;
 			}
@@ -1074,15 +1020,12 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			ArrayList<IContentProposal> list = new ArrayList<IContentProposal>();
 			for (int i = 0; i < proposals.length; i++) {
 				String string = getString(proposals[i]);
-				if (string.length() >= filterString.length()
-						&& string.substring(0, filterString.length())
-								.equalsIgnoreCase(filterString)) {
+				if ((string.length() >= filterString.length()) && string.substring(0, filterString.length()).equalsIgnoreCase(filterString)) {
 					list.add(proposals[i]);
 				}
 
 			}
-			return list.toArray(new IContentProposal[list
-					.size()]);
+			return list.toArray(new IContentProposal[list.size()]);
 		}
 
 		Listener getTargetControlListener() {
@@ -1104,49 +1047,39 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	public static final int PROPOSAL_INSERT = 1;
 
 	/**
-	 * Indicates that a chosen proposal should replace the entire contents of
-	 * the field.
+	 * Indicates that a chosen proposal should replace the entire contents of the field.
 	 */
 	public static final int PROPOSAL_REPLACE = 2;
 
 	/**
-	 * Indicates that the contents of the control should not be modified when a
-	 * proposal is chosen. This is typically used when a client needs more
-	 * specialized behavior when a proposal is chosen. In this case, clients
-	 * typically register an IContentProposalListener so that they are notified
-	 * when a proposal is chosen.
+	 * Indicates that the contents of the control should not be modified when a proposal is chosen. This is typically used when a client needs more specialized
+	 * behavior when a proposal is chosen. In this case, clients typically register an IContentProposalListener so that they are notified when a proposal is
+	 * chosen.
 	 */
 	public static final int PROPOSAL_IGNORE = 3;
 
 	/**
-	 * Indicates that there should be no filter applied as keys are typed in the
-	 * popup.
+	 * Indicates that there should be no filter applied as keys are typed in the popup.
 	 */
 	public static final int FILTER_NONE = 1;
 
 	/**
-	 * Indicates that a single character filter applies as keys are typed in the
-	 * popup.
+	 * Indicates that a single character filter applies as keys are typed in the popup.
 	 */
 	public static final int FILTER_CHARACTER = 2;
 
 	/**
-	 * Indicates that a cumulative filter applies as keys are typed in the
-	 * popup. That is, each character typed will be added to the filter.
-	 * 
-	 * @deprecated As of 3.4, filtering that is sensitive to changes in the
-	 *             control content should be performed by the supplied
-	 *             {@link IContentProposalProvider}, such as that performed by
-	 *             {@link SimpleContentProposalProvider}
+	 * Indicates that a cumulative filter applies as keys are typed in the popup. That is, each character typed will be added to the filter.
+	 *
+	 * @deprecated As of 3.4, filtering that is sensitive to changes in the control content should be performed by the supplied {@link IContentProposalProvider}
+	 *             , such as that performed by {@link SimpleContentProposalProvider}
 	 */
 	@Deprecated
 	public static final int FILTER_CUMULATIVE = 3;
 
 	/*
-	 * Set to <code>true</code> to use a Table with SWT.VIRTUAL. This is a
-	 * workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=98585#c40
-	 * The corresponding SWT bug is
-	 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=90321
+	 * Set to <code>true</code> to use a Table with SWT.VIRTUAL. This is a workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=98585#c40 The
+	 * corresponding SWT bug is https://bugs.eclipse.org/bugs/show_bug.cgi?id=90321
 	 */
 	private static final boolean USE_VIRTUAL = !Util.isMotif();
 
@@ -1156,14 +1089,12 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	private static final int POPUP_DELAY = 750;
 
 	/*
-	 * The character height hint for the popup. May be overridden by using
-	 * setInitialPopupSize.
+	 * The character height hint for the popup. May be overridden by using setInitialPopupSize.
 	 */
 	private static final int POPUP_CHAR_HEIGHT = 10;
 
 	/*
-	 * The minimum pixel width for the popup. May be overridden by using
-	 * setInitialPopupSize.
+	 * The minimum pixel width for the popup. May be overridden by using setInitialPopupSize.
 	 */
 	private static final int POPUP_MINIMUM_WIDTH = 300;
 
@@ -1183,21 +1114,19 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	private IContentProposalProvider proposalProvider;
 
 	/*
-	 * A label provider used to display proposals in the popup, and to extract
-	 * Strings from non-String proposals.
+	 * A label provider used to display proposals in the popup, and to extract Strings from non-String proposals.
 	 */
 	private ILabelProvider labelProvider;
 
 	/*
 	 * The control for which content proposals are provided.
 	 */
-	private Control control;
+	private final Control control;
 
 	/*
-	 * The adapter used to extract the String contents from an arbitrary
-	 * control.
+	 * The adapter used to extract the String contents from an arbitrary control.
 	 */
-	private IControlContentAdapter controlContentAdapter;
+	private final IControlContentAdapter controlContentAdapter;
 
 	/*
 	 * The popup used to show proposals.
@@ -1207,7 +1136,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	/*
 	 * The keystroke that signifies content proposals should be shown.
 	 */
-	private KeyStroke triggerKeyStroke;
+	private final KeyStroke triggerKeyStroke;
 
 	/*
 	 * The String containing characters that auto-activate the popup.
@@ -1215,22 +1144,18 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	private String autoActivateString;
 
 	/*
-	 * Integer that indicates how an accepted proposal should affect the
-	 * control. One of PROPOSAL_IGNORE, PROPOSAL_INSERT, or PROPOSAL_REPLACE.
-	 * Default value is PROPOSAL_INSERT.
+	 * Integer that indicates how an accepted proposal should affect the control. One of PROPOSAL_IGNORE, PROPOSAL_INSERT, or PROPOSAL_REPLACE. Default value is
+	 * PROPOSAL_INSERT.
 	 */
 	private int proposalAcceptanceStyle = PROPOSAL_INSERT;
 
 	/*
-	 * A boolean that indicates whether key events received while the proposal
-	 * popup is open should also be propagated to the control. Default value is
-	 * true.
+	 * A boolean that indicates whether key events received while the proposal popup is open should also be propagated to the control. Default value is true.
 	 */
 	private boolean propagateKeys = true;
 
 	/*
-	 * Integer that indicates the filtering style. One of FILTER_CHARACTER,
-	 * FILTER_CUMULATIVE, FILTER_NONE.
+	 * Integer that indicates the filtering style. One of FILTER_CHARACTER, FILTER_CUMULATIVE, FILTER_NONE.
 	 */
 	private int filterStyle = FILTER_NONE;
 
@@ -1242,16 +1167,15 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	/*
 	 * The list of IContentProposalListener listeners.
 	 */
-	private ListenerList proposalListeners = new ListenerList();
+	private final ListenerList proposalListeners = new ListenerList();
 
 	/*
 	 * The list of IContentProposalListener2 listeners.
 	 */
-	private ListenerList proposalListeners2 = new ListenerList();
+	private final ListenerList proposalListeners2 = new ListenerList();
 
 	/*
-	 * Flag that indicates whether the adapter is enabled. In some cases,
-	 * adapters may be installed but depend upon outside state.
+	 * Flag that indicates whether the adapter is enabled. In some cases, adapters may be installed but depend upon outside state.
 	 */
 	private boolean isEnabled = true;
 
@@ -1261,8 +1185,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	private int autoActivationDelay = 0;
 
 	/*
-	 * A boolean indicating whether a keystroke has been received. Used to see
-	 * if an autoactivation delay was interrupted by a keystroke.
+	 * A boolean indicating whether a keystroke has been received. Used to see if an autoactivation delay was interrupted by a keystroke.
 	 */
 	private boolean receivedKeyDown;
 
@@ -1272,16 +1195,13 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	private Point popupSize;
 
 	/*
-	 * The remembered position of the insertion position. Not all controls will
-	 * restore the insertion position if the proposal popup gets focus, so we
-	 * need to remember it.
+	 * The remembered position of the insertion position. Not all controls will restore the insertion position if the proposal popup gets focus, so we need to
+	 * remember it.
 	 */
 	private int insertionPos = -1;
 
 	/*
-	 * The remembered selection range. Not all controls will restore the
-	 * selection position if the proposal popup gets focus, so we need to
-	 * remember it.
+	 * The remembered selection range. Not all controls will restore the selection position if the proposal popup gets focus, so we need to remember it.
 	 */
 	private Point selectionRange = new Point(-1, -1);
 
@@ -1291,41 +1211,28 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	private boolean watchModify = false;
 
 	/**
-	 * Construct a content proposal adapter that can assist the user with
-	 * choosing content for the field.
-	 * 
+	 * Construct a content proposal adapter that can assist the user with choosing content for the field.
+	 *
 	 * @param control
-	 *            the control for which the adapter is providing content assist.
-	 *            May not be <code>null</code>.
+	 *            the control for which the adapter is providing content assist. May not be <code>null</code>.
 	 * @param controlContentAdapter
-	 *            the <code>IControlContentAdapter</code> used to obtain and
-	 *            update the control's contents as proposals are accepted. May
-	 *            not be <code>null</code>.
+	 *            the <code>IControlContentAdapter</code> used to obtain and update the control's contents as proposals are accepted. May not be
+	 *            <code>null</code>.
 	 * @param proposalProvider
-	 *            the <code>IContentProposalProvider</code> used to obtain
-	 *            content proposals for this control, or <code>null</code> if
-	 *            no content proposal is available.
+	 *            the <code>IContentProposalProvider</code> used to obtain content proposals for this control, or <code>null</code> if no content proposal is
+	 *            available.
 	 * @param keyStroke
-	 *            the keystroke that will invoke the content proposal popup. If
-	 *            this value is <code>null</code>, then proposals will be
-	 *            activated automatically when any of the auto activation
-	 *            characters are typed.
+	 *            the keystroke that will invoke the content proposal popup. If this value is <code>null</code>, then proposals will be activated automatically
+	 *            when any of the auto activation characters are typed.
 	 * @param autoActivationCharacters
-	 *            An array of characters that trigger auto-activation of content
-	 *            proposal. If specified, these characters will trigger
-	 *            auto-activation of the proposal popup, regardless of whether
-	 *            an explicit invocation keyStroke was specified. If this
-	 *            parameter is <code>null</code>, then only a specified
-	 *            keyStroke will invoke content proposal. If this parameter is
-	 *            <code>null</code> and the keyStroke parameter is
-	 *            <code>null</code>, then all alphanumeric characters will
-	 *            auto-activate content proposal.
+	 *            An array of characters that trigger auto-activation of content proposal. If specified, these characters will trigger auto-activation of the
+	 *            proposal popup, regardless of whether an explicit invocation keyStroke was specified. If this parameter is <code>null</code>, then only a
+	 *            specified keyStroke will invoke content proposal. If this parameter is <code>null</code> and the keyStroke parameter is <code>null</code>,
+	 *            then all alphanumeric characters will auto-activate content proposal.
 	 */
-	public ContentProposalModifier(Control control,
-			IControlContentAdapter controlContentAdapter,
-			IContentProposalProvider proposalProvider, KeyStroke keyStroke,
-			char[] autoActivationCharacters) {
-		super(control, controlContentAdapter, proposalProvider, null, new char[] {(char) 0xFF});
+	public ContentProposalModifier(final Control control, final IControlContentAdapter controlContentAdapter, final IContentProposalProvider proposalProvider,
+			final KeyStroke keyStroke, final char[] autoActivationCharacters) {
+		super(control, controlContentAdapter, proposalProvider, null, new char[] { (char) 0xFF });
 		// We always assume the control and content adapter are valid.
 		Assert.isNotNull(control);
 		Assert.isNotNull(controlContentAdapter);
@@ -1334,89 +1241,86 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 
 		// The rest of these may be null
 		this.proposalProvider = proposalProvider;
-		this.triggerKeyStroke = keyStroke;
+		triggerKeyStroke = keyStroke;
 		if (autoActivationCharacters != null) {
-			this.autoActivateString = new String(autoActivationCharacters);
+			autoActivateString = new String(autoActivationCharacters);
 		}
 		addControlListener(control);
 	}
 
 	/**
 	 * Get the control on which the content proposal adapter is installed.
-	 * 
+	 *
 	 * @return the control on which the proposal adapter is installed.
 	 */
+	@Override
 	public Control getControl() {
 		return control;
 	}
 
 	/**
 	 * Get the label provider that is used to show proposals.
-	 * 
-	 * @return the {@link ILabelProvider} used to show proposals, or
-	 *         <code>null</code> if one has not been installed.
+	 *
+	 * @return the {@link ILabelProvider} used to show proposals, or <code>null</code> if one has not been installed.
 	 */
+	@Override
 	public ILabelProvider getLabelProvider() {
 		return labelProvider;
 	}
 
 	/**
 	 * Return a boolean indicating whether the receiver is enabled.
-	 * 
-	 * @return <code>true</code> if the adapter is enabled, and
-	 *         <code>false</code> if it is not.
+	 *
+	 * @return <code>true</code> if the adapter is enabled, and <code>false</code> if it is not.
 	 */
+	@Override
 	public boolean isEnabled() {
 		return isEnabled;
 	}
 
 	/**
-	 * Set the label provider that is used to show proposals. The lifecycle of
-	 * the specified label provider is not managed by this adapter. Clients must
-	 * dispose the label provider when it is no longer needed.
-	 * 
+	 * Set the label provider that is used to show proposals. The lifecycle of the specified label provider is not managed by this adapter. Clients must dispose
+	 * the label provider when it is no longer needed.
+	 *
 	 * @param labelProvider
 	 *            the {@link ILabelProvider} used to show proposals.
 	 */
-	public void setLabelProvider(ILabelProvider labelProvider) {
+	@Override
+	public void setLabelProvider(final ILabelProvider labelProvider) {
 		this.labelProvider = labelProvider;
 	}
 
 	/**
-	 * Return the proposal provider that provides content proposals given the
-	 * current content of the field. A value of <code>null</code> indicates
-	 * that there are no content proposals available for the field.
-	 * 
-	 * @return the {@link IContentProposalProvider} used to show proposals. May
-	 *         be <code>null</code>.
+	 * Return the proposal provider that provides content proposals given the current content of the field. A value of <code>null</code> indicates that there
+	 * are no content proposals available for the field.
+	 *
+	 * @return the {@link IContentProposalProvider} used to show proposals. May be <code>null</code>.
 	 */
+	@Override
 	public IContentProposalProvider getContentProposalProvider() {
 		return proposalProvider;
 	}
 
 	/**
 	 * Set the content proposal provider that is used to show proposals.
-	 * 
+	 *
 	 * @param proposalProvider
 	 *            the {@link IContentProposalProvider} used to show proposals
 	 */
-	public void setContentProposalProvider(
-			IContentProposalProvider proposalProvider) {
+	@Override
+	public void setContentProposalProvider(final IContentProposalProvider proposalProvider) {
 		this.proposalProvider = proposalProvider;
 	}
 
 	/**
 	 * Return the array of characters on which the popup is autoactivated.
-	 * 
-	 * @return An array of characters that trigger auto-activation of content
-	 *         proposal. If specified, these characters will trigger
-	 *         auto-activation of the proposal popup, regardless of whether an
-	 *         explicit invocation keyStroke was specified. If this parameter is
-	 *         <code>null</code>, then only a specified keyStroke will invoke
-	 *         content proposal. If this value is <code>null</code> and the
-	 *         keyStroke value is <code>null</code>, then all alphanumeric
-	 *         characters will auto-activate content proposal.
+	 *
+	 * @return An array of characters that trigger auto-activation of content proposal. If specified, these characters will trigger auto-activation of the
+	 *         proposal popup, regardless of whether an explicit invocation keyStroke was specified. If this parameter is <code>null</code>, then only a
+	 *         specified keyStroke will invoke content proposal. If this value is <code>null</code> and the keyStroke value is <code>null</code>, then all
+	 *         alphanumeric characters will auto-activate content proposal.
 	 */
+	@Override
 	public char[] getAutoActivationCharacters() {
 		if (autoActivateString == null) {
 			return null;
@@ -1425,36 +1329,30 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	}
 
 	/**
-	 * Set the array of characters that will trigger autoactivation of the
-	 * popup.
-	 * 
+	 * Set the array of characters that will trigger autoactivation of the popup.
+	 *
 	 * @param autoActivationCharacters
-	 *            An array of characters that trigger auto-activation of content
-	 *            proposal. If specified, these characters will trigger
-	 *            auto-activation of the proposal popup, regardless of whether
-	 *            an explicit invocation keyStroke was specified. If this
-	 *            parameter is <code>null</code>, then only a specified
-	 *            keyStroke will invoke content proposal. If this parameter is
-	 *            <code>null</code> and the keyStroke value is
-	 *            <code>null</code>, then all alphanumeric characters will
-	 *            auto-activate content proposal.
-	 * 
+	 *            An array of characters that trigger auto-activation of content proposal. If specified, these characters will trigger auto-activation of the
+	 *            proposal popup, regardless of whether an explicit invocation keyStroke was specified. If this parameter is <code>null</code>, then only a
+	 *            specified keyStroke will invoke content proposal. If this parameter is <code>null</code> and the keyStroke value is <code>null</code>, then
+	 *            all alphanumeric characters will auto-activate content proposal.
+	 *
 	 */
-	public void setAutoActivationCharacters(char[] autoActivationCharacters) {
+	@Override
+	public void setAutoActivationCharacters(final char[] autoActivationCharacters) {
 		if (autoActivationCharacters == null) {
-			this.autoActivateString = null;
+			autoActivateString = null;
 		} else {
-			this.autoActivateString = new String(autoActivationCharacters);
+			autoActivateString = new String(autoActivationCharacters);
 		}
 	}
 
 	/**
-	 * Set the delay, in milliseconds, used before any autoactivation is
-	 * triggered.
-	 * 
-	 * @return the time in milliseconds that will pass before a popup is
-	 *         automatically opened
+	 * Set the delay, in milliseconds, used before any autoactivation is triggered.
+	 *
+	 * @return the time in milliseconds that will pass before a popup is automatically opened
 	 */
+	@Override
 	public int getAutoActivationDelay() {
 		return autoActivationDelay;
 
@@ -1462,163 +1360,137 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 
 	/**
 	 * Set the delay, in milliseconds, used before autoactivation is triggered.
-	 * 
+	 *
 	 * @param delay
-	 *            the time in milliseconds that will pass before a popup is
-	 *            automatically opened
+	 *            the time in milliseconds that will pass before a popup is automatically opened
 	 */
-	public void setAutoActivationDelay(int delay) {
+	@Override
+	public void setAutoActivationDelay(final int delay) {
 		autoActivationDelay = delay;
 
 	}
 
 	/**
-	 * Get the integer style that indicates how an accepted proposal affects the
-	 * control's content.
-	 * 
-	 * @return a constant indicating how an accepted proposal should affect the
-	 *         control's content. Should be one of <code>PROPOSAL_INSERT</code>,
-	 *         <code>PROPOSAL_REPLACE</code>, or <code>PROPOSAL_IGNORE</code>.
-	 *         (Default is <code>PROPOSAL_INSERT</code>).
+	 * Get the integer style that indicates how an accepted proposal affects the control's content.
+	 *
+	 * @return a constant indicating how an accepted proposal should affect the control's content. Should be one of <code>PROPOSAL_INSERT</code>,
+	 *         <code>PROPOSAL_REPLACE</code>, or <code>PROPOSAL_IGNORE</code>. (Default is <code>PROPOSAL_INSERT</code>).
 	 */
+	@Override
 	public int getProposalAcceptanceStyle() {
 		return proposalAcceptanceStyle;
 	}
 
 	/**
-	 * Set the integer style that indicates how an accepted proposal affects the
-	 * control's content.
-	 * 
+	 * Set the integer style that indicates how an accepted proposal affects the control's content.
+	 *
 	 * @param acceptance
-	 *            a constant indicating how an accepted proposal should affect
-	 *            the control's content. Should be one of
-	 *            <code>PROPOSAL_INSERT</code>, <code>PROPOSAL_REPLACE</code>,
-	 *            or <code>PROPOSAL_IGNORE</code>
+	 *            a constant indicating how an accepted proposal should affect the control's content. Should be one of <code>PROPOSAL_INSERT</code>,
+	 *            <code>PROPOSAL_REPLACE</code>, or <code>PROPOSAL_IGNORE</code>
 	 */
-	public void setProposalAcceptanceStyle(int acceptance) {
+	@Override
+	public void setProposalAcceptanceStyle(final int acceptance) {
 		proposalAcceptanceStyle = acceptance;
 	}
 
 	/**
-	 * Return the integer style that indicates how keystrokes affect the content
-	 * of the proposal popup while it is open.
-	 * 
-	 * @return a constant indicating how keystrokes in the proposal popup affect
-	 *         filtering of the proposals shown. <code>FILTER_NONE</code>
-	 *         specifies that no filtering will occur in the content proposal
-	 *         list as keys are typed. <code>FILTER_CHARACTER</code> specifies
-	 *         the content of the popup will be filtered by the most recently
-	 *         typed character. <code>FILTER_CUMULATIVE</code> is deprecated
-	 *         and no longer recommended. It specifies that the content of the
-	 *         popup will be filtered by a string containing all the characters
-	 *         typed since the popup has been open. The default is
+	 * Return the integer style that indicates how keystrokes affect the content of the proposal popup while it is open.
+	 *
+	 * @return a constant indicating how keystrokes in the proposal popup affect filtering of the proposals shown. <code>FILTER_NONE</code> specifies that no
+	 *         filtering will occur in the content proposal list as keys are typed. <code>FILTER_CHARACTER</code> specifies the content of the popup will be
+	 *         filtered by the most recently typed character. <code>FILTER_CUMULATIVE</code> is deprecated and no longer recommended. It specifies that the
+	 *         content of the popup will be filtered by a string containing all the characters typed since the popup has been open. The default is
 	 *         <code>FILTER_NONE</code>.
 	 */
+	@Override
 	public int getFilterStyle() {
 		return filterStyle;
 	}
 
 	/**
-	 * Set the integer style that indicates how keystrokes affect the content of
-	 * the proposal popup while it is open. Popup-based filtering is useful for
-	 * narrowing and navigating the list of proposals provided once the popup is
-	 * open. Filtering of the proposals will occur even when the control content
-	 * is not affected by user typing. Note that automatic filtering is not used
-	 * to achieve content-sensitive filtering such as auto-completion. Filtering
-	 * that is sensitive to changes in the control content should be performed
-	 * by the supplied {@link IContentProposalProvider}.
-	 * 
+	 * Set the integer style that indicates how keystrokes affect the content of the proposal popup while it is open. Popup-based filtering is useful for
+	 * narrowing and navigating the list of proposals provided once the popup is open. Filtering of the proposals will occur even when the control content is
+	 * not affected by user typing. Note that automatic filtering is not used to achieve content-sensitive filtering such as auto-completion. Filtering that is
+	 * sensitive to changes in the control content should be performed by the supplied {@link IContentProposalProvider}.
+	 *
 	 * @param filterStyle
-	 *            a constant indicating how keystrokes received in the proposal
-	 *            popup affect filtering of the proposals shown.
-	 *            <code>FILTER_NONE</code> specifies that no automatic
-	 *            filtering of the content proposal list will occur as keys are
-	 *            typed in the popup. <code>FILTER_CHARACTER</code> specifies
-	 *            that the content of the popup will be filtered by the most
-	 *            recently typed character. <code>FILTER_CUMULATIVE</code> is
-	 *            deprecated and no longer recommended. It specifies that the
-	 *            content of the popup will be filtered by a string containing
-	 *            all the characters typed since the popup has been open.
+	 *            a constant indicating how keystrokes received in the proposal popup affect filtering of the proposals shown. <code>FILTER_NONE</code>
+	 *            specifies that no automatic filtering of the content proposal list will occur as keys are typed in the popup. <code>FILTER_CHARACTER</code>
+	 *            specifies that the content of the popup will be filtered by the most recently typed character. <code>FILTER_CUMULATIVE</code> is deprecated
+	 *            and no longer recommended. It specifies that the content of the popup will be filtered by a string containing all the characters typed since
+	 *            the popup has been open.
 	 */
-	public void setFilterStyle(int filterStyle) {
+	@Override
+	public void setFilterStyle(final int filterStyle) {
 		this.filterStyle = filterStyle;
 	}
 
 	/**
 	 * Return the size, in pixels, of the content proposal popup.
-	 * 
-	 * @return a Point specifying the last width and height, in pixels, of the
-	 *         content proposal popup.
+	 *
+	 * @return a Point specifying the last width and height, in pixels, of the content proposal popup.
 	 */
+	@Override
 	public Point getPopupSize() {
 		return popupSize;
 	}
 
 	/**
-	 * Set the size, in pixels, of the content proposal popup. This size will be
-	 * used the next time the content proposal popup is opened.
-	 * 
+	 * Set the size, in pixels, of the content proposal popup. This size will be used the next time the content proposal popup is opened.
+	 *
 	 * @param size
-	 *            a Point specifying the desired width and height, in pixels, of
-	 *            the content proposal popup.
+	 *            a Point specifying the desired width and height, in pixels, of the content proposal popup.
 	 */
-	public void setPopupSize(Point size) {
+	@Override
+	public void setPopupSize(final Point size) {
 		popupSize = size;
 	}
 
 	/**
-	 * Get the boolean that indicates whether key events (including
-	 * auto-activation characters) received by the content proposal popup should
-	 * also be propagated to the adapted control when the proposal popup is
-	 * open.
-	 * 
-	 * @return a boolean that indicates whether key events (including
-	 *         auto-activation characters) should be propagated to the adapted
-	 *         control when the proposal popup is open. Default value is
-	 *         <code>true</code>.
+	 * Get the boolean that indicates whether key events (including auto-activation characters) received by the content proposal popup should also be propagated
+	 * to the adapted control when the proposal popup is open.
+	 *
+	 * @return a boolean that indicates whether key events (including auto-activation characters) should be propagated to the adapted control when the proposal
+	 *         popup is open. Default value is <code>true</code>.
 	 */
+	@Override
 	public boolean getPropagateKeys() {
 		return propagateKeys;
 	}
 
 	/**
-	 * Set the boolean that indicates whether key events (including
-	 * auto-activation characters) received by the content proposal popup should
-	 * also be propagated to the adapted control when the proposal popup is
-	 * open.
-	 * 
+	 * Set the boolean that indicates whether key events (including auto-activation characters) received by the content proposal popup should also be propagated
+	 * to the adapted control when the proposal popup is open.
+	 *
 	 * @param propagateKeys
-	 *            a boolean that indicates whether key events (including
-	 *            auto-activation characters) should be propagated to the
-	 *            adapted control when the proposal popup is open.
+	 *            a boolean that indicates whether key events (including auto-activation characters) should be propagated to the adapted control when the
+	 *            proposal popup is open.
 	 */
-	public void setPropagateKeys(boolean propagateKeys) {
+	@Override
+	public void setPropagateKeys(final boolean propagateKeys) {
 		this.propagateKeys = propagateKeys;
 	}
 
 	/**
-	 * Return the content adapter that can get or retrieve the text contents
-	 * from the adapter's control. This method is used when a client, such as a
-	 * content proposal listener, needs to update the control's contents
-	 * manually.
-	 * 
-	 * @return the {@link IControlContentAdapter} which can update the control
-	 *         text.
+	 * Return the content adapter that can get or retrieve the text contents from the adapter's control. This method is used when a client, such as a content
+	 * proposal listener, needs to update the control's contents manually.
+	 *
+	 * @return the {@link IControlContentAdapter} which can update the control text.
 	 */
+	@Override
 	public IControlContentAdapter getControlContentAdapter() {
 		return controlContentAdapter;
 	}
 
 	/**
 	 * Set the boolean flag that determines whether the adapter is enabled.
-	 * 
+	 *
 	 * @param enabled
-	 *            <code>true</code> if the adapter is enabled and responding
-	 *            to user input, <code>false</code> if it is ignoring user
-	 *            input.
-	 * 
+	 *            <code>true</code> if the adapter is enabled and responding to user input, <code>false</code> if it is ignoring user input.
+	 *
 	 */
-	public void setEnabled(boolean enabled) {
+	@Override
+	public void setEnabled(final boolean enabled) {
 		// If we are disabling it while it's proposing content, close the
 		// content proposal popup.
 		if (isEnabled && !enabled) {
@@ -1630,82 +1502,74 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	}
 
 	/**
-	 * Add the specified listener to the list of content proposal listeners that
-	 * are notified when content proposals are chosen.
+	 * Add the specified listener to the list of content proposal listeners that are notified when content proposals are chosen.
 	 * </p>
-	 * 
+	 *
 	 * @param listener
-	 *            the IContentProposalListener to be added as a listener. Must
-	 *            not be <code>null</code>. If an attempt is made to register
-	 *            an instance which is already registered with this instance,
-	 *            this method has no effect.
-	 * 
+	 *            the IContentProposalListener to be added as a listener. Must not be <code>null</code>. If an attempt is made to register an instance which is
+	 *            already registered with this instance, this method has no effect.
+	 *
 	 * @see org.eclipse.jface.fieldassist.IContentProposalListener
 	 */
-	public void addContentProposalListener(IContentProposalListener listener) {
+	@Override
+	public void addContentProposalListener(final IContentProposalListener listener) {
 		proposalListeners.add(listener);
 	}
 
 	/**
-	 * Removes the specified listener from the list of content proposal
-	 * listeners that are notified when content proposals are chosen.
+	 * Removes the specified listener from the list of content proposal listeners that are notified when content proposals are chosen.
 	 * </p>
-	 * 
+	 *
 	 * @param listener
-	 *            the IContentProposalListener to be removed as a listener. Must
-	 *            not be <code>null</code>. If the listener has not already
-	 *            been registered, this method has no effect.
-	 * 
+	 *            the IContentProposalListener to be removed as a listener. Must not be <code>null</code>. If the listener has not already been registered, this
+	 *            method has no effect.
+	 *
 	 * @since 3.3
 	 * @see org.eclipse.jface.fieldassist.IContentProposalListener
 	 */
-	public void removeContentProposalListener(IContentProposalListener listener) {
+	@Override
+	public void removeContentProposalListener(final IContentProposalListener listener) {
 		proposalListeners.remove(listener);
 	}
 
 	/**
-	 * Add the specified listener to the list of content proposal listeners that
-	 * are notified when a content proposal popup is opened or closed.
+	 * Add the specified listener to the list of content proposal listeners that are notified when a content proposal popup is opened or closed.
 	 * </p>
-	 * 
+	 *
 	 * @param listener
-	 *            the IContentProposalListener2 to be added as a listener. Must
-	 *            not be <code>null</code>. If an attempt is made to register
-	 *            an instance which is already registered with this instance,
-	 *            this method has no effect.
-	 * 
+	 *            the IContentProposalListener2 to be added as a listener. Must not be <code>null</code>. If an attempt is made to register an instance which is
+	 *            already registered with this instance, this method has no effect.
+	 *
 	 * @since 3.3
 	 * @see org.eclipse.jface.fieldassist.IContentProposalListener2
 	 */
-	public void addContentProposalListener(IContentProposalListener2 listener) {
+	@Override
+	public void addContentProposalListener(final IContentProposalListener2 listener) {
 		proposalListeners2.add(listener);
 	}
 
 	/**
-	 * Remove the specified listener from the list of content proposal listeners
-	 * that are notified when a content proposal popup is opened or closed.
+	 * Remove the specified listener from the list of content proposal listeners that are notified when a content proposal popup is opened or closed.
 	 * </p>
-	 * 
+	 *
 	 * @param listener
-	 *            the IContentProposalListener2 to be removed as a listener.
-	 *            Must not be <code>null</code>. If the listener has not
-	 *            already been registered, this method has no effect.
-	 * 
+	 *            the IContentProposalListener2 to be removed as a listener. Must not be <code>null</code>. If the listener has not already been registered,
+	 *            this method has no effect.
+	 *
 	 * @since 3.3
 	 * @see org.eclipse.jface.fieldassist.IContentProposalListener2
 	 */
-	public void removeContentProposalListener(IContentProposalListener2 listener) {
+	@Override
+	public void removeContentProposalListener(final IContentProposalListener2 listener) {
 		proposalListeners2.remove(listener);
 	}
 
 	/*
-	 * Add our listener to the control. Debug information to be left in until
-	 * this support is stable on all platforms.
+	 * Add our listener to the control. Debug information to be left in until this support is stable on all platforms.
 	 */
-	private void addControlListener(Control control) {
+	private void addControlListener(final Control control) {
 		if (DEBUG) {
-			System.out
-					.println("ContentProposalListener#installControlListener()"); //$NON-NLS-1$
+			System.out.println("ContentProposalListener#installControlListener()"); //$NON-NLS-1$
 		}
 
 		if (controlListener != null) {
@@ -1713,7 +1577,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 		controlListener = new Listener() {
 			@Override
-			public void handleEvent(Event e) {
+			public void handleEvent(final Event e) {
 				if (!isEnabled) {
 					return;
 				}
@@ -1748,7 +1612,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 						// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=192633
 						// If the popup is open and this is a valid character, we
 						// want to watch for the modified text.
-						if (propagateKeys && e.character != 0)
+						if (propagateKeys && (e.character != 0))
 							watchModify = true;
 
 						return;
@@ -1764,14 +1628,11 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 					if (triggerKeyStroke != null) {
 						// Either there are no modifiers for the trigger and we
 						// check the character field...
-						if ((triggerKeyStroke.getModifierKeys() == KeyStroke.NO_KEY && triggerKeyStroke
-								.getNaturalKey() == e.character)
-								||
+						if (((triggerKeyStroke.getModifierKeys() == KeyStroke.NO_KEY) && (triggerKeyStroke.getNaturalKey() == e.character)) ||
 								// ...or there are modifiers, in which case the
 								// keycode and state must match
-								(triggerKeyStroke.getNaturalKey() == e.keyCode && ((triggerKeyStroke
-										.getModifierKeys() & e.stateMask) == triggerKeyStroke
-										.getModifierKeys()))) {
+						((triggerKeyStroke.getNaturalKey() == e.keyCode)
+								&& ((triggerKeyStroke.getModifierKeys() & e.stateMask) == triggerKeyStroke.getModifierKeys()))) {
 							// We never propagate the keystroke for an explicit
 							// keystroke invocation of the popup
 							e.doit = false;
@@ -1780,8 +1641,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 						}
 					}
 					/*
-					 * The triggering keystroke was not invoked. If a character
-					 * was typed, compare it to the autoactivation characters.
+					 * The triggering keystroke was not invoked. If a character was typed, compare it to the autoactivation characters.
 					 */
 					if (e.character != 0) {
 						if (autoActivateString != null) {
@@ -1814,46 +1674,45 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 					}
 					break;
 
-
-					// There are times when we want to monitor content changes
-					// rather than individual keystrokes to determine whether
-					// the popup should be closed or opened based on the entire
-					// content of the control.
-					// The watchModify flag ensures that we don't autoactivate if
-					// the content change was caused by something other than typing.
-					// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=183650
-					case SWT.Modify:
-						if (allowsAutoActivate() && watchModify) {
-							if (DEBUG) {
-								dump("Modify event triggers popup open or close", e); //$NON-NLS-1$
-							}
-							watchModify = false;
-							// We are in autoactivation mode, either for specific
-							// characters or for all characters. In either case, 
-							// we should close the proposal popup when there is no
-							// content in the control.
-							if (isControlContentEmpty()) {
-								// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=192633
-								closeProposalPopup();
+				// There are times when we want to monitor content changes
+				// rather than individual keystrokes to determine whether
+				// the popup should be closed or opened based on the entire
+				// content of the control.
+				// The watchModify flag ensures that we don't autoactivate if
+				// the content change was caused by something other than typing.
+				// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=183650
+				case SWT.Modify:
+					if (allowsAutoActivate() && watchModify) {
+						if (DEBUG) {
+							dump("Modify event triggers popup open or close", e); //$NON-NLS-1$
+						}
+						watchModify = false;
+						// We are in autoactivation mode, either for specific
+						// characters or for all characters. In either case,
+						// we should close the proposal popup when there is no
+						// content in the control.
+						if (isControlContentEmpty()) {
+							// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=192633
+							closeProposalPopup();
+						} else {
+							// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=147377
+							// Given that we will close the popup when there are
+							// no valid proposals, we must consider reopening it on any
+							// content change when there are no particular autoActivation
+							// characters
+							if (autoActivateString == null) {
+								autoActivate();
 							} else {
-								// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=147377
-								// Given that we will close the popup when there are
-								// no valid proposals, we must consider reopening it on any
-								// content change when there are no particular autoActivation
-								// characters
-								if (autoActivateString == null) {
-									autoActivate();
-								} else {
-									// Autoactivation characters are defined, but this
-									// modify event does not involve one of them.  See
-									// if any of the autoactivation characters are left
-									// in the content and close the popup if none remain.
-									if (!shouldPopupRemainOpen())
-										closeProposalPopup();
-								}
+								// Autoactivation characters are defined, but this
+								// modify event does not involve one of them. See
+								// if any of the autoactivation characters are left
+								// in the content and close the popup if none remain.
+								if (!shouldPopupRemainOpen())
+									closeProposalPopup();
 							}
 						}
-						break;
+					}
+					break;
 				default:
 					break;
 				}
@@ -1861,15 +1720,14 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 
 			/**
 			 * Dump the given events to "standard" output.
-			 * 
+			 *
 			 * @param who
 			 *            who is dumping the event
 			 * @param e
 			 *            the event
 			 */
-			private void dump(String who, Event e) {
-				StringBuffer sb = new StringBuffer(
-						"--- [ContentProposalAdapter]\n"); //$NON-NLS-1$
+			private void dump(final String who, final Event e) {
+				StringBuffer sb = new StringBuffer("--- [ContentProposalAdapter]\n"); //$NON-NLS-1$
 				sb.append(who);
 				sb.append(" - e: keyCode=" + e.keyCode + hex(e.keyCode)); //$NON-NLS-1$
 				sb.append("; character=" + e.character + hex(e.character)); //$NON-NLS-1$
@@ -1880,7 +1738,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 				System.out.println(sb);
 			}
 
-			private String hex(int i) {
+			private String hex(final int i) {
 				return "[0x" + Integer.toHexString(i) + ']'; //$NON-NLS-1$
 			}
 		};
@@ -1889,22 +1747,18 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		control.addListener(SWT.Modify, controlListener);
 
 		if (DEBUG) {
-			System.out
-					.println("ContentProposalAdapter#installControlListener() - installed"); //$NON-NLS-1$
+			System.out.println("ContentProposalAdapter#installControlListener() - installed"); //$NON-NLS-1$
 		}
 	}
 
 	/**
-	 * Open the proposal popup and display the proposals provided by the
-	 * proposal provider. If there are no proposals to be shown, do not show the
-	 * popup. This method returns immediately. That is, it does not wait for the
-	 * popup to open or a proposal to be selected.
-	 * 
+	 * Open the proposal popup and display the proposals provided by the proposal provider. If there are no proposals to be shown, do not show the popup. This
+	 * method returns immediately. That is, it does not wait for the popup to open or a proposal to be selected.
+	 *
 	 * @param autoActivated
-	 *            a boolean indicating whether the popup was autoactivated. If
-	 *            false, a beep will sound when no proposals can be shown.
+	 *            a boolean indicating whether the popup was autoactivated. If false, a beep will sound when no proposals can be shown.
 	 */
-	private void openProposalPopup(boolean autoActivated) {
+	private void openProposalPopup(final boolean autoActivated) {
 		if (isValid()) {
 			if (popup == null) {
 				// Check whether there are any proposals to be shown.
@@ -1919,7 +1773,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 					popup.open();
 					popup.getShell().addDisposeListener(new DisposeListener() {
 						@Override
-						public void widgetDisposed(DisposeEvent event) {
+						public void widgetDisposed(final DisposeEvent event) {
 							popup = null;
 						}
 					});
@@ -1933,24 +1787,22 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	}
 
 	/**
-	 * Open the proposal popup and display the proposals provided by the
-	 * proposal provider. This method returns immediately. That is, it does not
-	 * wait for a proposal to be selected. This method is used by subclasses to
-	 * explicitly invoke the opening of the popup. If there are no proposals to
-	 * show, the popup will not open and a beep will be sounded.
+	 * Open the proposal popup and display the proposals provided by the proposal provider. This method returns immediately. That is, it does not wait for a
+	 * proposal to be selected. This method is used by subclasses to explicitly invoke the opening of the popup. If there are no proposals to show, the popup
+	 * will not open and a beep will be sounded.
 	 */
+	@Override
 	protected void openProposalPopup() {
 		openProposalPopup(false);
 	}
 
 	/**
-	 * Close the proposal popup without accepting a proposal. This method
-	 * returns immediately, and has no effect if the proposal popup was not
-	 * open. This method is used by subclasses to explicitly close the popup
-	 * based on additional logic.
-	 * 
+	 * Close the proposal popup without accepting a proposal. This method returns immediately, and has no effect if the proposal popup was not open. This method
+	 * is used by subclasses to explicitly close the popup based on additional logic.
+	 *
 	 * @since 3.3
 	 */
+	@Override
 	protected void closeProposalPopup() {
 		if (popup != null) {
 			popup.close();
@@ -1958,20 +1810,17 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	}
 
 	/*
-	 * A content proposal has been accepted. Update the control contents
-	 * accordingly and notify any listeners.
-	 * 
+	 * A content proposal has been accepted. Update the control contents accordingly and notify any listeners.
+	 *
 	 * @param proposal the accepted proposal
 	 */
-	private void proposalAccepted(IContentProposal proposal) {
+	private void proposalAccepted(final IContentProposal proposal) {
 		switch (proposalAcceptanceStyle) {
 		case (PROPOSAL_REPLACE):
-			setControlContent(proposal.getContent(), proposal
-					.getCursorPosition());
+			setControlContent(proposal.getContent(), proposal.getCursorPosition());
 			break;
 		case (PROPOSAL_INSERT):
-			insertControlContent(proposal.getContent(), proposal
-					.getCursorPosition());
+			insertControlContent(proposal.getContent(), proposal.getCursorPosition());
 			break;
 		default:
 			// do nothing. Typically a listener is installed to handle this in
@@ -1984,23 +1833,20 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	}
 
 	/*
-	 * Set the text content of the control to the specified text, setting the
-	 * cursorPosition at the desired location within the new contents.
+	 * Set the text content of the control to the specified text, setting the cursorPosition at the desired location within the new contents.
 	 */
-	private void setControlContent(String text, int cursorPosition) {
+	private void setControlContent(final String text, final int cursorPosition) {
 		if (isValid()) {
 			// should already be false, but just in case.
 			watchModify = false;
-			controlContentAdapter.setControlContents(control, text,
-					cursorPosition);
+			controlContentAdapter.setControlContents(control, text, cursorPosition);
 		}
 	}
 
 	/*
-	 * Insert the specified text into the control content, setting the
-	 * cursorPosition at the desired location within the new contents.
+	 * Insert the specified text into the control content, setting the cursorPosition at the desired location within the new contents.
 	 */
-	private void insertControlContent(String text, int cursorPosition) {
+	private void insertControlContent(final String text, final int cursorPosition) {
 		if (isValid()) {
 			// should already be false, but just in case.
 			watchModify = false;
@@ -2009,15 +1855,12 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			// the popup opened.
 			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=127108
 			// See https://bugs.eclipse.org/bugs/show_bug.cgi?id=139063
-			if (controlContentAdapter instanceof IControlContentAdapter2
-					&& selectionRange.x != -1) {
-				((IControlContentAdapter2) controlContentAdapter).setSelection(
-						control, selectionRange);
+			if ((controlContentAdapter instanceof IControlContentAdapter2) && (selectionRange.x != -1)) {
+				((IControlContentAdapter2) controlContentAdapter).setSelection(control, selectionRange);
 			} else if (insertionPos != -1) {
 				controlContentAdapter.setCursorPosition(control, insertionPos);
 			}
-			controlContentAdapter.insertControlContents(control, text,
-					cursorPosition);
+			controlContentAdapter.insertControlContents(control, text, cursorPosition);
 		}
 	}
 
@@ -2025,8 +1868,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	 * Check that the control and content adapter are valid.
 	 */
 	private boolean isValid() {
-		return control != null && !control.isDisposed()
-				&& controlContentAdapter != null;
+		return (control != null) && !control.isDisposed() && (controlContentAdapter != null);
 	}
 
 	/*
@@ -2038,19 +1880,17 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 			insertionPos = adapter.getCursorPosition(control);
 			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=139063
 			if (adapter instanceof IControlContentAdapter2) {
-				selectionRange = ((IControlContentAdapter2) adapter)
-						.getSelection(control);
+				selectionRange = ((IControlContentAdapter2) adapter).getSelection(control);
 			}
 
 		}
 	}
 
 	/*
-	 * Get the proposals from the proposal provider. Gets all of the proposals
-	 * without doing any filtering.
+	 * Get the proposals from the proposal provider. Gets all of the proposals without doing any filtering.
 	 */
 	private IContentProposal[] getProposals() {
-		if (proposalProvider == null || !isValid()) {
+		if ((proposalProvider == null) || !isValid()) {
 			return null;
 		}
 		if (DEBUG) {
@@ -2058,19 +1898,15 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 		int position = insertionPos;
 		if (position == -1) {
-			position = getControlContentAdapter().getCursorPosition(
-					getControl());
+			position = getControlContentAdapter().getCursorPosition(getControl());
 		}
-		String contents = getControlContentAdapter().getControlContents(
-				getControl());
-		IContentProposal[] proposals = proposalProvider.getProposals(contents,
-				position);
+		String contents = getControlContentAdapter().getControlContents(getControl());
+		IContentProposal[] proposals = proposalProvider.getProposals(contents, position);
 		return proposals;
 	}
 
 	/**
-	 * Autoactivation has been triggered. Open the popup using any specified
-	 * delay.
+	 * Autoactivation has been triggered. Open the popup using any specified delay.
 	 */
 	private void autoActivate() {
 		if (autoActivationDelay > 0) {
@@ -2116,14 +1952,13 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 	/*
 	 * A proposal has been accepted. Notify interested listeners.
 	 */
-	private void notifyProposalAccepted(IContentProposal proposal) {
+	private void notifyProposalAccepted(final IContentProposal proposal) {
 		if (DEBUG) {
 			System.out.println("Notify listeners - proposal accepted."); //$NON-NLS-1$
 		}
 		final Object[] listenerArray = proposalListeners.getListeners();
 		for (int i = 0; i < listenerArray.length; i++) {
-			((IContentProposalListener) listenerArray[i])
-					.proposalAccepted(proposal);
+			((IContentProposalListener) listenerArray[i]).proposalAccepted(proposal);
 		}
 	}
 
@@ -2136,8 +1971,7 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 		final Object[] listenerArray = proposalListeners2.getListeners();
 		for (int i = 0; i < listenerArray.length; i++) {
-			((IContentProposalListener2) listenerArray[i])
-					.proposalPopupOpened(this);
+			((IContentProposalListener2) listenerArray[i]).proposalPopupOpened(this);
 		}
 	}
 
@@ -2150,93 +1984,85 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 		}
 		final Object[] listenerArray = proposalListeners2.getListeners();
 		for (int i = 0; i < listenerArray.length; i++) {
-			((IContentProposalListener2) listenerArray[i])
-					.proposalPopupClosed(this);
+			((IContentProposalListener2) listenerArray[i]).proposalPopupClosed(this);
 		}
 	}
 
 	/**
-	 * Returns whether the content proposal popup has the focus. This includes
-	 * both the primary popup and any secondary info popup that may have focus.
-	 * 
-	 * @return <code>true</code> if the proposal popup or its secondary info
-	 *         popup has the focus
+	 * Returns whether the content proposal popup has the focus. This includes both the primary popup and any secondary info popup that may have focus.
+	 *
+	 * @return <code>true</code> if the proposal popup or its secondary info popup has the focus
 	 * @since 3.4
 	 */
+	@Override
 	public boolean hasProposalPopupFocus() {
-		return popup != null && popup.hasFocus();
+		return (popup != null) && popup.hasFocus();
 	}
 
 	/*
 	 * Return whether the control content is empty
 	 */
 	private boolean isControlContentEmpty() {
-		return getControlContentAdapter().getControlContents(getControl())
-				.length() == 0;
+		return getControlContentAdapter().getControlContents(getControl()).length() == 0;
 	}
-	
+
 	/*
-	 * The popup has just opened, but listeners have not yet
-	 * been notified.  Perform any cleanup that is needed.
+	 * The popup has just opened, but listeners have not yet been notified. Perform any cleanup that is needed.
 	 */
 	private void internalPopupOpened() {
 		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=243612
 		if (control instanceof Combo) {
-			((Combo)control).setListVisible(false);
+			((Combo) control).setListVisible(false);
 		}
 	}
-	
+
 	/*
-	 * Return whether a proposal popup should remain open.
-	 * If it was autoactivated by specific characters, and 
-	 * none of those characters remain, then it should not remain
-	 * open.  This method should not be used to determine
-	 * whether autoactivation has occurred or should occur, only whether
-	 * the circumstances would dictate that a popup remain open.
+	 * Return whether a proposal popup should remain open. If it was autoactivated by specific characters, and none of those characters remain, then it should
+	 * not remain open. This method should not be used to determine whether autoactivation has occurred or should occur, only whether the circumstances would
+	 * dictate that a popup remain open.
 	 */
 	private boolean shouldPopupRemainOpen() {
 		// If we always autoactivate or never autoactivate, it should remain open
-		if (autoActivateString == null || autoActivateString.length() == 0)
+		if ((autoActivateString == null) || (autoActivateString.length() == 0))
 			return true;
 		String content = getControlContentAdapter().getControlContents(getControl());
-		for (int i=0; i<autoActivateString.length(); i++) {
+		for (int i = 0; i < autoActivateString.length(); i++) {
 			if (content.indexOf(autoActivateString.charAt(i)) >= 0)
 				return true;
 		}
 		return false;
 	}
-	
+
 	/*
-	 * Return whether this adapter is configured for autoactivation, by
-	 * specific characters or by any characters.
+	 * Return whether this adapter is configured for autoactivation, by specific characters or by any characters.
 	 */
 	private boolean allowsAutoActivate() {
-		return (autoActivateString != null && autoActivateString.length() > 0) // there are specific autoactivation chars supplied
-		  || (autoActivateString == null && triggerKeyStroke == null);    // we autoactivate on everything
+		return ((autoActivateString != null) && (autoActivateString.length() > 0)) // there are specific autoactivation chars supplied
+				|| ((autoActivateString == null) && (triggerKeyStroke == null)); // we autoactivate on everything
 	}
-	
+
 	/**
-	 * Sets focus to the proposal popup. If the proposal popup is not opened,
-	 * this method is ignored. If the secondary popup has focus, focus is
-	 * returned to the main proposal popup.
-	 * 
+	 * Sets focus to the proposal popup. If the proposal popup is not opened, this method is ignored. If the secondary popup has focus, focus is returned to the
+	 * main proposal popup.
+	 *
 	 * @since 3.6
 	 */
+	@Override
 	public void setProposalPopupFocus() {
-		if (isValid() && popup != null)
+		if (isValid() && (popup != null))
 			popup.getShell().setFocus();
 	}
-	
+
 	/**
 	 * Answers a boolean indicating whether the main proposal popup is open.
-	 * 
-	 * @return <code>true</code> if the proposal popup is open, and
-	 *         <code>false</code> if it is not.
-	 * 
+	 *
+	 * @return <code>true</code> if the proposal popup is open, and <code>false</code> if it is not.
+	 *
 	 * @since 3.6
 	 */
+	@Override
 	public boolean isProposalPopupOpen() {
-		if (isValid() && popup != null)
+		if (isValid() && (popup != null))
 			return true;
 		return false;
 	}

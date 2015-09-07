@@ -30,6 +30,7 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.CodeCompletionAggregator;
+import org.eclipse.ease.ui.completion.CompletionLabelProvider;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.dnd.ShellDropTarget;
 import org.eclipse.ease.ui.help.hovers.ContentProposalModifier;
@@ -142,7 +143,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 	private ContentProposalAdapter fContentAssistAdapter = null;
 
-	private final CodeCompletionAggregator fCompletionDispatcher = new CodeCompletionAggregator();;
+	private final CodeCompletionAggregator fCompletionDispatcher = new CodeCompletionAggregator();
 
 	private Collection<IShellDropin> fDropins = Collections.emptySet();
 
@@ -324,6 +325,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 				fCompletionDispatcher.getActivationChars());
 
 		fContentAssistAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		fContentAssistAdapter.setLabelProvider(new CompletionLabelProvider());
 	}
 
 	public void runStartupCommands() {
