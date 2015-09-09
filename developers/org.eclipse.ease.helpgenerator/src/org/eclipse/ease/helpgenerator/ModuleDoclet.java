@@ -43,7 +43,7 @@ public class ModuleDoclet extends Doclet {
 	 */
 	public static void main(final String[] args) {
 
-		String repositoryRoot = new File(System.getProperty("user.dir")).getParentFile().getParent();
+		final String repositoryRoot = new File(System.getProperty("user.dir")).getParentFile().getParent();
 
 		final String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
 				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
@@ -68,7 +68,20 @@ public class ModuleDoclet extends Doclet {
 
 				"org.eclipse.ease.modules", "org.eclipse.ease" };
 
-		com.sun.tools.javadoc.Main.execute(javadocargs2);
+		final String[] javadocargs3 = { "-sourcepath", "C:/userdata/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src",
+
+				"-root", "C:/userdata/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease",
+
+				"-doclet", ModuleDoclet.class.getName(),
+
+				"-docletpath", "C:/userdata/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
+
+				// "-link", "http://docs.oracle.com/javase/8/docs/api",
+				// "-linkOffline", "http://localhost", "http://docs.oracle.com/javase/8/docs/api",
+
+				"org.eclipse.ease.modules", "org.eclipse.ease" };
+
+		com.sun.tools.javadoc.Main.execute(javadocargs3);
 	}
 
 	private static final String OPTION_PROJECT_ROOT = "-root";
@@ -128,10 +141,10 @@ public class ModuleDoclet extends Doclet {
 			} else if (OPTION_LINK_OFFLINE.equals(option[0])) {
 
 				try {
-					URL url = new URL(option[2] + "/package-list");
+					final URL url = new URL(option[2] + "/package-list");
 					fLinkProvider.registerAddress(option[1], parsePackages(url.openStream()));
 
-				} catch (MalformedURLException e) {
+				} catch (final MalformedURLException e) {
 					// invalid URI
 
 					try {
@@ -140,7 +153,7 @@ public class ModuleDoclet extends Doclet {
 					} catch (final FileNotFoundException e1) {
 						System.out.println("Error: cannot read from " + option[2]);
 					}
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					System.out.println("Error: cannot read from " + option[2]);
 				}
 			}
@@ -405,7 +418,7 @@ public class ModuleDoclet extends Doclet {
 			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
 				final String content = new HTMLWriter(clazz, fLinkProvider, fModuleNodes.get(clazz.qualifiedName()).getChildren("dependency"))
-				.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
+						.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
 
 				// write document
 				final File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));

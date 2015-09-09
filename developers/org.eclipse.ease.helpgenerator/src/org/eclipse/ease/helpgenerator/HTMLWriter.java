@@ -132,7 +132,13 @@ public class HTMLWriter {
 
 		addLine(buffer, "\t<h2>Methods</h2>");
 
-		final List<MethodDoc> methods = new ArrayList<MethodDoc>(Arrays.asList(fClazz.methods()));
+		final List<MethodDoc> methods = new ArrayList<MethodDoc>();
+		ClassDoc clazzDoc = fClazz;
+		while (clazzDoc != null) {
+			methods.addAll((Arrays.asList(clazzDoc.methods())));
+			clazzDoc = clazzDoc.superclass();
+		}
+
 		Collections.sort(methods, new Comparator<MethodDoc>() {
 
 			@Override
@@ -253,8 +259,8 @@ public class HTMLWriter {
 			for (final Parameter parameter : method.parameters()) {
 				addLine(buffer, "			<tr>");
 				addLine(buffer, "				<td>" + parameter.name() + "</td>");
-				addLine(buffer, "				<td>" + fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz))
-						+ "</td>");
+				addLine(buffer, "				<td>"
+						+ fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz)) + "</td>");
 				addText(buffer, "				<td>" + fLinkProvider.insertLinks(fClazz, findComment(method, parameter.name())));
 
 				final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
@@ -344,14 +350,20 @@ public class HTMLWriter {
 		addLine(buffer, "		</tr>");
 
 		final List<Overview> overview = new ArrayList<Overview>();
-		for (final MethodDoc method : fClazz.methods()) {
-			if (isExported(method)) {
-				overview.add(new Overview(method.name(), method.name(), method.commentText(), isDeprecated(method)));
-				for (final String alias : getFunctionAliases(method))
-					overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>.",
-							isDeprecated(method)));
+		ClassDoc clazzDoc = fClazz;
+		while (clazzDoc != null) {
+			for (final MethodDoc method : clazzDoc.methods()) {
+				if (isExported(method)) {
+					overview.add(new Overview(method.name(), method.name(), method.commentText(), isDeprecated(method)));
+					for (final String alias : getFunctionAliases(method))
+						overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>.",
+								isDeprecated(method)));
+				}
 			}
+
+			clazzDoc = clazzDoc.superclass();
 		}
+
 		Collections.sort(overview);
 
 		for (final Overview entry : overview) {
@@ -362,9 +374,8 @@ public class HTMLWriter {
 
 			} else {
 				addLine(buffer, "			<td class=\"deprecatedText\"><a href=\"#" + entry.fLinkID + "\">" + entry.fTitle + "</a>()</td>");
-				addLine(buffer,
-						"			<td class=\"deprecatedDescription\"><b>Deprecated:</b> " + fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription))
-								+ "</td>");
+				addLine(buffer, "			<td class=\"deprecatedDescription\"><b>Deprecated:</b> "
+						+ fLinkProvider.insertLinks(fClazz, getFirstSentence(entry.fDescription)) + "</td>");
 			}
 			addLine(buffer, "		</tr>");
 		}
@@ -378,9 +389,14 @@ public class HTMLWriter {
 	private StringBuffer createConstantsSection() {
 		final StringBuffer buffer = new StringBuffer();
 		final List<Overview> constants = new ArrayList<Overview>();
-		for (final FieldDoc field : fClazz.fields()) {
-			if (isExported(field))
-				constants.add(new Overview(field.name(), null, field.commentText(), isDeprecated(field), field));
+		ClassDoc clazzDoc = fClazz;
+		while (clazzDoc != null) {
+			for (final FieldDoc field : clazzDoc.fields()) {
+				if (isExported(field))
+					constants.add(new Overview(field.name(), null, field.commentText(), isDeprecated(field), field));
+			}
+
+			clazzDoc = clazzDoc.superclass();
 		}
 
 		if (!constants.isEmpty()) {
@@ -408,7 +424,8 @@ public class HTMLWriter {
 					if (deprecationText.isEmpty())
 						deprecationText = "This constant is deprecated and might be removed in future versions.";
 
-					addText(buffer, "				<div class=\"warning\"><b>Deprecation warning:</b> " + fLinkProvider.insertLinks(fClazz, deprecationText) + "</div>");
+					addText(buffer, "				<div class=\"warning\"><b>Deprecation warning:</b> " + fLinkProvider.insertLinks(fClazz, deprecationText)
+							+ "</div>");
 					addLine(buffer, "</td>");
 				}
 
