@@ -405,7 +405,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		fCodePieces.clear();
 
 		// re-enable launch extensions to register themselves
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final IScriptEngineLaunchExtension extension : scriptService.getLaunchExtensions(getDescription().getID()))
 			extension.createEngine(this);
 	}
@@ -472,21 +472,21 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		return Collections.unmodifiableMap(fBufferedVariables);
 	}
 
+	/**
+	 * Split a string with comma separated arguments.
+	 * 
+	 * @param arguments
+	 *            comma separated arguments
+	 * @return trimmed list of arguments
+	 */
 	public static final String[] extractArguments(final String arguments) {
 		final ArrayList<String> args = new ArrayList<String>();
 		if (arguments != null) {
-			int index = 0;
-			while (index < arguments.length()) {
-				final int endIndex = arguments.indexOf((arguments.charAt(index) == '"') ? '"' : ' ', index + 1);
 
-				if (endIndex > index) {
-					args.add(arguments.substring(index + 1, endIndex));
-					index = endIndex + 2;
-				} else {
-					// no end token, ignore and treat rest of arguments as a single arg
-					args.add(arguments.substring(index + 1));
-					index = arguments.length();
-				}
+			String[] tokens = arguments.split(",");
+			for (String token : tokens) {
+				if (!token.trim().isEmpty())
+					args.add(token.trim());
 			}
 		}
 

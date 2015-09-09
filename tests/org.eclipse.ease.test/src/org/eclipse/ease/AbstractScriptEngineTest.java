@@ -1,5 +1,6 @@
 package org.eclipse.ease;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -153,5 +154,20 @@ public class AbstractScriptEngineTest {
 		fTestEngine.terminate();
 
 		assertEquals(Job.NONE, fTestEngine.getState());
+	}
+
+	@Test
+	public void extractEmptyArguments() {
+		assertEquals(0, AbstractScriptEngine.extractArguments(null).length);
+		assertEquals(0, AbstractScriptEngine.extractArguments("").length);
+		assertEquals(0, AbstractScriptEngine.extractArguments("    ").length);
+		assertEquals(0, AbstractScriptEngine.extractArguments("\t\t").length);
+	}
+
+	@Test
+	public void extractArguments() {
+		assertArrayEquals(new String[] { "one" }, AbstractScriptEngine.extractArguments("one"));
+		assertArrayEquals(new String[] { "one with spaces" }, AbstractScriptEngine.extractArguments("one with spaces"));
+		assertArrayEquals(new String[] { "one", "and", "another" }, AbstractScriptEngine.extractArguments("one,and, another"));
 	}
 }
