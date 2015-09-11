@@ -253,8 +253,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			public void widgetDefaultSelected(final SelectionEvent e) {
 				final String input = fInputCombo.getText();
 				fInputCombo.setText("");
-
-				addToHistory(input);
 				fScriptEngine.executeAsync(input);
 			}
 		});
@@ -348,25 +346,30 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	 *            command to be stored to history.
 	 */
 	private void addToHistory(final String input) {
-		if (fInputCombo.getSelectionIndex() != -1)
-			fInputCombo.remove(fInputCombo.getSelectionIndex());
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (fInputCombo.getSelectionIndex() != -1)
+					fInputCombo.remove(fInputCombo.getSelectionIndex());
 
-		else {
-			// new element; check if we already have such an element in our
-			// history
-			for (int index = 0; index < fInputCombo.getItemCount(); index++) {
-				if (fInputCombo.getItem(index).equals(input)) {
-					fInputCombo.remove(index);
-					break;
+				else {
+					// new element; check if we already have such an element in our
+					// history
+					for (int index = 0; index < fInputCombo.getItemCount(); index++) {
+						if (fInputCombo.getItem(index).equals(input)) {
+							fInputCombo.remove(index);
+							break;
+						}
+					}
 				}
+
+				// avoid history overflows
+				while (fInputCombo.getItemCount() >= fHistoryLength)
+					fInputCombo.remove(fInputCombo.getItemCount() - 1);
+
+				fInputCombo.add(input, 0);
 			}
-		}
-
-		// avoid history overflows
-		while (fInputCombo.getItemCount() >= fHistoryLength)
-			fInputCombo.remove(fInputCombo.getItemCount() - 1);
-
-		fInputCombo.add(input, 0);
+		});
 	}
 
 	@Override
@@ -581,10 +584,10 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 						localPrint(script.getResult().getResult().toString(), TYPE_RESULT);
 					else
 						localPrint("[null]", TYPE_RESULT);
-
-					// add to content assist
-					// fCompletionDispatcher.addCode(script.getCode());
 				}
+
+				// store code in history
+				addToHistory(script.getCode());
 
 				if (fKeepCommand) {
 					final String code = script.getCode();
