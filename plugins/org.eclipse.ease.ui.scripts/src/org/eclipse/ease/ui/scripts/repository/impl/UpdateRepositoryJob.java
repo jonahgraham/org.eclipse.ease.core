@@ -59,7 +59,7 @@ public class UpdateRepositoryJob extends Job {
 
 				} else if (content instanceof URI) {
 					try {
-						new HttpParser().parse(((URI) content).toURL(), location);
+						new HttpParser().parse(((URI) content).toURL().toString(), location);
 					} catch (MalformedURLException e) {
 						// not a valid URL, ignore repository
 					}
