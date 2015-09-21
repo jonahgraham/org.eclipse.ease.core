@@ -35,6 +35,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.NativeJavaObject;
@@ -114,7 +115,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			mContext.setDebugger(null, null);
 		}
 
-		mScope = mContext.initStandardObjects();
+		mScope = new ImporterTopLevel(mContext);
 
 		// enable script termination support
 		mContext.setGenerateObserverCount(true);
@@ -208,16 +209,17 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 				throw wrapped;
 
 			else if (wrapped instanceof Throwable)
-				throw new ScriptExecutionException(wrapped.getMessage(), e.columnNumber(), e.lineSource(), "JavaError", getExceptionStackTrace(script,
-						e.lineNumber()), wrapped);
+				throw new ScriptExecutionException(wrapped.getMessage(), e.columnNumber(), e.lineSource(), "JavaError",
+						getExceptionStackTrace(script, e.lineNumber()), wrapped);
 
 		} catch (final EcmaError e) {
-			throw new ScriptExecutionException(e.getErrorMessage(), e.columnNumber(), e.lineSource(), e.getName(), getExceptionStackTrace(script,
-					e.lineNumber()), null);
+			throw new ScriptExecutionException(e.getErrorMessage(), e.columnNumber(), e.lineSource(), e.getName(),
+					getExceptionStackTrace(script, e.lineNumber()), null);
 
 		} catch (final JavaScriptException e) {
 			final String message = (e.getValue() != null) ? e.getValue().toString() : null;
-			throw new ScriptExecutionException(message, e.lineNumber(), e.lineSource(), "ScriptException", getExceptionStackTrace(script, e.lineNumber()), null);
+			throw new ScriptExecutionException(message, e.lineNumber(), e.lineSource(), "ScriptException", getExceptionStackTrace(script, e.lineNumber()),
+					null);
 
 		} catch (final EvaluatorException e) {
 			throw new ScriptExecutionException(e.getMessage(), e.columnNumber(), e.lineSource(), "SyntaxError", getExceptionStackTrace(script, e.lineNumber()),
