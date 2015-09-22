@@ -49,7 +49,7 @@ public class JavaScriptCompletionContextTest {
 		fContext.calculateContext(null, "'Hello", 0, 0);
 		assertEquals(CompletionContext.Type.STRING_LITERAL, fContext.getType());
 		assertEquals("Hello", fContext.getFilter());
-		assertEquals(null, fContext.getCaller());
+		assertEquals("", fContext.getCaller());
 
 		fContext.calculateContext(null, "print('Hello", 0, 0);
 		assertEquals(CompletionContext.Type.STRING_LITERAL, fContext.getType());

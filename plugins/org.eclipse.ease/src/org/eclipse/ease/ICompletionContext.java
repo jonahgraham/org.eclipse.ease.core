@@ -82,9 +82,9 @@ public interface ICompletionContext {
 
 	/**
 	 * Get the caller method for string literals. On STRING_LITERAL types this value denotes the calling method. The whole context of the caller is passed as a
-	 * value. Eg. "new java.lang.String"
+	 * value. Eg. "new java.lang.String". May not return <code>null</code>.
 	 *
-	 * @return calling method
+	 * @return calling method or empty string
 	 */
 	String getCaller();
 
