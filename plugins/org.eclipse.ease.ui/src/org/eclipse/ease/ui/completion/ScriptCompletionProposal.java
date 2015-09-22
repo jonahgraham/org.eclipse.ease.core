@@ -11,19 +11,22 @@
 
 package org.eclipse.ease.ui.completion;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.ui.help.hovers.IHelpResolver;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension5;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension6;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-public class ScriptCompletionProposal implements ICompletionProposal, ICompletionProposalExtension6, IContentProposal {
+public class ScriptCompletionProposal implements ICompletionProposal, ICompletionProposalExtension5, ICompletionProposalExtension6, IContentProposal {
 
 	public static final int ORDER_FIELD = 20;
 	public static final int ORDER_METHOD = 40;
@@ -38,22 +41,32 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	private StyledString fStyledString;
 	private final int fSortOrder;
 
+	private final IHelpResolver fHelpResolver;
+
 	public ScriptCompletionProposal(final String displayString, final String replacementString, final int cursorPosition, final ImageDescriptor imageDescriptor,
-			final int sortOrder) {
+			final int sortOrder, final IHelpResolver helpResolver) {
 		fDisplayString = displayString;
 		fReplacementString = replacementString;
 		fCursorPosition = cursorPosition;
 		fImageDescriptor = imageDescriptor;
 		fSortOrder = sortOrder;
+		fHelpResolver = helpResolver;
 	}
 
-	public ScriptCompletionProposal(final String replacementString, final int cursorPosition) {
-		this(replacementString, null, cursorPosition, null, ORDER_DEFAULT);
+	public ScriptCompletionProposal(final String displayString, final String replacementString, final int cursorPosition, final ImageDescriptor imageDescriptor,
+			final int sortOrder) {
+		this(displayString, replacementString, cursorPosition, imageDescriptor, sortOrder, null);
 	}
 
 	public ScriptCompletionProposal(final StyledString styledString, final String replacementString, final int cursorPosition,
 			final ImageDescriptor imageDescriptor, final int sortOrder) {
 		this(styledString.getString(), replacementString, cursorPosition, imageDescriptor, sortOrder);
+		fStyledString = styledString;
+	}
+
+	public ScriptCompletionProposal(final StyledString styledString, final String replacementString, final int cursorPosition,
+			final ImageDescriptor imageDescriptor, final int sortOrder, final IHelpResolver helpResolver) {
+		this(styledString.getString(), replacementString, cursorPosition, imageDescriptor, sortOrder, helpResolver);
 		fStyledString = styledString;
 	}
 
@@ -78,7 +91,15 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 
 	@Override
 	public String getAdditionalProposalInfo() {
+		if (fHelpResolver != null)
+			return fHelpResolver.resolveHTMLHelp();
+
 		return null;
+	}
+
+	@Override
+	public Object getAdditionalProposalInfo(final IProgressMonitor monitor) {
+		return getAdditionalProposalInfo();
 	}
 
 	@Override
@@ -131,7 +152,7 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 		return fSortOrder;
 	}
 
-	public static int compare(ScriptCompletionProposal proposal1, ScriptCompletionProposal proposal2) {
+	public static int compare(final ScriptCompletionProposal proposal1, final ScriptCompletionProposal proposal2) {
 		final int priority = proposal1.getSortOrder() - proposal2.getSortOrder();
 		if (priority != 0)
 			return priority;

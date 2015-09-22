@@ -15,6 +15,8 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.help.hovers.ModuleToolTipDecorator;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -23,9 +25,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;
-
-import org.eclipse.ease.ui.help.hovers.ModuleToolTipDecorator;;
+import org.eclipse.swt.widgets.Composite;;
 
 public class ModulesComposite extends Composite {
 	private final TreeViewer treeViewer;
@@ -70,7 +70,8 @@ public class ModulesComposite extends Composite {
 			}
 		});
 
-		treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TextTransfer.getInstance() }, new ModulesDragListener(treeViewer));
+		treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { LocalSelectionTransfer.getTransfer(), TextTransfer.getInstance() },
+				new ModulesDragListener(treeViewer));
 	}
 
 	@Override

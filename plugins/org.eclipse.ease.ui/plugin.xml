@@ -416,6 +416,8 @@
             class="org.eclipse.ease.ui.dnd.ResourceDropHandler"
             priority="10">
       </dropHandler>
+      <dropHandler
+            class="org.eclipse.ease.ui.dnd.ModulesDropHandler"></dropHandler>
    </extension>
    <extension
          point="org.eclipse.ease.ui.codeCompletionProvider">

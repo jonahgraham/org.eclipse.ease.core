@@ -31,7 +31,10 @@ import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
+import org.eclipse.ease.ui.help.hovers.IHelpResolver;
+import org.eclipse.ease.ui.help.hovers.JavaClassHelpResolver;
 import org.eclipse.jdt.ui.ISharedImages;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -51,10 +54,27 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 		final Collection<ScriptCompletionProposal> proposals = new ArrayList<ScriptCompletionProposal>();
 
 		if (getClasses().get(context.getPackage()) != null) {
-			for (String className : getClasses().get(context.getPackage())) {
+			for (final String className : getClasses().get(context.getPackage())) {
 				// add class name
-				addProposal(proposals, context, className, className, JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_CLASS),
-						ScriptCompletionProposal.ORDER_CLASS);
+				final IHelpResolver helpResolver = new JavaClassHelpResolver(context.getPackage(), className);
+
+				// retrieve image
+				ImageDescriptor descriptor = null;
+
+				try {
+					final Class<?> clazz = getClass().getClassLoader().loadClass(context.getPackage() + "." + className.replace('.', '$'));
+					if (clazz.isEnum())
+						descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_ENUM);
+					else if (clazz.isInterface())
+						descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_INTERFACE);
+				} catch (final ClassNotFoundException e) {
+					// if we cannot find the class, use the default image
+				}
+
+				if (descriptor == null)
+					descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_CLASS);
+
+				addProposal(proposals, context, className, className, descriptor, ScriptCompletionProposal.ORDER_CLASS, helpResolver);
 			}
 		}
 
@@ -67,10 +87,10 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 			// read java classes
 			try {
-				URL url = new URL(
+				final URL url = new URL(
 						"platform:/plugin/org.eclipse.ease.ui/resources/java" + System.getProperty("java.runtime.version").charAt(2) + " classes.txt");
-				InputStream inputStream = url.openConnection().getInputStream();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+				final InputStream inputStream = url.openConnection().getInputStream();
+				final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 				String fullQualifiedName;
 				while ((fullQualifiedName = reader.readLine()) != null) {
 					addClass(fullQualifiedName);
@@ -78,34 +98,35 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 				reader.close();
 
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				Logger.logError("Cannot read class list for code completion", e);
 			}
 
 			// read eclipse classes
-			BundleContext context = FrameworkUtil.getBundle(JavaClassCompletionProvider.class).getBundleContext();
-			for (Bundle bundle : context.getBundles()) {
+			final BundleContext context = FrameworkUtil.getBundle(JavaClassCompletionProvider.class).getBundleContext();
+			for (final Bundle bundle : context.getBundles()) {
 
-				Collection<String> exportedPackages = JavaPackagesCompletionProvider.getExportedPackages(bundle);
+				final Collection<String> exportedPackages = JavaPackagesCompletionProvider.getExportedPackages(bundle);
 
 				// first look for class signatures in manifest, so we do not need to parse the whole bundle
 				boolean signedContent = false;
 				try {
-					URL manifest = bundle.getEntry("/META-INF/MANIFEST.MF");
-					InputStream inputStream = manifest.openConnection().getInputStream();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+					final URL manifest = bundle.getEntry("/META-INF/MANIFEST.MF");
+					final InputStream inputStream = manifest.openConnection().getInputStream();
+					final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 					String line;
 					while ((line = reader.readLine()) != null) {
 						if ((line.startsWith("Name:")) && (line.endsWith(".class")) && (!line.contains("$")) && (!line.contains("package-info"))) {
-							String fullQualifiedName = line.substring(5, line.length() - 6).trim().replace('/', '.');
-							String packageName = fullQualifiedName.contains(".") ? fullQualifiedName.substring(0, fullQualifiedName.lastIndexOf('.')) : "";
+							final String fullQualifiedName = line.substring(5, line.length() - 6).trim().replace('/', '.');
+							final String packageName = fullQualifiedName.contains(".") ? fullQualifiedName.substring(0, fullQualifiedName.lastIndexOf('.'))
+									: "";
 							if (exportedPackages.contains(packageName))
 								addClass(fullQualifiedName);
 
 							signedContent = true;
 						}
 					}
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					Logger.logError("Could not parse manifest of bundle \"" + bundle.getBundleId() + "\"", e);
 				}
 
@@ -113,15 +134,15 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 					// we did not find a signed bundle, try to parse the bundle
 
 					try {
-						File bundleFile = FileLocator.getBundleFile(bundle);
+						final File bundleFile = FileLocator.getBundleFile(bundle);
 
 						if (bundleFile.isDirectory()) {
 							// bundle stored as folder
-							for (String packageName : exportedPackages) {
-								String packagePath = bundleFile.getAbsolutePath() + File.separatorChar + packageName.replace('.', File.separatorChar);
-								File packageFile = new File(packagePath);
+							for (final String packageName : exportedPackages) {
+								final String packagePath = bundleFile.getAbsolutePath() + File.separatorChar + packageName.replace('.', File.separatorChar);
+								final File packageFile = new File(packagePath);
 								if (packageFile.isDirectory()) {
-									for (String candidate : packageFile.list()) {
+									for (final String candidate : packageFile.list()) {
 										if ((candidate.endsWith(".class")) && (!candidate.contains("$")))
 											addClass(packageName + "." + candidate.substring(0, candidate.length() - 6));
 									}
@@ -130,14 +151,14 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 						} else if (bundleFile.isFile()) {
 							// bundle stored as jar
-							JarFile jarFile = new JarFile(bundleFile);
-							Enumeration<JarEntry> entries = jarFile.entries();
+							final JarFile jarFile = new JarFile(bundleFile);
+							final Enumeration<JarEntry> entries = jarFile.entries();
 							while (entries.hasMoreElements()) {
-								String candidate = entries.nextElement().getName();
+								final String candidate = entries.nextElement().getName();
 								if ((candidate.endsWith(".class")) && (!candidate.contains("$"))) {
-									String fullQualifiedName = candidate.substring(0, candidate.length() - 6).replace('/', '.');
-									String packageName = fullQualifiedName.contains(".") ? fullQualifiedName.substring(0, fullQualifiedName.lastIndexOf('.'))
-											: "";
+									final String fullQualifiedName = candidate.substring(0, candidate.length() - 6).replace('/', '.');
+									final String packageName = fullQualifiedName.contains(".")
+											? fullQualifiedName.substring(0, fullQualifiedName.lastIndexOf('.')) : "";
 									if (exportedPackages.contains(packageName))
 										addClass(fullQualifiedName);
 								}
@@ -146,7 +167,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 							jarFile.close();
 
 						}
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						Logger.logError("Cannot resolve location for bundle \"" + bundle.getBundleId() + "\"", e);
 					}
 				}
@@ -162,7 +183,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 	 */
 	private static void addClass(final String fullQualifiedName) {
 
-		String packageName = getPackage(fullQualifiedName);
+		final String packageName = getPackage(fullQualifiedName);
 
 		if (!CLASSES.containsKey(packageName))
 			CLASSES.put(packageName, new HashSet<String>());
@@ -175,12 +196,12 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 	 * @return
 	 */
 	private static String getPackage(final String className) {
-		int lastDot = className.lastIndexOf('.');
+		final int lastDot = className.lastIndexOf('.');
 		if (lastDot == -1)
 			return null;
 
-		String candidate = className.substring(0, lastDot);
-		Map<String, Collection<String>> packages = JavaPackagesCompletionProvider.getPackages();
+		final String candidate = className.substring(0, lastDot);
+		final Map<String, Collection<String>> packages = JavaPackagesCompletionProvider.getPackages();
 		if (JavaPackagesCompletionProvider.containsPackage(candidate))
 			return candidate;
 
