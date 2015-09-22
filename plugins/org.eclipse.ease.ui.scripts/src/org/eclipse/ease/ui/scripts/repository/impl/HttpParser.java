@@ -12,7 +12,6 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,17 +26,17 @@ import org.eclipse.ui.PlatformUI;
 
 public class HttpParser extends InputStreamParser {
 
-	public void parse(final URL location, final IScriptLocation entry) {
+	public void parse(final String location, final IScriptLocation entry) {
 		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		ScriptType scriptType = scriptService.getScriptType(location.toString());
+		ScriptType scriptType = scriptService.getScriptType(location);
 		if (scriptType != null) {
 			// register script
 			final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-			repositoryService.updateLocation(entry, location.toExternalForm(), System.currentTimeMillis());
+			repositoryService.updateLocation(entry, location, System.currentTimeMillis());
 
 		} else {
 			try {
-				InputStream stream = location.openStream();
+				InputStream stream = new URL(location).openStream();
 				if (stream != null) {
 					String content = StringTools.toString(stream);
 
@@ -46,24 +45,23 @@ public class HttpParser extends InputStreamParser {
 					} catch (IOException e) {
 					}
 
-					Collection<URL> anchors = extractAnchors(location, content);
-					// make sure we do not recursive load the same page over and over
-					anchors.remove(location);
+					Collection<String> anchors = extractAnchors(location, content);
 
-					for (URL subLocation : anchors)
+					for (String subLocation : anchors)
 						parse(subLocation, entry);
 				}
-
 			} catch (IOException e) {
 				// cannot read content, ignore location
+				// Includes MalformedURLException, so ignore invalid URLs
+
 			}
 		}
 	}
 
-	private Collection<URL> extractAnchors(final URL base, final String content) {
-		Collection<URL> anchorNodes = new HashSet<URL>();
+	private Collection<String> extractAnchors(final String base, final String content) {
+		Collection<String> anchorNodes = new HashSet<String>();
 
-		URI baseURI = URI.createURI(base.toString());
+		URI baseURI = URI.createURI(base);
 		if (baseURI.fileExtension() != null) {
 			// base refers to a file, not a folder
 			baseURI = baseURI.trimSegments(1);
@@ -76,31 +74,29 @@ public class HttpParser extends InputStreamParser {
 		do {
 			if (pos != -1) {
 				int endpos = content.indexOf(content.charAt(pos + 6), pos + 7);
-				try {
-					if (content.charAt(pos + 7) != '#') {
-						URI candidate = URI.createURI(content.substring(pos + 7, endpos));
-						if (candidate.isRelative())
-							candidate = candidate.resolve(baseURI);
+				if (content.charAt(pos + 7) != '#') {
+					URI candidate = URI.createURI(content.substring(pos + 7, endpos));
+					if (candidate.isRelative())
+						candidate = candidate.resolve(baseURI);
 
-						if (candidate.hasTrailingPathSeparator())
-							candidate = candidate.trimSegments(1);
+					if (candidate.hasTrailingPathSeparator())
+						candidate = candidate.trimSegments(1);
 
-						if (candidate.toString().startsWith(baseURI.toString())) {
-							// candidate is stored below the base
+					if (candidate.toString().startsWith(baseURI.toString())) {
+						// candidate is stored below the base
 
-							if (candidate.segmentCount() > baseURI.segmentCount())
-								anchorNodes.add(new URL(candidate.toString()));
-						}
+						if (candidate.segmentCount() > baseURI.segmentCount())
+							anchorNodes.add(candidate.toString());
 					}
-
-				} catch (MalformedURLException e) {
-					// ignore invalid URLs
 				}
 			}
 
 			pos = content.indexOf(" href=", pos + 1);
 
 		} while (pos != -1);
+
+		// make sure we do not recursive load the same page over and over
+		anchorNodes.remove(base);
 
 		return anchorNodes;
 	}
