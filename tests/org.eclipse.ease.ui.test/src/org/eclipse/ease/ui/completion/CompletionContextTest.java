@@ -13,6 +13,9 @@ package org.eclipse.ease.ui.completion;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+
+import org.eclipse.ease.ICompletionContext.Type;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,5 +55,51 @@ public class CompletionContextTest {
 	public void replaceMultipleStringLiterals() {
 		assertEquals("print('', \"\")", fContext.replaceStringLiterals("print('', \"\")"));
 		assertEquals("print('', \"\")", fContext.replaceStringLiterals("print('Hello world', \"Hello world\")"));
+	}
+
+	@Test
+	public void simplifyCalls() {
+		fContext.calculateContext(null, "create(java.lang.String('').is", 22, 0);
+		assertEquals("is", fContext.getFilter());
+	}
+
+	@Test
+	public void resolveStaticClass() {
+		fContext.calculateContext(null, "java.io.File.", 0, 0);
+		assertEquals("", fContext.getFilter());
+		assertEquals(File.class, fContext.getReferredClazz());
+		assertEquals(Type.STATIC_CLASS, fContext.getType());
+	}
+
+	@Test
+	public void resolveStaticClassWithFilter() {
+		fContext.calculateContext(null, "java.io.File.exi", 0, 0);
+		assertEquals("exi", fContext.getFilter());
+		assertEquals(File.class, fContext.getReferredClazz());
+		assertEquals(Type.STATIC_CLASS, fContext.getType());
+	}
+
+	@Test
+	public void resolveClass() {
+		fContext.calculateContext(null, "new java.io.File().", 0, 0);
+		assertEquals("", fContext.getFilter());
+		assertEquals(File.class, fContext.getReferredClazz());
+		assertEquals(Type.CLASS_INSTANCE, fContext.getType());
+	}
+
+	@Test
+	public void resolveClassWithParameters() {
+		fContext.calculateContext(null, "new java.io.File(\"/some/path\").", 0, 0);
+		assertEquals("", fContext.getFilter());
+		assertEquals(File.class, fContext.getReferredClazz());
+		assertEquals(Type.CLASS_INSTANCE, fContext.getType());
+	}
+
+	@Test
+	public void resolveClassWithFilter() {
+		fContext.calculateContext(null, "new java.io.File(\"/some/path\").exi", 0, 0);
+		assertEquals("exi", fContext.getFilter());
+		assertEquals(File.class, fContext.getReferredClazz());
+		assertEquals(Type.CLASS_INSTANCE, fContext.getType());
 	}
 }

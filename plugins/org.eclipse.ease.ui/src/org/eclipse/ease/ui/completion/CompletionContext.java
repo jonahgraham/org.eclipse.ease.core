@@ -40,6 +40,17 @@ import org.eclipse.jface.text.Position;
  */
 public abstract class CompletionContext implements ICompletionContext {
 
+	public static class Bracket {
+
+		private int fStart = -1;
+		private int fEnd = -1;
+
+		public Bracket(int start, int end) {
+			fStart = start;
+			fEnd = end;
+		}
+	}
+
 	private static final Pattern JAVA_PACKAGE_PATTERN = Pattern.compile("([A-Za-z]+\\.?)+");
 
 	private final IScriptEngine fScriptEngine;
@@ -53,7 +64,7 @@ public abstract class CompletionContext implements ICompletionContext {
 	private String fFilter = "";
 	private Type fType = Type.UNKNOWN;
 	private String fPackage;
-	private String fCaller = null;
+	private String fCaller = "";
 	private int fParameterOffset = -1;
 
 	private int fOffset;
@@ -166,7 +177,7 @@ public abstract class CompletionContext implements ICompletionContext {
 
 			// try to detect calling method
 			if (!code.isEmpty()) {
-				int openingBracket = findMatchingBracket(code + ")", code.length());
+				final int openingBracket = findMatchingBracket(code + ")", code.length());
 				if (openingBracket != -1) {
 					// caller found
 					fCaller = code.substring(0, openingBracket);
@@ -181,47 +192,47 @@ public abstract class CompletionContext implements ICompletionContext {
 		}
 
 		// if we find an opening bracket with no closing bracket, we can forget about everything left from it
-		final int openBracketIndex = code.lastIndexOf('(');
-		final int closeBracketIndex = code.lastIndexOf(')');
-		if (openBracketIndex > closeBracketIndex) {
-			code = code.substring(openBracketIndex + 1);
+		final Collection<Bracket> brackets = matchBrackets(code, '(', ')');
 
-			// if we had multiple parameters, discard previous ones
-			if (code.contains(","))
-				code = code.substring(code.lastIndexOf('.') + 1).trim();
-		}
-
-		// when parsing to the left: if we find a delimiter outside a bracket, we can discard everything left from it
-		// eg: foo + some.class.call('parameter', 23); -> discard 'foo +'
-		int offset = code.length();
-		int bracketCount = 0;
-		while (offset > 0) {
-			offset--;
-
-			final char c = code.charAt(offset);
-			if (c == '(') {
-				bracketCount--;
-				continue;
-			} else if (c == ')') {
-				bracketCount++;
-				continue;
+		int truncatePosition = -1;
+		for (final Bracket bracket : brackets) {
+			if ((bracket.fStart >= 0) && (bracket.fEnd == -1)) {
+				// found an open bracket
+				truncatePosition = Math.max(truncatePosition, bracket.fStart + 1);
 			}
-
-			if (bracketCount > 0)
-				// ignore content within method calls
-				continue;
-
-			if ((Character.isJavaIdentifierPart(c)) || (c == '.'))
-				continue;
-
-			// some separation character, break
-			break;
 		}
 
-		if (offset > 0)
-			code = code.substring(offset + 1);
+		// try to truncate parameters
+		for (int pos = code.length() - 1; pos >= 0; pos--) {
+			final char c = code.charAt(pos);
+			if ((c == ' ') || (c == '\t') || (c == ',') || (c == '!') || (c == '=') || (c == '<') || (c == '>') || (c == '+') || (c == '-') || (c == '*')
+					|| (c == '/') || (c == '%') || (c == '&') || (c == '|') || (c == '^')) {
+
+				// we have a separation character (operator, comma)
+				if (getBracket(brackets, pos) == null) {
+					// outside of a closed bracket, therefore we can truncate here
+					truncatePosition = Math.max(truncatePosition, pos + 1);
+
+					// parsing further to the left is pointless as truncatePosition cannot get bigger anymore
+					break;
+				}
+			}
+		}
+
+		if (truncatePosition != -1)
+			code = code.substring(truncatePosition);
 
 		return code;
+	}
+
+	private static int countOccurrence(String string, char character) {
+		int count = 0;
+		for (final char c : string.toCharArray()) {
+			if (c == character)
+				count++;
+		}
+
+		return count;
 	}
 
 	/**
@@ -234,7 +245,7 @@ public abstract class CompletionContext implements ICompletionContext {
 	private static String removeMethodCalls(String code) {
 		int closingBracket = code.lastIndexOf(')');
 		while (closingBracket != -1) {
-			int openingBracket = findMatchingBracket(code, closingBracket);
+			final int openingBracket = findMatchingBracket(code, closingBracket);
 			if (openingBracket != -1)
 				code = code.substring(0, openingBracket) + code.substring(closingBracket + 1);
 			else
@@ -360,7 +371,7 @@ public abstract class CompletionContext implements ICompletionContext {
 		sources.add(getOriginalCode());
 		sources.addAll(getIncludedResources().values());
 
-		final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*$\\s*.*?" + name + "\\s*=", Pattern.MULTILINE);
+		final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*$\\s*.*?" + Pattern.quote(name) + "\\s*=", Pattern.MULTILINE);
 
 		for (final String source : sources) {
 			final Matcher matcher = pattern.matcher(source);
@@ -540,7 +551,7 @@ public abstract class CompletionContext implements ICompletionContext {
 
 	/**
 	 * Add a module definition to the list of loaded modules. Will also add module dependencies to the list.
-	 * 
+	 *
 	 * @param definition
 	 *            module definition to add
 	 */
@@ -586,7 +597,7 @@ public abstract class CompletionContext implements ICompletionContext {
 						}
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// ignore invalid include locations
 			}
 		}
@@ -639,11 +650,11 @@ public abstract class CompletionContext implements ICompletionContext {
 
 			// add loaded modules from script engine
 			if (getScriptEngine() != null) {
-				for (Entry<String, Object> entry : getScriptEngine().getVariables().entrySet()) {
+				for (final Entry<String, Object> entry : getScriptEngine().getVariables().entrySet()) {
 					if (entry.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
-						Class<? extends Object> moduleClass = entry.getValue().getClass();
+						final Class<? extends Object> moduleClass = entry.getValue().getClass();
 
-						for (ModuleDefinition definition : scriptService.getAvailableModules().values()) {
+						for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
 							if (definition.getModuleClass().equals(moduleClass)) {
 								addLoadedModule(definition);
 								break;
@@ -690,5 +701,41 @@ public abstract class CompletionContext implements ICompletionContext {
 	@Override
 	public int getParameterOffset() {
 		return fParameterOffset;
+	}
+
+	private static Collection<Bracket> matchBrackets(String code, char openChar, char closeChar) {
+		final List<Bracket> brackets = new ArrayList<Bracket>();
+
+		for (int pos = 0; pos < code.length(); pos++) {
+			final char c = code.charAt(pos);
+			if (c == openChar) {
+				// push new Bracket
+				brackets.add(0, new Bracket(pos, -1));
+
+			} else if (c == closeChar) {
+				boolean found = false;
+				for (final Bracket bracket : brackets) {
+					if (bracket.fEnd == -1) {
+						bracket.fEnd = pos;
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+					brackets.add(0, new Bracket(-1, pos));
+			}
+		}
+
+		return brackets;
+	}
+
+	private static Bracket getBracket(Collection<Bracket> brackets, int pos) {
+		for (final Bracket bracket : brackets) {
+			if ((bracket.fStart != -1) && (bracket.fStart <= pos) && (bracket.fEnd != -1) && (bracket.fEnd > pos))
+				return bracket;
+		}
+
+		return null;
 	}
 }
