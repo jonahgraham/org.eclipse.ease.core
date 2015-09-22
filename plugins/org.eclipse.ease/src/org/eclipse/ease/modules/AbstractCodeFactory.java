@@ -22,49 +22,6 @@ import org.eclipse.ease.ICodeFactory;
 
 public abstract class AbstractCodeFactory implements ICodeFactory {
 
-	public static class Parameter {
-
-		private Class<?> fClazz;
-		private String fName = "";
-		private boolean fOptional = false;
-		private String fDefaultValue = ScriptParameter.NULL;
-
-		public void setClass(final Class<?> clazz) {
-			fClazz = clazz;
-		}
-
-		public void setName(final String name) {
-			fName = name;
-		}
-
-		public void setOptional(final boolean optional) {
-			fOptional = optional;
-		}
-
-		public void setDefault(final String defaultValue) {
-			fDefaultValue = defaultValue;
-		}
-
-		public String getName() {
-			return fName;
-		}
-
-		public Class<?> getClazz() {
-			return fClazz;
-		}
-
-		public String getDefaultValue() {
-			return fDefaultValue;
-		}
-
-		public boolean isOptional() {
-			return fOptional;
-		}
-	}
-
-	public AbstractCodeFactory() {
-	}
-
 	/**
 	 * Get the parameter name from a annotation. Use for engine which can have named variable
 	 *
@@ -143,7 +100,8 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 		return name;
 	}
 
-	protected String getDefaultValue(final Parameter parameter) {
+	@Override
+	public String getDefaultValue(final Parameter parameter) {
 		final String defaultStringValue = parameter.getDefaultValue().replaceAll("\\r", "\\\\r").replaceAll("\\n", "\\\\n");
 		final Class<?> clazz = parameter.getClazz();
 
