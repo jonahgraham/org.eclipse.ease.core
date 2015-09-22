@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +44,7 @@ public abstract class CompletionContext implements ICompletionContext {
 		private int fStart = -1;
 		private int fEnd = -1;
 
-		public Bracket(int start, int end) {
+		public Bracket(final int start, final int end) {
 			fStart = start;
 			fEnd = end;
 		}
@@ -225,7 +224,7 @@ public abstract class CompletionContext implements ICompletionContext {
 		return code;
 	}
 
-	private static int countOccurrence(String string, char character) {
+	private static int countOccurrence(final String string, final char character) {
 		int count = 0;
 		for (final char c : string.toCharArray()) {
 			if (c == character)
@@ -650,18 +649,8 @@ public abstract class CompletionContext implements ICompletionContext {
 
 			// add loaded modules from script engine
 			if (getScriptEngine() != null) {
-				for (final Entry<String, Object> entry : getScriptEngine().getVariables().entrySet()) {
-					if (entry.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
-						final Class<? extends Object> moduleClass = entry.getValue().getClass();
-
-						for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
-							if (definition.getModuleClass().equals(moduleClass)) {
-								addLoadedModule(definition);
-								break;
-							}
-						}
-					}
-				}
+				for (ModuleDefinition definition : ModuleHelper.getLoadedModules(getScriptEngine()))
+					addLoadedModule(definition);
 			}
 		}
 
@@ -703,7 +692,7 @@ public abstract class CompletionContext implements ICompletionContext {
 		return fParameterOffset;
 	}
 
-	private static Collection<Bracket> matchBrackets(String code, char openChar, char closeChar) {
+	private static Collection<Bracket> matchBrackets(final String code, final char openChar, final char closeChar) {
 		final List<Bracket> brackets = new ArrayList<Bracket>();
 
 		for (int pos = 0; pos < code.length(); pos++) {
@@ -730,7 +719,7 @@ public abstract class CompletionContext implements ICompletionContext {
 		return brackets;
 	}
 
-	private static Bracket getBracket(Collection<Bracket> brackets, int pos) {
+	private static Bracket getBracket(final Collection<Bracket> brackets, final int pos) {
 		for (final Bracket bracket : brackets) {
 			if ((bracket.fStart != -1) && (bracket.fStart <= pos) && (bracket.fEnd != -1) && (bracket.fEnd > pos))
 				return bracket;

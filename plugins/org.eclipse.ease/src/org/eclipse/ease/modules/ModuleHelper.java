@@ -14,13 +14,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
 
@@ -138,5 +141,34 @@ public final class ModuleHelper {
 		}
 
 		return searchPath.toString();
+	}
+
+	/**
+	 * Get all loaded modules for a given script engine.
+	 *
+	 * @param engine
+	 *            engine to parse
+	 * @return module definitions for all loaded modules
+	 */
+	public static Collection<ModuleDefinition> getLoadedModules(final IScriptEngine engine) {
+		Collection<ModuleDefinition> modules = new HashSet<ModuleDefinition>();
+
+		// statically access service as workbench is not available in headless mode
+		final IScriptService scriptService = ScriptService.getService();
+
+		for (Entry<String, Object> entry : engine.getVariables().entrySet()) {
+			if (entry.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
+				Class<? extends Object> moduleClass = entry.getValue().getClass();
+
+				for (ModuleDefinition definition : scriptService.getAvailableModules().values()) {
+					if (definition.getModuleClass().equals(moduleClass)) {
+						modules.add(definition);
+						break;
+					}
+				}
+			}
+		}
+
+		return modules;
 	}
 }
