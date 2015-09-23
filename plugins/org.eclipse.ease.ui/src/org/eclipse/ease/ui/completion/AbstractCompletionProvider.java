@@ -15,6 +15,7 @@ import java.util.Collection;
 
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
+import org.eclipse.ease.ui.help.hovers.IHelpResolver;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.StyledString;
 
@@ -36,6 +37,22 @@ public abstract class AbstractCompletionProvider implements ICompletionProvider 
 		proposals.add(new ScriptCompletionProposal(displayString, replacementString, context.getOffset(), image, priority));
 	}
 
+	protected void addProposal(final Collection<ScriptCompletionProposal> proposals, final ICompletionContext context, final StyledString displayString,
+			String replacementString, final ImageDescriptor image, final int priority, final IHelpResolver helpResolver) {
+
+		if (context.getFilter() != null) {
+			// eventually filter proposal
+			if (!replacementString.startsWith(context.getFilter()))
+				// filter proposal
+				return;
+
+			// do not filter, but adapt replacementString
+			replacementString = replacementString.substring(context.getFilter().length());
+		}
+
+		proposals.add(new ScriptCompletionProposal(displayString, replacementString, context.getOffset(), image, priority, helpResolver));
+	}
+
 	protected void addProposal(final Collection<ScriptCompletionProposal> proposals, final ICompletionContext context, final String displayString,
 			String replacementString, final ImageDescriptor image, final int priority) {
 
@@ -54,6 +71,26 @@ public abstract class AbstractCompletionProvider implements ICompletionProvider 
 		}
 
 		proposals.add(new ScriptCompletionProposal(displayString, replacementString, context.getOffset(), image, priority));
+	}
+
+	protected void addProposal(final Collection<ScriptCompletionProposal> proposals, final ICompletionContext context, final String displayString,
+			String replacementString, final ImageDescriptor image, final int priority, final IHelpResolver helpResolver) {
+
+		if (context.getFilter() != null) {
+			// eventually filter proposal
+			if (!replacementString.startsWith(context.getFilter()))
+				// filter proposal
+				return;
+
+			if (replacementString.equals(context.getFilter()))
+				// proposal equals existing text, do not display anymore
+				return;
+
+			// do not filter, but adapt replacementString
+			replacementString = replacementString.substring(context.getFilter().length());
+		}
+
+		proposals.add(new ScriptCompletionProposal(displayString, replacementString, context.getOffset(), image, priority, helpResolver));
 	}
 
 	@Override

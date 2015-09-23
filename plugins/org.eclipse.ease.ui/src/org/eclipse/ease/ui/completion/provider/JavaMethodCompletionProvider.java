@@ -20,6 +20,9 @@ import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
+import org.eclipse.ease.ui.help.hovers.IHelpResolver;
+import org.eclipse.ease.ui.help.hovers.JavaFieldHelpResolver;
+import org.eclipse.ease.ui.help.hovers.JavaMethodHelpResolver;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -42,26 +45,30 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 			if ((context.getType() == Type.STATIC_CLASS) && (!Modifier.isStatic(method.getModifiers())))
 				continue;
 
+			final IHelpResolver helpResolver = new JavaMethodHelpResolver(method);
+
 			final StyledString styledString = new StyledString(method.getName() + "(" + getMethodSignature(method) + ") : " + getMethodReturnType(method));
 			styledString.append(" - " + method.getDeclaringClass().getSimpleName(), StyledString.DECORATIONS_STYLER);
 
 			if (method.getParameterTypes().length > 0)
 				addProposal(proposals, context, styledString, method.getName() + "(", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC),
-						ScriptCompletionProposal.ORDER_METHOD);
+						ScriptCompletionProposal.ORDER_METHOD, helpResolver);
 			else
 				addProposal(proposals, context, styledString, method.getName() + "()", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC),
-						ScriptCompletionProposal.ORDER_METHOD);
+						ScriptCompletionProposal.ORDER_METHOD, helpResolver);
 		}
 
 		for (final Field field : clazz.getFields()) {
 			if ((context.getType() == Type.STATIC_CLASS) && (!Modifier.isStatic(field.getModifiers())))
 				continue;
 
+			final IHelpResolver helpResolver = new JavaFieldHelpResolver(field);
+
 			final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
 			styledString.append(" - " + field.getDeclaringClass().getSimpleName(), StyledString.DECORATIONS_STYLER);
 
-			addProposal(proposals, context, styledString, field.getName(), getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
-					ScriptCompletionProposal.ORDER_FIELD);
+			addProposal(proposals, context, styledString, field.getName(), getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_FIELD,
+					helpResolver);
 		}
 
 		return proposals;

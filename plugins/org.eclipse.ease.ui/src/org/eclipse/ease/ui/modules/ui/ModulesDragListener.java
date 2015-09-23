@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -23,10 +24,10 @@ import org.eclipse.swt.dnd.TextTransfer;
 
 public class ModulesDragListener implements DragSourceListener {
 
-	private final TreeViewer mTreeViewer;
+	private final TreeViewer fTreeViewer;
 
 	public ModulesDragListener(final TreeViewer viewer) {
-		mTreeViewer = viewer;
+		fTreeViewer = viewer;
 	}
 
 	@Override
@@ -36,10 +37,13 @@ public class ModulesDragListener implements DragSourceListener {
 
 	@Override
 	public void dragSetData(final DragSourceEvent event) {
-		IStructuredSelection selection = (IStructuredSelection) mTreeViewer.getSelection();
+		IStructuredSelection selection = (IStructuredSelection) fTreeViewer.getSelection();
 		Object firstElement = selection.getFirstElement();
 
-		if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+		if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
+			LocalSelectionTransfer.getTransfer().setSelection(selection);
+
+		} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 
 			StringBuilder data = new StringBuilder();
 			if (firstElement instanceof ModuleDefinition)
@@ -53,7 +57,6 @@ public class ModulesDragListener implements DragSourceListener {
 
 			event.data = data.toString();
 		}
-
 	}
 
 	@Override
