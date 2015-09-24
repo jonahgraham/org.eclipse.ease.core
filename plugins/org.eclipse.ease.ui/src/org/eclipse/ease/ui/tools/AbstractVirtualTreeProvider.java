@@ -79,9 +79,10 @@ public abstract class AbstractVirtualTreeProvider implements ITreeContentProvide
 	public Object getParent(final Object element) {
 		final Object treeElement = findPathForReplacement(element);
 
-		for (final IPath path : fElements.keySet()) {
-			if (fElements.get(path).contains(treeElement))
-				return path;
+		for (final Entry<IPath, Collection<Object>> entry : fElements.entrySet()) {
+			if (entry.getValue().contains(treeElement)) {
+				return entry.getKey();
+			}
 		}
 
 		return null;
