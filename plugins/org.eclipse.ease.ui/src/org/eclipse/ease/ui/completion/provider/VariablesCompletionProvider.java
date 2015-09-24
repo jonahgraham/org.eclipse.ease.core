@@ -40,7 +40,8 @@ public class VariablesCompletionProvider extends AbstractCompletionProvider {
 			if (!variable.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
 
 				final String type = (variable.getValue() != null) ? variable.getValue().getClass().getSimpleName() : "null";
-				final StyledString styledString = new StyledString(variable.getKey() + " : " + type);
+				final StyledString styledString = new StyledString(variable.getKey());
+				styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
 				styledString.append(" - " + "Variable", StyledString.QUALIFIER_STYLER);
 
 				addProposal(proposals, context, styledString, variable.getKey(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
