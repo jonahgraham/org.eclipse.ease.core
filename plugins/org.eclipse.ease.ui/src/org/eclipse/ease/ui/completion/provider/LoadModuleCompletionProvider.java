@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -54,17 +55,17 @@ public class LoadModuleCompletionProvider extends AbstractCompletionProvider {
 
 		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Map<String, ModuleDefinition> availableModules = scriptService.getAvailableModules();
-		for (final String moduleName : availableModules.keySet()) {
-			final Path modulePath = new Path(moduleName);
+		for (final Entry<String, ModuleDefinition> moduleEntry : availableModules.entrySet()) {
+			final Path modulePath = new Path(moduleEntry.getKey());
 			if (searchPath.isPrefixOf(modulePath)) {
 				// this is a valid candidate
 				if (searchPath.segmentCount() + 1 == modulePath.segmentCount()) {
 					// add module proposal
 					final StyledString displayString = new StyledString(modulePath.lastSegment());
-					if (!availableModules.get(moduleName).isVisible())
+					if (!moduleEntry.getValue().isVisible())
 						displayString.append(" (hidden)", StyledString.DECORATIONS_STYLER);
 
-					addProposal(proposals, context, displayString, moduleName, Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/module.png"),
+					addProposal(proposals, context, displayString, moduleEntry.getKey(), Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/module.png"),
 							0);
 
 				} else {

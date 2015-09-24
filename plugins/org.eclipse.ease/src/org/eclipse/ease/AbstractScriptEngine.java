@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -217,8 +218,9 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			fSetupDone = true;
 
 			// engine is initialized, set buffered variables
-			for (final String name : fBufferedVariables.keySet())
-				setVariable(name, fBufferedVariables.get(name));
+			for (final Entry<String, Object> entry : fBufferedVariables.entrySet()) {
+				setVariable(entry.getKey(), entry.getValue());
+			}
 
 			fBufferedVariables.clear();
 
