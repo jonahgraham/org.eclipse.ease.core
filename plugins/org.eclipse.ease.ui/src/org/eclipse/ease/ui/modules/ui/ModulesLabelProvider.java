@@ -14,19 +14,32 @@
 
 package org.eclipse.ease.ui.modules.ui;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.Activator;
+import org.eclipse.ease.ui.help.hovers.ModuleHelp;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.IToolTipProvider;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 
-public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLabelProvider {
+public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IToolTipProvider {
+
+	private static final Styler STRIKE_THROUGH_STYLE = new Styler() {
+
+		@Override
+		public void applyStyles(TextStyle textStyle) {
+			textStyle.strikeout = true;
+		}
+	};
 
 	@Override
 	public StyledString getStyledText(Object element) {
@@ -45,6 +58,9 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 		} else if (element instanceof Method) {
 			text.append(ModulesTools.getSignature((Method) element, true));
 		}
+
+		if (isDeprecated(element))
+			text.setStyle(0, text.length(), STRIKE_THROUGH_STYLE);
 
 		return text;
 	}
@@ -70,5 +86,33 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/field.png", true);
 
 		return null;
+	}
+
+	@Override
+	public String getToolTipText(final Object element) {
+
+		if (element instanceof IPath)
+			return null;
+
+		if (element instanceof ModuleDefinition)
+			return ModuleHelp.getModuleHelpTip((ModuleDefinition) element);
+
+		if (element instanceof Method)
+			return ModuleHelp.getMethodHelpTip((Method) element);
+
+		if (element instanceof Field)
+			return ModuleHelp.getConstantHelpTip((Field) element);
+
+		return null;
+	}
+
+	private static boolean isDeprecated(Object element) {
+		if (element instanceof AccessibleObject)
+			return ((AccessibleObject) element).getAnnotation(Deprecated.class) != null;
+
+		if (element instanceof ModuleDefinition)
+			return (((ModuleDefinition) element).getModuleClass().getAnnotation(Deprecated.class) != null);
+
+		return false;
 	}
 }

@@ -47,11 +47,8 @@ public class ModulesComposite extends Composite {
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		treeViewer.getTree().setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		// ColumnViewerToolTipSupport.enableFor(treeViewer);
 		ModuleToolTipDecorator.enableFor(treeViewer);
 
-		// use a decorated label provider
-		// treeViewer.setLabelProvider(new ModulesDecoratedLabelProvider(new ModulesLabelProvider()));
 		treeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new ModulesLabelProvider()));
 
 		treeViewer.setContentProvider(new ModulesContentProvider(modulesOnly));
