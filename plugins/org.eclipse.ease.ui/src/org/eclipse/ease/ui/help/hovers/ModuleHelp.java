@@ -15,216 +15,150 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 
-import org.eclipse.ui.IMemento;
-import org.eclipse.ui.XMLMemento;
+import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.modules.ui.ModulesTools;
-import org.eclipse.ease.Logger;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.XMLMemento;
 
 public class ModuleHelp {
 
 	/**
-	 * Generating help tool tips for modules
-	 * 
-	 * @param element
-	 * @return module tool tip
+	 * Retrieve help page for a given module definition.
+	 *
+	 * @param definition
+	 *            module definition to fetch help for
+	 * @return help content (HTML body node)
 	 */
-	public static String getModuleHelpTip(final ModuleDefinition module) {
+	private static IMemento getHelpContent(final ModuleDefinition definition) {
 
-		String moduleToolTip = null;
-		XMLMemento bodyNode = null;
-
-		if (module != null) {
-			moduleToolTip = "";
-			String helpLocation = module.getHelpLocation(module.getName());
+		if (definition != null) {
+			String helpLocation = definition.getHelpLocation(null);
 			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 			try {
-
-				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-
-				if (rootNode.getChild("body") != null) {
-					bodyNode = (XMLMemento) rootNode.getChild("body");
-				} else {
-					return null;
-				}
-
-				IMemento[] bodyChildNodes = bodyNode.getChildren();
-				int lengthBodyChildNodes = bodyChildNodes.length;
-				for (int i = 0; i < lengthBodyChildNodes; i++) {
-					if (bodyChildNodes[i].getTextData().equalsIgnoreCase("Method Overview") || bodyChildNodes[i].getTextData().equalsIgnoreCase("Constants")) {
-						break;
-					}
-					moduleToolTip += bodyChildNodes[i].toString();
-				}
-
-				String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
-				moduleToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>" + moduleToolTip + "</body>";
-
+				IMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
+				return rootNode.getChild("body");
 			} catch (Exception e) {
 				Logger.logError("Cannot find the module help content ", e);
-				return null;
 			}
 		}
-		return moduleToolTip;
+
+		return null;
 	}
 
 	/**
-	 * Generating help tool tips for module methods
-	 * 
-	 * @param element
-	 * @return method tool tip
+	 * Retrieve the css location for tooltips.
+	 *
+	 * @param definition
+	 *            module definition to fetch css location for
+	 * @return css location
+	 */
+	private static String getCSSUrl(final ModuleDefinition definition) {
+		String helpLocation = definition.getHelpLocation(null);
+		URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
+		return url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
+	}
+
+	/**
+	 * Retrieve help content for module definition.
+	 *
+	 * @param definition
+	 *            module definition to fetch help for
+	 * @return help content
+	 */
+	public static String getModuleHelpTip(final ModuleDefinition definition) {
+
+		StringBuilder helpContent = new StringBuilder();
+
+		IMemento bodyNode = getHelpContent(definition);
+		if (bodyNode != null) {
+			helpContent.append("<head><link rel=\"stylesheet\" type=\"text/css\" href=\"");
+			helpContent.append(getCSSUrl(definition));
+			helpContent.append("\" /></head><body>");
+
+			for (IMemento node : bodyNode.getChildren()) {
+				if (node.getTextData().equalsIgnoreCase("Method Overview") || node.getTextData().equalsIgnoreCase("Constants"))
+					break;
+
+				helpContent.append(node);
+			}
+
+			helpContent.append("</body>");
+		}
+
+		return helpContent.toString();
+	}
+
+	/**
+	 * Retrieve help content for module method.
+	 *
+	 * @param method
+	 *            module method to fetch help for
+	 * @return help content
 	 */
 	public static String getMethodHelpTip(final Method method) {
 
-		ModuleDefinition module = ModulesTools.getDeclaringModule(method);
-		String methodToolTip = null;
-		String methodName = method.getName();
-		XMLMemento bodyNode = null;
+		StringBuilder helpContent = new StringBuilder();
 
-		if (module != null) {
-			methodToolTip = "";
-			String helpLocation = module.getHelpLocation(module.getName());
-			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
+		IMemento bodyNode = getHelpContent(ModulesTools.getDeclaringModule(method));
+		if (bodyNode != null) {
+			for (IMemento node : bodyNode.getChildren("div")) {
+				if ((method.getName().equals(node.getString("title"))) && ("command".equals(node.getString("class")))) {
+					// method found
+					helpContent.append("<head><link rel=\"stylesheet\" type=\"text/css\" href=\"");
+					helpContent.append(getCSSUrl(ModulesTools.getDeclaringModule(method)));
+					helpContent.append("\" /></head><body>");
+					helpContent.append(node);
+					helpContent.append("</body>");
 
-			try {
-
-				XMLMemento theMethodNode = null;
-				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-
-				if (rootNode.getChild("body") != null) {
-					bodyNode = (XMLMemento) rootNode.getChild("body");
-				} else {
-					return null;
+					break;
 				}
-
-				boolean found = false;
-				IMemento[] bodyChildNodes = bodyNode.getChildren();
-				int lengthBodyChildNodes = bodyChildNodes.length;
-				int indexOfFirstMethodNode = 0;
-
-				for (int i = 0; i < lengthBodyChildNodes; i++) {
-					if (bodyChildNodes[i].getTextData().equalsIgnoreCase("Methods")) {
-						indexOfFirstMethodNode = i + 1;
-						break;
-					}
-				}
-
-				for (int i = indexOfFirstMethodNode; i < lengthBodyChildNodes; i++) {
-
-					if (isNull(bodyChildNodes[i], bodyChildNodes[i].getChild("h3"), bodyChildNodes[i].getChild("h3").getChild("a"))) {
-						return null;
-					}
-
-					if (bodyChildNodes[i].getChild("h3").getChild("a").getTextData().equalsIgnoreCase(methodName)) {
-						methodToolTip = bodyChildNodes[i].getChild("h3").getChild("a").getTextData();
-						theMethodNode = (XMLMemento) bodyChildNodes[i];
-						found = true;
-						break;
-					}
-				}
-
-				if (found) {
-					String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
-					methodToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>" + theMethodNode.toString()
-							+ "</body>";
-				} else {
-					return null;
-				}
-
-			} catch (Exception e) {
-				Logger.logError("Cannot find the method help content ", e);
-				return null;
 			}
 		}
-		return methodToolTip;
+
+		return helpContent.toString();
 	}
 
 	/**
-	 * Generating help tool tips for constants
-	 * 
-	 * @param element
-	 * @return constant tool tip
+	 * Retrieve help content for module constants.
+	 *
+	 * @param field
+	 *            module field to fetch help for
+	 * @return help content
 	 */
 	public static String getConstantHelpTip(final Field field) {
 
-		ModuleDefinition module = ModulesTools.getDeclaringModule(field);
-		String constantToolTip = null;
-		String fieldName = field.getName();
-		XMLMemento bodyNode = null;
+		StringBuilder helpContent = new StringBuilder();
 
-		if (module != null) {
-			constantToolTip = "";
-			String helpLocation = module.getHelpLocation(module.getName());
-			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
+		IMemento bodyNode = getHelpContent(ModulesTools.getDeclaringModule(field));
+		if (bodyNode != null) {
+			for (IMemento node : bodyNode.getChildren("table")) {
+				if ("constants".equals(node.getString("class"))) {
+					for (IMemento tableRow : node.getChildren("tr")) {
+						boolean found = false;
+						for (IMemento tableCell : tableRow.getChildren("td")) {
+							if (found) {
+								// constant found
+								helpContent.append("<head><link rel=\"stylesheet\" type=\"text/css\" href=\"");
+								helpContent.append(getCSSUrl(ModulesTools.getDeclaringModule(field)));
+								helpContent.append("\" /></head><body>");
+								helpContent.append(tableCell.getTextData());
+								helpContent.append("</body>");
 
-			try {
-
-				XMLMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
-				if (rootNode.getChild("body") != null) {
-					bodyNode = (XMLMemento) rootNode.getChild("body");
-				} else {
-					return null;
-				}
-
-				boolean constantFound = false;
-
-				for (IMemento node : bodyNode.getChildren()) {
-					if (constantFound) {
-						XMLMemento tableNode = null;
-						if (node != null) {
-							tableNode = (XMLMemento) node;
-						} else {
-							return null;
-						}
-
-						boolean isFirst = true;
-						for (IMemento rowNode : tableNode.getChildren()) {
-							if (isFirst) {
-								isFirst = false;
-								continue;
+								return helpContent.toString();
 							}
-							if (isNull(rowNode, rowNode.getChild("td"), rowNode.getChild("td").getChild("a"))) {
-								return null;
-							}
-							if (rowNode.getChild("td").getChild("a").getTextData().equalsIgnoreCase(fieldName)) {
-								String theconstantToolTip = "<table class=\"constants\"><tr><th>Constant</th><th>Description</th></tr>" + rowNode.toString()
-										+ "</table>";
-								String cssUrl = url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
-								constantToolTip = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssUrl + "\" /></head><body>"
-										+ theconstantToolTip + "</body>";
-								break;
-							}
-						}
-						break;
-					}
 
-					if (node.getTextData() != null && !constantFound) {
-						if (node.getTextData().equalsIgnoreCase("Constants")) {
-							constantFound = true;
-							continue;
+							IMemento anchorNode = tableCell.getChild("a");
+							found = (anchorNode != null) && (field.getName().equals(anchorNode.getString("id")));
 						}
 					}
-				}
 
-			} catch (Exception e) {
-				Logger.logError("Cannot find the constant help content", e);
-				return null;
+					break;
+				}
 			}
 		}
-		return constantToolTip;
-	}
 
-	/**
-	 * Check whether HTML nodes are null
-	 * 
-	 * @return true if a null node is found, false otherwise
-	 */
-	private static boolean isNull(IMemento node1, IMemento node2, IMemento node3) {
-		if (node1 == null || node2 == null || node3 == null) {
-			return true;
-		}
-		return false;
+		return helpContent.toString();
 	}
-
 }
