@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.help.hovers.ModuleToolTipDecorator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -50,7 +51,8 @@ public class ModulesComposite extends Composite {
 		ModuleToolTipDecorator.enableFor(treeViewer);
 
 		// use a decorated label provider
-		treeViewer.setLabelProvider(new ModulesDecoratedLabelProvider(new ModulesLabelProvider()));
+		// treeViewer.setLabelProvider(new ModulesDecoratedLabelProvider(new ModulesLabelProvider()));
+		treeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new ModulesLabelProvider()));
 
 		treeViewer.setContentProvider(new ModulesContentProvider(modulesOnly));
 

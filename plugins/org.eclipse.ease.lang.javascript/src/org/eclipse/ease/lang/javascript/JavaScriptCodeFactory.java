@@ -21,6 +21,7 @@ import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.AbstractCodeFactory;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
+import org.eclipse.ease.modules.ModuleHelper;
 
 public class JavaScriptCodeFactory extends AbstractCodeFactory {
 
@@ -120,7 +121,7 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 		final StringBuilder javaScriptCode = new StringBuilder();
 
 		// parse parameters
-		final List<Parameter> parameters = parseParameters(method);
+		final List<Parameter> parameters = ModuleHelper.getParameters(method);
 
 		// build parameter string
 		final StringBuilder parameterList = new StringBuilder();

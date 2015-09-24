@@ -12,10 +12,8 @@ package org.eclipse.ease.modules;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.ease.ICodeFactory;
@@ -36,68 +34,6 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 			}
 		}
 		return null;
-	}
-
-	public static List<Parameter> parseParameters(final Method method) {
-		final ArrayList<Parameter> parameters = new ArrayList<Parameter>();
-
-		for (int index = 0; index < method.getParameterTypes().length; index++) {
-			final Parameter parameter = new Parameter();
-			parameter.setClass(method.getParameterTypes()[index]);
-
-			final ScriptParameter annotation = getParameterAnnotation(method.getParameterAnnotations()[index]);
-			if (annotation != null) {
-				parameter.setName(annotation.name());
-				parameter.setOptional(ScriptParameter.Helper.isOptional(annotation));
-				parameter.setDefault(annotation.defaultValue());
-			}
-			parameters.add(parameter);
-		}
-
-		// post process parameters: find unique names for unnamed parameters
-		for (final Parameter parameter : parameters) {
-			if (parameter.getName().isEmpty())
-				parameter.setName(findName(parameters));
-		}
-
-		return parameters;
-	}
-
-	private static ScriptParameter getParameterAnnotation(final Annotation[] annotations) {
-		for (final Annotation annotation : annotations) {
-			if (annotation instanceof ScriptParameter)
-				return (ScriptParameter) annotation;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Find a unique name that is not used yet.
-	 *
-	 * @param parameters
-	 *            list of available parameters
-	 * @return unique unused parameter name
-	 */
-	private static String findName(final List<Parameter> parameters) {
-		String name;
-		int index = 1;
-		boolean found;
-		do {
-			found = true;
-			name = "param" + index;
-
-			for (final Parameter parameter : parameters) {
-				if (name.equals(parameter.getName())) {
-					index++;
-					found = false;
-					break;
-				}
-			}
-
-		} while (!found);
-
-		return name;
 	}
 
 	@Override

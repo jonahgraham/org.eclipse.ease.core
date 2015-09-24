@@ -17,94 +17,63 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ease.ICodeFactory.Parameter;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.modules.ScriptParameter;
 import org.eclipse.ease.service.IScriptService;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.ui.PlatformUI;
 
 public class ModulesTools {
 
+	private static Styler ITALIC_STYLE = new Styler() {
+		private final Font italic = JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT);
+
+		@Override
+		public void applyStyles(TextStyle textStyle) {
+			textStyle.font = italic;
+			textStyle.foreground = JFaceResources.getColorRegistry().get("QUALIFIER_COLOR");
+		}
+	};
+
 	@Deprecated
 	private ModulesTools() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
-	 * Generates the signature of the method. If a parameter is annotated as optional (Scriptparameter) it is enclosed with [].
+	 * Generates the signature of the method. Optional parameters are written in italic.
 	 *
 	 * @param method
 	 *            inspected method
-	 * @return Signature of Method.
+	 * @return signature of method.
 	 */
-	public static String getSignature(final Method method) {
-		return getSignature(method, false);
-	}
+	public static StyledString getSignature(final Method method, boolean useStyledReturnValue) {
 
-	/**
-	 * Generates the signature of the method. If a parameter is annotated as optional (Scriptparameter) it is enclose with []. If showDefault is true the given
-	 * default value is added. E.g. "foo(type1 [,type2 = defaultValue])".
-	 *
-	 * @param method
-	 *            inspected method
-	 * @return Signature of Method.
-	 */
-	public static String getSignature(final Method method, final boolean showDefault) {
+		final StyledString signature = new StyledString();
+		signature.append(method.getName());
 
-		final Class<?>[] parameters = method.getParameterTypes();
-		final List<Boolean> optional = new ArrayList<Boolean>();
-		final List<String> defaultValue = new ArrayList<String>();
-		int i = 0;
-		for (final Annotation[] list : method.getParameterAnnotations()) {
-			boolean optionalFlag = false;
-			String defaultValueFlag = "";
-			for (final Annotation annotation : list) {
-				if (annotation.annotationType().equals(ScriptParameter.class)) {
-					optionalFlag = ScriptParameter.Helper.isOptional((ScriptParameter) annotation);
-					defaultValueFlag = ((ScriptParameter) annotation).defaultValue();
-					if (parameters[i].equals(String.class)) {
-						defaultValueFlag = "\"" + defaultValueFlag + "\"";
-					}
-				} else {
-					optionalFlag = false;
-				}
-
+		signature.append('(');
+		final List<Parameter> parameters = ModuleHelper.getParameters(method);
+		for (final Parameter parameter : parameters) {
+			if (parameter.isOptional()) {
+				signature.append(parameter.getClazz().getSimpleName(), ITALIC_STYLE);
+			} else {
+				signature.append(parameter.getClazz().getSimpleName());
 			}
-			optional.add(optionalFlag);
-			defaultValue.add(defaultValueFlag);
-			i++;
 
+			if (!parameter.equals(parameters.get(parameters.size() - 1)))
+				signature.append(", ");
 		}
-		final StringBuilder signature = new StringBuilder(method.getName());
+		signature.append(')');
 
-		if (parameters.length != 0) {
-			signature.append("(");
-			i = 0;
-			for (final Class<?> parameter : parameters) {
-				if (optional.get(i)) {
-					signature.append("[");
-				}
-				if (i != 0) {
-					signature.append(",");
-				}
+		signature.append(" : " + method.getReturnType().getSimpleName(), (useStyledReturnValue) ? StyledString.DECORATIONS_STYLER : null);
 
-				signature.append(parameter.getSimpleName());
-
-				if (optional.get(i) & showDefault) {
-					signature.append(" = ").append(defaultValue.get(i));
-				}
-
-				if (optional.get(i)) {
-					signature.append("]");
-				}
-
-				i++;
-			}
-			signature.append(")");
-		} else {
-			signature.append("()");
-		}
-
-		return signature.toString();
+		return signature;
 	}
 
 	/**

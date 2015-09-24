@@ -372,25 +372,6 @@
       </perspective>
    </extension>
    <extension
-         point="org.eclipse.ui.decorators">
-      <decorator
-            class="org.eclipse.ease.ui.modules.decorators.ModulesExplorerFieldDecorator"
-            id="org.eclipse.ease.decorators.field"
-            label="field"
-            lightweight="true"
-            objectClass="java.lang.reflect.Field"
-            state="true">
-      </decorator>
-      <decorator
-            class="org.eclipse.ease.ui.modules.decorators.ModulesExplorerMethodDecorator"
-            id="org.eclipse.ease.decorators.method"
-            label="method"
-            lightweight="true"
-            objectClass="java.lang.reflect.Method"
-            state="true">
-      </decorator>
-   </extension>
-   <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.ease.ui.perspectives.ScriptingPerspective">

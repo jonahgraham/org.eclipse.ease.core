@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.ease.modules;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -23,6 +24,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ease.ICodeFactory.Parameter;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
@@ -46,9 +48,9 @@ public final class ModuleHelper {
 		if ((clazz == null) || (clazz.getMethods().length == 0))
 			return Collections.emptyList();
 
-		List<Method> methods = new ArrayList<Method>();
-		boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
-		for (Method method : clazz.getMethods()) {
+		final List<Method> methods = new ArrayList<Method>();
+		final boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
+		for (final Method method : clazz.getMethods()) {
 			if ((Modifier.isPublic(method.getModifiers()) && (!wrapping || method.isAnnotationPresent(WrapToScript.class))))
 				methods.add(method);
 		}
@@ -69,9 +71,9 @@ public final class ModuleHelper {
 		if ((clazz == null) || (clazz.getDeclaredFields().length == 0))
 			return Collections.emptyList();
 
-		List<Field> fields = new ArrayList<Field>();
-		boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
-		for (Field field : clazz.getDeclaredFields()) {
+		final List<Field> fields = new ArrayList<Field>();
+		final boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
+		for (final Field field : clazz.getDeclaredFields()) {
 			if ((Modifier.isFinal(field.getModifiers()))
 					&& (Modifier.isPublic(field.getModifiers()) && (!wrapping || field.isAnnotationPresent(WrapToScript.class))))
 				fields.add(field);
@@ -89,12 +91,12 @@ public final class ModuleHelper {
 	 */
 	private static boolean hasWrapToScript(final Class<?> clazz) {
 
-		for (Field field : clazz.getDeclaredFields()) {
+		for (final Field field : clazz.getDeclaredFields()) {
 			if (field.isAnnotationPresent(WrapToScript.class))
 				return true;
 		}
 
-		for (Method method : clazz.getMethods()) {
+		for (final Method method : clazz.getMethods()) {
 			if (method.isAnnotationPresent(WrapToScript.class))
 				return true;
 		}
@@ -112,7 +114,7 @@ public final class ModuleHelper {
 	 */
 	public static String resolveName(final String identifier) {
 		final IScriptService scriptService = ScriptService.getService();
-		Map<String, ModuleDefinition> availableModules = scriptService.getAvailableModules();
+		final Map<String, ModuleDefinition> availableModules = scriptService.getAvailableModules();
 
 		// check for absolute path
 		if (identifier.startsWith("/")) {
@@ -128,7 +130,7 @@ public final class ModuleHelper {
 		IPath searchPath = new Path(identifier);
 		if ((searchPath.segmentCount() == 1) && (!searchPath.isAbsolute())) {
 			// only module name given
-			for (Entry<String, ModuleDefinition> module : availableModules.entrySet()) {
+			for (final Entry<String, ModuleDefinition> module : availableModules.entrySet()) {
 				if (new Path(module.getKey()).lastSegment().equals(identifier)) {
 					// candidate detected
 					if (searchPath.isAbsolute())
@@ -151,16 +153,16 @@ public final class ModuleHelper {
 	 * @return module definitions for all loaded modules
 	 */
 	public static Collection<ModuleDefinition> getLoadedModules(final IScriptEngine engine) {
-		Collection<ModuleDefinition> modules = new HashSet<ModuleDefinition>();
+		final Collection<ModuleDefinition> modules = new HashSet<ModuleDefinition>();
 
 		// statically access service as workbench is not available in headless mode
 		final IScriptService scriptService = ScriptService.getService();
 
-		for (Entry<String, Object> entry : engine.getVariables().entrySet()) {
+		for (final Entry<String, Object> entry : engine.getVariables().entrySet()) {
 			if (entry.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
-				Class<? extends Object> moduleClass = entry.getValue().getClass();
+				final Class<? extends Object> moduleClass = entry.getValue().getClass();
 
-				for (ModuleDefinition definition : scriptService.getAvailableModules().values()) {
+				for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
 					if (definition.getModuleClass().equals(moduleClass)) {
 						modules.add(definition);
 						break;
@@ -170,5 +172,67 @@ public final class ModuleHelper {
 		}
 
 		return modules;
+	}
+
+	public static List<Parameter> getParameters(final Method method) {
+		final ArrayList<Parameter> parameters = new ArrayList<Parameter>();
+
+		for (int index = 0; index < method.getParameterTypes().length; index++) {
+			final Parameter parameter = new Parameter();
+			parameter.setClass(method.getParameterTypes()[index]);
+
+			final ScriptParameter annotation = getParameterAnnotation(method.getParameterAnnotations()[index]);
+			if (annotation != null) {
+				parameter.setName(annotation.name());
+				parameter.setOptional(ScriptParameter.Helper.isOptional(annotation));
+				parameter.setDefault(annotation.defaultValue());
+			}
+			parameters.add(parameter);
+		}
+
+		// post process parameters: find unique names for unnamed parameters
+		for (final Parameter parameter : parameters) {
+			if (parameter.getName().isEmpty())
+				parameter.setName(findName(parameters));
+		}
+
+		return parameters;
+	}
+
+	private static ScriptParameter getParameterAnnotation(final Annotation[] annotations) {
+		for (final Annotation annotation : annotations) {
+			if (annotation instanceof ScriptParameter)
+				return (ScriptParameter) annotation;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Find a unique name that is not used yet.
+	 *
+	 * @param parameters
+	 *            list of available parameters
+	 * @return unique unused parameter name
+	 */
+	private static String findName(final List<Parameter> parameters) {
+		String name;
+		int index = 1;
+		boolean found;
+		do {
+			found = true;
+			name = "param" + index;
+
+			for (final Parameter parameter : parameters) {
+				if (name.equals(parameter.getName())) {
+					index++;
+					found = false;
+					break;
+				}
+			}
+
+		} while (!found);
+
+		return name;
 	}
 }

@@ -38,8 +38,9 @@ public class LoadedModuleCompletionProvider extends AbstractCompletionProvider {
 		for (final ModuleDefinition definition : context.getLoadedModules()) {
 			// field proposals
 			for (final Field field : definition.getFields()) {
-				final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
-				styledString.append(" - " + definition.getName(), StyledString.DECORATIONS_STYLER);
+				final StyledString styledString = new StyledString(field.getName());
+				styledString.append(" : " + field.getType().getSimpleName(), StyledString.DECORATIONS_STYLER);
+				styledString.append(" - " + definition.getName(), StyledString.QUALIFIER_STYLER);
 
 				addProposal(proposals, context, styledString, field.getName(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
 						ScriptCompletionProposal.ORDER_FIELD);
@@ -47,13 +48,12 @@ public class LoadedModuleCompletionProvider extends AbstractCompletionProvider {
 
 			// method proposals
 			for (final Method method : definition.getMethods()) {
-				final StyledString styledString = new StyledString(
-						ModulesTools.getSignature(method) + " : " + JavaMethodCompletionProvider.getMethodReturnType(method));
-				styledString.append(" - " + definition.getName(), StyledString.DECORATIONS_STYLER);
+				final StyledString styledString = ModulesTools.getSignature(method, true);
+				styledString.append(" - " + definition.getName(), StyledString.QUALIFIER_STYLER);
 
 				if (method.getParameterTypes().length - ModulesTools.getOptionalParameterCount(method) > 0)
-					addProposal(proposals, context, styledString, method.getName() + "(", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
-							ScriptCompletionProposal.ORDER_METHOD);
+					addProposal(proposals, context, styledString, method.getName() + "(",
+							JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_METHOD);
 
 				else
 					addProposal(proposals, context, styledString, method.getName() + "()",

@@ -37,15 +37,15 @@ public class ModulesDragListener implements DragSourceListener {
 
 	@Override
 	public void dragSetData(final DragSourceEvent event) {
-		IStructuredSelection selection = (IStructuredSelection) fTreeViewer.getSelection();
-		Object firstElement = selection.getFirstElement();
+		final IStructuredSelection selection = (IStructuredSelection) fTreeViewer.getSelection();
+		final Object firstElement = selection.getFirstElement();
 
 		if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
 			LocalSelectionTransfer.getTransfer().setSelection(selection);
 
 		} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 
-			StringBuilder data = new StringBuilder();
+			final StringBuilder data = new StringBuilder();
 			if (firstElement instanceof ModuleDefinition)
 				data.append("loadModule('").append(((ModuleDefinition) firstElement).getPath().toString()).append("');\n");
 
@@ -53,7 +53,7 @@ public class ModulesDragListener implements DragSourceListener {
 				data.append(((Field) firstElement).getName());
 
 			else if (firstElement instanceof Method)
-				data.append(ModulesTools.getSignature((Method) firstElement)).append(";\n");
+				data.append(ModulesTools.getSignature((Method) firstElement, false)).append(";\n");
 
 			event.data = data.toString();
 		}

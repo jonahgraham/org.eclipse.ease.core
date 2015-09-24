@@ -21,27 +21,32 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
-public class ModulesLabelProvider extends LabelProvider {
+public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLabelProvider {
 
 	@Override
-	public String getText(final Object element) {
+	public StyledString getStyledText(Object element) {
+		final StyledString text = new StyledString();
 
-		if (element instanceof ModuleDefinition)
-			return ((ModuleDefinition) element).getName();
+		if (element instanceof ModuleDefinition) {
+			text.append(((ModuleDefinition) element).getName());
 
-		if (element instanceof IPath)
-			return ((IPath) element).lastSegment();
+		} else if (element instanceof IPath) {
+			text.append(((IPath) element).lastSegment());
 
-		if (element instanceof Field)
-			return ((Field) element).getName();
+		} else if (element instanceof Field) {
+			text.append(((Field) element).getName());
+			text.append(" : " + ((Field) element).getType().getSimpleName(), StyledString.DECORATIONS_STYLER);
 
-		if (element instanceof Method)
-			return ModulesTools.getSignature((Method) element);
+		} else if (element instanceof Method) {
+			text.append(ModulesTools.getSignature((Method) element, true));
+		}
 
-		return super.getText(element);
+		return text;
 	}
 
 	@Override
@@ -51,7 +56,7 @@ public class ModulesLabelProvider extends LabelProvider {
 			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/folder.png", true);
 
 		if (element instanceof ModuleDefinition) {
-			ImageDescriptor icon = ((ModuleDefinition) element).getImageDescriptor();
+			final ImageDescriptor icon = ((ModuleDefinition) element).getImageDescriptor();
 			if (icon == null)
 				return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/module.png", true);
 

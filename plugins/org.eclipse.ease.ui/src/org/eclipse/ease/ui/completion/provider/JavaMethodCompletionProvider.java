@@ -48,7 +48,7 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 			final IHelpResolver helpResolver = new JavaMethodHelpResolver(method);
 
 			final StyledString styledString = new StyledString(method.getName() + "(" + getMethodSignature(method) + ") : " + getMethodReturnType(method));
-			styledString.append(" - " + method.getDeclaringClass().getSimpleName(), StyledString.DECORATIONS_STYLER);
+			styledString.append(" - " + method.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
 
 			if (method.getParameterTypes().length > 0)
 				addProposal(proposals, context, styledString, method.getName() + "(", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC),
@@ -65,7 +65,7 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 			final IHelpResolver helpResolver = new JavaFieldHelpResolver(field);
 
 			final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
-			styledString.append(" - " + field.getDeclaringClass().getSimpleName(), StyledString.DECORATIONS_STYLER);
+			styledString.append(" - " + field.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
 
 			addProposal(proposals, context, styledString, field.getName(), getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_FIELD,
 					helpResolver);
