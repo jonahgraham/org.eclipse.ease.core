@@ -25,24 +25,25 @@ import org.eclipse.ease.ui.help.hovers.ModuleHelp;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IToolTipProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 
-public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IToolTipProvider {
+public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLabelProvider, IToolTipProvider, ILabelProvider {
 
 	private static final Styler STRIKE_THROUGH_STYLE = new Styler() {
 
 		@Override
-		public void applyStyles(TextStyle textStyle) {
+		public void applyStyles(final TextStyle textStyle) {
 			textStyle.strikeout = true;
 		}
 	};
 
 	@Override
-	public StyledString getStyledText(Object element) {
+	public StyledString getStyledText(final Object element) {
 		final StyledString text = new StyledString();
 
 		if (element instanceof ModuleDefinition) {
@@ -106,7 +107,7 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 		return null;
 	}
 
-	private static boolean isDeprecated(Object element) {
+	private static boolean isDeprecated(final Object element) {
 		if (element instanceof AccessibleObject)
 			return ((AccessibleObject) element).getAnnotation(Deprecated.class) != null;
 
@@ -114,5 +115,10 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 			return (((ModuleDefinition) element).getModuleClass().getAnnotation(Deprecated.class) != null);
 
 		return false;
+	}
+
+	@Override
+	public String getText(final Object element) {
+		return getStyledText(element).toString();
 	}
 }
