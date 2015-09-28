@@ -26,6 +26,8 @@ import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
+import org.eclipse.ease.ui.help.hovers.IHelpResolver;
+import org.eclipse.ease.ui.help.hovers.JavaPackageHelpResolver;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -48,14 +50,17 @@ public class JavaPackagesCompletionProvider extends AbstractCompletionProvider {
 
 		if (getPackages().get(parentPackage) != null) {
 			for (String packageName : getPackages().get(parentPackage)) {
+
+				final IHelpResolver helpResolver = new JavaPackageHelpResolver(parentPackage + "." + packageName);
+
 				if (parentPackage.isEmpty())
 					// add root package
 					addProposal(proposals, context, packageName, packageName + ".", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE),
-							ScriptCompletionProposal.ORDER_PACKAGE);
+							ScriptCompletionProposal.ORDER_PACKAGE, helpResolver);
 				else
 					// add sub package
 					addProposal(proposals, context, parentPackage + "." + packageName, packageName + ".",
-							JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE), ScriptCompletionProposal.ORDER_PACKAGE);
+							JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE), ScriptCompletionProposal.ORDER_PACKAGE, helpResolver);
 			}
 		}
 

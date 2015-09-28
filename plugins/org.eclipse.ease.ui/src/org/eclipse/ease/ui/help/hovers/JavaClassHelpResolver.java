@@ -29,27 +29,43 @@ import org.objectweb.asm.Type;
 
 public class JavaClassHelpResolver implements IHelpResolver {
 
+	private static IJavaProject JAVA_PROJECT;
 	private final String fPackageName;
 	private final String fClassName;
 	private Class<?> fClazz;
+
+	public static IJavaProject getJavaProject() {
+		if (JAVA_PROJECT == null) {
+			final IProject project = new VirtualProject();
+			JAVA_PROJECT = JavaCore.create(project);
+		}
+
+		return JAVA_PROJECT;
+	}
 
 	public JavaClassHelpResolver(final String packageName, final String className) {
 		fPackageName = packageName.replace('.', '/');
 		fClassName = className;
 
-		try {
-			fClazz = JavaClassHelpResolver.class.getClassLoader().loadClass(packageName + "." + className.replace('.', '$'));
-		} catch (final ClassNotFoundException e) {
+		if (className != null) {
+			try {
+				fClazz = JavaClassHelpResolver.class.getClassLoader().loadClass(packageName + "." + className.replace('.', '$'));
+			} catch (final ClassNotFoundException e) {
+				fClazz = null;
+			}
+		} else
 			fClazz = null;
-		}
+	}
+
+	protected JavaClassHelpResolver() {
+		fPackageName = null;
+		fClassName = null;
+		fClazz = null;
 	}
 
 	@Override
 	public String resolveHelp() {
-		final IProject project = new VirtualProject();
-		final IJavaProject javaProject = JavaCore.create(project);
-
-		final ITypeRoot typeRoot = resolveTypeRoot(javaProject);
+		final ITypeRoot typeRoot = resolveTypeRoot(getJavaProject());
 		final IJavaElement javaElement = resolveJavaElement(typeRoot);
 
 		final JavadocBrowserInformationControlInput hoverInfo = JavadocHover.getHoverInfo(new IJavaElement[] { javaElement }, typeRoot, new Region(0, 1), null);
@@ -91,7 +107,11 @@ public class JavaClassHelpResolver implements IHelpResolver {
 		return null;
 	}
 
-	protected static String getDescriptor(Class<?> clazz) {
+	protected String getPackageName() {
+		return fPackageName;
+	}
+
+	protected static String getDescriptor(final Class<?> clazz) {
 		return Type.getDescriptor(clazz);
 	}
 }
