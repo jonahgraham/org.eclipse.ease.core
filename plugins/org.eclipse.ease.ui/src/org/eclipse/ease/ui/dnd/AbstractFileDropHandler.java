@@ -15,14 +15,12 @@ import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ease.IScriptEngine;
-import org.eclipse.ease.modules.AbstractEnvironment;
-import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.tools.ResourceTools;
 
 /**
  * Helper class for file drop handler. Accepts files with certain file extensions and allows to encode their path.
  */
-public abstract class AbstractFileDropHandler implements IShellDropHandler {
+public abstract class AbstractFileDropHandler extends AbstractModuleDropHandler {
 
 	@Override
 	public boolean accepts(final IScriptEngine scriptEngine, final Object element) {
@@ -36,29 +34,6 @@ public abstract class AbstractFileDropHandler implements IShellDropHandler {
 		}
 
 		return (extension != null) ? getAcceptedFileExtensions().contains(extension) : false;
-	}
-
-	/**
-	 * Load a dedicated module if it is not already loaded.
-	 *
-	 * @param scriptEngine
-	 *            script engine to load module
-	 * @param moduleID
-	 *            moduleID to look for
-	 * @param force
-	 *            if set to <code>false</code> load only when not already loaded
-	 * @return module instance or <code>null</code>
-	 */
-	protected Object loadModule(final IScriptEngine scriptEngine, final String moduleID, final boolean force) {
-		IEnvironment environment = AbstractEnvironment.getEnvironment(scriptEngine);
-		if (environment != null) {
-			if ((force) || (environment.getModule(moduleID) == null))
-				return environment.loadModule(moduleID);
-
-			return environment.getModule(moduleID);
-		}
-
-		return null;
 	}
 
 	/**
