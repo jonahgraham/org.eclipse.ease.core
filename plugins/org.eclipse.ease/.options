@@ -1,3 +1,4 @@
-org.eclipse.ease/debug=true
-org.eclipse.ease/debug/moduleWrapper=true
-org.eclipse.ease/debug/EnvironementmoduleWrapper=true
+org.eclipse.ease/debug=false
+org.eclipse.ease/debug/scriptService=false
+org.eclipse.ease/debug/scriptEngine=false
+org.eclipse.ease/debug/moduleWrapper=false

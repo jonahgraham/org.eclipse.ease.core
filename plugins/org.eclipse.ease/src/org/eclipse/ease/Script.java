@@ -89,6 +89,9 @@ public class Script {
 		if (fCommand instanceof String)
 			return (String) fCommand;
 
+		if (fCommand instanceof StringBuilder)
+			return fCommand.toString();
+
 		if (fCommand instanceof InputStream)
 			// streams can only be read once, therefore buffer
 			return bufferStream((InputStream) fCommand);

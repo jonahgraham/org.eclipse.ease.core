@@ -24,8 +24,6 @@ import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
-import org.eclipse.ease.debug.ITracingConstant;
-import org.eclipse.ease.debug.Tracer;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.swt.widgets.Display;
@@ -59,10 +57,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 		final boolean reloaded = getScriptEngine().hasVariable(identifier);
 		getScriptEngine().setVariable(identifier, toBeWrapped);
 
-		// FIXME move to script engine
-		if (ITracingConstant.ENVIRONEMENT_MODULE_WRAPPER_TRACING) {
-			Tracer.logInfo("[Environment Module] Add variable to engine :\n " + toBeWrapped.toString() + " with value" + toBeWrapped);
-		}
+		Logger.trace(Logger.TRACE_MODULE_WRAPPER, "wrapping object: " + toBeWrapped.toString());
 
 		// create function wrappers
 		createWrappers(toBeWrapped, identifier, reloaded);
@@ -90,9 +85,9 @@ public class EnvironmentModule extends AbstractEnvironment {
 		final StringBuilder scriptCode = new StringBuilder();
 
 		ICodeFactory codeFactory = getCodeFactory();
-		if (null == codeFactory) 
+		if (null == codeFactory)
 			return;
-		
+
 		// create wrappers for methods
 		for (final Method method : ModuleHelper.getMethods(instance.getClass())) {
 			final String code = codeFactory.createFunctionWrapper(this, identifier, method);
@@ -102,7 +97,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 				scriptCode.append('\n');
 			}
 		}
-		
+
 		// create wrappers for static fields
 		if (!reload) {
 			// this is only done upon initial loading as we try to create constants here
@@ -129,13 +124,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 		}
 
 		// execute code
-		final String codeToInject = scriptCode.toString();
-		// FIXME move log to script engine
-		if (ITracingConstant.ENVIRONEMENT_MODULE_WRAPPER_TRACING) {
-			Tracer.logInfo("[Environement Module] Injecting code:\n" + codeToInject);
-		}
-
-		getScriptEngine().inject(new Script("Wrapper(" + instance.getClass().getSimpleName() + ")", codeToInject));
+		getScriptEngine().inject(new Script("Wrapper(" + instance.getClass().getSimpleName() + ")", scriptCode));
 	}
 
 	/**

@@ -28,8 +28,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ease.debug.ITracingConstant;
-import org.eclipse.ease.debug.Tracer;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.service.EngineDescription;
@@ -171,8 +169,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		synchronized (script.getResult()) {
 
 			try {
-				if (ITracingConstant.MODULE_WRAPPER_TRACING)
-					Tracer.logInfo("Executing (" + script.getTitle() + "):\n" + script.getCode());
+				Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Executing (" + script.getTitle() + "):\n" + script.getCode());
 
 				fStackTrace.add(0, new ScriptDebugFrame(script, 0, IScriptDebugFrame.TYPE_FILE));
 
@@ -213,6 +210,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
+		Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
 		final boolean setup = setupEngine();
 		if (setup) {
 			fSetupDone = true;
@@ -242,6 +240,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 					synchronized (this) {
 						if (!isTerminated()) {
 							try {
+								Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Engine idle: " + getName());
 								wait();
 							} catch (final InterruptedException e) {
 							}
@@ -264,6 +263,8 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		}
 
 		closeStreams();
+
+		Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
 
 		if (!setup)
 			throw new RuntimeException("Could not setup script engine, terminating");
@@ -476,7 +477,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	/**
 	 * Split a string with comma separated arguments.
-	 * 
+	 *
 	 * @param arguments
 	 *            comma separated arguments
 	 * @return trimmed list of arguments
