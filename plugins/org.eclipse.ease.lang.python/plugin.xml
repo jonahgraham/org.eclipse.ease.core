@@ -15,6 +15,7 @@
    <extension
          point="org.eclipse.ease.scriptType">
       <scriptType
+            codeFactory="org.eclipse.ease.lang.python.PythonCodeFactory"
             codeParser="org.eclipse.ease.lang.python.PythonCodeParser"
             defaultExtension="py"
             headerParser="org.eclipse.ease.lang.python.PythonHeaderParser"
