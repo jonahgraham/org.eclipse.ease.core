@@ -11,7 +11,7 @@
 
 import org.eclipse.ease.AbstractCodeParser;
 
-public class PythonHeaderParser extends AbstractCodeParser {
+public class PythonCodeParser extends AbstractCodeParser {
 
 	private static final String LINE_COMMENT = "#";
 
