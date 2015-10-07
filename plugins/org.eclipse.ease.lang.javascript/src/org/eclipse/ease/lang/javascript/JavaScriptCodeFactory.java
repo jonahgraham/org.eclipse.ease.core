@@ -137,6 +137,11 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 		// insert hooked pre execution code
 		body.append(getPreExecutionCode(environment, method));
 
+		// insert deprecation warnings
+
+		if (ModuleHelper.isDeprecated(method))
+			body.append("\tprintError('" + method.getName() + "() is deprecated. Consider updating your code.');\n");
+
 		// insert method call
 		body.append("\tvar ").append(IScriptFunctionModifier.RESULT_NAME).append(" = ").append(moduleVariable).append('.').append(method.getName()).append('(');
 		body.append(parameterList);

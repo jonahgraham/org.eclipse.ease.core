@@ -11,6 +11,7 @@
 package org.eclipse.ease.modules;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -234,5 +235,16 @@ public final class ModuleHelper {
 		} while (!found);
 
 		return name;
+	}
+
+	/**
+	 * Check deprecation status of a method/field.
+	 *
+	 * @param element
+	 *            method/field to check
+	 * @return <code>true</code> when deprecated
+	 */
+	public static boolean isDeprecated(final AccessibleObject element) {
+		return element.getAnnotation(Deprecated.class) != null;
 	}
 }

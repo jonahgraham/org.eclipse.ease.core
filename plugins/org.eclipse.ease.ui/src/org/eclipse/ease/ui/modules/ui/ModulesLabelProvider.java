@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.help.hovers.ModuleHelp;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -109,10 +110,10 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 
 	private static boolean isDeprecated(final Object element) {
 		if (element instanceof AccessibleObject)
-			return ((AccessibleObject) element).getAnnotation(Deprecated.class) != null;
+			return ModuleHelper.isDeprecated((AccessibleObject) element);
 
 		if (element instanceof ModuleDefinition)
-			return (((ModuleDefinition) element).getModuleClass().getAnnotation(Deprecated.class) != null);
+			return ((ModuleDefinition) element).isDeprecated();
 
 		return false;
 	}

@@ -239,4 +239,13 @@ public class ModuleDefinition {
 	public String getHelpLocation(final String topic) {
 		return "/" + getBundleID() + "/help/module_" + getId().replace(' ', '_').toLowerCase() + ".html" + ((topic != null) ? "#" + topic : "");
 	}
+
+	/**
+	 * Check deprecation status of module.
+	 * 
+	 * @return <code>true</code> when module is deprecated
+	 */
+	public boolean isDeprecated() {
+		return getModuleClass().getAnnotation(Deprecated.class) != null;
+	}
 }

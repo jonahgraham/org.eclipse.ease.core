@@ -72,6 +72,10 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 					}
 				}
 
+				// print deprecation warning
+				if (definition.isDeprecated())
+					printError("Module \"" + moduleName + "\" is deprecated. Consider updating your code.");
+
 				module = definition.createModuleInstance();
 				if (module instanceof IScriptModule)
 					((IScriptModule) module).initialize(getScriptEngine(), this);
@@ -105,7 +109,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	}
 
 	@Override
-	public void initialize(IScriptEngine engine, IEnvironment environment) {
+	public void initialize(final IScriptEngine engine, final IEnvironment environment) {
 		super.initialize(engine, environment);
 
 		fModules.add(this);
@@ -120,7 +124,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	@WrapToScript
 	public final String listModules() {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Collection<ModuleDefinition> modules = scriptService.getAvailableModules().values();
 
 		final StringBuilder output = new StringBuilder();
@@ -222,7 +226,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 			((IModuleListener) listener).notifyModule(module, type);
 	}
 
-	public static IEnvironment getEnvironment(IScriptEngine engine) {
+	public static IEnvironment getEnvironment(final IScriptEngine engine) {
 		for (final Object variable : engine.getVariables().values()) {
 			if (variable instanceof IEnvironment)
 				return (IEnvironment) variable;
