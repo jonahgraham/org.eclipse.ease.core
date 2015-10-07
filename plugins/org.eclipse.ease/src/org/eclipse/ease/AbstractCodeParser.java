@@ -146,7 +146,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 			} while (isComment);
 
 		} catch (final IOException e) {
-			Logger.logError("Could not parse input stream header", e);
+			Logger.error(Activator.PLUGIN_ID, "Could not parse input stream header", e);
 			return "";
 		}
 
@@ -154,7 +154,8 @@ public abstract class AbstractCodeParser implements ICodeParser {
 	}
 
 	@Override
-	public ICompletionContext getContext(IScriptEngine scriptEngine, Object resource, String contents, int position, int selectionRange) {
+	public ICompletionContext getContext(final IScriptEngine scriptEngine, final Object resource, final String contents, final int position,
+			final int selectionRange) {
 		return null;
 	}
 

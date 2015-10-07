@@ -169,7 +169,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		synchronized (script.getResult()) {
 
 			try {
-				Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Executing (" + script.getTitle() + "):\n" + script.getCode());
+				Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Executing script (" + script.getTitle() + "):", script.getCode());
 
 				fStackTrace.add(0, new ScriptDebugFrame(script, 0, IScriptDebugFrame.TYPE_FILE));
 
@@ -210,7 +210,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
+		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
 		final boolean setup = setupEngine();
 		if (setup) {
 			fSetupDone = true;
@@ -240,7 +240,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 					synchronized (this) {
 						if (!isTerminated()) {
 							try {
-								Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Engine idle: " + getName());
+								Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine idle: " + getName());
 								wait();
 							} catch (final InterruptedException e) {
 							}
@@ -264,7 +264,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 		closeStreams();
 
-		Logger.trace(Logger.TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
+		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
 
 		if (!setup)
 			throw new RuntimeException("Could not setup script engine, terminating");

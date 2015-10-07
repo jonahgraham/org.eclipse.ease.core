@@ -95,7 +95,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			try {
 				resource.save(Collections.emptyMap());
 			} catch (final IOException e) {
-				Logger.logError("Could not store script repositories");
+				Logger.error(Activator.PLUGIN_ID, "Could not store script repositories", e);
 			}
 
 			return Status.OK_STATUS;
@@ -108,6 +108,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 	 * Initialize the repository service.
 	 */
 	private RepositoryService() {
+		Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Starting repository service");
 		RepositoryFactoryImpl.init();
 
 		// load stored data
@@ -120,6 +121,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			try {
 				resource.load(null);
 				fRepository = (IStorage) resource.getContents().get(0);
+				Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Loaded cached scripts");
 
 			} catch (final IOException e) {
 				// we could not load an existing model, but we will refresh it in a second
@@ -131,6 +133,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		if (fRepository == null) {
 			// create an empty repository to start with
 			fRepository = IRepositoryFactory.eINSTANCE.createStorage();
+			Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Created clean script repository");
 
 		} else if (!fRepository.getScripts().isEmpty()) {
 			// wait for the workspace to be loaded before updating, we have cached data anyway
@@ -139,6 +142,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 		// verify that cached repositories match preference settings
 		if (!equals(fRepository.getEntries(), PreferencesHelper.getLocations())) {
+			Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Cached scripts are dirty, cleanup");
 			fRepository.getEntries().clear();
 			fRepository.getEntries().addAll(PreferencesHelper.getLocations());
 			save();
@@ -361,6 +365,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		}
 
 		PreferencesHelper.addLocation(entry);
+		Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Script location added: " + locationURI);
 
 		fRepository.getEntries().add(entry);
 
@@ -380,6 +385,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 					removeScript(script);
 
 				save();
+				Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Script location removed: " + locationURI);
 
 				// no need to traverse further as locationURIs need to be unique
 				break;

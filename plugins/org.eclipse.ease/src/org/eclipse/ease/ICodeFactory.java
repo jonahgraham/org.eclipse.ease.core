@@ -13,10 +13,15 @@ package org.eclipse.ease;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.ScriptParameter;
 
 public interface ICodeFactory {
+
+	/** Trace enablement for module wrappers. */
+	boolean TRACE_MODULE_WRAPPER = org.eclipse.ease.Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/moduleWrapper"));
 
 	public static class Parameter {
 

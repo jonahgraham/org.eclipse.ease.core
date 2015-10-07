@@ -23,6 +23,7 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ui.PlatformUI;
 
 public class ResourceDropHandler implements IShellDropHandler {
@@ -54,7 +55,7 @@ public class ResourceDropHandler implements IShellDropHandler {
 				scriptEngine.executeAsync(element);
 
 		} catch (Exception e) {
-			Logger.logError("include() method not found in Environment module", e);
+			Logger.error(Activator.PLUGIN_ID, "include() method not found in Environment module", e);
 
 			// fallback solution
 			scriptEngine.executeAsync(element);

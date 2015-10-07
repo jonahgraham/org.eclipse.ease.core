@@ -87,19 +87,17 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 						final ScriptStorage storage = getStorage();
 						if (storage != null) {
 							// ask for script name
-							final InputDialog dialog = new InputDialog(HandlerUtil.getActiveShell(event),
-									"Save Script", "Enter a unique name for your script (use '/' as path delimiter)",
-									"", new IInputValidator() {
+							final InputDialog dialog = new InputDialog(HandlerUtil.getActiveShell(event), "Save Script",
+									"Enter a unique name for your script (use '/' as path delimiter)", "", new IInputValidator() {
 
-								@Override
-								public String isValid(final String name) {
-									if (storage.exists(name))
-										return "Script name <" + name
-														+ "> is already in use. Choose a different one.";
+										@Override
+										public String isValid(final String name) {
+											if (storage.exists(name))
+												return "Script name <" + name + "> is already in use. Choose a different one.";
 
-									return null;
-								}
-							});
+											return null;
+										}
+									});
 
 							if (dialog.open() == Window.OK)
 								name = dialog.getValue();
@@ -125,8 +123,7 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 							// store script
 							if (!storage.store(fileName, buffer.toString()))
 								// could not store script
-								MessageDialog.openError(HandlerUtil.getActiveShell(event), "Save error",
-										"Could not store script data");
+								MessageDialog.openError(HandlerUtil.getActiveShell(event), "Save error", "Could not store script data");
 
 							// TODO update script repository
 
@@ -135,17 +132,15 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 							// and let user decide, what to do
 							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 							try {
-								IEditorDescriptor editor = IDE
-										.getDefaultEditor(ResourcesPlugin.getWorkspace().getRoot()
-												.getFile(new Path("/sample/foo." + scriptType.getDefaultExtension())));
-								IEditorPart openEditor = IDE.openEditor(page,
-										new ScriptEditorInput(name, buffer.toString()), editor.getId());
+								IEditorDescriptor editor = IDE.getDefaultEditor(
+										ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("/sample/foo." + scriptType.getDefaultExtension())));
+								IEditorPart openEditor = IDE.openEditor(page, new ScriptEditorInput(name, buffer.toString()), editor.getId());
 								// the editor starts indicating it is not dirty,
 								// so ask the user to perform a save as action
 								openEditor.doSaveAs();
 
 							} catch (PartInitException e) {
-								Logger.logError("Could not open editor for recorded script.", e);
+								Logger.error(Activator.PLUGIN_ID, "Could not open editor for recorded script.", e);
 							}
 						}
 					}
@@ -164,8 +159,7 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 			// user did not select a storage yet, ask for location
 			SelectScriptStorageDialog dialog = new SelectScriptStorageDialog(Display.getDefault().getActiveShell());
 			if (dialog.open() == Window.OK) {
-				final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-						IRepositoryService.class);
+				final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
 				repositoryService.addLocation(dialog.getLocation(), true, true);
 			}
 
@@ -183,12 +177,10 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 		super.updateElement(element, parameters);
 
 		if (fChecked)
-			element.setIcon(org.eclipse.ease.ui.Activator.getImageDescriptor(Activator.PLUGIN_ID,
-					"icons/elcl16/stop_script_recording.png"));
+			element.setIcon(org.eclipse.ease.ui.Activator.getImageDescriptor(Activator.PLUGIN_ID, "icons/elcl16/stop_script_recording.png"));
 
 		else
-			element.setIcon(org.eclipse.ease.ui.Activator.getImageDescriptor(Activator.PLUGIN_ID,
-					"icons/elcl16/start_script_recording.png"));
+			element.setIcon(org.eclipse.ease.ui.Activator.getImageDescriptor(Activator.PLUGIN_ID, "icons/elcl16/start_script_recording.png"));
 	}
 
 	@Override

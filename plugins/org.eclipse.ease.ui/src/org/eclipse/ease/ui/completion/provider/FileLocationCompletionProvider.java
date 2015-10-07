@@ -24,6 +24,7 @@ import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.CompletionContext;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
@@ -210,7 +211,7 @@ public class FileLocationCompletionProvider extends AbstractCompletionProvider {
 				}
 
 			} catch (final CoreException e) {
-				Logger.logError("Could not traverse folder \"" + ((IContainer) displayResource).getName() + "\"");
+				Logger.error(Activator.PLUGIN_ID, "Could not traverse folder \"" + ((IContainer) displayResource).getName() + "\"", e);
 			}
 
 		} else if (displayResource instanceof File) {

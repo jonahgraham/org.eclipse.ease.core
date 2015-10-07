@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
 import org.eclipse.ease.modules.ModuleCategoryDefinition;
 import org.eclipse.ease.modules.ModuleDefinition;
@@ -26,6 +27,10 @@ import org.eclipse.ease.modules.ModuleDefinition;
  * </pre>
  */
 public interface IScriptService {
+
+	/** Trace enablement for the script service. */
+	boolean TRACE_SCRIPT_SERVICE = org.eclipse.ease.Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/scriptService"));
 
 	/**
 	 * Get a dedicated engine description. Allows to get an engine description for a dedicated engine identifier.

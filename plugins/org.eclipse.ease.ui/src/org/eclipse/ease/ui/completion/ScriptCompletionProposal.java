@@ -13,6 +13,7 @@ package org.eclipse.ease.ui.completion;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.help.hovers.IHelpResolver;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -80,7 +81,7 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 		try {
 			document.replace(fCursorPosition, 0, fReplacementString);
 		} catch (final BadLocationException e) {
-			Logger.logError("Could not insert completion proposal into document", e);
+			Logger.error(Activator.PLUGIN_ID, "Could not insert completion proposal into document", e);
 		}
 	}
 

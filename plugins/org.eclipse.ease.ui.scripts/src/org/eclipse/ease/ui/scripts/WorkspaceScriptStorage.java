@@ -45,7 +45,7 @@ public class WorkspaceScriptStorage extends ScriptStorage {
 				file.create(new ByteArrayInputStream(content.getBytes()), false, null);
 				return true;
 			} catch (CoreException e) {
-				Logger.logError("Could not create file " + file, e);
+				Logger.error(Activator.PLUGIN_ID, "Could not create file " + file, e);
 			}
 		}
 
@@ -86,7 +86,7 @@ public class WorkspaceScriptStorage extends ScriptStorage {
 				folder.create(false, true, null);
 				return true;
 			} catch (CoreException e) {
-				Logger.logError("Could not create folder " + folder, e);
+				Logger.error(Activator.PLUGIN_ID, "Could not create folder " + folder, e);
 			}
 		} else
 			return true;
@@ -102,7 +102,7 @@ public class WorkspaceScriptStorage extends ScriptStorage {
 				project.open(null);
 				return project;
 			} catch (CoreException e) {
-				Logger.logError("Could not create project " + project, e);
+				Logger.error(Activator.PLUGIN_ID, "Could not create project " + project, e);
 			}
 		} else
 			return project;

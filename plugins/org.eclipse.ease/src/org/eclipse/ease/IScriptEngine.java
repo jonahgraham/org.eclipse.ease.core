@@ -18,6 +18,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.service.EngineDescription;
 
 /**
@@ -25,6 +26,10 @@ import org.eclipse.ease.service.EngineDescription;
  * therefore run separately from other code. An engine shall be started by calling {@link #schedule()}.
  */
 public interface IScriptEngine {
+
+	/** Trace enablement for script engines. */
+	boolean TRACE_SCRIPT_ENGINE = org.eclipse.ease.Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/scriptEngine"));
 
 	/**
 	 * Execute script code asynchronously. The code provided will be scheduled and executed as soon as all previously scheduled code is executed. If

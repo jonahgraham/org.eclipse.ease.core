@@ -69,7 +69,7 @@ public class ModuleDefinition {
 	 * @return module definition or <code>null</code>
 	 */
 	public static ModuleDefinition getDefinition(final Object module) {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
 			if (definition.getModuleClass().equals(module.getClass()))
 				return definition;
@@ -198,7 +198,7 @@ public class ModuleDefinition {
 					categoryID = definition.getParentId();
 				} else {
 					// invalid category detected
-					Logger.logError("Invalid category \"" + categoryID + "\" detected for module \"" + getName() + "\"");
+					Logger.error(Activator.PLUGIN_ID, "Invalid category \"" + categoryID + "\" detected for module \"" + getName() + "\"");
 					categoryID = null;
 				}
 			}

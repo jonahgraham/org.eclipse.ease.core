@@ -7,77 +7,129 @@
  *
  * Contributors:
  *     Arthur Daussy - initial implementation
+ *     Christian Pontesegger - refactoring, added tracing
  *******************************************************************************/
 package org.eclipse.ease;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
+/**
+ * Global Logger implementation for EASE. Provides means to log errors, warnings, infos and to create trace output.
+ */
 public class Logger {
 
-	/** Trace enablement for the script service. */
-	public static final boolean TRACE_SCRIPT_SERVICE = org.eclipse.ease.Activator.getDefault().isDebugging()
-			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/scriptService"));
-
-	/** Trace enablement for script engines. */
-	public static final boolean TRACE_SCRIPT_ENGINE = org.eclipse.ease.Activator.getDefault().isDebugging()
-			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/scriptEngine"));
-
-	/** Trace enablement for module wrappers. */
-	public static final boolean TRACE_MODULE_WRAPPER = org.eclipse.ease.Activator.getDefault().isDebugging()
-			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/scriptService"));
-
-	public static void logError(final String message) {
-		logError(message, Activator.PLUGIN_ID);
+	/**
+	 * Log an error.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param message
+	 *            error message
+	 */
+	public static void error(final String pluginID, final String message) {
+		error(pluginID, message, null);
 	}
 
-	public static void logError(final String message, final Throwable exception) {
-		logError(message, Activator.PLUGIN_ID, exception);
+	/**
+	 * Log an error.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param message
+	 *            error message
+	 * @param throwable
+	 *            throwable to be added
+	 */
+	public static void error(final String pluginID, final String message, final Throwable throwable) {
+		Activator.getDefault().getLog().log(new Status(IStatus.ERROR, pluginID, message, throwable));
 	}
 
-	public static void logError(final String message, final String pluginID) {
-		Activator.getDefault().getLog().log(createErrorStatus(message, pluginID));
+	/**
+	 * Log a warning.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param message
+	 *            warning message
+	 */
+	public static void warning(final String pluginID, final String message) {
+		error(pluginID, message, null);
 	}
 
-	public static void logError(final String message, final String pluginID, final Throwable exception) {
-		Activator.getDefault().getLog().log(createErrorStatus(message, pluginID, exception));
+	/**
+	 * Log a warning.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param message
+	 *            warning message
+	 * @param throwable
+	 *            throwable to be added
+	 */
+	public static void warning(final String pluginID, final String message, final Throwable throwable) {
+		Activator.getDefault().getLog().log(new Status(IStatus.WARNING, pluginID, message, throwable));
 	}
 
-	public static IStatus createErrorStatus(final String message, final String pluginID, final Throwable exception) {
-		return createStatus(IStatus.ERROR, message, pluginID, exception);
+	/**
+	 * Log an info.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param message
+	 *            info message
+	 */
+	public static void info(final String pluginID, final String message) {
+		error(pluginID, message, null);
 	}
 
-	public static IStatus createErrorStatus(final String message, final String pluginID) {
-		return createStatus(IStatus.ERROR, message, pluginID, null);
+	/**
+	 * Log an info.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param message
+	 *            info message
+	 * @param throwable
+	 *            throwable to be added
+	 */
+	public static void info(final String pluginID, final String message, final Throwable throwable) {
+		Activator.getDefault().getLog().log(new Status(IStatus.INFO, pluginID, message, throwable));
 	}
 
-	public static IStatus createStatus(final int statusError, final String message, final String pluginID, final Throwable exception) {
-		if (exception != null) {
-			return new Status(statusError, pluginID, message, exception);
-		} else {
-			return new Status(statusError, pluginID, message);
+	/**
+	 * Create trace output.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param enabled
+	 *            enablement flag for tracing, typically points to a trace option flag
+	 * @param title
+	 *            trace message title
+	 */
+	public static void trace(final String pluginID, final boolean enabled, final String title) {
+		trace(pluginID, enabled, title, null);
+	}
+
+	/**
+	 * Create trace output.
+	 *
+	 * @param pluginID
+	 *            origin plug-in ID
+	 * @param enabled
+	 *            enablement flag for tracing, typically points to a trace option flag
+	 * @param title
+	 *            trace message title
+	 * @param details
+	 *            detailed message, will be indented for better readability
+	 */
+	public static void trace(final String pluginID, final boolean enabled, final String title, final String details) {
+		if (enabled) {
+			System.out.println(pluginID + ": " + title);
+
+			if (details != null)
+				// indent detail description
+				System.out.println(details.replace("\n", "\n\t"));
 		}
-	}
-
-	public static IStatus createWarningStatus(final String message, final String pluginID) {
-		return createStatus(IStatus.WARNING, message, pluginID, null);
-	}
-
-	public static IStatus createWarningStatus(final String message, final String pluginID, final Throwable exception) {
-		return createStatus(IStatus.WARNING, message, pluginID, exception);
-	}
-
-	public static void logWarning(final String message) {
-		logWarning(message, Activator.PLUGIN_ID);
-	}
-
-	public static void logWarning(final String message, final String pluginID) {
-		Activator.getDefault().getLog().log(createWarningStatus(message, pluginID));
-	}
-
-	public static void trace(final boolean enabled, final String message) {
-		if (enabled)
-			System.out.println(Activator.PLUGIN_ID + ": " + message);
 	}
 }

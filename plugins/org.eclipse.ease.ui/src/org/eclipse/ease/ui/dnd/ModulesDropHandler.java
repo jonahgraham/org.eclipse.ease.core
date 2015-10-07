@@ -20,6 +20,7 @@ import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.service.ScriptService;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.modules.ui.ModulesTools;
 
 public class ModulesDropHandler implements IShellDropHandler {
@@ -67,7 +68,7 @@ public class ModulesDropHandler implements IShellDropHandler {
 				scriptEngine.executeAsync(element);
 
 		} catch (Exception e) {
-			Logger.logError("loadModule() method not found in Environment module", e);
+			Logger.error(Activator.PLUGIN_ID, "loadModule() method not found in Environment module", e);
 
 			// fallback solution
 			scriptEngine.executeAsync(element);

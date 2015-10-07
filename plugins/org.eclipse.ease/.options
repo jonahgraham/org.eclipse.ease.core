@@ -1,4 +1,13 @@
+# trace options for org.eclipse.ease
+
+# global trace flag for this plugin
 org.eclipse.ease/debug=false
+
+# trace enablement for script service
 org.eclipse.ease/debug/scriptService=false
+
+# trace enablement for script engines
 org.eclipse.ease/debug/scriptEngine=false
+
+# trace enablement for module wrappers
 org.eclipse.ease/debug/moduleWrapper=false

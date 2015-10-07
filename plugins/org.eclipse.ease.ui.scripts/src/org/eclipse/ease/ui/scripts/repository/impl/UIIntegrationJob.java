@@ -23,7 +23,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ease.Logger;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.ease.ui.scripts.Activator;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IScriptListener;
 import org.eclipse.ease.ui.tools.LocationImageDescriptor;
@@ -36,6 +38,10 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
 public class UIIntegrationJob extends UIJob implements IScriptListener {
+	/** Trace enablement for the script UI integration. */
+	private static final boolean TRACE_UI_INTEGRATION = Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption(Activator.PLUGIN_ID + "/debug/UIIntegration"));
+
 	private static final String KEYWORD_NAME = "name";
 
 	private static final String KEYWORD_IMAGE = "image";
@@ -197,6 +203,8 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 
 	private void modifyViewContribution(final String scheme, final IScript script, final ParameterDelta parameterDelta) {
 
+		Logger.trace(Activator.PLUGIN_ID, TRACE_UI_INTEGRATION, Activator.PLUGIN_ID, "Modifying script UI integration for \"" + script.getName());
+
 		if (parameterDelta.isRemoved(scheme) || parameterDelta.isModified(scheme)) {
 			// remove from old contribution
 			LocationDescription oldLocation = new LocationDescription(scheme, parameterDelta.getOldParameter(scheme));
@@ -246,6 +254,9 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 
 	private void addViewContribution(final LocationDescription location, final IScript script) {
 
+		Logger.trace(Activator.PLUGIN_ID, TRACE_UI_INTEGRATION, Activator.PLUGIN_ID,
+				"Adding script \"" + script.getName() + "\" to " + location.fScheme + ":" + location.fViewID);
+
 		// update contribution
 		getContributionFactory(location.getId()).addScript(script);
 
@@ -271,6 +282,9 @@ public class UIIntegrationJob extends UIJob implements IScriptListener {
 	}
 
 	private void removeViewContribution(final LocationDescription location, final IScript script) {
+
+		Logger.trace(Activator.PLUGIN_ID, TRACE_UI_INTEGRATION, Activator.PLUGIN_ID,
+				"Removing script \"" + script.getName() + "\" from " + location.fScheme + ":" + location.fViewID);
 
 		// update contribution
 		getContributionFactory(location.getId()).removeScript(script);

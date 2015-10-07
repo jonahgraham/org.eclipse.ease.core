@@ -405,7 +405,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	@Override
 	public ScriptType getType() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		ScriptType type = null;
 
 		// script type as provided in metadata
@@ -500,7 +500,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			engine.schedule();
 
 		} else
-			Logger.logError("Could not detect script engine for " + this);
+			Logger.error(org.eclipse.ease.ui.scripts.Activator.PLUGIN_ID, "Could not detect script engine for " + this);
 	}
 
 	/**
@@ -509,7 +509,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 * @generated NOT
 	 */
 	private EngineDescription getEngineDescription() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		String engineIDs = getParameters().get("script-engine");
 		if (engineIDs == null)

@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.ease.ui.help.hovers.IHelpResolver;
@@ -99,7 +100,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 				reader.close();
 
 			} catch (final IOException e) {
-				Logger.logError("Cannot read class list for code completion", e);
+				Logger.error(Activator.PLUGIN_ID, "Cannot read class list for code completion", e);
 			}
 
 			// read eclipse classes
@@ -127,7 +128,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 						}
 					}
 				} catch (final IOException e) {
-					Logger.logError("Could not parse manifest of bundle \"" + bundle.getBundleId() + "\"", e);
+					Logger.error(Activator.PLUGIN_ID, "Could not parse manifest of bundle \"" + bundle.getBundleId() + "\"", e);
 				}
 
 				if (!signedContent) {
@@ -168,7 +169,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 						}
 					} catch (final IOException e) {
-						Logger.logError("Cannot resolve location for bundle \"" + bundle.getBundleId() + "\"", e);
+						Logger.error(Activator.PLUGIN_ID, "Cannot resolve location for bundle \"" + bundle.getBundleId() + "\"", e);
 					}
 				}
 			}

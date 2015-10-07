@@ -37,10 +37,8 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Get the default location to store recorded/imported scripts to. If no
-	 * path was defined by the user, a default path within the .metadata
-	 * workspace folder is returned. As the user might change the default path
-	 * also invalid entries might be returned.
+	 * Get the default location to store recorded/imported scripts to. If no path was defined by the user, a default path within the .metadata workspace folder
+	 * is returned. As the user might change the default path also invalid entries might be returned.
 	 *
 	 * @return path to default script storage location
 	 */
@@ -53,9 +51,7 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Get the storage location for recorded/imported scripts as set by the
-	 * user. If the user did not explicitly set a location, <code>null</code> is
-	 * returned.
+	 * Get the storage location for recorded/imported scripts as set by the user. If the user did not explicitly set a location, <code>null</code> is returned.
 	 *
 	 * @return user provided storage location or <code>null</code>
 	 */
@@ -69,8 +65,7 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Get the default location to store recorded/imported scripts to. Returns
-	 * the hard-coded default location within the workspace/.metadata folder.
+	 * Get the default location to store recorded/imported scripts to. Returns the hard-coded default location within the workspace/.metadata folder.
 	 *
 	 * @return path to default script storage location
 	 */
@@ -79,8 +74,7 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Returns a collection of script locations as stored in the preferences.
-	 * Converts preference data to {@link IEntry} elements.
+	 * Returns a collection of script locations as stored in the preferences. Converts preference data to {@link IEntry} elements.
 	 *
 	 * @return all configured script locations
 	 */
@@ -114,8 +108,7 @@ public final class PreferencesHelper {
 	}
 
 	/**
-	 * Create a location for a given preferences node. Reads preferences data to
-	 * recreate the node.
+	 * Create a location for a given preferences node. Reads preferences data to recreate the node.
 	 *
 	 * @param node
 	 *            preferences node to read
@@ -162,7 +155,7 @@ public final class PreferencesHelper {
 			try {
 				node.removeNode();
 			} catch (BackingStoreException e) {
-				Logger.logError("Could not remove storage location for \"" + locationURI + "\"", e);
+				Logger.error(Activator.PLUGIN_ID, "Could not remove storage location for \"" + locationURI + "\"", e);
 			}
 		}
 	}

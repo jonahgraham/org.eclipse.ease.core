@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.AbstractCodeFactory;
 import org.eclipse.ease.modules.IEnvironment;
@@ -152,8 +151,8 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 		// build function declarations
 		for (final String name : getMethodNames(method)) {
 			if (!isValidMethodName(name)) {
-				Logger.logError("The method name \"" + name + "\" from the module \"" + moduleVariable + "\" can not be wrapped because it's name is reserved",
-						Activator.PLUGIN_ID);
+				Logger.error(PluginConstants.PLUGIN_ID,
+						"The method name \"" + name + "\" from the module \"" + moduleVariable + "\" can not be wrapped because it's name is reserved");
 
 			} else if (!name.isEmpty()) {
 				javaScriptCode.append("function ").append(name).append("(").append(parameterList).append(") {\n");

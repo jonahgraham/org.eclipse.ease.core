@@ -18,6 +18,7 @@ import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.service.ScriptService;
+import org.eclipse.ease.ui.Activator;
 
 /**
  * Helper class for drop handlers. Adds convenience methods to keep dedicated handlers simpler.
@@ -49,15 +50,15 @@ public abstract class AbstractModuleDropHandler implements IShellDropHandler {
 						return scriptEngine.executeSync(functionCall);
 
 					} catch (NoSuchMethodException e) {
-						Logger.logError("Method loadModule() not found", e);
+						Logger.error(Activator.PLUGIN_ID, "Method loadModule() not found", e);
 					} catch (SecurityException e) {
-						Logger.logError("Method loadModule() not accessible", e);
+						Logger.error(Activator.PLUGIN_ID, "Method loadModule() not accessible", e);
 					} catch (InterruptedException e) {
-						Logger.logError("Script execution interrupted", e);
+						Logger.error(Activator.PLUGIN_ID, "Script execution interrupted", e);
 					}
 
 				} else
-					Logger.logError("Module \"" + moduleID + "\" cannot be found");
+					Logger.error(Activator.PLUGIN_ID, "Module \"" + moduleID + "\" cannot be found");
 
 			} else
 				return environment.getModule(moduleID);

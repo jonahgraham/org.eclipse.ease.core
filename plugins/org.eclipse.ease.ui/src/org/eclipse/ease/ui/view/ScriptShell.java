@@ -675,7 +675,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 						dropins.add((IShellDropin) dropin);
 					}
 				} catch (final CoreException e1) {
-					Logger.logError("Invalid shell dropin detected: " + e.getAttribute(PROPERTY_DROPIN_CLASS), e1);
+					Logger.error(Activator.PLUGIN_ID, "Invalid shell dropin detected: " + e.getAttribute(PROPERTY_DROPIN_CLASS), e1);
 				}
 			}
 		}

@@ -17,6 +17,7 @@ import java.net.URL;
 
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.modules.ui.ModulesTools;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.PlatformUI;
@@ -40,7 +41,7 @@ public class ModuleHelp {
 				IMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
 				return rootNode.getChild("body");
 			} catch (Exception e) {
-				Logger.logError("Cannot find the module help content ", e);
+				Logger.error(Activator.PLUGIN_ID, "Cannot find the module help content ", e);
 			}
 		}
 

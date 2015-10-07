@@ -26,6 +26,7 @@ import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -87,7 +88,7 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 					providers.add((ICompletionProvider) candidate);
 
 			} catch (final CoreException e) {
-				Logger.logError("Invalid completion provider detected in " + element.getContributor().getName(), e);
+				Logger.error(Activator.PLUGIN_ID, "Invalid completion provider detected in " + element.getContributor().getName(), e);
 			}
 		}
 

@@ -41,7 +41,7 @@ public class FileScriptStorage extends ScriptStorage {
 						return true;
 
 					} catch (Exception e) {
-						Logger.logError("Could not store recorded script.", e);
+						Logger.error(Activator.PLUGIN_ID, "Could not store recorded script.", e);
 					} finally {
 						if (outputStream != null) {
 							try {
@@ -54,7 +54,7 @@ public class FileScriptStorage extends ScriptStorage {
 				}
 			}
 		} catch (IOException e) {
-			Logger.logError("Could not create file", e);
+			Logger.error(Activator.PLUGIN_ID, "Could not create file", e);
 		}
 
 		return false;

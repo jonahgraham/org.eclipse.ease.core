@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DND;
@@ -69,7 +70,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
 
 				} catch (final CoreException e1) {
 
-					Logger.logError("Invalid drop target listener detected in plugin \"" + e.getContributor().getName() + "\"", e1);
+					Logger.error(Activator.PLUGIN_ID, "Invalid drop target listener detected in plugin \"" + e.getContributor().getName() + "\"", e1);
 				}
 			}
 		}

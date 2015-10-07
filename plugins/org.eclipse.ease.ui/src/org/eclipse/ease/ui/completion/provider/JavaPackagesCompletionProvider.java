@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.ease.ui.help.hovers.IHelpResolver;
@@ -84,7 +85,7 @@ public class JavaPackagesCompletionProvider extends AbstractCompletionProvider {
 				reader.close();
 
 			} catch (IOException e) {
-				Logger.logError("Cannot read package list for code completion", e);
+				Logger.error(Activator.PLUGIN_ID, "Cannot read package list for code completion", e);
 			}
 
 			// read eclipse packages

@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.urlhandler.WorkspaceURLConnection;
 import org.eclipse.ui.IEditorPart;
@@ -356,7 +357,7 @@ public final class ResourceTools {
 				return ((URI) resource).toURL().openStream();
 		} catch (final Exception e) {
 			// cannot open stream
-			Logger.logError("Cannot open stream for \"" + location + "\"", e);
+			Logger.error(Activator.PLUGIN_ID, "Cannot open stream for \"" + location + "\"", e);
 		}
 
 		return null;
@@ -375,7 +376,7 @@ public final class ResourceTools {
 			InputStream inputStream = new BufferedInputStream(getInputStream(location));
 			return StringTools.toString(inputStream);
 		} catch (IOException e) {
-			Logger.logError("Cannot read from resource \"" + location + "\"", e);
+			Logger.error(Activator.PLUGIN_ID, "Cannot read from resource \"" + location + "\"", e);
 		}
 
 		return null;

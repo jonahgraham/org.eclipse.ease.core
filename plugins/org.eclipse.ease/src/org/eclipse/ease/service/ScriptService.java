@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.ease.Activator;
 import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.IScriptEngine;
@@ -102,7 +103,8 @@ public class ScriptService implements IScriptService {
 					if (definition.getModuleClass() != null)
 						fAvailableModules.put(definition.getPath().toString(), definition);
 					else
-						Logger.logWarning("Module <" + definition.getName() + "> in plugin <" + definition.getBundleID() + "> could not be located!");
+						Logger.warning(Activator.PLUGIN_ID,
+								"Module <" + definition.getName() + "> in plugin <" + definition.getBundleID() + "> could not be located!");
 				}
 			}
 		}

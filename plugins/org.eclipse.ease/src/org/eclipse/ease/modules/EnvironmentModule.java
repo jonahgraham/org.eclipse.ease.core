@@ -19,6 +19,7 @@ import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ease.Activator;
 import org.eclipse.ease.ExitException;
 import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.IScriptEngine;
@@ -57,7 +58,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 		final boolean reloaded = getScriptEngine().hasVariable(identifier);
 		getScriptEngine().setVariable(identifier, toBeWrapped);
 
-		Logger.trace(Logger.TRACE_MODULE_WRAPPER, "wrapping object: " + toBeWrapped.toString());
+		Logger.trace(Activator.PLUGIN_ID, ICodeFactory.TRACE_MODULE_WRAPPER, "wrapping object: " + toBeWrapped.toString());
 
 		// create function wrappers
 		createWrappers(toBeWrapped, identifier, reloaded);
@@ -113,12 +114,12 @@ public class EnvironmentModule extends AbstractEnvironment {
 							scriptCode.append('\n');
 						}
 					} else {
-						Logger.logWarning("Skipped wrapping of field \"" + field.getName() + "\" (module \"" + instance.getClass().getName()
-								+ "\") as variable is already declared.");
+						Logger.trace(Activator.PLUGIN_ID, ICodeFactory.TRACE_MODULE_WRAPPER, "Skipped wrapping of field \"" + field.getName() + "\" (module \""
+								+ instance.getClass().getName() + "\") as variable is already declared.");
 					}
 
 				} catch (final IllegalArgumentException e) {
-					Logger.logError("Could not wrap field \"" + field.getName() + " \" of module \"" + instance.getClass() + "\".");
+					Logger.error(Activator.PLUGIN_ID, "Could not wrap field \"" + field.getName() + " \" of module \"" + instance.getClass() + "\".", e);
 				}
 			}
 		}

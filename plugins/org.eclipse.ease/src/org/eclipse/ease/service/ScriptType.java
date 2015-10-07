@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.ease.Activator;
 import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
@@ -63,7 +64,7 @@ public class ScriptType {
 
 		} catch (CoreException e) {
 			// could not instantiate class
-			Logger.logError("Could not instantiate header parser", e);
+			Logger.error(Activator.PLUGIN_ID, "Could not instantiate code parser", e);
 		}
 
 		return null;
@@ -77,7 +78,7 @@ public class ScriptType {
 
 		} catch (CoreException e) {
 			// could not instantiate class
-			Logger.logError("Could not instantiate code factory", e);
+			Logger.error(Activator.PLUGIN_ID, "Could not instantiate code factory", e);
 		}
 
 		return null;

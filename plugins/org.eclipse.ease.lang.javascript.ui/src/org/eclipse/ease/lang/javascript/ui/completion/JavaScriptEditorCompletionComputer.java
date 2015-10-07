@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.lang.javascript.JavaScriptHelper;
+import org.eclipse.ease.lang.javascript.ui.PluginConstants;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.completion.CodeCompletionAggregator;
@@ -80,7 +81,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 					return fCompletionAggregator.getCompletionProposals(resource, relevantText, cursorPosition, selectionRange, monitor);
 
 				} catch (final BadLocationException e) {
-					Logger.logError("Failed to calculate proposals for JavaScript editor", e);
+					Logger.error(PluginConstants.PLUGIN_ID, "Failed to calculate proposals for JavaScript editor", e);
 				}
 			}
 		}

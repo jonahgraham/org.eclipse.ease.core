@@ -12,8 +12,8 @@ package org.eclipse.ease.ui.scripts.repository;
 
 import java.util.Collection;
 
-import org.eclipse.ease.ui.scripts.repository.IScript;
-import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.ease.ui.scripts.Activator;
 
 /**
  * Global service to register user scripts and to query for registered scripts. To get the service instance use
@@ -23,6 +23,10 @@ import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
  * </pre>
  */
 public interface IRepositoryService {
+
+	/** Trace enablement for the repository service. */
+	boolean TRACE_REPOSITORY_SERVICE = Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption(Activator.PLUGIN_ID + "/debug/repositoryService"));
 
 	/**
 	 * Trigger an immediate refresh of all script sources and contained scripts.
@@ -85,7 +89,7 @@ public interface IRepositoryService {
 
 	/**
 	 * Remove a give location from the repository. Removes the location and all scripts registered under that location.
-	 * 
+	 *
 	 * @param locationURI
 	 *            location URI to unregister
 	 */

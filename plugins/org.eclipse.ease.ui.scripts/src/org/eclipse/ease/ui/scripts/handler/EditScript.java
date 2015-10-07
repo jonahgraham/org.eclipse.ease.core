@@ -22,6 +22,7 @@ import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.ui.scripts.Activator;
 import org.eclipse.ease.ui.scripts.ScriptEditorInput;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
@@ -56,7 +57,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 						try {
 							IDE.openEditor(page, (IFile) content);
 						} catch (PartInitException e) {
-							Logger.logError("Could not open editor for file " + content);
+							Logger.error(Activator.PLUGIN_ID, "Could not open editor for file " + content, e);
 						}
 
 					} else if ((content instanceof File) && (((File) content).exists())) {
@@ -88,7 +89,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 													outputStream.write(newSource.getBytes());
 
 												} catch (Exception e) {
-													Logger.logError("Could not store recorded script.", e);
+													Logger.error(Activator.PLUGIN_ID, "Could not store recorded script.", e);
 												} finally {
 													if (outputStream != null) {
 														try {
@@ -100,8 +101,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 												}
 
 												// refresh script in repository
-												final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-														IRepositoryService.class);
+												final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
 												// FIXME we should only update
 												// this one resource instead of
 												// all scripts
@@ -112,7 +112,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 								});
 
 							} catch (PartInitException e) {
-								Logger.logError("Could not open editor for file " + content);
+								Logger.error(Activator.PLUGIN_ID, "Could not open editor for file " + content, e);
 							}
 						}
 
@@ -126,7 +126,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 								final IEditorPart editor = page.openEditor(editorInput, descriptor.getId());
 
 							} catch (PartInitException e) {
-								Logger.logError("Could not open editor for file " + content);
+								Logger.error(Activator.PLUGIN_ID, "Could not open editor for file " + content, e);
 							}
 						}
 					}

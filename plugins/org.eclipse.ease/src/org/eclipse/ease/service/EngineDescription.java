@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.ease.AbstractScriptEngine;
+import org.eclipse.ease.Activator;
 import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineLaunchExtension;
@@ -60,7 +61,7 @@ public class EngineDescription {
 				if (scriptTypeID != null) {
 					final ScriptType scriptType = scriptService.getAvailableScriptTypes().get(scriptTypeID);
 					if (scriptType == null)
-						Logger.logError("Unknow scriptType " + scriptTypeID);
+						Logger.error(Activator.PLUGIN_ID, "Unknow scriptType " + scriptTypeID);
 					else
 						fTypes.add(scriptType);
 				}
@@ -102,7 +103,7 @@ public class EngineDescription {
 			}
 
 		} catch (final CoreException e) {
-			Logger.logError("Could not create script engine: " + getID(), e);
+			Logger.error(Activator.PLUGIN_ID, "Could not create script engine: " + getID(), e);
 		}
 
 		return null;
@@ -161,7 +162,7 @@ public class EngineDescription {
 
 		} catch (final CoreException e) {
 			// not found, seems to be an invalid extension configuration
-			Logger.logError("Plugin extension configuration error for engine: " + toString());
+			Logger.error(Activator.PLUGIN_ID, "Plugin extension configuration error for engine: " + toString(), e);
 			return false;
 		}
 	}

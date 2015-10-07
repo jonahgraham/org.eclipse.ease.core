@@ -27,6 +27,7 @@ import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.debug.ui.ILaunchShortcut2;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.tools.ResourceTools;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -158,7 +159,7 @@ public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunch
 			} catch (final CoreException e) {
 				// could not launch configuration, giving up
 				MessageDialog.openError(Display.getDefault().getActiveShell(), "Launch Error", "Could not launch \"" + file + "\"");
-				Logger.logError("Could not launch \"" + file + "\"", e);
+				Logger.error(Activator.PLUGIN_ID, "Could not launch \"" + file + "\"", e);
 			}
 		}
 	}
