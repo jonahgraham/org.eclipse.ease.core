@@ -35,7 +35,7 @@ public class ModulesTools {
 		private final Font italic = JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT);
 
 		@Override
-		public void applyStyles(TextStyle textStyle) {
+		public void applyStyles(final TextStyle textStyle) {
 			textStyle.font = italic;
 			textStyle.foreground = JFaceResources.getColorRegistry().get("QUALIFIER_COLOR");
 		}
@@ -52,7 +52,7 @@ public class ModulesTools {
 	 *            inspected method
 	 * @return signature of method.
 	 */
-	public static StyledString getSignature(final Method method, boolean useStyledReturnValue) {
+	public static StyledString getSignature(final Method method, final boolean useStyledReturnValue) {
 
 		final StyledString signature = new StyledString();
 		signature.append(method.getName());
@@ -88,8 +88,15 @@ public class ModulesTools {
 		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
+		// try for exact match
 		for (final ModuleDefinition module : modules) {
 			if (module.getModuleClass().equals(method.getDeclaringClass()))
+				return module;
+		}
+
+		// try for derived match
+		for (final ModuleDefinition module : modules) {
+			if (method.getDeclaringClass().isAssignableFrom(module.getModuleClass()))
 				return module;
 		}
 
@@ -108,15 +115,22 @@ public class ModulesTools {
 		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
+		// try for exact match
 		for (final ModuleDefinition module : modules) {
 			if (module.getModuleClass().equals(field.getDeclaringClass()))
+				return module;
+		}
+
+		// try for derived match
+		for (final ModuleDefinition module : modules) {
+			if (field.getDeclaringClass().isAssignableFrom(module.getModuleClass()))
 				return module;
 		}
 
 		return null;
 	}
 
-	public static int getOptionalParameterCount(Method method) {
+	public static int getOptionalParameterCount(final Method method) {
 		int optional = 0;
 
 		for (final Annotation[] list : method.getParameterAnnotations()) {
