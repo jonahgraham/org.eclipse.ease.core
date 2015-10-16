@@ -17,9 +17,9 @@ import org.eclipse.ease.ui.scripts.handler.RenameScript;
 import org.eclipse.ease.ui.scripts.handler.RunScript;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.menus.AbstractContributionFactory;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
@@ -29,7 +29,9 @@ import org.eclipse.ui.services.IServiceLocator;
 /**
  * Provide context menu entries for macros.
  */
-public class ScriptContextMenuEntries extends AbstractContributionFactory {
+public class ScriptContextMenuEntries extends AbstractContributionFactory implements ISelectionChangedListener {
+
+	private IStructuredSelection fLastSelection;
 
 	/**
 	 * Constructor.
@@ -43,58 +45,61 @@ public class ScriptContextMenuEntries extends AbstractContributionFactory {
 
 	@Override
 	public final void createContributionItems(final IServiceLocator serviceLocator, final IContributionRoot additions) {
-		final ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
-		if (selection instanceof IStructuredSelection) {
-			if (!((IStructuredSelection) selection).isEmpty()) {
 
-				final StringBuffer names = new StringBuffer();
-				for (final Object object : ((IStructuredSelection) selection).toArray()) {
-					if (object instanceof IScript)
-						names.append(((IScript) object).getPath()).append(';');
-				}
+		if ((fLastSelection != null) && (!fLastSelection.isEmpty())) {
 
-				if (names.length() > 0) {
-					names.deleteCharAt(names.length() - 1);
-					final HashMap<String, String> parameters = new HashMap<String, String>();
+			final StringBuffer names = new StringBuffer();
+			for (final Object object : fLastSelection.toArray()) {
+				if (object instanceof IScript)
+					names.append(((IScript) object).getPath()).append(';');
+			}
 
-					// add "run" entry
-					parameters.put(RunScript.PARAMETER_NAME, names.toString());
-					final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(serviceLocator, null,
-							RunScript.COMMAND_ID, CommandContributionItem.STYLE_PUSH);
-					contributionParameter.label = "Run";
-					contributionParameter.visibleEnabled = true;
-					contributionParameter.parameters = parameters;
-					CommandContributionItem contribution = new CommandContributionItem(contributionParameter);
-					additions.addContributionItem(contribution, null);
+			if (names.length() > 0) {
+				names.deleteCharAt(names.length() - 1);
+				final HashMap<String, String> parameters = new HashMap<String, String>();
 
-					// add separator
-					additions.addContributionItem(new Separator(), null);
+				// add "run" entry
+				parameters.put(RunScript.PARAMETER_NAME, names.toString());
+				final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(serviceLocator, null, RunScript.COMMAND_ID,
+						CommandContributionItem.STYLE_PUSH);
+				contributionParameter.label = "Run";
+				contributionParameter.visibleEnabled = true;
+				contributionParameter.parameters = parameters;
+				CommandContributionItem contribution = new CommandContributionItem(contributionParameter);
+				additions.addContributionItem(contribution, null);
 
-					// add "edit" entry
-					parameters.clear();
-					contributionParameter.commandId = EditScript.COMMAND_ID;
-					contributionParameter.label = "Edit";
-					contribution = new CommandContributionItem(contributionParameter);
-					additions.addContributionItem(contribution, null);
+				// add separator
+				additions.addContributionItem(new Separator(), null);
 
-					// add "rename" entry
-					parameters.clear();
-					parameters.put(RenameScript.PARAMETER_NAME, names.toString());
-					contributionParameter.commandId = RenameScript.COMMAND_ID;
-					contributionParameter.label = "Rename";
-					contribution = new CommandContributionItem(contributionParameter);
-					additions.addContributionItem(contribution, null);
+				// add "edit" entry
+				parameters.clear();
+				contributionParameter.commandId = EditScript.COMMAND_ID;
+				contributionParameter.label = "Edit";
+				contribution = new CommandContributionItem(contributionParameter);
+				additions.addContributionItem(contribution, null);
 
-					// TODO re-implement
-					// add "delete" entry
-					// parameters.clear();
-					// parameters.put(Delete.PARAMETER_NAME, names.toString());
-					// contributionParameter.commandId = Delete.COMMAND_ID;
-					// contributionParameter.label = "Delete";
-					// contribution = new CommandContributionItem(contributionParameter);
-					// additions.addContributionItem(contribution, null);
-				}
+				// add "rename" entry
+				parameters.clear();
+				parameters.put(RenameScript.PARAMETER_NAME, names.toString());
+				contributionParameter.commandId = RenameScript.COMMAND_ID;
+				contributionParameter.label = "Rename";
+				contribution = new CommandContributionItem(contributionParameter);
+				additions.addContributionItem(contribution, null);
+
+				// TODO re-implement
+				// add "delete" entry
+				// parameters.clear();
+				// parameters.put(Delete.PARAMETER_NAME, names.toString());
+				// contributionParameter.commandId = Delete.COMMAND_ID;
+				// contributionParameter.label = "Delete";
+				// contribution = new CommandContributionItem(contributionParameter);
+				// additions.addContributionItem(contribution, null);
 			}
 		}
+	}
+
+	@Override
+	public void selectionChanged(final SelectionChangedEvent event) {
+		fLastSelection = (event.getSelection() instanceof IStructuredSelection) ? (IStructuredSelection) event.getSelection() : null;
 	}
 }
