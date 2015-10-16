@@ -145,7 +145,7 @@ public class PythonCodeFactory extends AbstractCodeFactory {
 	}
 
 	@Override
-	public String createStaticFieldWrapper(final IEnvironment environment, final String moduleVariable, final Field field) {
+	public String createFinalFieldWrapper(final IEnvironment environment, final String moduleVariable, final Field field) {
 		return PythonHelper.getSaveName(field.getName()) + " = " + moduleVariable + '.' + field.getName() + '\n';
 	}
 

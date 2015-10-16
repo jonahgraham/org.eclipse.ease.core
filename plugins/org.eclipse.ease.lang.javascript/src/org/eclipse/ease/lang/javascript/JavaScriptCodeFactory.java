@@ -170,7 +170,7 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 	}
 
 	@Override
-	public String createStaticFieldWrapper(final IEnvironment environment, final String moduleVariable, final Field field) {
+	public String createFinalFieldWrapper(final IEnvironment environment, final String moduleVariable, final Field field) {
 		return "const " + JavaScriptHelper.getSaveName(field.getName()) + " = " + moduleVariable + "." + field.getName() + ";\n";
 	}
 

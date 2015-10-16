@@ -60,8 +60,8 @@ public final class ModuleHelper {
 	}
 
 	/**
-	 * Returns a List of exported fields. Any public static field marked by a @WrapToScript annotation is exported. If no annotations are found all public
-	 * static fields are returned.
+	 * Returns a List of exported fields. Any public final field marked by a @WrapToScript annotation is exported. If no annotations are found all public final
+	 * fields are returned.
 	 *
 	 * @param clazz
 	 *            Class to be evaluated

@@ -99,7 +99,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 			}
 		}
 
-		// create wrappers for static fields
+		// create wrappers for final fields
 		if (!reload) {
 			// this is only done upon initial loading as we try to create constants here
 			for (final Field field : ModuleHelper.getFields(instance.getClass())) {
@@ -107,7 +107,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 
 					// only wrap if field is not already declared
 					if (!getScriptEngine().hasVariable(codeFactory.getSaveVariableName(field.getName()))) {
-						final String code = codeFactory.createStaticFieldWrapper(this, identifier, field);
+						final String code = codeFactory.createFinalFieldWrapper(this, identifier, field);
 
 						if ((code != null) && !code.isEmpty()) {
 							scriptCode.append(code);
