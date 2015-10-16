@@ -14,6 +14,7 @@ package org.eclipse.ease.ui.completion;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -176,7 +177,16 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 
 	@Override
 	public IContentProposal[] getProposals(final String contents, final int position) {
-		final Collection<ICompletionProposal> proposals = getCompletionProposals(null, contents, position, 0, null);
+		final List<ICompletionProposal> proposals = getCompletionProposals(null, contents, position, 0, null);
+
+		Collections.sort(proposals, new Comparator<ICompletionProposal>() {
+
+			@Override
+			public int compare(final ICompletionProposal o1, final ICompletionProposal o2) {
+				return ScriptCompletionProposal.compare((ScriptCompletionProposal) o1, (ScriptCompletionProposal) o2);
+			}
+		});
+
 		return proposals.toArray(new IContentProposal[proposals.size()]);
 	}
 }
