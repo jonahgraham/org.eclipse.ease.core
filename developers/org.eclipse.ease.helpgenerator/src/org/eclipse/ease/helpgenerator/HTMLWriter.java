@@ -1,7 +1,6 @@
 package org.eclipse.ease.helpgenerator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,10 +10,12 @@ import java.util.List;
 import com.sun.javadoc.AnnotationDesc;
 import com.sun.javadoc.AnnotationDesc.ElementValuePair;
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.Doc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.Tag;
 
 public class HTMLWriter {
@@ -24,18 +25,12 @@ public class HTMLWriter {
 		private final String fLinkID;
 		private final String fDescription;
 		private final boolean fDeprecated;
-		private FieldDoc fField;
 
 		public Overview(final String title, final String linkID, final String description, final boolean deprecated) {
 			fTitle = title;
 			fLinkID = linkID;
 			fDescription = description;
 			fDeprecated = deprecated;
-		}
-
-		public Overview(final String title, final String linkID, final String description, final boolean deprecated, final FieldDoc field) {
-			this(title, linkID, description, deprecated);
-			fField = field;
 		}
 
 		@Override
@@ -90,6 +85,7 @@ public class HTMLWriter {
 		// dependencies
 		addLine(buffer, createDependenciesSection());
 
+		// end title div
 		addLine(buffer, "	</div>");
 
 		// constants
@@ -132,62 +128,45 @@ public class HTMLWriter {
 
 		addLine(buffer, "\t<h2>Methods</h2>");
 
-		final List<MethodDoc> methods = new ArrayList<MethodDoc>();
-		ClassDoc clazzDoc = fClazz;
-		while (clazzDoc != null) {
-			methods.addAll((Arrays.asList(clazzDoc.methods())));
-			clazzDoc = clazzDoc.superclass();
-		}
+		for (final MethodDoc method : getExportedMethods()) {
+			// heading
+			addText(buffer, "\t<div class=\"command");
+			if (isDeprecated(method))
+				addText(buffer, " deprecated");
+			addText(buffer, "\" title=\"");
+			addText(buffer, method.name());
+			addLine(buffer, "\">");
 
-		Collections.sort(methods, new Comparator<MethodDoc>() {
+			addLine(buffer,
+					"\t\t<h3" + (isDeprecated(method) ? " class=\"deprecatedText\"" : "") + "><a id=\"" + method.name() + "\">" + method.name() + "</a></h3>");
 
-			@Override
-			public int compare(final MethodDoc o1, final MethodDoc o2) {
-				return o1.name().compareTo(o2.name());
+			// synopsis
+			addLine(buffer, createSynopsis(method));
+
+			// main description
+			addLine(buffer, "\t\t<p class=\"description\">" + fLinkProvider.insertLinks(fClazz, method.commentText()) + "</p>");
+
+			if (isDeprecated(method)) {
+				String deprecationText = method.tags("deprecated")[0].text();
+				if (deprecationText.isEmpty())
+					deprecationText = "This method is deprecated and might be removed in future versions.";
+
+				addLine(buffer, "\t\t<p class=\"warning\"><b>Deprecation warning:</b> " + fLinkProvider.insertLinks(fClazz, deprecationText) + "</p>");
 			}
-		});
 
-		for (final MethodDoc method : methods) {
-			if (isExported(method)) {
-				// heading
-				addText(buffer, "\t<div class=\"command");
-				if (isDeprecated(method))
-					addText(buffer, " deprecated");
-				addText(buffer, "\" title=\"");
-				addText(buffer, method.name());
-				addLine(buffer, "\">");
+			// aliases
+			addLine(buffer, createAliases(method));
 
-				addLine(buffer, "\t\t<h3" + (isDeprecated(method) ? " class=\"deprecatedText\"" : "") + "><a id=\"" + method.name() + "\">" + method.name()
-						+ "</a></h3>");
+			// parameters
+			addLine(buffer, createParametersTable(method));
 
-				// synopsis
-				addLine(buffer, createSynopsis(method));
+			// return value
+			addLine(buffer, createReturnValueArea(method));
 
-				// main description
-				addLine(buffer, "\t\t<p class=\"description\">" + fLinkProvider.insertLinks(fClazz, method.commentText()) + "</p>");
+			// examples
+			addLine(buffer, createExampleArea(method));
 
-				if (isDeprecated(method)) {
-					String deprecationText = method.tags("deprecated")[0].text();
-					if (deprecationText.isEmpty())
-						deprecationText = "This method is deprecated and might be removed in future versions.";
-
-					addLine(buffer, "\t\t<p class=\"warning\"><b>Deprecation warning:</b> " + fLinkProvider.insertLinks(fClazz, deprecationText) + "</p>");
-				}
-
-				// aliases
-				addLine(buffer, createAliases(method));
-
-				// parameters
-				addLine(buffer, createParametersTable(method));
-
-				// return value
-				addLine(buffer, createReturnValueArea(method));
-
-				// examples
-				addLine(buffer, createExampleArea(method));
-
-				addLine(buffer, "\t</div>");
-			}
+			addLine(buffer, "\t</div>");
 		}
 
 		return buffer;
@@ -350,18 +329,12 @@ public class HTMLWriter {
 		addLine(buffer, "		</tr>");
 
 		final List<Overview> overview = new ArrayList<Overview>();
-		ClassDoc clazzDoc = fClazz;
-		while (clazzDoc != null) {
-			for (final MethodDoc method : clazzDoc.methods()) {
-				if (isExported(method)) {
-					overview.add(new Overview(method.name(), method.name(), method.commentText(), isDeprecated(method)));
-					for (final String alias : getFunctionAliases(method))
-						overview.add(new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>.",
-								isDeprecated(method)));
-				}
-			}
 
-			clazzDoc = clazzDoc.superclass();
+		for (final MethodDoc method : getExportedMethods()) {
+			overview.add(new Overview(method.name(), method.name(), method.commentText(), isDeprecated(method)));
+			for (final String alias : getFunctionAliases(method))
+				overview.add(
+						new Overview(alias, method.name(), "Alias for <a href=\"#" + method.name() + "\">" + method.name() + "</a>.", isDeprecated(method)));
 		}
 
 		Collections.sort(overview);
@@ -388,20 +361,9 @@ public class HTMLWriter {
 
 	private StringBuffer createConstantsSection() {
 		final StringBuffer buffer = new StringBuffer();
-		final List<Overview> constants = new ArrayList<Overview>();
-		ClassDoc clazzDoc = fClazz;
-		while (clazzDoc != null) {
-			for (final FieldDoc field : clazzDoc.fields()) {
-				if (isExported(field))
-					constants.add(new Overview(field.name(), null, field.commentText(), isDeprecated(field), field));
-			}
 
-			clazzDoc = clazzDoc.superclass();
-		}
-
-		if (!constants.isEmpty()) {
-			Collections.sort(constants);
-
+		List<FieldDoc> fields = getExportedFields();
+		if (!fields.isEmpty()) {
 			addLine(buffer, "");
 			addLine(buffer, "	<h2>Constants</h2>");
 			addLine(buffer, "	<table class=\"constants\">");
@@ -410,17 +372,17 @@ public class HTMLWriter {
 			addLine(buffer, "			<th>Description</th>");
 			addLine(buffer, "		</tr>");
 
-			for (final Overview constant : constants) {
+			for (final FieldDoc field : fields) {
 				addLine(buffer, "\t\t<tr>");
 
-				if (!constant.fDeprecated) {
-					addLine(buffer, "			<td><a id=\"" + constant.fTitle + "\">" + constant.fTitle + "</a></td>");
-					addLine(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, constant.fDescription) + "</td>");
+				if (!isDeprecated(field)) {
+					addLine(buffer, "			<td><a id=\"" + field.name() + "\">" + field.name() + "</a></td>");
+					addLine(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, field.commentText()) + "</td>");
 
 				} else {
-					addLine(buffer, "			<td><a id=\"" + constant.fTitle + "\" class=\"deprecatedText\">" + constant.fTitle + "</a></td>");
-					addText(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, constant.fDescription));
-					String deprecationText = constant.fField.tags("deprecated")[0].text();
+					addLine(buffer, "			<td><a id=\"" + field.name() + "\" class=\"deprecatedText\">" + field.name() + "</a></td>");
+					addText(buffer, "			<td>" + fLinkProvider.insertLinks(fClazz, field.commentText()));
+					String deprecationText = field.tags("deprecated")[0].text();
 					if (deprecationText.isEmpty())
 						deprecationText = "This constant is deprecated and might be removed in future versions.";
 
@@ -472,19 +434,6 @@ public class HTMLWriter {
 		buffer.append(text).append(LINE_DELIMITER);
 	}
 
-	private static boolean isExported(final FieldDoc field) {
-		for (final AnnotationDesc annotation : field.annotations()) {
-			if (isWrapToScriptAnnotation(annotation))
-				return true;
-		}
-
-		return false;
-	}
-
-	private static boolean isExported(final MethodDoc method) {
-		return getWrapAnnotation(method) != null;
-	}
-
 	private static boolean isDeprecated(final MethodDoc method) {
 		final Tag[] tags = method.tags("deprecated");
 		return (tags != null) && (tags.length > 0);
@@ -493,15 +442,6 @@ public class HTMLWriter {
 	private static boolean isDeprecated(final FieldDoc field) {
 		final Tag[] tags = field.tags("deprecated");
 		return (tags != null) && (tags.length > 0);
-	}
-
-	private static AnnotationDesc getWrapAnnotation(final MethodDoc method) {
-		for (final AnnotationDesc annotation : method.annotations()) {
-			if (isWrapToScriptAnnotation(annotation))
-				return annotation;
-		}
-
-		return null;
 	}
 
 	private static AnnotationDesc getScriptParameterAnnotation(final Parameter parameter) {
@@ -518,11 +458,6 @@ public class HTMLWriter {
 				|| (SCRIPT_PARAMETER.equals(annotation.annotationType().qualifiedName()));
 	}
 
-	private static boolean isWrapToScriptAnnotation(final AnnotationDesc annotation) {
-		return (QUALIFIED_WRAP_TO_SCRIPT.equals(annotation.annotationType().qualifiedName()))
-				|| (WRAP_TO_SCRIPT.equals(annotation.annotationType().qualifiedName()));
-	}
-
 	private static String findComment(final MethodDoc method, final String name) {
 
 		for (final ParamTag paramTags : method.paramTags()) {
@@ -533,4 +468,88 @@ public class HTMLWriter {
 		return "";
 	}
 
+	private List<MethodDoc> getExportedMethods() {
+		final List<MethodDoc> methods = new ArrayList<MethodDoc>();
+		boolean hasAnnotation = hasWrapToScriptAnnotation();
+
+		ClassDoc clazzDoc = fClazz;
+		while ((clazzDoc != null) && (!Object.class.getName().equals(clazzDoc.qualifiedName()))) {
+			for (MethodDoc method : clazzDoc.methods()) {
+				if ((!hasAnnotation) || (getWrapAnnotation(method) != null))
+					methods.add(method);
+			}
+
+			clazzDoc = clazzDoc.superclass();
+		}
+
+		// sort methods alphabetically
+		Collections.sort(methods, new Comparator<Doc>() {
+
+			@Override
+			public int compare(final Doc o1, final Doc o2) {
+				return o1.name().compareTo(o2.name());
+			}
+		});
+
+		return methods;
+	}
+
+	private List<FieldDoc> getExportedFields() {
+		final List<FieldDoc> fields = new ArrayList<FieldDoc>();
+		ClassDoc clazzDoc = fClazz;
+		boolean hasAnnotation = hasWrapToScriptAnnotation();
+		while ((clazzDoc != null) && (!Object.class.getName().equals(clazzDoc.qualifiedName()))) {
+
+			for (FieldDoc field : clazzDoc.fields()) {
+				if ((!hasAnnotation) || (getWrapAnnotation(field) != null))
+					fields.add(field);
+			}
+
+			clazzDoc = clazzDoc.superclass();
+		}
+
+		// sort fields alphabetically
+		Collections.sort(fields, new Comparator<Doc>() {
+
+			@Override
+			public int compare(final Doc o1, final Doc o2) {
+				return o1.name().compareTo(o2.name());
+			}
+		});
+
+		return fields;
+	}
+
+	private boolean hasWrapToScriptAnnotation() {
+		ClassDoc clazzDoc = fClazz;
+		while (clazzDoc != null) {
+			for (final MethodDoc method : clazzDoc.methods()) {
+				if (getWrapAnnotation(method) != null)
+					return true;
+			}
+
+			for (final FieldDoc field : clazzDoc.fields()) {
+				if (getWrapAnnotation(field) != null)
+					return true;
+			}
+
+			clazzDoc = clazzDoc.superclass();
+		}
+
+		return false;
+	}
+
+	private static AnnotationDesc getWrapAnnotation(final ProgramElementDoc method) {
+		for (final AnnotationDesc annotation : method.annotations()) {
+			if (isWrapToScriptAnnotation(annotation))
+				return annotation;
+		}
+
+		return null;
+	}
+
+	private static boolean isWrapToScriptAnnotation(final AnnotationDesc annotation) {
+		return (QUALIFIED_WRAP_TO_SCRIPT.equals(annotation.annotationType().qualifiedName()))
+				|| (WRAP_TO_SCRIPT.equals(annotation.annotationType().qualifiedName()));
+	}
 }

@@ -52,8 +52,14 @@ public final class ModuleHelper {
 		final List<Method> methods = new ArrayList<Method>();
 		final boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
 		for (final Method method : clazz.getMethods()) {
-			if ((Modifier.isPublic(method.getModifiers()) && (!wrapping || method.isAnnotationPresent(WrapToScript.class))))
+			if ((Modifier.isPublic(method.getModifiers()) && (!wrapping || method.isAnnotationPresent(WrapToScript.class)))) {
+
+				// ignore methods from java.lang.Object
+				if (Object.class.equals(method.getDeclaringClass()))
+					continue;
+
 				methods.add(method);
+			}
 		}
 
 		return methods;
