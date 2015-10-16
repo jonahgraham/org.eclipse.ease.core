@@ -399,6 +399,8 @@
       </dropHandler>
       <dropHandler
             class="org.eclipse.ease.ui.dnd.ModulesDropHandler"></dropHandler>
+      <dropHandler
+            class="org.eclipse.ease.ui.dnd.JarDropHandler"></dropHandler>
    </extension>
    <extension
          point="org.eclipse.ease.ui.codeCompletionProvider">
