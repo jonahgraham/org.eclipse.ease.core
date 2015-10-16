@@ -420,7 +420,7 @@
             class="org.eclipse.ease.ui.completion.provider.JavaClassCompletionProvider">
       </codeCompletionProvider>
       <codeCompletionProvider
-            class="org.eclipse.ease.ui.completion.provider.FileLocationCompletionProvider">
+            class="org.eclipse.ease.ui.completion.provider.EnvironmentLocationCompletionProvider">
       </codeCompletionProvider>
       <codeCompletionProvider
             class="org.eclipse.ease.ui.completion.provider.LoadModuleCompletionProvider">

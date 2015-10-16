@@ -34,7 +34,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-public class FileLocationCompletionProvider extends AbstractCompletionProvider {
+public abstract class AbstractFileLocationCompletionProvider extends AbstractCompletionProvider {
 
 	private static final int ORDER_URI_SCHEME = ScriptCompletionProposal.ORDER_DEFAULT;
 	private static final int ORDER_PROJECT = ScriptCompletionProposal.ORDER_DEFAULT + 1;
@@ -76,7 +76,7 @@ public class FileLocationCompletionProvider extends AbstractCompletionProvider {
 
 	@Override
 	public boolean isActive(final ICompletionContext context) {
-		return (context.getType() == Type.STRING_LITERAL) && (context.getCaller().endsWith("include")) && (context.getParameterOffset() == 0);
+		return (context.getType() == Type.STRING_LITERAL);
 	}
 
 	@Override
@@ -280,6 +280,16 @@ public class FileLocationCompletionProvider extends AbstractCompletionProvider {
 
 	private static final boolean isWindows() {
 		return System.getProperty("os.name").toLowerCase().contains("win");
+	}
+
+	protected static boolean hasFileExtension(final Object candidate, final String extension) {
+		if (candidate instanceof File)
+			return ((File) candidate).getName().toLowerCase().endsWith("." + extension.toLowerCase());
+
+		else if (candidate instanceof IFile)
+			return ((IFile) candidate).getFileExtension().equalsIgnoreCase(extension);
+
+		return false;
 	}
 
 	protected static boolean isFileSystemResource(final Object candidate) {
