@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.ExitException;
@@ -213,22 +214,24 @@ public class EnvironmentModule extends AbstractEnvironment {
 	}
 
 	/**
-	 * Add a jar file to the classpath. Contents of the jar can be accessed right after loading. <i>location</i> can be an URI, a path, a File or an IFile
-	 * instance.
+	 * Add a jar file to the classpath. Contents of the jar can be accessed right after loading. <i>location</i> can be an URL, a path, a File or an IFile
+	 * instance. Adding a jar location does not necessary mean that its classes can be accessed. If the source is not accessible, then its classes are not
+	 * available for scripting, too.
 	 *
 	 * @param location
-	 *            URI, Path, File or IFile
+	 *            {@link URL}, {@link Path}, {@link File} or {@link IFile}
+	 * @return <code>true</code> when input could be converted to a URL
 	 * @throws MalformedURLException
 	 *             invalid URL detected
 	 */
 	@WrapToScript
-	public void loadJar(Object location) throws MalformedURLException {
+	public boolean loadJar(Object location) throws MalformedURLException {
 		if (!(location instanceof URL)) {
 			// try to resolve workspace URIs
 			Object file = ResourceTools.resolveFile(location.toString(), getScriptEngine().getExecutedFile(), true);
 
 			if (file instanceof IFile)
-				file = ((IFile) file).getFullPath().toFile();
+				file = ((IFile) file).getLocation().toFile();
 
 			if (file instanceof File)
 				location = ((File) file).toURI().toURL();
@@ -237,8 +240,12 @@ public class EnvironmentModule extends AbstractEnvironment {
 				location = new URL(location.toString());
 		}
 
-		if (location instanceof URL)
+		if (location instanceof URL) {
 			getScriptEngine().registerJar((URL) location);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
