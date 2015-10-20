@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
@@ -39,6 +40,8 @@ public class EnvironmentModule extends AbstractEnvironment {
 	public static final String MODULE_NAME = "/System/Environment";
 
 	public static final String MODULE_PREFIX = "__MOD_";
+
+	private static final Pattern VALID_TOPICS_PATTERN = Pattern.compile("[\\w ]+(?:\\(\\))?");
 
 	public EnvironmentModule() {
 	}
@@ -86,7 +89,7 @@ public class EnvironmentModule extends AbstractEnvironment {
 		// script code to inject
 		final StringBuilder scriptCode = new StringBuilder();
 
-		ICodeFactory codeFactory = getCodeFactory();
+		final ICodeFactory codeFactory = getCodeFactory();
 		if (null == codeFactory)
 			return;
 
@@ -257,6 +260,12 @@ public class EnvironmentModule extends AbstractEnvironment {
 	 */
 	@WrapToScript
 	public void help(@ScriptParameter(defaultValue = ScriptParameter.NULL) final String topic) {
+
+		// sanity check to avoid blue screens for invalid calls, see https://bugs.eclipse.org/bugs/show_bug.cgi?id=479762
+		if (!VALID_TOPICS_PATTERN.matcher(topic).matches()) {
+			printError("Invalid help topic to look for: \"" + topic + "\"");
+			return;
+		}
 
 		if (PlatformUI.isWorkbenchRunning()) {
 			if (topic != null) {
