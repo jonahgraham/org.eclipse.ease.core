@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
-import org.eclipse.ease.ui.help.hovers.ModuleToolTipDecorator;
 import org.eclipse.ease.ui.tools.DecoratedLabelProvider;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -47,7 +46,7 @@ public class ModulesComposite extends Composite {
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		treeViewer.getTree().setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		ModuleToolTipDecorator.enableFor(treeViewer);
+		// ModuleToolTipDecorator.enableFor(treeViewer);
 
 		final DecoratedLabelProvider labelProvider = new DecoratedLabelProvider(new ModulesLabelProvider());
 		treeViewer.setLabelProvider(labelProvider);
