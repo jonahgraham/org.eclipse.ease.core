@@ -83,6 +83,9 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 		final IThemeManager themeManager = PlatformUI.getWorkbench().getThemeManager();
 		final ColorRegistry colorRegistry = themeManager.getCurrentTheme().getColorRegistry();
 		errorStream.setColor(colorRegistry.get("ERROR_COLOR"));
+
+		// set input stream color
+		getInputStream().setColor(colorRegistry.get("CONSOLE_INPUT_COLOR"));
 	}
 
 	public static String getConsoleType() {

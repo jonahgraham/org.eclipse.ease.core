@@ -426,4 +426,25 @@
             class="org.eclipse.ease.ui.completion.provider.LoadModuleCompletionProvider">
       </codeCompletionProvider>
    </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <colorDefinition
+            categoryId="org.eclipse.ui.workbenchMisc"
+            id="CONSOLE_INPUT_COLOR"
+            label="Console input text color"
+            value="50,200,50">
+         <description>
+            %Color.errorTextDesc
+         </description>
+      </colorDefinition>
+      <colorDefinition
+            categoryId="org.eclipse.ui.workbenchMisc"
+            id="CONSOLE_INPUT_COLOR"
+            label="Console input text color"
+            value="COLOR_RED">
+         <description>
+            %Color.errorTextDesc
+         </description>
+      </colorDefinition>
+   </extension>
 </plugin>

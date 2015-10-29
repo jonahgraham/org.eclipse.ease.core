@@ -633,6 +633,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			final ScriptConsole console = ScriptConsole.create(fScriptEngine.getName() + "Script Shell", fScriptEngine);
 			fScriptEngine.setOutputStream(console.getOutputStream());
 			fScriptEngine.setErrorStream(console.getErrorStream());
+			fScriptEngine.setInputStream(console.getInputStream());
 
 			// register at script engine
 			fScriptEngine.addExecutionListener(this);

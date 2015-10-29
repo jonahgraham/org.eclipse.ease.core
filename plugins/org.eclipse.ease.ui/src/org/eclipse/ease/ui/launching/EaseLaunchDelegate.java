@@ -44,13 +44,13 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 	private static final String LAUNCH_CONFIGURATION_ID = "org.eclipse.ease.launchConfigurationType";
 
 	@Override
-	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+	public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch, final IProgressMonitor monitor) throws CoreException {
 
 		final Object resource = ResourceTools.resolveFile(getFileLocation(configuration), null, true);
 
 		// create engine
 		final String engineID = configuration.getAttribute(LaunchConstants.SCRIPT_ENGINE, "");
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
 		if ((ILaunchManager.DEBUG_MODE.equals(mode)) && (!engineDescription.supportsDebugging())) {
 			// we are trying to debug using an engine that does not support debugging
@@ -72,11 +72,8 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 				final RunnableWithResult<Boolean> runnable = new RunnableWithResult<Boolean>() {
 					@Override
 					public void run() {
-						final boolean confirmEngineSwitch = MessageDialog
-								.openConfirm(
-										Display.getDefault().getActiveShell(),
-										"Configuration change needed",
-										"The currently selected script engine does not support debugging. However an alternative engine is available. Do you want to debug your script using that alternative engine?");
+						final boolean confirmEngineSwitch = MessageDialog.openConfirm(Display.getDefault().getActiveShell(), "Configuration change needed",
+								"The currently selected script engine does not support debugging. However an alternative engine is available. Do you want to debug your script using that alternative engine?");
 
 						setResult(confirmEngineSwitch);
 					}
@@ -108,6 +105,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 		final ScriptConsole console = ScriptConsole.create(engine.getName() + ": " + resource, engine);
 		engine.setOutputStream(console.getOutputStream());
 		engine.setErrorStream(console.getErrorStream());
+		engine.setInputStream(console.getInputStream());
 
 		// setup debugger
 		if (ILaunchManager.DEBUG_MODE.equals(mode)) {
@@ -134,7 +132,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 	}
 
 	@Override
-	protected ILaunchConfiguration createLaunchConfiguration(IResource file, String mode) throws CoreException {
+	protected ILaunchConfiguration createLaunchConfiguration(final IResource file, final String mode) throws CoreException {
 		final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		final ILaunchConfigurationType type = manager.getLaunchConfigurationType(LAUNCH_CONFIGURATION_ID);
 
@@ -142,7 +140,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 		configuration.setAttribute(LaunchConstants.FILE_LOCATION, ResourceTools.toAbsoluteLocation(file, null));
 
 		// find a valid engine
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Collection<EngineDescription> engines = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(file, null)).getEngines();
 		if (engines.isEmpty())
 			// TODO use a better way to bail out and use the direct file launch
@@ -161,7 +159,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 	}
 
 	@Override
-	protected String getFileLocation(ILaunchConfiguration configuration) throws CoreException {
+	protected String getFileLocation(final ILaunchConfiguration configuration) throws CoreException {
 		return configuration.getAttribute(LaunchConstants.FILE_LOCATION, "");
 	}
 

@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.ease.modules;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -224,6 +228,35 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	@Override
 	public void removeModuleListener(final IModuleListener listener) {
 		fModuleListeners.remove(listener);
+	}
+
+	/**
+	 * Read a single line of data from the default input stream of the script engine. Depending on the <i>blocking</i> parameter this method will wait for user
+	 * input or return immediately with available data.
+	 *
+	 * @param blocking
+	 *            <code>true</code> results in a blocking call until data is available, <code>false</code> returns in any case
+	 * @return string data from input stream or <code>null</code>
+	 * @throws IOException
+	 *             when reading on the input stream fails
+	 */
+	@WrapToScript
+	public String readInput(@ScriptParameter(defaultValue = "true") final boolean blocking) throws IOException {
+		InputStream inputStream = getScriptEngine().getInputStream();
+		boolean doRead = blocking;
+		if (!doRead) {
+			try {
+				doRead = (inputStream.available() > 0);
+			} catch (IOException e) {
+				// no data to read available
+			}
+		}
+
+		if (doRead)
+			// read a single line
+			return new BufferedReader(new InputStreamReader(inputStream)).readLine();
+
+		return null;
 	}
 
 	protected void fireModuleEvent(final Object module, final int type) {

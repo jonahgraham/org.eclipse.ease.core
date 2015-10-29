@@ -479,6 +479,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			final ScriptConsole console = ScriptConsole.create(engine.getName() + ": " + getPath(), engine);
 			engine.setOutputStream(console.getOutputStream());
 			engine.setErrorStream(console.getErrorStream());
+			engine.setInputStream(console.getInputStream());
 
 			// check for remote scripts
 			if (isRemote()) {
