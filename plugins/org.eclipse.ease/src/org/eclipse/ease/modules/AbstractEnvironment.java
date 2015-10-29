@@ -147,7 +147,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 		}
 
 		// write to default output
-		print(output);
+		print(output, true);
 
 		return output.toString();
 	}
@@ -193,11 +193,16 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	 *
 	 * @param text
 	 *            message to write
+	 * @param lineFeed
+	 *            <code>true</code> to add a line feed after the text
 	 */
 	@Override
 	@WrapToScript
-	public final void print(final @ScriptParameter(defaultValue = "") Object text) {
-		getScriptEngine().getOutputStream().println(text);
+	public final void print(final @ScriptParameter(defaultValue = "") Object text, final @ScriptParameter(defaultValue = "true") boolean lineFeed) {
+		if (lineFeed)
+			getScriptEngine().getOutputStream().println(text);
+		else
+			getScriptEngine().getOutputStream().print(text);
 	}
 
 	/**
