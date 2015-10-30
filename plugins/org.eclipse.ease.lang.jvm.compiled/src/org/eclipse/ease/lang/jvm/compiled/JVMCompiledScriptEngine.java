@@ -123,7 +123,7 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 	public static boolean isSaveName(final String identifier) {
 		return Pattern.matches("[a-zA-Z_$][a-zA-Z0-9_$]*", identifier);
 	}
-	
+
 	@Override
 	public void registerJar(final URL url) {
 		throw new RuntimeException("Functionality not supported by this engine");
@@ -142,25 +142,25 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 	@Override
 	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Exception {
 
-		Class<?> clazz = loadClass(reference);
+		final Class<?> clazz = loadClass(reference);
 		if (clazz != null) {
 
-			Method mainMethod = clazz.getMethod("main", String[].class);
+			final Method mainMethod = clazz.getMethod("main", String[].class);
 			if (mainMethod != null) {
 
-				ClassLoader localClassLoader = Thread.currentThread().getContextClassLoader();
+				final ClassLoader localClassLoader = Thread.currentThread().getContextClassLoader();
 				Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
 
 				try {
 					// before we run main, we try to initialize the class
 					try {
-						Method initialize = clazz.getMethod("initialize", InputStream.class, PrintStream.class, PrintStream.class);
+						final Method initialize = clazz.getMethod("initialize", InputStream.class, PrintStream.class, PrintStream.class);
 						initialize.invoke(null, getInputStream(), getOutputStream(), getErrorStream());
-					} catch (NoSuchMethodException e) {
+					} catch (final NoSuchMethodException e) {
 						// initialize method not available, to be ignored
 					}
 
-					Object result = mainMethod.invoke(null, internalGetVariable("argv"));
+					final Object result = mainMethod.invoke(null, internalGetVariable("argv"));
 					return result;
 
 				} finally {
@@ -182,56 +182,56 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 	 *             If the class was not found
 	 */
 	public static Class<?> loadClass(final Object reference) throws JavaModelException, MalformedURLException, ClassNotFoundException {
-		Object file = ResourceTools.resolveFile(reference, null, true);
+		final Object file = ResourceTools.resolveFile(reference, null, true);
 
 		// find source project and resolve dependencies
-		SimpleEntry<IFile, IBundleProjectDescription> pair = getBundleProjectDescription(file);
+		final SimpleEntry<IFile, IBundleProjectDescription> pair = getBundleProjectDescription(file);
 		if (pair != null) {
-			IFile sourceFile = pair.getKey();
-			IBundleProjectDescription scriptBundleProject = pair.getValue();
-			List<URL> urls = new ArrayList<URL>();
-			IProject project = scriptBundleProject.getProject();
-			IJavaProject javaProject = JavaCore.create(project);
+			final IFile sourceFile = pair.getKey();
+			final IBundleProjectDescription scriptBundleProject = pair.getValue();
+			final List<URL> urls = new ArrayList<URL>();
+			final IProject project = scriptBundleProject.getProject();
+			final IJavaProject javaProject = JavaCore.create(project);
 
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 
-			IClasspathEntry[] cpEntries = javaProject.getRawClasspath();
+			final IClasspathEntry[] cpEntries = javaProject.getRawClasspath();
 			if (cpEntries != null) {
-				for (IClasspathEntry cpEntry : cpEntries) {
+				for (final IClasspathEntry cpEntry : cpEntries) {
 					// The script bundle project may have a ".classpath"
 					// dependency on another
 					// Eclipse "source" project (could be Java or Scala or
 					// anything else based on the Eclipse Java nature)
 					if ((cpEntry.getEntryKind() == IClasspathEntry.CPE_PROJECT) && (cpEntry.getContentKind() == IPackageFragmentRoot.K_SOURCE)) {
-						IPath cpPath = cpEntry.getPath();
-						IProject cpProject = root.getProject(cpPath.toString());
+						final IPath cpPath = cpEntry.getPath();
+						final IProject cpProject = root.getProject(cpPath.toString());
 						if (cpProject != null) {
-							IJavaProject jcpProject = JavaCore.create(cpProject);
-							IPath output = jcpProject.getOutputLocation();
-							IResource bin = root.findMember(output);
-							IPath binPath = bin.getRawLocation();
-							URL url = binPath.toFile().toURI().toURL();
+							final IJavaProject jcpProject = JavaCore.create(cpProject);
+							final IPath output = jcpProject.getOutputLocation();
+							final IResource bin = root.findMember(output);
+							final IPath binPath = bin.getRawLocation();
+							final URL url = binPath.toFile().toURI().toURL();
 							urls.add(url);
 						}
 					}
 				}
 			}
 
-			IPath output = javaProject.getOutputLocation();
-			IResource bin = root.findMember(output);
-			IPath binPath = bin.getRawLocation();
-			URL url = binPath.toFile().toURI().toURL();
+			final IPath output = javaProject.getOutputLocation();
+			final IResource bin = root.findMember(output);
+			final IPath binPath = bin.getRawLocation();
+			final URL url = binPath.toFile().toURI().toURL();
 			urls.add(url);
 
-			IPath wsPath = sourceFile.getProjectRelativePath();
-			IPath wsSource = wsPath.removeFirstSegments(1);
+			final IPath wsPath = sourceFile.getProjectRelativePath();
+			final IPath wsSource = wsPath.removeFirstSegments(1);
 
-			IRequiredBundleDescription[] requiredBundles = scriptBundleProject.getRequiredBundles();
-			List<Bundle> bundles = new ArrayList<Bundle>();
+			final IRequiredBundleDescription[] requiredBundles = scriptBundleProject.getRequiredBundles();
+			final List<Bundle> bundles = new ArrayList<Bundle>();
 			if (requiredBundles != null) {
-				for (IRequiredBundleDescription requiredBundle : requiredBundles) {
-					String id = requiredBundle.getName();
-					Bundle b = Platform.getBundle(id);
+				for (final IRequiredBundleDescription requiredBundle : requiredBundles) {
+					final String id = requiredBundle.getName();
+					final Bundle b = Platform.getBundle(id);
 					if (b != null)
 						// The script bundle project (in the Eclipse workspace)
 						// has a MANIFEST dependency
@@ -243,34 +243,36 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 						// on an Eclipse plugin that is not in the Eclipse
 						// installation -- so it must be in the Eclipse
 						// workspace...
-						IProject bProject = root.getProject("/" + id);
+						final IProject bProject = root.getProject("/" + id);
 						if (bProject != null) {
-							IJavaProject bjProject = JavaCore.create(bProject);
-							IPath bOutput = bjProject.getOutputLocation();
-							IResource bBin = root.findMember(bOutput);
-							IPath bBinPath = bBin.getRawLocation();
-							URL bUrl = bBinPath.toFile().toURI().toURL();
+							final IJavaProject bjProject = JavaCore.create(bProject);
+							final IPath bOutput = bjProject.getOutputLocation();
+							final IResource bBin = root.findMember(bOutput);
+							final IPath bBinPath = bBin.getRawLocation();
+							final URL bUrl = bBinPath.toFile().toURI().toURL();
 							urls.add(bUrl);
 						}
 					}
 				}
 			}
 
-			URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), JVMCompiledScriptEngine.class.getClassLoader());
+			final URLClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), JVMCompiledScriptEngine.class.getClassLoader());
 			try {
-				IJavaElement wsElement = javaProject.findElement(wsSource);
+				final IJavaElement wsElement = javaProject.findElement(wsSource);
 				if (wsElement instanceof ICompilationUnit) {
-					ICompilationUnit u = (ICompilationUnit) wsElement;
-					String uName = u.getElementName();
-					int dot = uName.indexOf('.');
+					final ICompilationUnit u = (ICompilationUnit) wsElement;
+					final String uName = u.getElementName();
+					final int dot = uName.indexOf('.');
 
 					String qName = uName.substring(0, dot);
 
 					IJavaElement uParent = u.getParent();
 					while (uParent instanceof IPackageFragment) {
-						IPackageFragment uPkg = (IPackageFragment) uParent;
-						String pkgName = uPkg.getElementName();
-						qName = pkgName + "." + qName;
+						final IPackageFragment uPkg = (IPackageFragment) uParent;
+						final String pkgName = uPkg.getElementName();
+						if ((pkgName != null) && (!pkgName.isEmpty()))
+							qName = pkgName + "." + qName;
+
 						uParent = uParent.getParent();
 					}
 
@@ -292,27 +294,27 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 			sourceFile = (IFile) reference;
 
 		else if (reference instanceof File) {
-			URI scriptURI = ((File) reference).toURI();
-			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-			IFile[] files = workspaceRoot.findFilesForLocationURI(scriptURI);
+			final URI scriptURI = ((File) reference).toURI();
+			final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+			final IFile[] files = workspaceRoot.findFilesForLocationURI(scriptURI);
 			if ((files != null) && (files.length == 1))
 				sourceFile = files[0];
 		}
 
 		if (sourceFile != null) {
-			Bundle bundle = FrameworkUtil.getBundle(IBundleProjectService.class);
-			BundleContext context = bundle.getBundleContext();
-			ServiceReference<IBundleProjectService> ref = context.getServiceReference(IBundleProjectService.class);
-			IBundleProjectService service = context.getService(ref);
+			final Bundle bundle = FrameworkUtil.getBundle(IBundleProjectService.class);
+			final BundleContext context = bundle.getBundleContext();
+			final ServiceReference<IBundleProjectService> ref = context.getServiceReference(IBundleProjectService.class);
+			final IBundleProjectService service = context.getService(ref);
 
 			try {
-				IBundleProjectDescription projectDescription = service.getDescription(sourceFile.getProject());
+				final IBundleProjectDescription projectDescription = service.getDescription(sourceFile.getProject());
 				if (projectDescription != null)
 					return new AbstractMap.SimpleEntry<IFile, IBundleProjectDescription>(sourceFile, projectDescription);
 
-			} catch (IllegalArgumentException ex) {
+			} catch (final IllegalArgumentException ex) {
 				// ignore
-			} catch (CoreException e) {
+			} catch (final CoreException e) {
 				// ignore
 			}
 		}
