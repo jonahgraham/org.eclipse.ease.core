@@ -43,12 +43,19 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				key = matcher.group(1);
 				parameters.put(key, matcher.group(2).trim());
 
-			} else if ((key != null) && (!line.trim().isEmpty())) {
-				// check that we do not have a delimiter line (all same chars)
-				line = line.trim();
-				if (!Pattern.matches("[" + line.charAt(0) + "]+", line))
-					// line belongs to previous key value pair
-					parameters.put(key, parameters.get(key) + " " + line.trim());
+			} else if (key != null) {
+				if (!line.trim().isEmpty()) {
+					// check that we do not have a delimiter line (all same chars)
+					line = line.trim();
+					if (!Pattern.matches("[" + line.charAt(0) + "]+", line))
+						// line belongs to previous key value pair
+						parameters.put(key, parameters.get(key) + " " + line.trim());
+					else
+						// line does not belong to previous key anymore
+						key = null;
+				} else
+					// remove cached key as we hit an empty line
+					key = null;
 			}
 
 			// any other line will be ignored
