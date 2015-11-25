@@ -50,7 +50,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 	 * Constructor sets up {@link CodeCompletionAggregator} and loads registered {@link ICompletionProvider}.
 	 */
 	public JavaScriptEditorCompletionComputer() {
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		final ScriptType scriptType = scriptService.getAvailableScriptTypes().get(JavaScriptHelper.SCRIPT_TYPE_JAVASCRIPT);
 
 		fCompletionAggregator.setScriptType(scriptType);

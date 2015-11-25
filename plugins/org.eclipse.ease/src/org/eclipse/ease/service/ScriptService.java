@@ -61,7 +61,7 @@ public class ScriptService implements IScriptService {
 
 	public static IScriptService getService() {
 		try {
-			return PlatformUI.getWorkbench().getService(IScriptService.class);
+			return (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		} catch (IllegalStateException e) {
 			// workbench has not been created yet, might be running in headless mode
 			return ScriptService.getInstance();

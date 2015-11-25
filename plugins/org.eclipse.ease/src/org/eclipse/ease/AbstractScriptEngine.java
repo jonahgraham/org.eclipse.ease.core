@@ -408,7 +408,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		fCodePieces.clear();
 
 		// re-enable launch extensions to register themselves
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final IScriptEngineLaunchExtension extension : scriptService.getLaunchExtensions(getDescription().getID()))
 			extension.createEngine(this);
 	}

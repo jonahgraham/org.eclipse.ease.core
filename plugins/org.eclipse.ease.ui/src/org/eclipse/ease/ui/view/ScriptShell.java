@@ -154,7 +154,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		super();
 
 		// setup Script engine
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		// try to load preferred engine
 		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
@@ -620,7 +620,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fScriptEngine.terminate();
 		}
 
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		fScriptEngine = scriptService.getEngineByID(id).createEngine();
 
 		if (fScriptEngine != null) {

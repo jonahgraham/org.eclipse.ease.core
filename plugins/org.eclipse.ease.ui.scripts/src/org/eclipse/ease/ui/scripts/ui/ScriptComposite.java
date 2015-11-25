@@ -112,7 +112,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 			}
 		});
 
-		final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 		treeViewer.setInput(repositoryService);
 
 		if (fDoubleClickListener != null)
@@ -129,7 +129,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 		site.setSelectionProvider(treeViewer);
 
 		// add dynamic context menu entries
-		final IMenuService menuService = PlatformUI.getWorkbench().getService(IMenuService.class);
+		final IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
 		ScriptContextMenuEntries popupContributionFactory = new ScriptContextMenuEntries("popup:" + site.getId());
 		menuService.addContributionFactory(popupContributionFactory);
 		menuManager.setRemoveAllWhenShown(true);
@@ -150,7 +150,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 
 	@Override
 	public void dispose() {
-		final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 		repositoryService.removeScriptListener(this);
 
 		super.dispose();

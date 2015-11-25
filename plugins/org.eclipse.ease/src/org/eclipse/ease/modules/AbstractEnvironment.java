@@ -128,7 +128,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	@WrapToScript
 	public final String listModules() {
 
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Collection<ModuleDefinition> modules = scriptService.getAvailableModules().values();
 
 		final StringBuilder output = new StringBuilder();

@@ -490,7 +490,7 @@ public class VirtualProject implements IProject {
 	}
 
 	@Override
-	public <T> T getAdapter(final Class<T> adapter) {
+	public Object getAdapter(final Class adapter) {
 		throw new RuntimeException("getAdapter not implemented");
 	}
 

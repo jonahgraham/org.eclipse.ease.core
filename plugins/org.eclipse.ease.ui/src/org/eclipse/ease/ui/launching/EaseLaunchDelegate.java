@@ -50,7 +50,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 		// create engine
 		final String engineID = configuration.getAttribute(LaunchConstants.SCRIPT_ENGINE, "");
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
 		if ((ILaunchManager.DEBUG_MODE.equals(mode)) && (!engineDescription.supportsDebugging())) {
 			// we are trying to debug using an engine that does not support debugging
@@ -140,7 +140,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 		configuration.setAttribute(LaunchConstants.FILE_LOCATION, ResourceTools.toAbsoluteLocation(file, null));
 
 		// find a valid engine
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Collection<EngineDescription> engines = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(file, null)).getEngines();
 		if (engines.isEmpty())
 			// TODO use a better way to bail out and use the direct file launch

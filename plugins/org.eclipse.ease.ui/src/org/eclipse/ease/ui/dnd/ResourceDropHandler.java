@@ -63,7 +63,7 @@ public class ResourceDropHandler implements IShellDropHandler {
 	}
 
 	private static ScriptType getScriptType(final Object element) {
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		return scriptService.getScriptType(ResourceTools.toAbsoluteLocation(element, null));
 	}
 }

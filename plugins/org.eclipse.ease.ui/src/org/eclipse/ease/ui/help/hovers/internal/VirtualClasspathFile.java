@@ -384,7 +384,7 @@ public class VirtualClasspathFile implements IFile {
 	}
 
 	@Override
-	public <T> T getAdapter(final Class<T> adapter) {
+	public Object getAdapter(final Class adapter) {
 		throw new RuntimeException("getAdapter not implemented");
 	}
 
@@ -527,5 +527,4 @@ public class VirtualClasspathFile implements IFile {
 	public void setContents(final IFileState source, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("setContents not implemented");
 	}
-
 }

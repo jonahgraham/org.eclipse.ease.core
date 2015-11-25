@@ -101,7 +101,8 @@ public class EditScript extends AbstractHandler implements IHandler {
 												}
 
 												// refresh script in repository
-												final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+												final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench()
+														.getService(IRepositoryService.class);
 												// FIXME we should only update
 												// this one resource instead of
 												// all scripts

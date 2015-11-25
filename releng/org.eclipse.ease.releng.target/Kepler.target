@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<target name="Kepler" sequenceNumber="1448435459">
+  <locations>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.platform.feature.group" version="4.3.2.v20140221-1852"/>
+      <unit id="org.eclipse.rcp.feature.group" version="4.3.2.v20140221-1700"/>
+      <unit id="org.eclipse.jdt.feature.group" version="3.9.2.v20140221-1700"/>
+      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.0.100.v20130502-0334"/>
+      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="1.5.2.v201401171657-7H7FFhXFC7sReuSlgtfhew"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="2.9.2.v20140203-1126"/>
+      <unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.5.2.v201401062113-7C7OFvVF7RZHQXIlNxNyPh"/>
+      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.5.2.v201401062113-7H7IFizDxumVu0K6bjdPjXRkoz0FiUYMnSyT9PL"/>
+      <unit id="org.eclipse.pde.feature.group" version="3.9.1.v20140221-1700"/>
+      <unit id="org.eclipse.jdt" version="3.9.1.v20140221-1700"/>
+      <unit id="org.eclipse.team.svn.feature.group" version="1.1.3.I20140206-1700"/>
+      <repository location="http://download.eclipse.org/releases/kepler/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.mockito" version="1.9.5.v201311280930"/>
+      <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
+      <repository id="eclipse-orbit" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
+    </location>
+  </locations>
+</target>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Indigo" sequenceNumber="1427380682">
+<target name="Indigo" sequenceNumber="1448433078">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.platform.feature.group" version="3.7.2.v20120207-1839-9gF7UHPDFxGjd-PqDr2jX_4yKaumkoHTz04_q-q"/>
@@ -25,8 +25,13 @@
       <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.9.9.201503111318"/>
+      <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.0.0"/>
       <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.mockito" version="1.9.5.v201311280930"/>
+      <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
+      <repository id="eclipse-orbit" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
     </location>
   </locations>
 </target>

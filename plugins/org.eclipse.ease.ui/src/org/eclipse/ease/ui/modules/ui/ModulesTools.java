@@ -85,7 +85,7 @@ public class ModulesTools {
 	 */
 	public static ModuleDefinition getDeclaringModule(final Method method) {
 
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
 		// try for exact match
@@ -112,7 +112,7 @@ public class ModulesTools {
 	 */
 	public static ModuleDefinition getDeclaringModule(final Field field) {
 
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
 
 		// try for exact match

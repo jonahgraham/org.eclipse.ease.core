@@ -159,7 +159,7 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 			// user did not select a storage yet, ask for location
 			SelectScriptStorageDialog dialog = new SelectScriptStorageDialog(Display.getDefault().getActiveShell());
 			if (dialog.open() == Window.OK) {
-				final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+				final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 				repositoryService.addLocation(dialog.getLocation(), true, true);
 			}
 

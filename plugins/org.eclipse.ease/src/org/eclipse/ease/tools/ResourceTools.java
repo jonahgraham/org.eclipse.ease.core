@@ -529,7 +529,7 @@ public final class ResourceTools {
 				if (workbenchPage != null) {
 					IEditorPart editor = workbenchPage.getActiveEditor();
 					if (editor != null) {
-						file = editor.getEditorInput().getAdapter(IFile.class);
+						file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
 					}
 				}
 			}

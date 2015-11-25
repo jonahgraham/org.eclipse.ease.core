@@ -69,7 +69,7 @@ public class ModuleDefinition {
 	 * @return module definition or <code>null</code>
 	 */
 	public static ModuleDefinition getDefinition(final Object module) {
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
 			if (definition.getModuleClass().equals(module.getClass()))
 				return definition;
@@ -242,7 +242,7 @@ public class ModuleDefinition {
 
 	/**
 	 * Check deprecation status of module.
-	 * 
+	 *
 	 * @return <code>true</code> when module is deprecated
 	 */
 	public boolean isDeprecated() {

@@ -253,7 +253,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 	@Override
 	public void updateLocation(final IScriptLocation entry, final String location, final long lastChanged) {
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		IScript script = getScriptByLocation(location);
 		final ScriptType scriptType = scriptService.getScriptType(location);

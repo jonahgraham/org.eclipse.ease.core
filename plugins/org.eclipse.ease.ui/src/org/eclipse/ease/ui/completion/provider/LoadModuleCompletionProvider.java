@@ -53,20 +53,20 @@ public class LoadModuleCompletionProvider extends AbstractCompletionProvider {
 
 		final Collection<String> pathProposals = new HashSet<String>();
 
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Map<String, ModuleDefinition> availableModules = scriptService.getAvailableModules();
 		for (final Entry<String, ModuleDefinition> moduleEntry : availableModules.entrySet()) {
 			final Path modulePath = new Path(moduleEntry.getKey());
 			if (searchPath.isPrefixOf(modulePath)) {
 				// this is a valid candidate
-				if (searchPath.segmentCount() + 1 == modulePath.segmentCount()) {
+				if ((searchPath.segmentCount() + 1) == modulePath.segmentCount()) {
 					// add module proposal
 					final StyledString displayString = new StyledString(modulePath.lastSegment());
 					if (!moduleEntry.getValue().isVisible())
 						displayString.append(" (hidden)", StyledString.DECORATIONS_STYLER);
 
-					addProposal(proposals, context, displayString, moduleEntry.getKey(), Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/module.png"),
-							0);
+					addProposal(proposals, context, displayString, moduleEntry.getKey(),
+							Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/module.png"), 0);
 
 				} else {
 					// add path proposal; collect them first to avoid duplicates
