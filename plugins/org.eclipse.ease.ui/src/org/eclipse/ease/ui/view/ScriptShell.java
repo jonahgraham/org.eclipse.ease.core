@@ -38,16 +38,10 @@ import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.resource.ColorDescriptor;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.events.KeyEvent;
@@ -81,14 +75,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 	private static final String XML_HISTORY_NODE = "history";
 
-	private static final int TYPE_ERROR = 1;
-
-	private static final int TYPE_OUTPUT = 2;
-
-	private static final int TYPE_RESULT = 3;
-
-	private static final int TYPE_COMMAND = 4;
-
 	private class AutoFocus implements KeyListener {
 
 		@Override
@@ -119,13 +105,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 	private Combo fInputCombo;
 
-	private StyledText fOutputText;
-
-	private boolean fScrollLock = false;
-
-	private boolean fPrintLock = false;
-
-	private LocalResourceManager fResourceManager = null;
+	private ScriptHistoryText fOutputText;
 
 	private int[] fSashWeights = new int[] { 70, 30 };
 
@@ -153,29 +133,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	public ScriptShell() {
 		super();
 
-		// setup Script engine
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-
-		// try to load preferred engine
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
-		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE, IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
-		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
-
-		if (engineDescription == null) {
-			// not found, try to load any JavaScript engine
-			engineDescription = scriptService.getEngine("JavaScript");
-
-			if (engineDescription == null) {
-				// no luck either, get next engine of any type
-				final Collection<EngineDescription> engines = scriptService.getEngines();
-				if (!engines.isEmpty())
-					engineDescription = engines.iterator().next();
-			}
-		}
-
-		if (engineDescription != null)
-			setEngine(engineDescription.getID());
-
 		// FIXME add preferences lookup
 		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
@@ -201,26 +158,14 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	@Override
 	public final void createPartControl(final Composite parent) {
 
-		// setup resource manager
-		fResourceManager = new LocalResourceManager(JFaceResources.getResources(), parent);
-
 		// setup layout
 		parent.setLayout(new GridLayout());
 
 		fSashForm = new SashForm(parent, SWT.NONE);
 		fSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		fOutputText = new StyledText(fSashForm, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER);
+		fOutputText = new ScriptHistoryText(fSashForm, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER);
 
-		// set monospaced font
-		final Object os = Platform.getOS();
-		if ("win32".equals(os))
-			fOutputText.setFont(fResourceManager.createFont(FontDescriptor.createFrom("Courier New", 10, SWT.NONE)));
-
-		else if ("linux".equals(os))
-			fOutputText.setFont(fResourceManager.createFont(FontDescriptor.createFrom("Monospace", 10, SWT.NONE)));
-
-		fOutputText.setEditable(false);
 		fOutputText.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(final MouseEvent e) {
@@ -238,8 +183,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 		fDropins = getAvailableDropins();
 		for (final IShellDropin dropin : fDropins) {
-			dropin.setScriptEngine(fScriptEngine);
-
 			final TabItem tab = new TabItem(tabFolder, SWT.NONE);
 			tab.setText(dropin.getTitle());
 			tab.setControl(dropin.createPartControl(getSite(), tabFolder));
@@ -293,9 +236,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		// add DND support
 		ShellDropTarget.addDropSupport(fOutputText, this);
 
-		// set view title
-		setPartName(fScriptEngine.getName() + " " + super.getTitle());
-
 		// read default preferences
 		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(IPreferenceConstants.NODE_SHELL);
 
@@ -314,8 +254,27 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		fOutputText.addSelectionListener(selectionProvider);
 		getSite().setSelectionProvider(selectionProvider);
 
-		// run startup commands, do this for all supported script types
-		runStartupCommands();
+		// UI is ready, start script engine
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+
+		// try to load preferred engine
+		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE, IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
+		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
+
+		if (engineDescription == null) {
+			// not found, try to load any JavaScript engine
+			engineDescription = scriptService.getEngine("JavaScript");
+
+			if (engineDescription == null) {
+				// no luck either, get next engine of any type
+				final Collection<EngineDescription> engines = scriptService.getEngines();
+				if (!engines.isEmpty())
+					engineDescription = engines.iterator().next();
+			}
+		}
+
+		if (engineDescription != null)
+			setEngine(engineDescription.getID());
 	}
 
 	private void addAutoCompletion() {
@@ -334,7 +293,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			if (!initCommands.isEmpty())
 				fScriptEngine.executeAsync(initCommands);
 			else
-				localPrint("// use help(\"<topic>\") to get more information", TYPE_COMMAND);
+				fScriptEngine.executeAsync("// use help(\"<topic>\") to get more information");
 		}
 	}
 
@@ -379,8 +338,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fScriptEngine.terminate();
 		}
 
-		fResourceManager.dispose();
-
 		super.dispose();
 	}
 
@@ -393,131 +350,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	 * Clear the output text.
 	 */
 	public final void clearOutput() {
-		fOutputText.setText("");
-		fOutputText.setStyleRanges(new StyleRange[0]);
-	}
-
-	/**
-	 * Set/unset the scroll lock feature.
-	 *
-	 * @param lock
-	 *            true when auto scrolling shall be locked
-	 */
-	public final void setScrollLock(final boolean lock) {
-		fScrollLock = lock;
-	}
-
-	/**
-	 * Set/unset the print lock feature. When
-	 *
-	 * @param lock
-	 *            true when printing shall be disabled
-	 */
-	public final void setPrintLock(final boolean lock) {
-		fPrintLock = lock;
-	}
-
-	/**
-	 * Print to the output pane or to console. Text in the output pane may be formatted in different styles depending on the style flag. Printing is executed if
-	 * printLock is turned off or in case of error output.
-	 *
-	 * @param text
-	 *            text to print
-	 * @param style
-	 *            style to use (see JavaScriptShell.STYLE_* constants)
-	 */
-
-	private void localPrint(final String message, final int style) {
-		if (message != null) {
-			if ((!fPrintLock) || (style == TYPE_ERROR)) {
-				// // print to output pane
-				Display.getDefault().asyncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						String out = message;
-						if (style != TYPE_COMMAND)
-							// indent message
-							out = "\t" + message.replaceAll("\\r?\\n", "\n\t");
-
-						if (!fOutputText.isDisposed()) {
-							fOutputText.append("\n");
-
-							// create new style range
-							final StyleRange styleRange = getStyle(style, fOutputText.getText().length(), out.length());
-
-							fOutputText.append(out);
-							fOutputText.setStyleRange(styleRange);
-
-							// scroll to end of window
-							if (!fScrollLock) {
-								fOutputText.setHorizontalPixel(0);
-								fOutputText.setTopPixel(fOutputText.getLineHeight() * fOutputText.getLineCount());
-							}
-						}
-					}
-				});
-			}
-		}
-	}
-
-	/**
-	 *
-	 * @param style
-	 *            style to use (see JavaScriptShell.STYLE_* constants)
-	 * @param start
-	 *            start of text to be styled
-	 * @param length
-	 *            length of text to be styled
-	 * @return StyleRange for text
-	 */
-	private StyleRange getStyle(final int style, final int start, final int length) {
-
-		final StyleRange styleRange = new StyleRange();
-		styleRange.start = start;
-		styleRange.length = length;
-
-		switch (style) {
-		case TYPE_RESULT:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
-			break;
-
-		case TYPE_COMMAND:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE)));
-			styleRange.fontStyle = SWT.BOLD;
-			break;
-
-		case TYPE_ERROR:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
-			styleRange.fontStyle = SWT.ITALIC;
-			break;
-
-		case TYPE_OUTPUT:
-			styleRange.foreground = fResourceManager
-					.createColor(ColorDescriptor.createFrom(getViewSite().getShell().getDisplay().getSystemColor(SWT.COLOR_BLACK)));
-			break;
-
-		default:
-			break;
-		}
-
-		return styleRange;
-	}
-
-	/**
-	 * Get the text selected in the output pane. if no text is selected, the whole content will be returned.
-	 *
-	 * @return selected text of output pane
-	 */
-	public final String getSelectedText() {
-		final String text = fOutputText.getSelectionText();
-		if (text.isEmpty())
-			return fOutputText.getText();
-
-		return text;
+		fOutputText.clear();
 	}
 
 	public final void toggleDropinsPane() {
@@ -552,10 +385,6 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		}
 	}
 
-	public StyledText getOutput() {
-		return fOutputText;
-	}
-
 	public void stopScriptEngine() {
 		fScriptEngine.terminateCurrent();
 	}
@@ -568,24 +397,8 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	@Override
 	public void notify(final IScriptEngine engine, final Script script, final int status) {
 
-		try {
-			switch (status) {
-			case SCRIPT_START:
-				localPrint(script.getCode(), TYPE_COMMAND);
-				break;
-
-			case SCRIPT_END:
-				if (script.getResult().hasException())
-					localPrint(script.getResult().getException().getLocalizedMessage(), TYPE_ERROR);
-
-				else {
-					final Object result = script.getResult().getResult();
-					if (result != null)
-						localPrint(script.getResult().getResult().toString(), TYPE_RESULT);
-					else
-						localPrint("[null]", TYPE_RESULT);
-				}
-
+		if (status == SCRIPT_END) {
+			try {
 				// store code in history
 				addToHistory(script.getCode());
 
@@ -602,25 +415,21 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 						}
 					});
 				}
-
-				break;
-
-			default:
-				// do nothing
-				break;
+			} catch (final Exception e) {
+				// script.getCode() failed, gracefully continue
 			}
-
-		} catch (final Exception e) {
 		}
 	}
 
 	public final void setEngine(final String id) {
 		if (fScriptEngine != null) {
+			fOutputText.removeScriptEngine(fScriptEngine);
+
 			fScriptEngine.removeExecutionListener(this);
 			fScriptEngine.terminate();
 		}
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		fScriptEngine = scriptService.getEngineByID(id).createEngine();
 
 		if (fScriptEngine != null) {
@@ -640,6 +449,8 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 
 			// start script engine
 			fScriptEngine.schedule();
+
+			fOutputText.addScriptEngine(fScriptEngine);
 
 			// execute startup scripts
 			// TODO currently we cannot run this on the first launch as the UI
