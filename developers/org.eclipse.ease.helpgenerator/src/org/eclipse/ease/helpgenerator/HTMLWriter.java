@@ -277,10 +277,13 @@ public class HTMLWriter {
 
 		final Collection<String> aliases = getFunctionAliases(method);
 		if (!aliases.isEmpty()) {
-			addLine(buffer, "		<p class=\"synonyms\">");
+			addLine(buffer, "		<p class=\"synonyms\"><em>Alias:</em>");
 
 			for (final String alias : aliases)
-				addText(buffer, alias + " ");
+				addText(buffer, " " + alias + "(),");
+
+			// remove last comma
+			buffer.deleteCharAt(buffer.length() - 1);
 
 			addLine(buffer, "</p>");
 		}
