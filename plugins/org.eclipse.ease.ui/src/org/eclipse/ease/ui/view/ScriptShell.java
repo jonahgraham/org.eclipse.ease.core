@@ -164,7 +164,8 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		fSashForm = new SashForm(parent, SWT.NONE);
 		fSashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		fOutputText = new ScriptHistoryText(fSashForm, SWT.V_SCROLL | SWT.READ_ONLY | SWT.BORDER);
+		fOutputText = new ScriptHistoryText(fSashForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY | SWT.BORDER);
+		fOutputText.setAlwaysShowScrollBars(false);
 
 		fOutputText.addMouseListener(new MouseAdapter() {
 			@Override
