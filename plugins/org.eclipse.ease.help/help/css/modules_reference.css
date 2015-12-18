@@ -22,7 +22,7 @@ th					{ background-color: #000000; color: #FFFFFF;
 						font-weight: normal; padding: 5px 6px 5px 6px;
 						font-weight: bold; border: 1px solid white; font-family: "Arial";
 					}
-td					{ padding: 5px 10px 5px 20px; border: 1px solid white; }
+td					{ padding: 5px 10px 5px 20px; border: 1px solid white; vertical-align: top; }
 tr:nth-child(even)	{ background-color: #eeeeee; }
 tr:nth-child(odd)	{ background-color: #cccccc; }
 
