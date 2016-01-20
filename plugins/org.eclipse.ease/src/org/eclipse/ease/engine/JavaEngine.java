@@ -35,6 +35,8 @@ public class JavaEngine implements IScriptEngine {
 	private final Map<String, Object> fVariables = new HashMap<String, Object>();
 	private final IEnvironment fEnvironment;
 
+	private EngineDescription fDescription;
+
 	public JavaEngine() {
 		fEnvironment = new NativeEnvironment();
 		((NativeEnvironment) fEnvironment).initialize(this, fEnvironment);
@@ -178,11 +180,6 @@ public class JavaEngine implements IScriptEngine {
 	}
 
 	@Override
-	public EngineDescription getDescription() {
-		throw new RuntimeException("not supported");
-	}
-
-	@Override
 	public Object removeVariable(final String name) {
 		return getVariables().remove(name);
 	}
@@ -199,5 +196,15 @@ public class JavaEngine implements IScriptEngine {
 
 	@Override
 	public void setCloseStreamsOnTerminate(final boolean closeStreams) {
+	}
+
+	@Override
+	public void setEngineDescription(final EngineDescription description) {
+		fDescription = description;
+	}
+
+	@Override
+	public EngineDescription getDescription() {
+		return fDescription;
 	}
 }

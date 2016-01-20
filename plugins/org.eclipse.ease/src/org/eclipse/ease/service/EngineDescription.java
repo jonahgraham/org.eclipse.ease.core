@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.content.IContentType;
-import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.IScriptEngine;
@@ -91,8 +90,7 @@ public class EngineDescription {
 			final Object object = fConfigurationElement.createExecutableExtension(CLASS);
 			if (object instanceof IScriptEngine) {
 				// configure engine
-				if (object instanceof AbstractScriptEngine)
-					((AbstractScriptEngine) object).setEngineDescription(this);
+				((IScriptEngine) object).setEngineDescription(this);
 
 				// engine loaded, now load launch extensions
 				final IScriptService scriptService = ScriptService.getService();

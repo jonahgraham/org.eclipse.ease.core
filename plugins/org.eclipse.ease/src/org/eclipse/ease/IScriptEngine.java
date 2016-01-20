@@ -222,6 +222,14 @@ public interface IScriptEngine {
 	EngineDescription getDescription();
 
 	/**
+	 * Set engine description for current engine. This method gets called by the script service right after the engine constructor is called.
+	 *
+	 * @param description
+	 *            engine description
+	 */
+	void setEngineDescription(EngineDescription description);
+
+	/**
 	 * Remove a variable from the scope.
 	 *
 	 * @param name
