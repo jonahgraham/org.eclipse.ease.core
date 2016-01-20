@@ -91,6 +91,7 @@ public class JavaPackagesCompletionProvider extends AbstractCompletionProvider {
 			// read eclipse packages
 			BundleContext context = FrameworkUtil.getBundle(JavaPackagesCompletionProvider.class).getBundleContext();
 			for (Bundle bundle : context.getBundles()) {
+
 				for (String packageName : getExportedPackages(bundle))
 					registerPackage(packageName);
 			}
@@ -154,15 +155,11 @@ public class JavaPackagesCompletionProvider extends AbstractCompletionProvider {
 	 * @return <code>true</code> when package is registered
 	 */
 	public static boolean containsPackage(final String candidate) {
-		if (getPackages().containsKey(candidate))
-			return true;
-
 		int lastDot = candidate.lastIndexOf('.');
-		if (lastDot > 0) {
-			Collection<String> packageList = getPackages().get(candidate.substring(0, lastDot));
-			if (packageList != null)
-				return packageList.contains(candidate.substring(lastDot + 1));
-		}
+		Collection<String> packageList = (lastDot > 0) ? getPackages().get(candidate.substring(0, lastDot)) : getPackages().get("");
+
+		if (packageList != null)
+			return packageList.contains(candidate.substring(lastDot + 1));
 
 		return false;
 	}

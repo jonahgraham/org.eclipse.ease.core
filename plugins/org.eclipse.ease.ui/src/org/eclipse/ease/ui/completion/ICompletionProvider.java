@@ -14,9 +14,15 @@ package org.eclipse.ease.ui.completion;
 
 import java.util.Collection;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.ICompletionContext;
+import org.eclipse.ease.ui.Activator;
 
 public interface ICompletionProvider {
+
+	/** Trace enablement for code completion. */
+	boolean TRACE_CODE_COMPLETION = Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease.ui/debug/codeCompletion"));
 
 	/**
 	 * Calculate all matching proposals for given {@link ICompletionContext}.

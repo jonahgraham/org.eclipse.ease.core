@@ -1,0 +1,7 @@
+# trace options for org.eclipse.ease.ui
+
+# global trace flag for this plugin
+org.eclipse.ease.ui/debug=false
+
+# trace enablement for code completion
+org.eclipse.ease.ui/debug/codeCompletion=false

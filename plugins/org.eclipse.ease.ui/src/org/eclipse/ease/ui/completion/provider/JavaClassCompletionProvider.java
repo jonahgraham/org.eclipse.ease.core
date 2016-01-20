@@ -34,6 +34,7 @@ import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.ease.ui.help.hovers.IHelpResolver;
 import org.eclipse.ease.ui.help.hovers.JavaClassHelpResolver;
+import org.eclipse.ease.ui.tools.Timer;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.Bundle;
@@ -86,6 +87,8 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 		if (CLASSES == null) {
 			CLASSES = new HashMap<String, Collection<String>>();
 
+			Timer timer = new Timer();
+
 			// read java classes
 			try {
 				final URL url = new URL(
@@ -102,11 +105,13 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 			} catch (final IOException e) {
 				Logger.error(Activator.PLUGIN_ID, "Cannot read class list for code completion", e);
 			}
+			Logger.trace(Activator.PLUGIN_ID, TRACE_CODE_COMPLETION, "Load java classes took: " + timer.getMilliSeconds() + " ms");
 
 			// read eclipse classes
+			timer = new Timer();
+
 			final BundleContext context = FrameworkUtil.getBundle(JavaClassCompletionProvider.class).getBundleContext();
 			for (final Bundle bundle : context.getBundles()) {
-
 				final Collection<String> exportedPackages = JavaPackagesCompletionProvider.getExportedPackages(bundle);
 
 				// first look for class signatures in manifest, so we do not need to parse the whole bundle
@@ -173,6 +178,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 					}
 				}
 			}
+			Logger.trace(Activator.PLUGIN_ID, TRACE_CODE_COMPLETION, "Load eclipse classes took: " + timer.getMilliSeconds() + " ms");
 		}
 
 		return CLASSES;
@@ -202,7 +208,6 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 			return null;
 
 		final String candidate = className.substring(0, lastDot);
-		final Map<String, Collection<String>> packages = JavaPackagesCompletionProvider.getPackages();
 		if (JavaPackagesCompletionProvider.containsPackage(candidate))
 			return candidate;
 
