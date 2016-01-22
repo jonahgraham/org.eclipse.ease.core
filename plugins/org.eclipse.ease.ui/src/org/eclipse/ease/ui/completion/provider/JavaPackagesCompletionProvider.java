@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,28 +43,28 @@ public class JavaPackagesCompletionProvider extends AbstractCompletionProvider {
 	}
 
 	@Override
-	public Collection<? extends ScriptCompletionProposal> getProposals(final ICompletionContext context) {
-		final Collection<ScriptCompletionProposal> proposals = new ArrayList<ScriptCompletionProposal>();
+	protected void prepareProposals(final ICompletionContext context) {
 
 		String parentPackage = (context.getType() == Type.NONE) ? "" : context.getPackage();
 
 		if (getPackages().get(parentPackage) != null) {
 			for (String packageName : getPackages().get(parentPackage)) {
 
-				final IHelpResolver helpResolver = new JavaPackageHelpResolver(parentPackage + "." + packageName);
+				if (matchesFilter(packageName)) {
+					final IHelpResolver helpResolver = new JavaPackageHelpResolver(parentPackage + "." + packageName);
 
-				if (parentPackage.isEmpty())
-					// add root package
-					addProposal(proposals, context, packageName, packageName + ".", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE),
-							ScriptCompletionProposal.ORDER_PACKAGE, helpResolver);
-				else
-					// add sub package
-					addProposal(proposals, context, parentPackage + "." + packageName, packageName + ".",
-							JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE), ScriptCompletionProposal.ORDER_PACKAGE, helpResolver);
+					if (parentPackage.isEmpty())
+						// add root package
+						addProposal(packageName, packageName + ".", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE),
+								ScriptCompletionProposal.ORDER_PACKAGE, helpResolver);
+					else
+						// add sub package
+						addProposal(parentPackage + "." + packageName, packageName + ".",
+								JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_PACKAGE), ScriptCompletionProposal.ORDER_PACKAGE,
+								helpResolver);
+				}
 			}
 		}
-
-		return proposals;
 	}
 
 	public static Map<String, Collection<String>> getPackages() {

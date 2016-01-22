@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.completion.provider;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map.Entry;
 
 import org.eclipse.ease.ICompletionContext;
@@ -32,23 +30,20 @@ public class VariablesCompletionProvider extends AbstractCompletionProvider {
 	}
 
 	@Override
-	public Collection<? extends ScriptCompletionProposal> getProposals(final ICompletionContext context) {
-		final Collection<ScriptCompletionProposal> proposals = new ArrayList<ScriptCompletionProposal>();
-
+	protected void prepareProposals(final ICompletionContext context) {
 		for (final Entry<String, Object> variable : context.getScriptEngine().getVariables().entrySet()) {
 			// ignore mapped modules
 			if (!variable.getKey().startsWith(EnvironmentModule.MODULE_PREFIX)) {
+				if (matchesFilterIgnoreCase(variable.getKey())) {
+					final String type = (variable.getValue() != null) ? variable.getValue().getClass().getSimpleName() : "null";
+					final StyledString styledString = new StyledString(variable.getKey());
+					styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
+					styledString.append(" - " + "Variable", StyledString.QUALIFIER_STYLER);
 
-				final String type = (variable.getValue() != null) ? variable.getValue().getClass().getSimpleName() : "null";
-				final StyledString styledString = new StyledString(variable.getKey());
-				styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
-				styledString.append(" - " + "Variable", StyledString.QUALIFIER_STYLER);
-
-				addProposal(proposals, context, styledString, variable.getKey(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
-						ScriptCompletionProposal.ORDER_FIELD);
+					addProposal(styledString, variable.getKey(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+							ScriptCompletionProposal.ORDER_FIELD, null);
+				}
 			}
 		}
-
-		return proposals;
 	}
 }

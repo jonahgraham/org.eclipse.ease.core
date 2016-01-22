@@ -11,22 +11,16 @@
 package org.eclipse.ease.ui.completion.provider;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.nio.file.Path;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
-import org.eclipse.ease.Logger;
-import org.eclipse.ease.tools.ResourceTools;
-import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
-import org.eclipse.ease.ui.completion.CompletionContext;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -41,37 +35,6 @@ public abstract class AbstractFileLocationCompletionProvider extends AbstractCom
 	private static final int ORDER_FOLDER = ScriptCompletionProposal.ORDER_DEFAULT + 2;
 	private static final int ORDER_FILE = ScriptCompletionProposal.ORDER_DEFAULT + 3;
 
-	/**
-	 * Simple context to create proposals for exchanged filters.
-	 */
-	private class StringContext extends CompletionContext {
-
-		private final String fFilter;
-		private final ICompletionContext fContext;
-
-		public StringContext(final ICompletionContext context, final String filter) {
-			super(context.getScriptEngine(), context.getScriptType());
-
-			fContext = context;
-			fFilter = filter;
-		}
-
-		@Override
-		public String getFilter() {
-			return fFilter;
-		}
-
-		@Override
-		public int getOffset() {
-			return fContext.getOffset();
-		}
-
-		@Override
-		protected boolean isLiteral(final char candidate) {
-			return false;
-		}
-	}
-
 	private final ILabelProvider fLabelProvider = new WorkbenchLabelProvider();
 
 	@Override
@@ -80,165 +43,66 @@ public abstract class AbstractFileLocationCompletionProvider extends AbstractCom
 	}
 
 	@Override
-	public Collection<? extends ScriptCompletionProposal> getProposals(final ICompletionContext context) {
-		final Collection<ScriptCompletionProposal> proposals = new ArrayList<ScriptCompletionProposal>();
+	protected void prepareProposals(final ICompletionContext context) {
+		final LocationResolver resolver = new LocationResolver(context.getFilter(), context.getResource());
 
-		// add URI schemes
-		if (showCandidate(context, "workspace://"))
-			addProposal(proposals, context, "workspace://", "workspace://", null, ORDER_URI_SCHEME);
+		if ((resolver.getResolvedFolder() == null) || (!resolver.isAbsolute())
+				|| (resolver.getType() == org.eclipse.ease.ui.completion.provider.LocationResolver.Type.UNKNOWN)) {
+			// add URI scheme proposals
+			if ((matches(context.getFilter(), "workspace:/")) && (showCandidate("workspace://")))
+				addProposal("workspace://", "workspace://", null, ORDER_URI_SCHEME, null);
 
-		if (showCandidate(context, "project://"))
-			addProposal(proposals, context, "project://", "project://", null, ORDER_URI_SCHEME);
+			if ((matches(context.getFilter(), "project:/")) && (getContext().getResource() instanceof IResource) && (showCandidate("project://")))
+				addProposal("project://", "project://", null, ORDER_URI_SCHEME, null);
 
-		if (showCandidate(context, "file:///"))
-			addProposal(proposals, context, "file:///", "file:///", null, ORDER_URI_SCHEME);
-
-		ICompletionContext proposalContext = context;
-		String location = context.getFilter();
-		location = location.replace('\\', '/');
-		Object displayResource = null;
-
-		// special handling for project:// URIs
-		if ((location.startsWith("project://")) && (context.getResource() instanceof IResource)) {
-			final IProject project = ((IResource) context.getResource()).getProject();
-			location = location.replace("project://", "workspace://" + project.getName() + "/");
-
-			// now let workspace:// resolver do the job
-
-		} else if (location.startsWith("/")) {
-			// absolute path into file system (unix)
-			location = "file://" + location;
-
-		} else if (location.indexOf(":/") == 1) {
-			// absolute path into file system (windows)
-			location = "file:///" + location;
-
-		} else if ((!location.contains("://") && (!location.startsWith("file:///")) && (!location.startsWith("workspace://")))) {
-			// must be a relative path, make absolute
-
-			if (context.getResource() instanceof IResource)
-				location = "workspace:/" + ((IResource) context.getResource()).getParent().getFullPath().toString() + "/" + location;
-
-			else if (context.getResource() instanceof File)
-				location = "workspace:/" + ((File) context.getResource()).getParentFile().getAbsolutePath() + "/" + location;
-		}
-
-		if (location.startsWith("file:///")) {
-			// absolute path into file system
-
-			// split into base & filter
-			int lastSlash = location.lastIndexOf('/');
-			final String base = (lastSlash > "file:///".length()) ? location.substring("file:///".length(), lastSlash) : "";
-			final String filter = location.substring(lastSlash + 1);
-
-			proposalContext = new StringContext(context, filter);
-
-			if (base.isEmpty()) {
-				// get root elements
-				if (isWindows()) {
-					for (final File rootFile : File.listRoots()) {
-						final String name = rootFile.getPath().replace('\\', '/');
-						if (showCandidate(context, rootFile))
-							addProposal(proposals, proposalContext, name, name, getImage(rootFile), ORDER_FOLDER);
-					}
-
-					// done
-					return proposals;
-
-				} else
-					displayResource = new File("/");
-
-			} else {
-				// some root path already chosen
-				// if (location.endsWith(":/"))
-				// do not remove slash
-				lastSlash++;
-
-				displayResource = ResourceTools.resolveFolder(location.substring(0, lastSlash), context.getResource(), true);
-			}
-
-		} else if (location.startsWith("workspace://")) {
-			// absolute path into workspace
-
-			// split into base & filter
-			final int lastSlash = location.lastIndexOf('/');
-			final String base = (lastSlash > "workspace://".length()) ? location.substring("workspace://".length(), lastSlash) : "";
-			final String filter = location.substring(lastSlash + 1);
-
-			proposalContext = new StringContext(context, filter);
-
-			if (base.isEmpty()) {
-				// get root projects
-				for (final IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-					if (showCandidate(context, project)) {
-						final ImageDescriptor imageDescriptor = ImageDescriptor.createFromImage(fLabelProvider.getImage(project));
-						addProposal(proposals, proposalContext, project.getName(), project.getName() + "/", imageDescriptor, ORDER_PROJECT);
-					}
-				}
-
-				// done
-				return proposals;
-
-			} else {
-				// some root path already chosen
-				displayResource = ResourceTools.resolveFolder(location.substring(0, lastSlash), context.getResource(), true);
-			}
+			if ((matches(context.getFilter(), "file://")) && (showCandidate("file:///")))
+				addProposal("file:///", "file:///", null, ORDER_URI_SCHEME, null);
 		}
 
 		// display proposals
-		if (displayResource instanceof IContainer) {
-			// display an eclipse resource container
-			try {
-				for (final IResource resource : ((IContainer) displayResource).members()) {
-					if (showCandidate(context, resource)) {
-						if (resource instanceof IFile) {
-							final ImageDescriptor imageDescriptor = ImageDescriptor.createFromImage(fLabelProvider.getImage(resource));
-							addProposal(proposals, proposalContext, resource.getName(), resource.getName(), imageDescriptor, ORDER_FILE);
+		for (final Object child : resolver.getChildren()) {
+			if (child instanceof File) {
+				String name = ((File) child).getName();
+				String suffix = "";
+				if (name.isEmpty())
+					name = ((File) child).toString().replace('\\', '/');
+				else if (((File) child).isDirectory())
+					suffix = "/";
 
-						} else {
-							final ImageDescriptor imageDescriptor = ImageDescriptor.createFromImage(fLabelProvider.getImage(resource));
-							addProposal(proposals, proposalContext, resource.getName(), resource.getName() + "/", imageDescriptor, ORDER_FOLDER);
-						}
-					}
-				}
-
-				// add proposal to traverse up one level
-				if (!(displayResource instanceof IProject)) {
-					if (showCandidate(context, "..")) {
-						addProposal(proposals, proposalContext, "..", "../",
-								PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER), ORDER_FOLDER);
-					}
-				}
-
-			} catch (final CoreException e) {
-				Logger.error(Activator.PLUGIN_ID, "Could not traverse folder \"" + ((IContainer) displayResource).getName() + "\"", e);
+				if ((matchesIgnoreCase(resolver.getFilterPart(), name)) && (showCandidate(child)))
+					addProposal(name, resolver.getParentString() + name + suffix, getImage((File) child), ORDER_FILE, null);
 			}
 
-		} else if (displayResource instanceof File) {
-			// display a file system file
-			final File[] dirListing = ((File) displayResource).listFiles();
-			if (dirListing != null) {
-				// sometimes returns null - seems to be related with insufficient rights to access folders
-				for (final File file : dirListing) {
-					if (showCandidate(context, file)) {
-						if (file.isFile())
-							addProposal(proposals, proposalContext, file.getName(), file.getName(), getImage(file), ORDER_FILE);
-
-						else
-							addProposal(proposals, proposalContext, file.getName(), file.getName() + "/", getImage(file), ORDER_FOLDER);
+			if (child instanceof IResource) {
+				if ((matchesIgnoreCase(resolver.getFilterPart(), ((IResource) child).getName())) && (showCandidate(child))) {
+					final ImageDescriptor imageDescriptor = ImageDescriptor.createFromImage(fLabelProvider.getImage(child));
+					if (child instanceof IProject) {
+						addProposal(((IProject) child).getName(), resolver.getParentString() + ((IProject) child).getName() + '/', imageDescriptor,
+								ORDER_PROJECT, null);
+					} else if (child instanceof IContainer) {
+						addProposal(((IContainer) child).getName(), resolver.getParentString() + ((IContainer) child).getName() + '/', imageDescriptor,
+								ORDER_FOLDER, null);
+					} else {
+						addProposal(((IResource) child).getName(), resolver.getParentString() + ((IResource) child).getName(), imageDescriptor, ORDER_FILE,
+								null);
 					}
-				}
-			}
-
-			if (!isRootFile((File) displayResource)) {
-				if (showCandidate(context, "..")) {
-					addProposal(proposals, proposalContext, "..", "../",
-							PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER), ORDER_FOLDER);
 				}
 			}
 		}
 
-		return proposals;
+		// add '..' proposal if we are not located in a root folder
+		if ((matches(resolver.getFilterPart(), "..")) && (showCandidate(".."))) {
+			final Object parentFolder = resolver.getResolvedFolder();
+
+			if ((parentFolder instanceof IResource) && !(parentFolder instanceof IProject) && !(parentFolder instanceof IWorkspaceRoot)) {
+				addProposal("..", resolver.getParentString() + "../",
+						PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER), ORDER_FOLDER, null);
+
+			} else if ((parentFolder instanceof File) && !(isRootFile((File) parentFolder))) {
+				addProposal("..", resolver.getParentString() + "../",
+						PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER), ORDER_FOLDER, null);
+			}
+		}
 	}
 
 	/**
@@ -249,8 +113,9 @@ public abstract class AbstractFileLocationCompletionProvider extends AbstractCom
 	 * @return <code>true</code> for root files
 	 */
 	private static boolean isRootFile(final File file) {
+		final Path filePath = file.toPath().normalize();
 		for (final File rootFile : File.listRoots()) {
-			if (rootFile.equals(file))
+			if (rootFile.toPath().equals(filePath))
 				return true;
 		}
 
@@ -270,16 +135,12 @@ public abstract class AbstractFileLocationCompletionProvider extends AbstractCom
 		return null;
 	}
 
-	protected boolean showCandidate(final ICompletionContext context, final Object candidate) {
+	protected boolean showCandidate(final Object candidate) {
 		// do not show closed projects
 		if ((candidate instanceof IProject) && (!((IProject) candidate).isOpen()))
 			return false;
 
 		return true;
-	}
-
-	private static final boolean isWindows() {
-		return System.getProperty("os.name").toLowerCase().contains("win");
 	}
 
 	protected static boolean hasFileExtension(final Object candidate, final String extension) {

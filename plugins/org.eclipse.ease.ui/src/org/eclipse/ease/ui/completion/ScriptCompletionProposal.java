@@ -12,6 +12,7 @@
 package org.eclipse.ease.ui.completion;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.help.hovers.IHelpResolver;
@@ -27,7 +28,8 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
-public class ScriptCompletionProposal implements ICompletionProposal, ICompletionProposalExtension5, ICompletionProposalExtension6, IContentProposal {
+public class ScriptCompletionProposal
+		implements ICompletionProposal, ICompletionProposalExtension5, ICompletionProposalExtension6, IContentProposal, Comparable<ScriptCompletionProposal> {
 
 	public static final int ORDER_FIELD = 20;
 	public static final int ORDER_METHOD = 40;
@@ -37,38 +39,49 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 
 	private final String fDisplayString;
 	private final String fReplacementString;
-	private int fCursorPosition;
 	private final ImageDescriptor fImageDescriptor;
 	private StyledString fStyledString;
 	private final int fSortOrder;
 
 	private final IHelpResolver fHelpResolver;
+	private final ICompletionContext fContext;
 
-	public ScriptCompletionProposal(final String displayString, final String replacementString, final int cursorPosition, final ImageDescriptor imageDescriptor,
-			final int sortOrder, final IHelpResolver helpResolver) {
+	public ScriptCompletionProposal(final ICompletionContext context, final String displayString, final String replacementString,
+			final ImageDescriptor imageDescriptor, final int sortOrder, final IHelpResolver helpResolver) {
+		fContext = context;
 		fDisplayString = displayString;
 		fReplacementString = replacementString;
-		fCursorPosition = cursorPosition;
 		fImageDescriptor = imageDescriptor;
 		fSortOrder = sortOrder;
 		fHelpResolver = helpResolver;
 	}
 
-	public ScriptCompletionProposal(final String displayString, final String replacementString, final int cursorPosition, final ImageDescriptor imageDescriptor,
-			final int sortOrder) {
-		this(displayString, replacementString, cursorPosition, imageDescriptor, sortOrder, null);
-	}
-
-	public ScriptCompletionProposal(final StyledString styledString, final String replacementString, final int cursorPosition,
-			final ImageDescriptor imageDescriptor, final int sortOrder) {
-		this(styledString.getString(), replacementString, cursorPosition, imageDescriptor, sortOrder);
-		fStyledString = styledString;
-	}
-
-	public ScriptCompletionProposal(final StyledString styledString, final String replacementString, final int cursorPosition,
+	public ScriptCompletionProposal(final ICompletionContext context, final StyledString styledString, final String replacementString,
 			final ImageDescriptor imageDescriptor, final int sortOrder, final IHelpResolver helpResolver) {
-		this(styledString.getString(), replacementString, cursorPosition, imageDescriptor, sortOrder, helpResolver);
+		this(context, styledString.getString(), replacementString, imageDescriptor, sortOrder, null);
 		fStyledString = styledString;
+	}
+
+	@Override
+	public int compareTo(final ScriptCompletionProposal o) {
+		final int priority = fSortOrder - o.fSortOrder;
+		if (priority != 0)
+			return priority;
+
+		return getDisplayString().compareToIgnoreCase(o.getDisplayString());
+	}
+	// ----------------------------------------------------------------------
+	// ICompletionProposal interface implementation (for editor replacements)
+	// ----------------------------------------------------------------------
+
+	@Override
+	public String getDisplayString() {
+		return fDisplayString;
+	}
+
+	@Override
+	public Image getImage() {
+		return (fImageDescriptor != null) ? fImageDescriptor.createImage() : null;
 	}
 
 	@Override
@@ -79,7 +92,12 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	@Override
 	public void apply(final IDocument document) {
 		try {
-			document.replace(fCursorPosition, 0, fReplacementString);
+			if (fContext.getFilter() != null)
+				document.replace(fContext.getOffset() - fContext.getFilter().length(), fContext.getFilter().length(), fReplacementString);
+
+			else
+				document.replace(fContext.getOffset(), 0, fReplacementString);
+
 		} catch (final BadLocationException e) {
 			Logger.error(Activator.PLUGIN_ID, "Could not insert completion proposal into document", e);
 		}
@@ -87,7 +105,11 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 
 	@Override
 	public Point getSelection(final IDocument document) {
-		return new Point(fCursorPosition + fReplacementString.length(), 0);
+		if (fContext.getFilter() != null)
+			return new Point((fContext.getOffset() - fContext.getFilter().length()) + fReplacementString.length(), 0);
+
+		else
+			return new Point(fContext.getOffset() + fReplacementString.length(), 0);
 	}
 
 	@Override
@@ -104,60 +126,31 @@ public class ScriptCompletionProposal implements ICompletionProposal, ICompletio
 	}
 
 	@Override
-	public String getDisplayString() {
-		return fDisplayString;
-	}
-
-	public String getReplacementString() {
-		return fReplacementString;
-	}
-
-	@Override
-	public Image getImage() {
-		return (fImageDescriptor != null) ? fImageDescriptor.createImage() : null;
-	}
-
-	@Override
 	public IContextInformation getContextInformation() {
 		return null;
 	}
 
-	// -----------------------------------------
-	// IContentProposal interface implementation
-	// -----------------------------------------
+	// ------------------------------------------------------------------
+	// IContentProposal interface implementation (for shell replacements)
+	// ------------------------------------------------------------------
 	@Override
 	public String getContent() {
-		return getReplacementString();
+		String original = fContext.getOriginalCode();
+		return original.substring(0, original.length() - fContext.getFilter().length()) + fReplacementString;
 	}
 
 	@Override
 	public int getCursorPosition() {
-		return getSelection(null).x;
+		return getContent().length();
 	}
 
 	@Override
 	public String getLabel() {
-		return getDisplayString();
+		return getDisplayString() + "x";
 	}
 
 	@Override
 	public String getDescription() {
 		return getAdditionalProposalInfo();
-	}
-
-	public void setCursorPosition(final int cursorPosition) {
-		fCursorPosition = cursorPosition;
-	}
-
-	public int getSortOrder() {
-		return fSortOrder;
-	}
-
-	public static int compare(final ScriptCompletionProposal proposal1, final ScriptCompletionProposal proposal2) {
-		final int priority = proposal1.getSortOrder() - proposal2.getSortOrder();
-		if (priority != 0)
-			return priority;
-
-		return proposal1.getDisplayString().compareToIgnoreCase(proposal2.getDisplayString());
 	}
 }

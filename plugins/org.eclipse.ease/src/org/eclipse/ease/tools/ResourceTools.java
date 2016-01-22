@@ -223,7 +223,14 @@ public final class ResourceTools {
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
-			final IContainer relativeFolder = ((IContainer) parent).getFolder(new Path(location.toString()));
+			IPath targetPath = ((IResource) parent).getFullPath().append(new Path(location.toString()));
+			IContainer relativeFolder = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(targetPath);
+			if ((relativeFolder == null) && (targetPath.segmentCount() == 1))
+				relativeFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(targetPath.segment(0));
+
+			if (relativeFolder == null)
+				relativeFolder = ((IContainer) parent).getFolder(new Path(location.toString()));
+
 			if ((relativeFolder.exists()) || (!exists))
 				return relativeFolder;
 
@@ -529,7 +536,7 @@ public final class ResourceTools {
 				if (workbenchPage != null) {
 					IEditorPart editor = workbenchPage.getActiveEditor();
 					if (editor != null) {
-						file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
+						file = editor.getEditorInput().getAdapter(IFile.class);
 					}
 				}
 			}

@@ -18,9 +18,9 @@ import org.eclipse.wst.jsdt.ui.text.java.AbstractProposalSorter;
 public class JavaScriptProposalSorter extends AbstractProposalSorter {
 
 	@Override
-	public int compare(ICompletionProposal proposal1, ICompletionProposal proposal2) {
+	public int compare(final ICompletionProposal proposal1, final ICompletionProposal proposal2) {
 		if ((proposal1 instanceof ScriptCompletionProposal) && (proposal1 instanceof ScriptCompletionProposal))
-			return ScriptCompletionProposal.compare((ScriptCompletionProposal) proposal1, (ScriptCompletionProposal) proposal2);
+			return ((ScriptCompletionProposal) proposal1).compareTo((ScriptCompletionProposal) proposal2);
 
 		return proposal1.getDisplayString().compareToIgnoreCase(proposal2.getDisplayString());
 	}

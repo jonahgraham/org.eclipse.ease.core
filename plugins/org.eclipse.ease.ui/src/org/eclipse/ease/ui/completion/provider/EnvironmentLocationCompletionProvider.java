@@ -22,15 +22,15 @@ public class EnvironmentLocationCompletionProvider extends AbstractFileLocationC
 	}
 
 	@Override
-	protected boolean showCandidate(final ICompletionContext context, final Object candidate) {
+	protected boolean showCandidate(final Object candidate) {
 		if (isFile(candidate)) {
-			if (context.getCaller().endsWith("include"))
-				return hasFileExtension(candidate, context.getScriptType().getDefaultExtension());
+			if (getContext().getCaller().endsWith("include"))
+				return hasFileExtension(candidate, getContext().getScriptType().getDefaultExtension());
 
-			else if (context.getCaller().endsWith("loadJar"))
+			else if (getContext().getCaller().endsWith("loadJar"))
 				return hasFileExtension(candidate, "jar");
 		}
 
-		return super.showCandidate(context, candidate);
+		return super.showCandidate(candidate);
 	}
 }

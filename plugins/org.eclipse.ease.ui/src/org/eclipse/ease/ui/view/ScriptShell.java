@@ -282,7 +282,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 		fContentAssistAdapter = new ContentProposalModifier(fInputCombo, new ComboContentAdapter(), fCompletionDispatcher, KeyStroke.getInstance(SWT.CTRL, ' '),
 				fCompletionDispatcher.getActivationChars());
 
-		fContentAssistAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+		fContentAssistAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 		fContentAssistAdapter.setLabelProvider(new CompletionLabelProvider());
 	}
 

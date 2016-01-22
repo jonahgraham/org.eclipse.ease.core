@@ -16,14 +16,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.ease.ICompletionContext;
@@ -37,6 +38,7 @@ import org.eclipse.ease.ui.help.hovers.JavaClassHelpResolver;
 import org.eclipse.ease.ui.tools.Timer;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.StyledString;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -48,39 +50,72 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 	@Override
 	public boolean isActive(final ICompletionContext context) {
-		return super.isActive(context) && (context.getType() == Type.PACKAGE);
+		return super.isActive(context) && ((context.getType() == Type.PACKAGE)
+				// also activate when no package is provided and the first letter is capitalized and we see at least 3 characters
+				|| ((context.getType() == Type.NONE) && (context.getFilter().length() >= 3) && (Character.isUpperCase(context.getFilter().charAt(0)))));
 	}
 
 	@Override
-	public Collection<? extends ScriptCompletionProposal> getProposals(final ICompletionContext context) {
-		final Collection<ScriptCompletionProposal> proposals = new ArrayList<ScriptCompletionProposal>();
+	protected void prepareProposals(final ICompletionContext context) {
 
 		if (getClasses().get(context.getPackage()) != null) {
+			// dedicated package provided, only query this package
+
 			for (final String className : getClasses().get(context.getPackage())) {
-				// add class name
-				final IHelpResolver helpResolver = new JavaClassHelpResolver(context.getPackage(), className);
+				if (matchesFilter(className)) {
 
-				// retrieve image
-				ImageDescriptor descriptor = null;
+					// add class name
+					final IHelpResolver helpResolver = new JavaClassHelpResolver(context.getPackage(), className);
 
-				try {
-					final Class<?> clazz = getClass().getClassLoader().loadClass(context.getPackage() + "." + className.replace('.', '$'));
-					if (clazz.isEnum())
-						descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_ENUM);
-					else if (clazz.isInterface())
-						descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_INTERFACE);
-				} catch (final ClassNotFoundException e) {
-					// if we cannot find the class, use the default image
+					// retrieve image
+					ImageDescriptor descriptor = getImage(context.getPackage(), className);
+
+					addProposal(className, className, descriptor, ScriptCompletionProposal.ORDER_CLASS, helpResolver);
 				}
+			}
 
-				if (descriptor == null)
-					descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_CLASS);
+		} else {
+			// no package provided, look in all packages for matching class
+			String filter = context.getFilter();
+			Pattern classPattern = Pattern.compile(filter + ".*");
 
-				addProposal(proposals, context, className, className, descriptor, ScriptCompletionProposal.ORDER_CLASS, helpResolver);
+			for (Entry<String, Collection<String>> packageEntry : getClasses().entrySet()) {
+				for (String candidate : packageEntry.getValue()) {
+					if (classPattern.matcher(candidate).matches()) {
+						// add class proposal
+						// add class name
+						final IHelpResolver helpResolver = new JavaClassHelpResolver(packageEntry.getKey(), candidate);
+
+						// retrieve image
+						ImageDescriptor descriptor = getImage(packageEntry.getKey(), candidate);
+
+						final StyledString styledString = new StyledString(candidate);
+						styledString.append(" - " + packageEntry.getKey(), StyledString.QUALIFIER_STYLER);
+
+						addProposal(styledString, packageEntry.getKey() + "." + candidate, descriptor, ScriptCompletionProposal.ORDER_CLASS, helpResolver);
+					}
+				}
 			}
 		}
+	}
 
-		return proposals;
+	private static ImageDescriptor getImage(final String packageName, final String className) {
+		ImageDescriptor descriptor = null;
+
+		try {
+			final Class<?> clazz = JavaClassCompletionProvider.class.getClassLoader().loadClass(packageName + "." + className.replace('.', '$'));
+			if (clazz.isEnum())
+				descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_ENUM);
+			else if (clazz.isInterface())
+				descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_INTERFACE);
+		} catch (final ClassNotFoundException e) {
+			// if we cannot find the class, use the default image
+		}
+
+		if (descriptor == null)
+			descriptor = JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_OBJS_CLASS);
+
+		return descriptor;
 	}
 
 	private static Map<String, Collection<String>> getClasses() {

@@ -14,7 +14,6 @@ package org.eclipse.ease.ui.completion;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,7 +29,6 @@ import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 /**
  * Dispatcher class create code completion proposals.
@@ -147,9 +145,9 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 * @param i
 	 * @return
 	 */
-	public List<ICompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset, final int selectionRange,
-			final IProgressMonitor monitor) {
-		final LinkedList<ICompletionProposal> proposals = new LinkedList<ICompletionProposal>();
+	public List<ScriptCompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset,
+			final int selectionRange, final IProgressMonitor monitor) {
+		final LinkedList<ScriptCompletionProposal> proposals = new LinkedList<ScriptCompletionProposal>();
 
 		final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
 
@@ -177,15 +175,8 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 
 	@Override
 	public IContentProposal[] getProposals(final String contents, final int position) {
-		final List<ICompletionProposal> proposals = getCompletionProposals(null, contents, position, 0, null);
-
-		Collections.sort(proposals, new Comparator<ICompletionProposal>() {
-
-			@Override
-			public int compare(final ICompletionProposal o1, final ICompletionProposal o2) {
-				return ScriptCompletionProposal.compare((ScriptCompletionProposal) o1, (ScriptCompletionProposal) o2);
-			}
-		});
+		final List<ScriptCompletionProposal> proposals = getCompletionProposals(null, contents, position, 0, null);
+		Collections.sort(proposals);
 
 		return proposals.toArray(new IContentProposal[proposals.size()]);
 	}

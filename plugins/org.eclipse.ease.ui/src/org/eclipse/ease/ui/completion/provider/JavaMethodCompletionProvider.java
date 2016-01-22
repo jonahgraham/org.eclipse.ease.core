@@ -13,8 +13,6 @@ package org.eclipse.ease.ui.completion.provider;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
@@ -36,42 +34,42 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 	}
 
 	@Override
-	public Collection<? extends ScriptCompletionProposal> getProposals(final ICompletionContext context) {
-		final Collection<ScriptCompletionProposal> proposals = new ArrayList<ScriptCompletionProposal>();
-
+	protected void prepareProposals(final ICompletionContext context) {
 		final Class<? extends Object> clazz = context.getReferredClazz();
 
 		for (final Method method : clazz.getMethods()) {
 			if ((context.getType() == Type.STATIC_CLASS) && (!Modifier.isStatic(method.getModifiers())))
 				continue;
 
-			final IHelpResolver helpResolver = new JavaMethodHelpResolver(method);
+			if (matchesFilterIgnoreCase(method.getName())) {
 
-			final StyledString styledString = new StyledString(method.getName() + "(" + getMethodSignature(method) + ") : " + getMethodReturnType(method));
-			styledString.append(" - " + method.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
+				final IHelpResolver helpResolver = new JavaMethodHelpResolver(method);
 
-			if (method.getParameterTypes().length > 0)
-				addProposal(proposals, context, styledString, method.getName() + "(", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC),
-						ScriptCompletionProposal.ORDER_METHOD, helpResolver);
-			else
-				addProposal(proposals, context, styledString, method.getName() + "()", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC),
-						ScriptCompletionProposal.ORDER_METHOD, helpResolver);
+				final StyledString styledString = new StyledString(method.getName() + "(" + getMethodSignature(method) + ") : " + getMethodReturnType(method));
+				styledString.append(" - " + method.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
+
+				if (method.getParameterTypes().length > 0)
+					addProposal(styledString, method.getName() + "(", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC), ScriptCompletionProposal.ORDER_METHOD,
+							helpResolver);
+				else
+					addProposal(styledString, method.getName() + "()", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC), ScriptCompletionProposal.ORDER_METHOD,
+							helpResolver);
+			}
 		}
 
 		for (final Field field : clazz.getFields()) {
 			if ((context.getType() == Type.STATIC_CLASS) && (!Modifier.isStatic(field.getModifiers())))
 				continue;
 
-			final IHelpResolver helpResolver = new JavaFieldHelpResolver(field);
+			if (matchesFilterIgnoreCase(field.getName())) {
+				final IHelpResolver helpResolver = new JavaFieldHelpResolver(field);
 
-			final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
-			styledString.append(" - " + field.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
+				final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
+				styledString.append(" - " + field.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
 
-			addProposal(proposals, context, styledString, field.getName(), getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_FIELD,
-					helpResolver);
+				addProposal(styledString, field.getName(), getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_FIELD, helpResolver);
+			}
 		}
-
-		return proposals;
 	}
 
 	public static String getMethodReturnType(final Method method) {
