@@ -152,8 +152,14 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 		final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
 
 		for (final ICompletionProvider provider : fCompletionProviders) {
-			if (provider.isActive(context))
-				proposals.addAll(provider.getProposals(context));
+			try {
+				if (provider.isActive(context))
+
+					proposals.addAll(provider.getProposals(context));
+			} catch (Exception ex) {
+				Logger.error(Activator.PLUGIN_ID,
+						"Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">",ex);
+			}
 		}
 
 		return proposals;
