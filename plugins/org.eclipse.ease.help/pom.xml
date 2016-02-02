@@ -14,6 +14,19 @@
 		<platform.api>org.eclipse.platform.doc.isv/reference/api</platform.api>
 	</properties>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<timestampProvider>default</timestampProvider>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<profile>
 			<!-- Do the javadoc generation in a profile to keep standard builds (e.g. 
