@@ -16,11 +16,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.ease.AbstractScriptEngine;
@@ -144,30 +142,21 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	protected Object execute(final Script script, final Object reference, final String fileName, final boolean uiThread) throws Throwable {
 		if (uiThread) {
 			// run in UI thread
-			final RunnableWithResult<Entry<Object, Throwable>> runnable = new RunnableWithResult<Entry<Object, Throwable>>() {
+			final RunnableWithResult<Object> runnable = new RunnableWithResult<Object>() {
 
 				@Override
-				public void run() {
+				public void runWithTry() throws Throwable {
 					// initialize scope
 					getContext().initStandardObjects(mScope);
 
 					// call execute again, now from correct thread
-					try {
-						setResult(new AbstractMap.SimpleEntry<Object, Throwable>(internalExecute(script, reference, fileName), null));
-					} catch (final Throwable e) {
-						setResult(new AbstractMap.SimpleEntry<Object, Throwable>(null, e));
-					}
+					setResult(internalExecute(script, reference, fileName));
 				}
 			};
 
 			Display.getDefault().syncExec(runnable);
 
-			// evaluate result
-			final Entry<Object, Throwable> result = runnable.getResult();
-			if (result.getValue() != null)
-				throw (result.getValue());
-
-			return result.getKey();
+			return runnable.getResultFromTry();
 
 		} else
 			// run in engine thread
