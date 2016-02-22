@@ -16,6 +16,7 @@ import java.lang.reflect.Modifier;
 
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.ease.ui.help.hovers.IHelpResolver;
@@ -49,11 +50,11 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 				styledString.append(" - " + method.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
 
 				if (method.getParameterTypes().length > 0)
-					addProposal(styledString, method.getName() + "(", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC), ScriptCompletionProposal.ORDER_METHOD,
-							helpResolver);
+					addProposal(styledString, method.getName() + "(", getMethodImage(Modifier.isStatic(method.getModifiers())),
+							ScriptCompletionProposal.ORDER_METHOD, helpResolver);
 				else
-					addProposal(styledString, method.getName() + "()", getSharedImage(ISharedImages.IMG_OBJS_PUBLIC), ScriptCompletionProposal.ORDER_METHOD,
-							helpResolver);
+					addProposal(styledString, method.getName() + "()", getMethodImage(Modifier.isStatic(method.getModifiers())),
+							ScriptCompletionProposal.ORDER_METHOD, helpResolver);
 			}
 		}
 
@@ -67,9 +68,24 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 				final StyledString styledString = new StyledString(field.getName() + " : " + field.getType().getSimpleName());
 				styledString.append(" - " + field.getDeclaringClass().getSimpleName(), StyledString.QUALIFIER_STYLER);
 
-				addProposal(styledString, field.getName(), getSharedImage(ISharedImages.IMG_FIELD_PUBLIC), ScriptCompletionProposal.ORDER_FIELD, helpResolver);
+				addProposal(styledString, field.getName(), getFieldImage(Modifier.isStatic(field.getModifiers())), ScriptCompletionProposal.ORDER_FIELD,
+						helpResolver);
 			}
 		}
+	}
+
+	private static ImageDescriptor getMethodImage(final boolean isStatic) {
+		if (isStatic)
+			return Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/static_function.png");
+
+		return getSharedImage(ISharedImages.IMG_OBJS_PUBLIC);
+	}
+
+	private static ImageDescriptor getFieldImage(final boolean isStatic) {
+		if (isStatic)
+			return Activator.getImageDescriptor(Activator.PLUGIN_ID, "/icons/eobj16/static_field.png");
+
+		return getSharedImage(ISharedImages.IMG_FIELD_PUBLIC);
 	}
 
 	public static String getMethodReturnType(final Method method) {
