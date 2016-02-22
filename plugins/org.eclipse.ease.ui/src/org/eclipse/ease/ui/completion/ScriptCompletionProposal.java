@@ -58,7 +58,7 @@ public class ScriptCompletionProposal
 
 	public ScriptCompletionProposal(final ICompletionContext context, final StyledString styledString, final String replacementString,
 			final ImageDescriptor imageDescriptor, final int sortOrder, final IHelpResolver helpResolver) {
-		this(context, styledString.getString(), replacementString, imageDescriptor, sortOrder, null);
+		this(context, styledString.getString(), replacementString, imageDescriptor, sortOrder, helpResolver);
 		fStyledString = styledString;
 	}
 

@@ -101,9 +101,6 @@ public class JavaClassHelpResolver implements IHelpResolver {
 		if (javaElement instanceof JavaElement)
 			return new ResolvedBinaryType((JavaElement) javaElement, fClazz.getSimpleName(), getDescriptor(fClazz));
 
-		// if (javaElement instanceof JavaElement)
-		// return new ResolvedBinaryType((JavaElement) javaElement, fClassName, "L" + fPackageName + "/" + fClassName);
-
 		return null;
 	}
 
@@ -112,6 +109,6 @@ public class JavaClassHelpResolver implements IHelpResolver {
 	}
 
 	protected static String getDescriptor(final Class<?> clazz) {
-		return Type.getDescriptor(clazz);
+		return Type.getDescriptor(clazz).replace('/', '.');
 	}
 }
