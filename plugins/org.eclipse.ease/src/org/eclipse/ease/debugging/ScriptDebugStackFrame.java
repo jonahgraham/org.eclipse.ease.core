@@ -64,6 +64,27 @@ public class ScriptDebugStackFrame extends ScriptDebugElement implements IStackF
 		return fVariables.toArray(new IVariable[fVariables.size()]);
 	}
 
+	/**
+	 * Get child variables from a given script variable.
+	 *
+	 * @param value
+	 *            parent to retrieve children from
+	 * @return child variables or <code>null</code>
+	 */
+	public IVariable[] getVariables(final Object value) {
+		Map<String, Object> children = fDebugFrame.getVariables(value);
+		if ((children != null) && (!children.isEmpty())) {
+			List<IVariable> variables = new ArrayList<IVariable>();
+
+			for (Entry<String, Object> entry : children.entrySet())
+				variables.add(new ScriptDebugVariable(this, entry.getKey(), entry.getValue()));
+
+			return variables.toArray(new IVariable[variables.size()]);
+		}
+
+		return new IVariable[0];
+	}
+
 	@Override
 	public boolean hasVariables() throws DebugException {
 		return getVariables().length > 0;

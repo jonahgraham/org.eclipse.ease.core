@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.ease.Script;
@@ -57,6 +60,70 @@ public class ScriptDebugFrame implements IScriptDebugFrame {
 	@Override
 	public Map<String, Object> getVariables() {
 		return Collections.emptyMap();
+	}
+
+	@Override
+	public Map<String, Object> getVariables(final Object parent) {
+		Map<String, Object> variables = new HashMap<String, Object>();
+
+		if ((parent != null) && (!ScriptDebugValue.isSimpleType(parent))) {
+			if (parent.getClass().isArray()) {
+				// handle arrays
+
+				if (parent instanceof Object[]) {
+					for (int index = 0; index < ((Object[]) parent).length; index++)
+						variables.put("[" + index + "]", ((Object[]) parent)[index]);
+
+				} else if (parent instanceof char[]) {
+					for (int index = 0; index < ((char[]) parent).length; index++)
+						variables.put("[" + index + "]", ((char[]) parent)[index]);
+
+				} else if (parent instanceof byte[]) {
+					for (int index = 0; index < ((byte[]) parent).length; index++)
+						variables.put("[" + index + "]", ((byte[]) parent)[index]);
+
+				} else if (parent instanceof boolean[]) {
+					for (int index = 0; index < ((boolean[]) parent).length; index++)
+						variables.put("[" + index + "]", ((boolean[]) parent)[index]);
+
+				} else if (parent instanceof short[]) {
+					for (int index = 0; index < ((short[]) parent).length; index++)
+						variables.put("[" + index + "]", ((short[]) parent)[index]);
+
+				} else if (parent instanceof int[]) {
+					for (int index = 0; index < ((int[]) parent).length; index++)
+						variables.put("[" + index + "]", ((int[]) parent)[index]);
+
+				} else if (parent instanceof long[]) {
+					for (int index = 0; index < ((long[]) parent).length; index++)
+						variables.put("[" + index + "]", ((long[]) parent)[index]);
+
+				} else if (parent instanceof double[]) {
+					for (int index = 0; index < ((double[]) parent).length; index++)
+						variables.put("[" + index + "]", ((double[]) parent)[index]);
+
+				} else if (parent instanceof float[]) {
+					for (int index = 0; index < ((float[]) parent).length; index++)
+						variables.put("[" + index + "]", ((float[]) parent)[index]);
+				}
+
+			} else {
+				// handle java objects
+				for (Field field : parent.getClass().getDeclaredFields()) {
+					try {
+						if (!Modifier.isStatic(field.getModifiers())) {
+							if (!field.isAccessible())
+								field.setAccessible(true);
+
+							variables.put(field.getName(), field.get(parent));
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
+
+		return variables;
 	}
 
 	@Override

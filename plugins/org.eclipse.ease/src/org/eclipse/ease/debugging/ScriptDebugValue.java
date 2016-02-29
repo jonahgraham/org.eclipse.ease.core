@@ -10,11 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease.debugging;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
@@ -54,8 +49,11 @@ public class ScriptDebugValue extends ScriptDebugElement implements IValue {
 
 	@Override
 	public String getValueString() throws DebugException {
-		if(isSimpleType(fValue))
+		if (isSimpleType(fValue))
 			return fValue + " (" + fValue.getClass().getSimpleName().toLowerCase() + ")";
+
+		if (fValue instanceof String)
+			return "\"" + fValue + "\"";
 
 		return (fValue != null) ? fValue.getClass().getSimpleName() : "null";
 	}
@@ -67,66 +65,11 @@ public class ScriptDebugValue extends ScriptDebugElement implements IValue {
 
 	@Override
 	public IVariable[] getVariables() throws DebugException {
-		List<IVariable> variables = new ArrayList<IVariable>();
+		IVariable[] children = fStackFrame.getVariables(fValue);
+		if (children != null)
+			return children;
 
-		if((fValue != null) && (!isSimpleType(fValue))) {
-			if(fValue.getClass().isArray()) {
-				// handle arrays
-
-				if(fValue instanceof Object[]) {
-					for(int index = 0; index < ((Object[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((Object[])fValue)[index]));
-
-				} else if(fValue instanceof char[]) {
-					for(int index = 0; index < ((char[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((char[])fValue)[index]));
-
-				} else if(fValue instanceof byte[]) {
-					for(int index = 0; index < ((byte[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((byte[])fValue)[index]));
-
-				} else if(fValue instanceof boolean[]) {
-					for(int index = 0; index < ((boolean[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((boolean[])fValue)[index]));
-
-				} else if(fValue instanceof short[]) {
-					for(int index = 0; index < ((short[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((short[])fValue)[index]));
-
-				} else if(fValue instanceof int[]) {
-					for(int index = 0; index < ((int[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((int[])fValue)[index]));
-
-				} else if(fValue instanceof long[]) {
-					for(int index = 0; index < ((long[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((long[])fValue)[index]));
-
-				} else if(fValue instanceof double[]) {
-					for(int index = 0; index < ((double[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((double[])fValue)[index]));
-
-				} else if(fValue instanceof float[]) {
-					for(int index = 0; index < ((float[])fValue).length; index++)
-						variables.add(new ScriptDebugVariable(fStackFrame, "[" + index + "]", ((float[])fValue)[index]));
-				}
-
-			} else {
-				// handle java objects
-				for(Field field : fValue.getClass().getDeclaredFields()) {
-					try {
-						if(!Modifier.isStatic(field.getModifiers())) {
-							if(!field.isAccessible())
-								field.setAccessible(true);
-
-							variables.add(new ScriptDebugVariable(fStackFrame, field.getName(), field.get(fValue)));
-						}
-					} catch (Exception e) {
-					}
-				}
-			}
-		}
-
-		return variables.toArray(new IVariable[variables.size()]);
+		return new IVariable[0];
 	}
 
 	@Override
@@ -136,7 +79,7 @@ public class ScriptDebugValue extends ScriptDebugElement implements IValue {
 
 	@Override
 	public Object getAdapter(final Class adapter) {
-		if(String.class.equals(adapter))
+		if (String.class.equals(adapter))
 			return (fValue != null) ? fValue.toString() : "";
 
 		return super.getAdapter(adapter);
@@ -146,7 +89,8 @@ public class ScriptDebugValue extends ScriptDebugElement implements IValue {
 		return fValue;
 	}
 
-	private static boolean isSimpleType(final Object value) {
-		return (value instanceof Integer) || (value instanceof Byte) || (value instanceof Short) || (value instanceof Boolean) || (value instanceof Character) || (value instanceof Long) || (value instanceof Double) || (value instanceof Float);
+	public static boolean isSimpleType(final Object value) {
+		return (value instanceof Integer) || (value instanceof Byte) || (value instanceof Short) || (value instanceof Boolean) || (value instanceof Character)
+				|| (value instanceof Long) || (value instanceof Double) || (value instanceof Float);
 	}
 }

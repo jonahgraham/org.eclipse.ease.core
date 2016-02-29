@@ -12,6 +12,7 @@ package org.eclipse.ease.lang.javascript.rhino.debugger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
@@ -20,6 +21,7 @@ import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.debug.DebugFrame;
 import org.mozilla.javascript.debug.DebuggableScript;
@@ -99,6 +101,20 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 			final Map<String, Object> result = RhinoScriptEngine.getVariables(fScope);
 
 			return result;
+		}
+
+		@Override
+		public Map<String, Object> getVariables(final Object parent) {
+			if (parent instanceof NativeObject) {
+				Map<String, Object> children = new HashMap<String, Object>();
+
+				for (Entry<Object, Object> entry : ((NativeObject) parent).entrySet())
+					children.put(entry.getKey().toString(), entry.getValue());
+
+				return children;
+			}
+
+			return super.getVariables(parent);
 		}
 	}
 
