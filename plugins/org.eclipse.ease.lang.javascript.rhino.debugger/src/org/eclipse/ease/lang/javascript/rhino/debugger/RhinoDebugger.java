@@ -7,12 +7,15 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
+ *     Bernhard Wedl - added Nativ
  *******************************************************************************/
 package org.eclipse.ease.lang.javascript.rhino.debugger;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
@@ -21,6 +24,7 @@ import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.lang.javascript.rhino.RhinoScriptEngine;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.debug.DebugFrame;
@@ -106,10 +110,17 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		@Override
 		public Map<String, Object> getVariables(final Object parent) {
 			if (parent instanceof NativeObject) {
-				Map<String, Object> children = new HashMap<String, Object>();
+				Map<String, Object> children = new TreeMap<String, Object>();
 
 				for (Entry<Object, Object> entry : ((NativeObject) parent).entrySet())
 					children.put(entry.getKey().toString(), entry.getValue());
+
+				return children;
+			} else if (parent instanceof NativeArray) {
+				Map<String, Object> children = new LinkedHashMap<String, Object>();
+
+				for (Object id : ((NativeArray) parent).getIndexIds())
+					children.put("[" + id + "]", ((NativeArray) parent).get(id));
 
 				return children;
 			}
