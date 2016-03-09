@@ -420,7 +420,7 @@
 								<configuration>
 									<source>
 										<repository>
-											<url>${project.build.directory}/repository</url>
+											<url>${p2.source}</url>
 										</repository>
 									</source>
 									<append>${p2.append}</append>
