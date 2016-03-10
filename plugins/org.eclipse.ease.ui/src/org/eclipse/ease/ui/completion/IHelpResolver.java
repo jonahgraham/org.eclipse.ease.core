@@ -9,11 +9,24 @@
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.ui.help.hovers;
+package org.eclipse.ease.ui.completion;
 
+/**
+ * Provides help content for completion proposals and help popups. Whenever HTML renderers are available HTML help is preferred over ASCII help.
+ */
 public interface IHelpResolver {
 
+	/**
+	 * Retrieve test help content.
+	 *
+	 * @return ASCII content
+	 */
 	String resolveHelp();
 
+	/**
+	 * Retrieve HTML help content.
+	 *
+	 * @return html content
+	 */
 	String resolveHTMLHelp();
 }

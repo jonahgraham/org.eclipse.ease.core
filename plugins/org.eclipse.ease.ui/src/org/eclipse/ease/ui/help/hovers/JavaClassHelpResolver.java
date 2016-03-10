@@ -14,6 +14,7 @@ package org.eclipse.ease.ui.help.hovers;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ease.ui.completion.IHelpResolver;
 import org.eclipse.ease.ui.help.hovers.internal.VirtualProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;

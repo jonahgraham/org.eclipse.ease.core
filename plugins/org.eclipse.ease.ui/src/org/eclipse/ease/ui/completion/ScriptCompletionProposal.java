@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.help.hovers.IHelpResolver;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
@@ -114,8 +113,10 @@ public class ScriptCompletionProposal
 
 	@Override
 	public String getAdditionalProposalInfo() {
-		if (fHelpResolver != null)
-			return fHelpResolver.resolveHTMLHelp();
+		if (fHelpResolver != null) {
+			final String htmlHelp = fHelpResolver.resolveHTMLHelp();
+			return (htmlHelp != null) ? htmlHelp : fHelpResolver.resolveHelp();
+		}
 
 		return null;
 	}
@@ -135,7 +136,7 @@ public class ScriptCompletionProposal
 	// ------------------------------------------------------------------
 	@Override
 	public String getContent() {
-		String original = fContext.getOriginalCode();
+		final String original = fContext.getOriginalCode();
 		return original.substring(0, original.length() - fContext.getFilter().length()) + fReplacementString;
 	}
 

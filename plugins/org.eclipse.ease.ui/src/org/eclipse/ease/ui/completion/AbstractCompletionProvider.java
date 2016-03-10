@@ -16,7 +16,6 @@ import java.util.Collection;
 
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
-import org.eclipse.ease.ui.help.hovers.IHelpResolver;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.StyledString;
 
