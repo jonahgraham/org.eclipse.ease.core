@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipse.ease.modules">
+      <module
+            class="org.eclipse.ease.ui.help.hovers.SampleModule"
+            id="org.eclipse.ease.ui.help.hovers.sample"
+            name="SampleModule"
+            visible="true">
+      </module>
+   </extension>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="help/reference.xml"
+            primary="false">
+      </toc>
+   </extension>
+
+</fragment>
