@@ -341,6 +341,7 @@
 				<module>../../tests/org.eclipse.ease.test</module>
 				<module>../../tests/org.eclipse.ease.lang.javascript.rhino.test</module>
 				<module>../../tests/org.eclipse.ease.lang.javascript.test</module>
+				<module>../../tests/org.eclipse.ease.lang.python.test</module>
 				<module>../../tests/org.eclipse.ease.ui.test</module>
 			</modules>
 			<build>
