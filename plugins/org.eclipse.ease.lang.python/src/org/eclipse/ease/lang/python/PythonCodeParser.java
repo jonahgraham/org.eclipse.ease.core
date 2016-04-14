@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.lang.python;
+ *******************************************************************************/
+package org.eclipse.ease.lang.python;
 
 import org.eclipse.ease.AbstractCodeParser;
 

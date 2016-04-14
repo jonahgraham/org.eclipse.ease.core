@@ -132,6 +132,9 @@
 		<!-- Python -->
 		<module>../../plugins/org.eclipse.ease.lang.python</module>
 		<module>../../features/org.eclipse.ease.python.feature</module>
+		<module>../../plugins/org.eclipse.ease.lang.python.jython</module>
+		<module>../../plugins/org.eclipse.ease.lang.python.jython.debugger</module>
+		<module>../../features/org.eclipse.ease.lang.python.jython.feature</module>
 
 		<!-- Native .class engine -->
 		<module>../../plugins/org.eclipse.ease.lang.jvm.compiled</module>

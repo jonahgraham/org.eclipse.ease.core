@@ -10,4 +10,37 @@
 		<version>0.3.0-SNAPSHOT</version>
 		<relativePath>../org.eclipse.ease.releng</relativePath>
 	</parent>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>jboss-public-repository-group</id>
+			<name>JBoss Public Repository Group</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jboss.tools.tycho-plugins</groupId>
+				<artifactId>repository-utils</artifactId>
+				<version>0.23.2</version>
+				<executions>
+					<execution>
+						<id>generate-facade</id>
+						<phase>package</phase>
+						<goals>
+							<goal>generate-repository-facade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<associateSites>
+						<site>https://bintray.com/artifact/download/pontesegger/ease-engines</site>
+					</associateSites>
+					<skipBuildInfo>true</skipBuildInfo>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

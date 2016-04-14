@@ -15,6 +15,9 @@
    <feature id="org.eclipse.ease.lang.jvm.feature.source" version="0.3.0.qualifier">
       <category name="Developer"/>
    </feature>
+   <feature id="org.eclipse.ease.python.jython.feature.source" version="0.3.0.qualifier">
+      <category name="Developer"/>
+   </feature>
    <category-def name="Developer" label="EASE Developer Resources">
       <description>
          Source code bundles of the EASE project.

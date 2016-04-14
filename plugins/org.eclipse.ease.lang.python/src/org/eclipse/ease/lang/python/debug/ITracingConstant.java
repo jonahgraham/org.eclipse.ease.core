@@ -12,11 +12,9 @@ package org.eclipse.ease.lang.python.debug;
 
 import org.eclipse.core.runtime.Platform;
 
-
 public interface ITracingConstant {
 
-
-	public static final boolean PYTHON_BOOT_STRAPPER_TRACING = org.eclipse.ease.Activator.getDefault().isDebugging() && "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease.lang.python/debug/PythonBootStrapper"));
-
+	public static final boolean PYTHON_BOOT_STRAPPER_TRACING = org.eclipse.ease.Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease.lang.python/debug/PythonBootStrapper"));
 
 }

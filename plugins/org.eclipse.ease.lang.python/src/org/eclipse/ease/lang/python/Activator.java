@@ -13,7 +13,6 @@ package org.eclipse.ease.lang.python;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-
 public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ease.lang.python";
@@ -30,7 +29,6 @@ public class Activator extends AbstractUIPlugin {
 
 		mInstance = this;
 	}
-
 
 	@Override
 	public void stop(final BundleContext context) throws Exception {

@@ -17,6 +17,10 @@ location "http://download.eclipse.org/releases/mars/" eclipse-mars {
 	org.eclipse.jdt
 }
 
+location "https://bintray.com/artifact/download/pontesegger/ease-engines/" ease-engines {
+	org.eclipse.ease.engine.jython.feature.feature.group [2.7.0,3.0.0)
+}
+
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/" eclipse-orbit {
 	org.mockito [1.9.5,2.0.0)
 	org.hamcrest [1.1.0,2.0.0)
