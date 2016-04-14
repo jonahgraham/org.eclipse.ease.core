@@ -25,6 +25,13 @@
 			<port>9898</port>
 			<nonProxyHosts>*.eclipse.org</nonProxyHosts>
 		</proxy>
+		<proxy>
+			<active>true</active>
+			<protocol>http</protocol>
+			<host>proxy.eclipse.org</host>
+			<port>9898</port>
+			<nonProxyHosts>*.eclipse.org</nonProxyHosts>
+		</proxy>
 	</proxies>
 	
 	<profiles />
