@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.ease</groupId>
 	<artifactId>org.eclipse.ease.releng</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
@@ -62,7 +62,7 @@
 						<artifact>
 							<groupId>org.eclipse.ease</groupId>
 							<artifactId>org.eclipse.ease.releng.target</artifactId>
-							<version>0.3.0-SNAPSHOT</version>
+							<version>0.4.0-SNAPSHOT</version>
 						</artifact>
 					</target>
 				</configuration>

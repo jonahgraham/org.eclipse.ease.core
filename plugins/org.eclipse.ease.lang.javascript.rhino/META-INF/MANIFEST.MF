@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: EASE Rhino Interpreter (Incubation)
 Bundle-SymbolicName: org.eclipse.ease.lang.javascript.rhino;singleton:=true
-Bundle-Version: 0.3.0.qualifier
+Bundle-Version: 0.4.0.qualifier
 Bundle-Vendor: Eclipse.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.mozilla.javascript;bundle-version="[1.7.2,2.0.0)",

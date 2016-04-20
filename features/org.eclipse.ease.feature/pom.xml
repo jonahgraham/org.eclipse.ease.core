@@ -15,7 +15,7 @@
   	<relativePath>../../releng/org.eclipse.ease.releng</relativePath>
   	<groupId>org.eclipse.ease</groupId>
   	<artifactId>org.eclipse.ease.releng</artifactId>
-  	<version>0.3.0-SNAPSHOT</version>
+  	<version>0.4.0-SNAPSHOT</version>
   </parent>
   <artifactId>org.eclipse.ease.feature</artifactId>
   <packaging>eclipse-feature</packaging>
