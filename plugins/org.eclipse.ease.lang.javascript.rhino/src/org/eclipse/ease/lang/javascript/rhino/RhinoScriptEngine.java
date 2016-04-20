@@ -68,13 +68,13 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	public static final String ENGINE_ID = "org.eclipse.ease.javascript.rhino";
 
 	/** Rhino Scope. Created when interpreter is initialized */
-	private ScriptableObject mScope;
+	private ScriptableObject fScope;
 
-	private Context mContext;
+	private Context fContext;
 
-	private Debugger mDebugger = null;
+	private Debugger fDebugger = null;
 
-	private int mOptimizationLevel = 9;
+	private int fOptimizationLevel = 9;
 
 	/**
 	 * Creates a new Rhino interpreter.
@@ -94,30 +94,33 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	public void setOptimizationLevel(final int level) {
-		mOptimizationLevel = level;
+		fOptimizationLevel = level;
 	}
 
 	@Override
 	protected synchronized boolean setupEngine() {
-		mContext = getContext();
+		fContext = getContext();
 
-		if (mDebugger != null) {
-			mContext.setOptimizationLevel(-1);
-			mContext.setGeneratingDebug(true);
-			mContext.setGeneratingSource(true);
-			mContext.setDebugger(mDebugger, null);
+		if (fDebugger != null) {
+			fContext.setOptimizationLevel(-1);
+			fContext.setGeneratingDebug(true);
+			fContext.setGeneratingSource(true);
+			fContext.setDebugger(fDebugger, null);
 
 		} else {
-			mContext.setGeneratingDebug(false);
-			mContext.setOptimizationLevel(mOptimizationLevel);
-			mContext.setDebugger(null, null);
+			fContext.setGeneratingDebug(false);
+			fContext.setOptimizationLevel(fOptimizationLevel);
+			fContext.setDebugger(null, null);
 		}
 
-		mScope = new ImporterTopLevel(mContext);
+		fScope = new ImporterTopLevel(fContext);
 
 		// enable script termination support
-		mContext.setGenerateObserverCount(true);
-		mContext.setInstructionObserverThreshold(10);
+		fContext.setGenerateObserverCount(true);
+		fContext.setInstructionObserverThreshold(10);
+
+		// enable JS v1.8 language constructs
+		fContext.setLanguageVersion(Context.VERSION_1_8);
 
 		return true;
 	}
@@ -125,12 +128,12 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	@Override
 	protected synchronized boolean teardownEngine() {
 		// remove debugger to allow for garbage collection
-		mContext.setDebugger(null, null);
+		fContext.setDebugger(null, null);
 
 		// cleanup context
 		Context.exit();
-		mContext = null;
-		mScope = null;
+		fContext = null;
+		fScope = null;
 
 		// unregister from classloader
 		RhinoClassLoader.unregisterEngine(this);
@@ -147,7 +150,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 				@Override
 				public void runWithTry() throws Throwable {
 					// initialize scope
-					getContext().initStandardObjects(mScope);
+					getContext().initStandardObjects(fScope);
 
 					// call execute again, now from correct thread
 					setResult(internalExecute(script, reference, fileName));
@@ -172,14 +175,14 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 			final Object result;
 
 			if (script.getCommand() instanceof NativeFunction)
-				result = ((NativeFunction) script.getCommand()).call(getContext(), mScope, mScope, ScriptRuntime.emptyArgs);
+				result = ((NativeFunction) script.getCommand()).call(getContext(), fScope, fScope, ScriptRuntime.emptyArgs);
 
 			else if (script.getCommand() instanceof org.mozilla.javascript.Script)
 				// execute anonymous functions
-				result = ((org.mozilla.javascript.Script) script.getCommand()).exec(getContext(), mScope);
+				result = ((org.mozilla.javascript.Script) script.getCommand()).exec(getContext(), fScope);
 
 			else
-				result = getContext().evaluateReader(mScope, codeReader, fileName, 1, null);
+				result = getContext().evaluateReader(fScope, codeReader, fileName, 1, null);
 
 			if ((result == null) || (result instanceof Undefined))
 				return null;
@@ -265,15 +268,15 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	@Override
 	public void terminateCurrent() {
 		// typically requested by a different thread, so do not use getContext() here
-		((ObservingContextFactory) ContextFactory.getGlobal()).terminate(mContext);
+		((ObservingContextFactory) ContextFactory.getGlobal()).terminate(fContext);
 	}
 
 	public void setDebugger(final Debugger debugger) {
-		mDebugger = debugger;
+		fDebugger = debugger;
 	}
 
 	protected Debugger getDebugger() {
-		return mDebugger;
+		return fDebugger;
 	}
 
 	@Override
@@ -292,12 +295,12 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected Object internalGetVariable(final String name) {
-		return getVariable(mScope, name);
+		return getVariable(fScope, name);
 	}
 
 	@Override
 	protected Map<String, Object> internalGetVariables() {
-		return getVariables(mScope);
+		return getVariables(fScope);
 	}
 
 	public static Map<String, Object> getVariables(final Scriptable scope) {
@@ -327,7 +330,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected boolean internalHasVariable(final String name) {
-		final Object value = mScope.get(name, mScope);
+		final Object value = fScope.get(name, fScope);
 		return !Scriptable.NOT_FOUND.equals(value);
 	}
 
@@ -336,7 +339,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		if (!JavaScriptHelper.isSaveName(name))
 			throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
 
-		final Scriptable scope = mScope;
+		final Scriptable scope = fScope;
 
 		final Object jsOut = internaljavaToJS(content, scope);
 		scope.put(name, scope, jsOut);
@@ -345,7 +348,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	@Override
 	protected Object internalRemoveVariable(final String name) {
 		final Object result = getVariable(name);
-		mScope.delete(name);
+		fScope.delete(name);
 
 		return result;
 	}
