@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Atos
+ * Copyright (c) 2013, 2016 Atos and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -162,5 +162,10 @@ public class PythonCodeFactory extends AbstractCodeFactory {
 	@Override
 	protected String getFalseString() {
 		return "False";
+	}
+
+	@Override
+	protected String getSingleLineCommentToken() {
+		return "# ";
 	}
 }

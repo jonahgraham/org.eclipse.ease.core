@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Christian Pontesegger and others.
+ * Copyright (c) 2013, 2016 Christian Pontesegger and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.IExecutionListener;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineProvider;
@@ -27,6 +28,7 @@ import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.service.ScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.CodeCompletionAggregator;
@@ -294,8 +296,13 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			final String initCommands = prefs.get(IPreferenceConstants.SHELL_STARTUP + scriptType.getName(), "").trim();
 			if (!initCommands.isEmpty())
 				fScriptEngine.executeAsync(initCommands);
-			else
-				fScriptEngine.executeAsync("// use help(\"<topic>\") to get more information");
+			else {
+				ICodeFactory codeFactory = ScriptService.getCodeFactory(fScriptEngine);
+				if (codeFactory != null) {
+					String helpComment = codeFactory.createCommentedString("use help(\"<topic>\") to get more information");
+					fScriptEngine.executeAsync(helpComment);
+				}
+			}
 		}
 	}
 

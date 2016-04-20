@@ -11,13 +11,24 @@
 
 package org.eclipse.ease.lang.python;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
 import org.junit.Test;
 
-public class PythonLanguageTest {
-	// TODO write the real test - test plug-ins need at least one test otherwise they fail
-	// (the other choice is failIfNoTests in pom.xml)
-	@Test
-	public void testTODO() {
+public class PythonCodeFactoryTest {
+	private PythonCodeFactory fFactory;
 
+	@Before
+	public void setup() {
+		fFactory = new PythonCodeFactory();
 	}
+
+	@Test
+	public void testCommentCreator() {
+		assertEquals("# Comment", fFactory.createCommentedString("Comment"));
+		assertEquals(String.format("# Multi%n# Line%n# Comment"),
+				fFactory.createCommentedString("Multi\nLine\nComment"));
+	}
+
 }

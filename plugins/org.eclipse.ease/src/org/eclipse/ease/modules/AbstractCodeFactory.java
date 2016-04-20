@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Atos
+ * Copyright (c) 2013, 2016 Atos and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,9 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.ease.ICodeFactory;
 
@@ -187,5 +190,25 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 		code.append(");");
 
 		return code.toString();
+	}
+
+	/**
+	 * As many languages use // happily, provide a default of // style comments.
+	 *
+	 * @return "// " comment token
+	 */
+	protected String getSingleLineCommentToken() {
+		return "// ";
+	}
+
+	/**
+	 * Provide a default implementation that adds a single line comment token to the beginning of each line of the comment. Extenders can override
+	 * {@link #getSingleLineCommentToken()} to return that token.
+	 */
+	@Override
+	public String createCommentedString(String comment) {
+		String token = getSingleLineCommentToken();
+		Stream<String> split = Pattern.compile("\r?\n").splitAsStream(comment);
+		return split.map(s -> token + s).collect(Collectors.joining(System.lineSeparator()));
 	}
 }
