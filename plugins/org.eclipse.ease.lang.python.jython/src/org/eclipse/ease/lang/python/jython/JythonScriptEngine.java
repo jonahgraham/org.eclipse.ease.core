@@ -160,7 +160,7 @@ public class JythonScriptEngine extends AbstractScriptEngine {
 		PyString newString = null;
 		if (f != null) {
 			final String absolutePath = f.getAbsolutePath();
-			setVariable("__File__", absolutePath);
+			setVariable("__file__", absolutePath);
 			final String containerPart = f.getParent();
 			newString = Py.newString(containerPart);
 			Py.getSystemState().path.insert(0, newString);
