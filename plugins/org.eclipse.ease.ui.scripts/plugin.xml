@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="keyword" name="Keyword" schema="schema/keyword.exsd"/>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated ScriptRepository -->
@@ -173,7 +174,7 @@
    <extension
          point="org.eclipse.ui.services">
       <serviceFactory
-            factoryClass="org.eclipse.ease.ui.scripts.repository.RepositoryServiceFactory">
+            factoryClass="org.eclipse.ease.ui.scripts.repository.impl.RepositoryServiceFactory">
          <service
                serviceClass="org.eclipse.ease.ui.scripts.repository.IRepositoryService">
          </service>
@@ -185,5 +186,29 @@
             protocol="script"
             serviceClass="org.eclipse.ease.ui.scripts.ScriptURLStreamHandler">
       </urlStreamHandlerService>
+   </extension>
+   <extension
+         point="org.eclipse.ease.ui.scripts.keyword">
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.ToolbarHandler"
+            description="Adds scripts to view toolbars. Keyword syntax: viewID;viewID|name;viewTitle;viewTitle|name"
+            id="org.eclipse.ease.ui.scripts.handler.toolbar"
+            keywords="toolbar"
+            name="Toolbar Additions">
+      </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.MenuHandler"
+            description="Adds scripts to view menus. Keyword syntax: viewID;viewID|name;viewTitle;viewTitle|name"
+            id="org.eclipse.ease.ui.scripts.handler.menu"
+            keywords="menu"
+            name="Menu Additions">
+      </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.PopupHandler"
+            description="Adds scripts to popup menus. Keyword syntax: viewID;viewID|name;viewTitle;viewTitle|name"
+            id="org.eclipse.ease.ui.scripts.handler.popup"
+            keywords="popup"
+            name="Popup Additions">
+      </handler>
    </extension>
 </plugin>

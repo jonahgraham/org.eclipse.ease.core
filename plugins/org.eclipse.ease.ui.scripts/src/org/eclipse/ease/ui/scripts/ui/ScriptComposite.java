@@ -11,14 +11,12 @@
 package org.eclipse.ease.ui.scripts.ui;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.IScriptEngineProvider;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
-import org.eclipse.ease.ui.scripts.repository.IScriptListener;
-import org.eclipse.ease.ui.scripts.repository.impl.ParameterDelta;
-import org.eclipse.ease.ui.scripts.repository.impl.ScriptEvent;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -36,11 +34,13 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.menus.IMenuService;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 /**
  * SWT Composite that displays available macros. Implemented as a tree viewer.
  */
-public class ScriptComposite extends Composite implements IScriptListener {
+public class ScriptComposite extends Composite implements EventHandler {
 	private final TreeViewer treeViewer;
 
 	private IDoubleClickListener fDoubleClickListener = new IDoubleClickListener() {
@@ -112,14 +112,11 @@ public class ScriptComposite extends Composite implements IScriptListener {
 			}
 		});
 
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+		final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
 		treeViewer.setInput(repositoryService);
 
 		if (fDoubleClickListener != null)
 			treeViewer.addDoubleClickListener(fDoubleClickListener);
-
-		// add listener for script repository changes
-		repositoryService.addScriptListener(this);
 
 		// add context menu support
 		final MenuManager menuManager = new MenuManager();
@@ -129,7 +126,7 @@ public class ScriptComposite extends Composite implements IScriptListener {
 		site.setSelectionProvider(treeViewer);
 
 		// add dynamic context menu entries
-		final IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
+		final IMenuService menuService = PlatformUI.getWorkbench().getService(IMenuService.class);
 		ScriptContextMenuEntries popupContributionFactory = new ScriptContextMenuEntries("popup:" + site.getId());
 		menuService.addContributionFactory(popupContributionFactory);
 		menuManager.setRemoveAllWhenShown(true);
@@ -139,8 +136,11 @@ public class ScriptComposite extends Composite implements IScriptListener {
 		// add DND support
 		ScriptDragSource.addDragSupport(treeViewer);
 
-		// register for change events
-		repositoryService.addScriptListener(this);
+		// add listener for script additions/removals/renames
+		IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		fEventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPTS_NEW, this);
+		fEventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPTS_REMOVED, this);
+		fEventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPT_KEYWORDS + "name", this);
 	}
 
 	// TODO change this filter to scripttype
@@ -150,8 +150,8 @@ public class ScriptComposite extends Composite implements IScriptListener {
 
 	@Override
 	public void dispose() {
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-		repositoryService.removeScriptListener(this);
+		IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		fEventBroker.unsubscribe(this);
 
 		super.dispose();
 	}
@@ -167,28 +167,15 @@ public class ScriptComposite extends Composite implements IScriptListener {
 	}
 
 	@Override
-	public void notify(final ScriptEvent event) {
-		switch (event.getType()) {
-		case ScriptEvent.PARAMETER_CHANGE:
-			final ParameterDelta eventData = (ParameterDelta) event.getEventData();
-			if (!eventData.isAffected("name"))
-				return;
+	public void handleEvent(final Event event) {
+		// FIXME needs some performance improvements on multiple script
+		// updates
+		Display.getDefault().asyncExec(new Runnable() {
 
-			// name changed, fall through
-
-		case ScriptEvent.DELETE:
-			// fall through
-
-		case ScriptEvent.ADD:
-			// FIXME needs some performance improvements on multiple script
-			// updates
-			Display.getDefault().asyncExec(new Runnable() {
-
-				@Override
-				public void run() {
-					treeViewer.refresh();
-				}
-			});
-		}
+			@Override
+			public void run() {
+				treeViewer.refresh();
+			}
+		});
 	}
 }

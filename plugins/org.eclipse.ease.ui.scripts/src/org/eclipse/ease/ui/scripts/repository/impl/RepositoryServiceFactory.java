@@ -8,9 +8,9 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.scripts.repository;
+package org.eclipse.ease.ui.scripts.repository.impl;
 
-import org.eclipse.ease.ui.scripts.repository.impl.RepositoryService;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ui.services.AbstractServiceFactory;
 import org.eclipse.ui.services.IServiceLocator;
 

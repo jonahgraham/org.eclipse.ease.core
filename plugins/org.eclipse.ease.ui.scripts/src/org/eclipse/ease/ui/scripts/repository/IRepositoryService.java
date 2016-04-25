@@ -24,6 +24,18 @@ import org.eclipse.ease.ui.scripts.Activator;
  */
 public interface IRepositoryService {
 
+	/** Base channel for all script events. */
+	String BROKER_CHANNEL_SCRIPTS_BASE = "org/eclipse/ease/scripts/";
+
+	/** Channel to promote new detected user scripts. */
+	String BROKER_CHANNEL_SCRIPTS_NEW = BROKER_CHANNEL_SCRIPTS_BASE + "new";
+
+	/** Channel to promote when user scripts are removed. */
+	String BROKER_CHANNEL_SCRIPTS_REMOVED = BROKER_CHANNEL_SCRIPTS_BASE + "removed";
+
+	/** Channel to promote all keyword changes from user scripts. */
+	String BROKER_CHANNEL_SCRIPT_KEYWORDS = BROKER_CHANNEL_SCRIPTS_BASE + "keyword/";
+
 	/** Trace enablement for the repository service. */
 	boolean TRACE_REPOSITORY_SERVICE = Activator.getDefault().isDebugging()
 			&& "true".equalsIgnoreCase(Platform.getDebugOption(Activator.PLUGIN_ID + "/debug/repositoryService"));
@@ -50,22 +62,6 @@ public interface IRepositoryService {
 	 * @return script instance
 	 */
 	IScript getScript(String name);
-
-	/**
-	 * Add listener to get notified on script events. Events are triggered for scripts added, deleted or modified.
-	 *
-	 * @param listener
-	 *            listener to be registered
-	 */
-	void addScriptListener(IScriptListener listener);
-
-	/**
-	 * Remove a script event listener.
-	 *
-	 * @param listener
-	 *            listener to be removed
-	 */
-	void removeScriptListener(IScriptListener listener);
 
 	/**
 	 * Get all script locations currently registered.

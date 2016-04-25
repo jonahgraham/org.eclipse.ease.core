@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Christian Pontesegger - changed visibility of some methods to allow changes during runtime
  *******************************************************************************/
-package org.eclipse.ease.ui.scripts.repository.impl;
+package org.eclipse.ease.ui.scripts.keywordhandler;
 
 import java.util.Map;
 

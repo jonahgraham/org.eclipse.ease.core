@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.scripts.repository.impl;
+package org.eclipse.ease.ui.scripts.keywordhandler;
 
 import java.util.HashMap;
 import java.util.Map;

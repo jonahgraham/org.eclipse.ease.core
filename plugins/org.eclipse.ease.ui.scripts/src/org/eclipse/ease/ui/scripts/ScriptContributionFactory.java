@@ -21,8 +21,6 @@ import java.util.Map.Entry;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
-import org.eclipse.ease.ui.scripts.repository.IScriptListener;
-import org.eclipse.ease.ui.scripts.repository.impl.ScriptEvent;
 import org.eclipse.ease.ui.scripts.ui.ScriptPopup;
 import org.eclipse.ease.ui.scripts.ui.ScriptPopupMenu;
 import org.eclipse.jface.action.IContributionItem;
@@ -34,7 +32,9 @@ import org.eclipse.ui.services.IServiceLocator;
 /**
  * Factory adding scripts to dynamically populated menu.
  */
-public final class ScriptContributionFactory extends CompoundContributionItem implements IWorkbenchContribution, IScriptListener {
+public final class ScriptContributionFactory extends CompoundContributionItem implements IWorkbenchContribution
+//, IScriptListener 
+{
 
 	private IServiceLocator fServiceLocator;
 	private boolean fDirty = true;
@@ -42,9 +42,10 @@ public final class ScriptContributionFactory extends CompoundContributionItem im
 	@Override
 	public void initialize(final IServiceLocator serviceLocator) {
 		fServiceLocator = serviceLocator;
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-		if (repositoryService != null)
-			repositoryService.addScriptListener(this);
+//		FIXME needs replacement
+//		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+//		if (repositoryService != null)
+//			repositoryService.addScriptListener(this);
 	}
 
 	@Override
@@ -116,19 +117,21 @@ public final class ScriptContributionFactory extends CompoundContributionItem im
 	@Override
 	public void dispose() {
 
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-		if (repositoryService != null)
-			repositoryService.removeScriptListener(this);
+//		FIXME needs replacement
+//		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+//		if (repositoryService != null)
+//			repositoryService.removeScriptListener(this);
 
 		fDirty = false;
 
 		super.dispose();
 	}
 
-	@Override
-	public void notify(final ScriptEvent event) {
-		fDirty = true;
-	}
+//		FIXME needs replacement
+//	@Override
+//	public void notify(final ScriptEvent event) {
+//		fDirty = true;
+//	}
 
 	private static ScriptPopupMenu registerPath(final Map<IPath, ScriptPopupMenu> dynamicMenus, final IPath path) {
 		if (!dynamicMenus.containsKey(path)) {

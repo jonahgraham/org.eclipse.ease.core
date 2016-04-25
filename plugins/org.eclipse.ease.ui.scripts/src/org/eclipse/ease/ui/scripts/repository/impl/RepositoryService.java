@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -25,12 +27,14 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
@@ -40,7 +44,6 @@ import org.eclipse.ease.ui.scripts.preferences.PreferencesHelper;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
-import org.eclipse.ease.ui.scripts.repository.IScriptListener;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
 import org.eclipse.ease.ui.scripts.repository.IStorage;
 import org.eclipse.emf.common.util.URI;
@@ -49,6 +52,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.service.event.EventHandler;
 
 public class RepositoryService implements IRepositoryService, IResourceChangeListener {
 
@@ -64,6 +68,10 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 	// TODO find a nice delay value here
 	private static final long DEFAULT_DELAY = 60 * 1000; // 1 minute
 	public static final long UPDATE_STREAM_INTERVAL = 0;
+	private static final String EXTENSION_KEYWORD_ID = "org.eclipse.ease.ui.scripts.keyword";
+	private static final String EXTENSION_KEYWORD_HANDLER = "handler";
+	private static final String EXTENSION_KEYWORD_HANDLER_CLASS = "class";
+	private static final String EXTENSION_KEYWORD_HANDLER_KEYWORDS = "keywords";
 
 	/**
 	 * Get the repository service singleton.
@@ -80,6 +88,8 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 	private IStorage fRepository = null;
 
 	private final UpdateRepositoryJob fUpdateJob;
+
+	IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
 
 	private final Job fSaveJob = new Job("Save Script Repositories") {
 
@@ -102,14 +112,15 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		}
 	};
 
-	private final ListenerList fListeners = new ListenerList();
-
 	/**
 	 * Initialize the repository service.
 	 */
 	private RepositoryService() {
+
 		Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Starting repository service");
 		RepositoryFactoryImpl.init();
+
+		startKeywordHandlers();
 
 		// load stored data
 		final IPath path = Activator.getDefault().getStateLocation().append(CACHE_FILE_NAME);
@@ -121,6 +132,13 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			try {
 				resource.load(null);
 				fRepository = (IStorage) resource.getContents().get(0);
+
+				// push all updates to the event bus
+				for (IScript script : fRepository.getScripts()) {
+					for (Entry<String, String> entry : script.getParameters().entrySet())
+						fireKeywordEvent(script, entry.getKey(), entry.getValue(), "");
+				}
+
 				Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Loaded cached scripts");
 
 			} catch (final IOException e) {
@@ -148,9 +166,6 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			save();
 		}
 
-		// apply UI integrations
-		new UIIntegrationJob(this);
-
 		// update repository
 		fUpdateJob = new UpdateRepositoryJob(this);
 
@@ -165,6 +180,56 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 				break;
 			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	private void startKeywordHandlers() {
+		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_KEYWORD_ID);
+
+		for (final IConfigurationElement e : config) {
+
+			if (EXTENSION_KEYWORD_HANDLER.equals(e.getName())) {
+				try {
+					Object listener = e.createExecutableExtension(EXTENSION_KEYWORD_HANDLER_CLASS);
+					if (listener instanceof EventHandler) {
+						String keywords = e.getAttribute(EXTENSION_KEYWORD_HANDLER_KEYWORDS);
+						for (String keyword : keywords.split(","))
+							fEventBroker.subscribe(BROKER_CHANNEL_SCRIPT_KEYWORDS + keyword, (EventHandler) listener);
+
+					} else
+						Logger.error(Activator.PLUGIN_ID, "Invalid keyword handler detected: " + e.getAttribute("id"));
+
+				} catch (Exception e1) {
+					Logger.error(Activator.PLUGIN_ID, "Invalid keyword handler detected: " + e.getAttribute("id"), e1);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Post a keyword change to the event bus.
+	 *
+	 * @param script
+	 *            script that created the event
+	 * @param key
+	 *            keyword that changed
+	 * @param value
+	 *            value for that keyword
+	 * @param oldValue
+	 *            previous value for that keyword
+	 */
+	private void fireKeywordEvent(final IScript script, final String key, final String value, final String oldValue) {
+		Object service = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		if (service instanceof IEventBroker) {
+			HashMap<String, Object> eventData = new HashMap<String, Object>();
+			eventData.put("script", script);
+			eventData.put("keyword", key);
+			eventData.put("value", value);
+			eventData.put("oldValue", oldValue);
+			((IEventBroker) service).post(BROKER_CHANNEL_SCRIPT_KEYWORDS + key, eventData);
 		}
 	}
 
@@ -226,24 +291,9 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		fSaveJob.schedule(500);
 	}
 
-	private void fireScriptEvent(final ScriptEvent event) {
-		for (final Object listener : fListeners.getListeners())
-			((IScriptListener) listener).notify(event);
-	}
-
 	@Override
 	public Collection<IScript> getScripts() {
 		return Collections.unmodifiableCollection(fRepository.getScripts());
-	}
-
-	@Override
-	public void addScriptListener(final IScriptListener listener) {
-		fListeners.add(listener);
-	}
-
-	@Override
-	public void removeScriptListener(final IScriptListener listener) {
-		fListeners.remove(listener);
 	}
 
 	@Override
@@ -253,7 +303,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 	@Override
 	public void updateLocation(final IScriptLocation entry, final String location, final long lastChanged) {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		IScript script = getScriptByLocation(location);
 		final ScriptType scriptType = scriptService.getScriptType(location);
@@ -266,7 +316,9 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				script.setLocation(location);
 
 				entry.getScripts().add(script);
-				fireScriptEvent(new ScriptEvent(script, ScriptEvent.ADD, null));
+				HashMap<String, Object> eventData = new HashMap<String, Object>();
+				eventData.put("script", script);
+				fEventBroker.post(BROKER_CHANNEL_SCRIPTS_NEW, eventData);
 
 			} else if (script.getTimestamp() == lastChanged) {
 				// no update needed
@@ -283,8 +335,21 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 			final Map<String, String> newParameters = script.getParameters();
 
-			if (!oldParameters.equals(newParameters))
-				fireScriptEvent(new ScriptEvent(script, ScriptEvent.PARAMETER_CHANGE, new ParameterDelta(oldParameters, newParameters)));
+			if (!oldParameters.equals(newParameters)) {
+				// changed script parameters, push events
+
+				// find deleted parameters
+				for (String oldParameter : oldParameters.keySet()) {
+					if (!newParameters.containsKey(oldParameter))
+						fireKeywordEvent(script, oldParameter, "", oldParameters.get(oldParameter));
+				}
+
+				// find changed/new parameters
+				for (Entry<String, String> newEntry : newParameters.entrySet()) {
+					if (!newEntry.getValue().equals(oldParameters.get(newEntry.getKey())))
+						fireKeywordEvent(script, newEntry.getKey(), newEntry.getValue(), oldParameters.get(newEntry.getKey()));
+				}
+			}
 
 			// script is up to date
 			script.setTimestamp(lastChanged);
@@ -316,7 +381,14 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 	void removeScript(final IScript script) {
 		script.getEntry().getScripts().remove(script);
-		fireScriptEvent(new ScriptEvent(script, ScriptEvent.DELETE, null));
+
+		// unregister script keywords
+		for (Entry<String, String> entry : script.getParameters().entrySet())
+			fireKeywordEvent(script, entry.getKey(), "", entry.getValue());
+
+		HashMap<String, Object> eventData = new HashMap<String, Object>();
+		eventData.put("script", script);
+		fEventBroker.post(BROKER_CHANNEL_SCRIPTS_REMOVED, eventData);
 	}
 
 	@Override

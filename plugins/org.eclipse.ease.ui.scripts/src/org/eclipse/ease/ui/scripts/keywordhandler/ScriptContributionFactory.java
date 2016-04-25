@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.scripts.repository.impl;
+package org.eclipse.ease.ui.scripts.keywordhandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,11 +34,11 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 	/** ContributionManager scripts should be added to. */
 	private IContributionManager fContributionManager = null;
 
-	public ScriptContributionFactory(final String location, final String namespace) {
-		super(location, namespace);
+	public ScriptContributionFactory(final String location) {
+		super(location, null);
 
 		// register factory
-		final IMenuService menuService = (IMenuService) PlatformUI.getWorkbench().getService(IMenuService.class);
+		final IMenuService menuService = PlatformUI.getWorkbench().getService(IMenuService.class);
 		menuService.addContributionFactory(this);
 	}
 
@@ -59,7 +59,7 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 			}
 		}
 
-		if (getLocation().endsWith(UIIntegrationJob.POPUP_LOCATION)) {
+		if (getLocation().endsWith(PopupHandler.POPUP_LOCATION)) {
 			for (IScript script : sortScripts(fScripts))
 				additions.addContributionItem(new ScriptContributionItem(script, script.getParameters().get("popup")), null);
 

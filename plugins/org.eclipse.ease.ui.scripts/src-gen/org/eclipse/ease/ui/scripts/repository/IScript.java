@@ -145,7 +145,8 @@ public interface IScript extends IRawLocation {
 	IPath getPath();
 
 	/**
-	 *
+	 * Get all parameters stored for this script. Merges script parameters and user defined parameters. User parameters have higher relevance.
+	 * 
 	 * @generated NOT
 	 */
 	Map<String, String> getParameters();
