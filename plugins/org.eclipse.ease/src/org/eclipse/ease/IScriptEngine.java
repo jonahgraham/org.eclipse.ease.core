@@ -252,4 +252,21 @@ public interface IScriptEngine {
 	 *            url to load jar file from
 	 */
 	void registerJar(final URL url);
+
+	/**
+	 * Join engine execution thread. Waits for engine execution up to <i>timeout</i>
+	 *
+	 * @param timeout
+	 *            command timeout in milliseconds
+	 * @throws InterruptedException
+	 *             when join command got interrupted
+	 */
+	void join(long timeout) throws InterruptedException;
+
+	/**
+	 * Verify that engine was started and terminated.
+	 *
+	 * @return <code>true</code> when engine ran and terminated
+	 */
+	boolean isFinished();
 }

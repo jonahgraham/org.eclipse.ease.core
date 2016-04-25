@@ -405,7 +405,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	@Override
 	public ScriptType getType() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		ScriptType type = null;
 
 		// script type as provided in metadata
@@ -466,10 +466,12 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
+	 * @return
+	 *
 	 * @generated NOT
 	 */
 	@Override
-	public void run() {
+	public IScriptEngine run() {
 
 		EngineDescription engineDescription = getEngineDescription();
 		if (engineDescription != null) {
@@ -490,7 +492,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 				if (!allowRemoteAccess) {
 					engine.getErrorStream().println("Remote script source detected. Access is disabled in preferences.");
-					return;
+					return null;
 				}
 			}
 
@@ -500,8 +502,12 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			engine.executeAsync(getResource());
 			engine.schedule();
 
+			return engine;
+
 		} else
 			Logger.error(org.eclipse.ease.ui.scripts.Activator.PLUGIN_ID, "Could not detect script engine for " + this);
+
+		return null;
 	}
 
 	/**
@@ -510,7 +516,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 * @generated NOT
 	 */
 	private EngineDescription getEngineDescription() {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		String engineIDs = getParameters().get("script-engine");
 		if (engineIDs == null)

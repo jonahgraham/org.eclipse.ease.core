@@ -207,4 +207,13 @@ public class JavaEngine implements IScriptEngine {
 	public EngineDescription getDescription() {
 		return fDescription;
 	}
+
+	@Override
+	public void join(final long timeout) {
+	}
+
+	@Override
+	public boolean isFinished() {
+		return true;
+	}
 }

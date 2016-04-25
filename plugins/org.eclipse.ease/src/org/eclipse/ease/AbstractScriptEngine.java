@@ -66,6 +66,8 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	private boolean fCloseStreamsOnTerminate;
 
+	private boolean fTerminated = false;
+
 	/**
 	 * Constructor. Sets the name for the underlying job.
 	 *
@@ -260,6 +262,10 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_END);
 
 			teardownEngine();
+			fTerminated = true;
+			synchronized (this) {
+				notifyAll();
+			}
 		}
 
 		closeStreams();
@@ -408,7 +414,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		fCodePieces.clear();
 
 		// re-enable launch extensions to register themselves
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final IScriptEngineLaunchExtension extension : scriptService.getLaunchExtensions(getDescription().getID()))
 			extension.createEngine(this);
 	}
@@ -430,6 +436,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		return null;
 	}
 
+	@Override
 	public void setEngineDescription(final EngineDescription description) {
 		fDescription = description;
 	}
@@ -494,6 +501,19 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		}
 
 		return args.toArray(new String[args.size()]);
+	}
+
+	@Override
+	public boolean isFinished() {
+		return fTerminated;
+	}
+
+	@Override
+	public void join(final long timeout) throws InterruptedException {
+		synchronized (this) {
+			if (!isFinished())
+				wait(timeout);
+		}
 	}
 
 	/**

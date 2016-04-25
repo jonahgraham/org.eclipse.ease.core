@@ -210,5 +210,19 @@
             keywords="popup"
             name="Popup Additions">
       </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.StartupHandler"
+            description="Run scripts on Eclipse startup. Provide an integer parameter to denote an execution delay in seconds."
+            id="org.eclipse.ease.ui.scripts.handler.startup"
+            keywords="onStartup"
+            name="Eclipse Startup">
+      </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.ShutdownHandler"
+            description="Runs scripts on Eclipse shutdown. Provide an integer parameter to denote maximum execution time in secods (defaults to 10s). Do not run UI code in shutdown scripts, it would lock up your application!"
+            id="org.eclipse.ease.ui.scripts.handler.shutdown"
+            keywords="onShutdown"
+            name="Eclipse Shutdown">
+      </handler>
    </extension>
 </plugin>
