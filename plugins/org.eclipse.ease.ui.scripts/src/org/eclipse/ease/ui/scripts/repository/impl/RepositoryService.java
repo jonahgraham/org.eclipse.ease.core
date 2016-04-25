@@ -136,7 +136,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				// push all updates to the event bus
 				for (IScript script : fRepository.getScripts()) {
 					for (Entry<String, String> entry : script.getParameters().entrySet())
-						fireKeywordEvent(script, entry.getKey(), entry.getValue(), "");
+						fireKeywordEvent(script, entry.getKey(), entry.getValue(), null);
 				}
 
 				Logger.trace(Activator.PLUGIN_ID, TRACE_REPOSITORY_SERVICE, Activator.PLUGIN_ID, "Loaded cached scripts");
@@ -341,7 +341,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				// find deleted parameters
 				for (String oldParameter : oldParameters.keySet()) {
 					if (!newParameters.containsKey(oldParameter))
-						fireKeywordEvent(script, oldParameter, "", oldParameters.get(oldParameter));
+						fireKeywordEvent(script, oldParameter, null, oldParameters.get(oldParameter));
 				}
 
 				// find changed/new parameters
@@ -384,7 +384,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 		// unregister script keywords
 		for (Entry<String, String> entry : script.getParameters().entrySet())
-			fireKeywordEvent(script, entry.getKey(), "", entry.getValue());
+			fireKeywordEvent(script, entry.getKey(), null, entry.getValue());
 
 		HashMap<String, Object> eventData = new HashMap<String, Object>();
 		eventData.put("script", script);

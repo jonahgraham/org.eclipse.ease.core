@@ -48,7 +48,7 @@ public class ToolbarHandler implements EventHandler {
 		public String fViewID;
 		public String fName = null;
 
-		public Location(String scheme, String location) {
+		public Location(final String scheme, final String location) {
 			fScheme = scheme;
 
 			String[] tokens = location.split("\\|");
@@ -89,7 +89,7 @@ public class ToolbarHandler implements EventHandler {
 		}
 
 		@Override
-		public IStatus runInUIThread(IProgressMonitor monitor) {
+		public IStatus runInUIThread(final IProgressMonitor monitor) {
 			if (PlatformUI.getWorkbench().getActiveWorkbenchWindow() == null) {
 				// we might get called before the workbench is loaded.
 				// in that case delay execution until the workbench is ready
@@ -128,10 +128,10 @@ public class ToolbarHandler implements EventHandler {
 				String value = (String) event.getProperty("value");
 				String oldValue = (String) event.getProperty("oldValue");
 
-				if (!oldValue.isEmpty())
+				if ((oldValue != null) && (!oldValue.isEmpty()))
 					removeContribution(script, oldValue);
 
-				if (!value.isEmpty())
+				if ((value != null) && (!value.isEmpty()))
 					addContribution(script, value);
 			}
 
@@ -142,7 +142,7 @@ public class ToolbarHandler implements EventHandler {
 	/**
 	 * @param value
 	 */
-	public static Collection<Location> toLocations(String value) {
+	public static Collection<Location> toLocations(final String value) {
 		Collection<Location> locations = new HashSet<Location>();
 
 		for (String part : value.split(";"))
@@ -152,7 +152,7 @@ public class ToolbarHandler implements EventHandler {
 	}
 
 	/** Event process job. */
-	private Job fUpdateUIJob = new UIIntegrationJob();
+	private final Job fUpdateUIJob = new UIIntegrationJob();
 
 	/** Event queue to be processed. */
 	private List<Event> fKeywordEvents = new ArrayList<Event>();
@@ -161,7 +161,7 @@ public class ToolbarHandler implements EventHandler {
 	private final Map<String, ScriptContributionFactory> fContributionFactories = new HashMap<String, ScriptContributionFactory>();
 
 	@Override
-	public void handleEvent(Event event) {
+	public void handleEvent(final Event event) {
 		synchronized (this) {
 			fKeywordEvents.add(event);
 		}
@@ -171,13 +171,13 @@ public class ToolbarHandler implements EventHandler {
 
 	/**
 	 * Add a toolbar script contribution.
-	 * 
+	 *
 	 * @param script
 	 *            script to add
 	 * @param value
 	 *            toolbar keyword value
 	 */
-	protected void addContribution(IScript script, String value) {
+	protected void addContribution(final IScript script, final String value) {
 
 		// process each location
 		for (Location location : toLocations(value)) {
@@ -206,13 +206,13 @@ public class ToolbarHandler implements EventHandler {
 
 	/**
 	 * Remove a toolbar script contribution.
-	 * 
+	 *
 	 * @param script
 	 *            script to remove
 	 * @param value
 	 *            toolbar keyword value
 	 */
-	protected void removeContribution(IScript script, String value) {
+	protected void removeContribution(final IScript script, final String value) {
 		// process each location
 		for (Location location : toLocations(value)) {
 			Logger.trace(Activator.PLUGIN_ID, TRACE_UI_INTEGRATION, Activator.PLUGIN_ID,
