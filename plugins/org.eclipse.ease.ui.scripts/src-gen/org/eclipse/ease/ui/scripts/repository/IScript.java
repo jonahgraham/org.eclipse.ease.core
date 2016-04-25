@@ -165,4 +165,14 @@ public interface IScript extends IRawLocation {
 	 */
 	boolean isRemote();
 
+	/**
+	 * Run script with startup parameters.
+	 *
+	 * @param parameters
+	 *            startup parameters passed to the script
+	 *
+	 * @generated NOT
+	 */
+	IScriptEngine run(String... parameters);
+
 } // IScript

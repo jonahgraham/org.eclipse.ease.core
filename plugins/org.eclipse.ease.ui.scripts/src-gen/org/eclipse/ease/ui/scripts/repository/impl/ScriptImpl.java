@@ -472,6 +472,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 */
 	@Override
 	public IScriptEngine run() {
+		return run(new String[0]);
+	}
+
+	@Override
+	public IScriptEngine run(final String... parameters) {
 
 		EngineDescription engineDescription = getEngineDescription();
 		if (engineDescription != null) {
@@ -496,9 +501,8 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 				}
 			}
 
-			// set dummy input parameters. Scripts do not have any, but script
-			// source might expect them
-			engine.setVariable("argv", new String[0]);
+			// set input parameters.
+			engine.setVariable("argv", parameters);
 			engine.executeAsync(getResource());
 			engine.schedule();
 
