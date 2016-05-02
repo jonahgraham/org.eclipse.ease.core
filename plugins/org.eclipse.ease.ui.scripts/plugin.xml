@@ -232,4 +232,14 @@
             name="Save Editor">
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.equinox.p2.engine.actions">
+      <action
+            class="org.eclipse.ease.ui.scripts.touchpoints.AddScriptLocationTouchpoint"
+            name="addScriptLocation"
+            touchpointType="org.eclipse.equinox.p2.native"
+            touchpointVersion="1.0.0"
+            version="1.0.0">
+      </action>
+   </extension>
 </plugin>
