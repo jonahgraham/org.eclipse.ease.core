@@ -58,10 +58,15 @@ public class UpdateRepositoryJob extends Job {
 					new FileSystemParser().parse((File) content, location);
 
 				} else if (content instanceof URI) {
-					try {
-						new HttpParser().parse(((URI) content).toURL().toString(), location);
-					} catch (MalformedURLException e) {
-						// not a valid URL, ignore repository
+					if ("platform".equals(((URI) content).getScheme())) {
+						new PluginParser().parse(content, location);
+
+					} else {
+						try {
+							new HttpParser().parse(((URI) content).toURL().toString(), location);
+						} catch (MalformedURLException e) {
+							// not a valid URL, ignore repository
+						}
 					}
 
 				} else if (content instanceof InputStream) {
