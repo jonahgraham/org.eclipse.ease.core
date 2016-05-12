@@ -136,6 +136,32 @@ public class AbstractScriptEngineTest {
 		// test valid if it terminates within the timeout period
 	}
 
+	@Test(timeout = 1000)
+	public void terminateOnIdleAfterSchedule() throws InterruptedException {
+		fTestEngine.setTerminateOnIdle(false);
+		fTestEngine.schedule();
+		while (true) {
+			Thread.sleep(10);
+			if (fTestEngine.getState() != Job.RUNNING) {
+				// eclipse job has not started yet
+				continue;
+			}
+			if (!fTestEngine.isIdle()) {
+				// ease still has work to do in the job
+				continue;
+			}
+			if (fTestEngine.getThread().getState() != Thread.State.WAITING) {
+				// thread is still running, we want it to be waiting
+				continue;
+			}
+			break;
+		}
+		fTestEngine.setTerminateOnIdle(true);
+		fTestEngine.join();
+
+		// test valid if it terminates within the timeout period
+	}
+
 	@Test
 	public void keepRunningOnIdle() throws InterruptedException {
 		fTestEngine.setTerminateOnIdle(false);

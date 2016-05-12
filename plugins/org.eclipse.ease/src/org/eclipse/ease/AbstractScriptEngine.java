@@ -47,7 +47,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	private final ListenerList fExecutionListeners = new ListenerList();
 
 	/** Indicator to terminate once this Job gets IDLE. */
-	private boolean fTerminateOnIdle = true;
+	private volatile boolean fTerminateOnIdle = true;
 
 	private PrintStream fOutputStream = null;
 
@@ -352,6 +352,9 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	@Override
 	public final void setTerminateOnIdle(final boolean terminate) {
 		fTerminateOnIdle = terminate;
+		synchronized (this) {
+			notifyAll();
+		}
 	}
 
 	@Override
