@@ -143,15 +143,13 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 					Display.getDefault().asyncExec(() -> setBackground(fResourceManager.createColor(fColorDefaultBackground)));
 				}
 
-				if (script.getResult().hasException())
+				if (script.getResult().hasException()) {
 					localPrint(script.getResult().getException().getLocalizedMessage(), STYLE_ERROR);
-
-				else {
+				} else {
 					final Object result = script.getResult().getResult();
-					if (result != null)
-						localPrint(script.getResult().getResult().toString(), STYLE_RESULT);
-					else
-						localPrint("[null]", STYLE_RESULT);
+					if (result != null) {
+						localPrint(result.toString(), STYLE_RESULT);
+					}
 				}
 
 				break;
