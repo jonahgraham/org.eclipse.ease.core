@@ -463,21 +463,8 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		return new Path(relativePath).makeAbsolute();
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return
-	 *
-	 * @generated NOT
-	 */
 	@Override
-	public IScriptEngine run() {
-		return run(new String[0]);
-	}
-
-	@Override
-	public IScriptEngine run(final String... parameters) {
-
+	public IScriptEngine prepareEngine() {
 		EngineDescription engineDescription = getEngineDescription();
 		if (engineDescription != null) {
 			IScriptEngine engine = engineDescription.createEngine();
@@ -501,10 +488,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 				}
 			}
 
-			// set input parameters.
-			engine.setVariable("argv", parameters);
 			engine.executeAsync(getResource());
-			engine.schedule();
 
 			return engine;
 
@@ -512,6 +496,23 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			Logger.error(org.eclipse.ease.ui.scripts.Activator.PLUGIN_ID, "Could not detect script engine for " + this);
 
 		return null;
+	}
+
+	@Override
+	public IScriptEngine run() {
+		return run(new String[0]);
+	}
+
+	@Override
+	public IScriptEngine run(final String... parameters) {
+		IScriptEngine engine = prepareEngine();
+
+		if (engine != null) {
+			engine.setVariable("argv", parameters);
+			engine.schedule();
+		}
+
+		return engine;
 	}
 
 	/**

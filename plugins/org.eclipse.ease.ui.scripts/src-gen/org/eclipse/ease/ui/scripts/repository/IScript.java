@@ -153,6 +153,7 @@ public interface IScript extends IRawLocation {
 	Map<String, String> getParameters();
 
 	/**
+	 * Get script type.
 	 *
 	 * @generated NOT
 	 */
@@ -170,9 +171,20 @@ public interface IScript extends IRawLocation {
 	 *
 	 * @param parameters
 	 *            startup parameters passed to the script
+	 * @return script engine
 	 *
 	 * @generated NOT
 	 */
 	IScriptEngine run(String... parameters);
+
+	/**
+	 * Prepare a script engine ready to run. The script is already scheduled for execution. Typically used when the launching application wants to modify engine
+	 * parameters or inject variables before the launch.
+	 *
+	 * @return script engine
+	 *
+	 * @generated NOT
+	 */
+	IScriptEngine prepareEngine();
 
 } // IScript

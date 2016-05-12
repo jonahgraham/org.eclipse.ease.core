@@ -231,6 +231,13 @@
             keywords="onSave"
             name="Save Editor">
       </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.EventBusHandler"
+            description="Run scripts when a specific event is posted on the OSGI message bus. Accepts a channel identifier for broker subscription (* wildcards may be used). The event will be passed to the script as variable &apos;event&apos;."
+            id="org.eclipse.ease.ui.scripts.handler.brokerEvent"
+            keywords="onEventBus"
+            name="Event Bus">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.equinox.p2.engine.actions">
