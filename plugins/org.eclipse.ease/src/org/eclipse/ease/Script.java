@@ -39,6 +39,26 @@ public class Script {
 	/** Script title (optional). */
 	private final String fTitle;
 
+	/** Interactive/shell originated script piece */
+	private final boolean fIsShell;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param title
+	 *            name of script object
+	 * @param command
+	 *            command (sequence) to be executed
+	 * @param isShell
+	 *            <code>true</code> if the script originated from a shell/interactive session
+	 */
+	public Script(final String title, final Object command, final boolean isShell) {
+		fTitle = title;
+		fCommand = command;
+		fResult = new ScriptResult();
+		fIsShell = isShell;
+	}
+
 	/**
 	 * Constructor.
 	 *
@@ -48,9 +68,7 @@ public class Script {
 	 *            command (sequence) to be executed
 	 */
 	public Script(final String title, final Object command) {
-		fTitle = title;
-		fCommand = command;
-		fResult = new ScriptResult();
+		this(title, command, false);
 	}
 
 	/**
@@ -237,6 +255,17 @@ public class Script {
 			return fCommand.toString();
 
 		return null;
+	}
+
+	/**
+	 * Script originated from interactive input or shell, as opposed to a source file.
+	 *
+	 * A script engine may decide to process a script originating in the shell differently than one originating in a source file.
+	 *
+	 * @return <code>true</code> origin is interactive input or shell, or <code>false</code> if origin is a source file.
+	 */
+	public boolean isShellMode() {
+		return fIsShell;
 	}
 
 	@Override

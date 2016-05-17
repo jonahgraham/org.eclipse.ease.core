@@ -199,7 +199,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			public void widgetDefaultSelected(final SelectionEvent e) {
 				final String input = fInputCombo.getText();
 				fInputCombo.setText("");
-				fScriptEngine.executeAsync(input);
+				fScriptEngine.executeAsync(new Script("User input", input, true));
 			}
 		});
 
