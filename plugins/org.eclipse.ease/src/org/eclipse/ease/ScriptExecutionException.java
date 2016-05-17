@@ -78,8 +78,11 @@ public class ScriptExecutionException extends RuntimeException {
 
 		// TODO add In function '...' if ST is available
 
-		buffer.append(fErrorName);
-		buffer.append(": ");
+		if (fErrorName != null) {
+			buffer.append(fErrorName);
+			buffer.append(": ");
+		}
+
 		buffer.append(super.getMessage());
 
 		if (fLineSource != null) {
