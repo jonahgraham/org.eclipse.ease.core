@@ -39,6 +39,26 @@ public class Script {
 	/** Script title (optional). */
 	private final String fTitle;
 
+	/** Interactive/shell originated script piece */
+	private final boolean fIsShell;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param title
+	 *            name of script object
+	 * @param command
+	 *            command (sequence) to be executed
+	 * @param isShell
+	 *            true if the script originated from a shell/interactive session
+	 */
+	public Script(final String title, final Object command, final boolean isShell) {
+		fTitle = title;
+		fCommand = command;
+		fResult = new ScriptResult();
+		fIsShell = isShell;
+	}
+
 	/**
 	 * Constructor.
 	 *
@@ -48,9 +68,7 @@ public class Script {
 	 *            command (sequence) to be executed
 	 */
 	public Script(final String title, final Object command) {
-		fTitle = title;
-		fCommand = command;
-		fResult = new ScriptResult();
+		this(title, command, false);
 	}
 
 	/**
@@ -239,6 +257,13 @@ public class Script {
 		return null;
 	}
 
+	/**
+	 * @return
+	 */
+	public boolean isShellMode() {
+		return fIsShell;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -263,4 +288,5 @@ public class Script {
 			return false;
 		return true;
 	}
+
 }
