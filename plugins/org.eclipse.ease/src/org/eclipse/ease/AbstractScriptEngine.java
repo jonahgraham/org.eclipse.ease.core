@@ -212,9 +212,13 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
-		final boolean setup = setupEngine();
-		if (setup) {
+		try {
+			Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
+
+			if (!setupEngine()) {
+				// The boolean return is deprecated because we don't know what went wrong
+				throw new ScriptEngineException("Unknown setup failure");
+			}
 			fSetupDone = true;
 
 			// engine is initialized, set buffered variables
@@ -251,13 +255,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				}
 			}
 
-			// discard pending code pieces
-			synchronized (fCodePieces) {
-				for (final Script script : fCodePieces)
-					script.setException(new ExitException());
-			}
-
-			fCodePieces.clear();
+			discardCodePieces();
 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_END);
 
@@ -266,19 +264,26 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			synchronized (this) {
 				notifyAll();
 			}
+			if (isTerminated())
+				return Status.OK_STATUS;
+
+			return Status.CANCEL_STATUS;
+		} catch (ScriptEngineException e) {
+			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not setup script engine", e);
+		} finally {
+			discardCodePieces();
+			closeStreams();
+			Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
 		}
+	}
 
-		closeStreams();
-
-		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
-
-		if (!setup)
-			throw new RuntimeException("Could not setup script engine, terminating");
-
-		if (isTerminated())
-			return Status.OK_STATUS;
-
-		return Status.CANCEL_STATUS;
+	private void discardCodePieces() {
+		// discard pending code pieces
+		synchronized (fCodePieces) {
+			for (final Script script : fCodePieces)
+				script.setException(new ExitException());
+			fCodePieces.clear();
+		}
 	}
 
 	private void closeStreams() {
@@ -548,9 +553,12 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	 * Setup method for script engine. Run directly after the engine is activated. Needs to return <code>true</code>. Otherwise the engine will terminate
 	 * instantly.
 	 *
+	 * Unresolvable errors should be indicated by throwing a ScriptEngineException with details as to what went wrong. The boolean return indicating an error is
+	 * deprecated.
+	 *
 	 * @return <code>true</code> when setup succeeds
 	 */
-	protected abstract boolean setupEngine();
+	protected abstract boolean setupEngine() throws ScriptEngineException;
 
 	/**
 	 * Teardown engine. Called immediately before the engine terminates. This method is not called when {@link #setupEngine()} fails.
