@@ -89,7 +89,13 @@ public class PythonCodeFactory extends AbstractCodeFactory {
 		body.append(getPreExecutionCode(environment, method));
 
 		// insert method call
-		body.append('\t').append(IScriptFunctionModifier.RESULT_NAME).append(" = ").append(moduleVariable).append('.').append(method.getName()).append('(');
+		body.append('\t').append(IScriptFunctionModifier.RESULT_NAME).append(" = ");
+		// use getattr to get around reserved names, e.g.:
+		// __result = getattr(__environmentModule, "print")(args)
+		// instead of the illegal:
+		// __result = __environmentModule.print(args)
+		body.append("getattr(").append(moduleVariable).append(", \"").append(method.getName()).append("\")");
+		body.append('(');
 		body.append(methodCall);
 		body.append(")\n");
 
@@ -101,12 +107,18 @@ public class PythonCodeFactory extends AbstractCodeFactory {
 
 		// build function declarations
 		for (final String name : getMethodNames(method)) {
-			if (!isValidMethodName(name)) {
-				Logger.error(Activator.PLUGIN_ID,
-						"The method name \"" + name + "\" from the module \"" + moduleVariable + "\" can not be wrapped because it's name is reserved");
+			String cleanName = name;
+			if (!isValidMethodName(cleanName)) {
+				// Try once to make a clean name, e.g. turn print into print_
+				cleanName += "_";
+				if (!isValidMethodName(cleanName)) {
+					Logger.error(Activator.PLUGIN_ID,
+							"The method name \"" + name + "\" from the module \"" + moduleVariable + "\" can not be wrapped because it's name is reserved");
+				}
+			}
 
-			} else if (!name.isEmpty()) {
-				pythonCode.append("def ").append(name).append('(').append(methodSignature).append("):\n");
+			if (!cleanName.isEmpty()) {
+				pythonCode.append("def ").append(cleanName).append('(').append(methodSignature).append("):\n");
 				pythonCode.append(body);
 				pythonCode.append('\n');
 			}
