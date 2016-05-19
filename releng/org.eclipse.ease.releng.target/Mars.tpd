@@ -25,3 +25,7 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2015051921075
 	org.mockito [1.9.5,2.0.0)
 	org.hamcrest [1.1.0,2.0.0)
 }
+
+location "https://dl.bintray.com/py4j/py4j-eclipse/0.10.2.1/" py4j-eclipse {
+	org.py4j.feature.feature.group [0.10.2,0.10.3)
+}

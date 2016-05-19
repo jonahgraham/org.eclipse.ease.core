@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.eclipse.ease.lang.python.py4j Unit Test
+Bundle-SymbolicName: org.eclipse.ease.lang.python.py4j.test
+Bundle-Version: 0.4.0.qualifier
+Fragment-Host: org.eclipse.ease.lang.python.py4j;bundle-version="0.4.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: Eclipse.org
+Require-Bundle: org.junit,
+ org.eclipse.core.runtime
