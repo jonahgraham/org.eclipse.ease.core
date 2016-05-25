@@ -13,7 +13,6 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +28,6 @@ import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
-import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryPackage;
@@ -414,19 +412,10 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			type = scriptService.getAvailableScriptTypes().get(identifier);
 
 		// script type from file
-		if (type == null) {
-			Object resource = getResource();
-			if ((resource instanceof IFile) && (((IFile) resource).exists()))
-				type = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
+		if (type == null)
+			type = scriptService.getScriptType(getLocation());
 
-			else if ((resource instanceof File) && (((File) resource).exists()))
-				type = scriptService.getScriptType(resource.toString());
-
-			else if (resource instanceof URI)
-				type = scriptService.getScriptType(resource.toString());
-
-			// TODO get content type from raw file data (read file)
-		}
+		// TODO get content type from raw file data (read file)
 
 		return type;
 	}
@@ -488,7 +477,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 				}
 			}
 
-			engine.executeAsync(getResource());
+			Object executionContent = getResource();
+			if (executionContent == null)
+				executionContent = getInputStream();
+
+			engine.executeAsync(executionContent);
 
 			return engine;
 
@@ -557,7 +550,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	@Override
 	public boolean isRemote() {
 		Object resource = getResource();
-		return (!(resource instanceof IFile)) && (!(resource instanceof File));
+		return (!(resource instanceof IFile)) && (!(resource instanceof File)) && (!getLocation().toString().startsWith("platform:/"));
 	}
 
 } // ScriptImpl

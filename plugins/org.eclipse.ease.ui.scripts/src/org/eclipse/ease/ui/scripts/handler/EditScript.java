@@ -13,7 +13,6 @@ package org.eclipse.ease.ui.scripts.handler;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -101,8 +100,7 @@ public class EditScript extends AbstractHandler implements IHandler {
 												}
 
 												// refresh script in repository
-												final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench()
-														.getService(IRepositoryService.class);
+												final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
 												// FIXME we should only update
 												// this one resource instead of
 												// all scripts
@@ -117,14 +115,14 @@ public class EditScript extends AbstractHandler implements IHandler {
 							}
 						}
 
-					} else if (content instanceof URI) {
+					} else {
 						ScriptType type = ((IScript) element).getType();
 						IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor("foo." + type.getDefaultExtension());
 						if (descriptor != null) {
 							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 							try {
 								final ScriptEditorInput editorInput = new ScriptEditorInput((IScript) element);
-								final IEditorPart editor = page.openEditor(editorInput, descriptor.getId());
+								page.openEditor(editorInput, descriptor.getId());
 
 							} catch (PartInitException e) {
 								Logger.error(Activator.PLUGIN_ID, "Could not open editor for file " + content, e);

@@ -46,7 +46,7 @@ public class PluginParser extends InputStreamParser {
 						if ((root != null) && (root.exists())) {
 							if (root.isDirectory()) {
 								// found a bundle directory to host script files
-								parseFolder(root, path, location);
+								parseFolder(rootPath.toFile(), path, location);
 
 							} else {
 								try {

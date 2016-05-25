@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IContainer;
@@ -362,6 +363,11 @@ public final class ResourceTools {
 
 			if (resource instanceof URI)
 				return ((URI) resource).toURL().openStream();
+
+			// last resort: try to create a URL directly
+			if (location != null)
+				return new URL(location.toString()).openStream();
+
 		} catch (final Exception e) {
 			// cannot open stream
 			Logger.error(Activator.PLUGIN_ID, "Cannot open stream for \"" + location + "\"", e);
