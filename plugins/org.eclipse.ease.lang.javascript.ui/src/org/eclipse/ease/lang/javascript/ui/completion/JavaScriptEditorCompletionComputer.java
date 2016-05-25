@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Martin Kloesch and others.
+ * Copyright (c) 2015, 2016 Martin Kloesch and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 
 package org.eclipse.ease.lang.javascript.ui.completion;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import org.eclipse.ease.ui.completion.ICompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
@@ -58,7 +59,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 	}
 
 	@Override
-	public List<ScriptCompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+	public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
 		if (context != null) {
 			// get content of document
 			final IDocument document = context.getDocument();
@@ -78,7 +79,9 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 
 					final int cursorPosition = context.getInvocationOffset();
 					final int selectionRange = context.getViewer().getSelectedRange().y;
-					return fCompletionAggregator.getCompletionProposals(resource, relevantText, cursorPosition, selectionRange, monitor);
+					List<ScriptCompletionProposal> proposals = fCompletionAggregator.getCompletionProposals(resource, relevantText, cursorPosition,
+							selectionRange, monitor);
+					return new ArrayList<>(proposals);
 
 				} catch (final BadLocationException e) {
 					Logger.error(PluginConstants.PLUGIN_ID, "Failed to calculate proposals for JavaScript editor", e);
@@ -89,8 +92,11 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 		return Collections.emptyList();
 	}
 
+	// XXX: We are returning List because of a bug in JSDT's API that will hopefully be fixed before it is released
+	// in Neon, but in case it isn't we need to protect against the API changing. Note the API in question is
+	// provisional. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=493810
 	@Override
-	public List<IContextInformation> computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+	public List computeContextInformation(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
 		return Collections.emptyList();
 	}
 
