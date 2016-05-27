@@ -1,9 +1,23 @@
 package org.eclipse.ease.lang.python.py4j.ui.preferences;
 
-import org.eclipse.jface.preference.*;
-import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ease.lang.python.py4j.ui.Activator;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 
 /**
  * This class represents a preference page that is contributed to the
@@ -16,32 +30,68 @@ import org.eclipse.ease.lang.python.py4j.ui.Activator;
  * preferences can be accessed directly via the preference store.
  */
 
-public class Py4JPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class Py4JPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
+	private ComboViewer viewer;
 	public Py4JPreferencePage() {
-		super(GRID);
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 		setDescription("Python Interpreter Provider Settings");
 	}
 
-	/**
-	 * Creates the field editors. Field editors are abstractions of the common
-	 * GUI blocks needed to manipulate various types of preferences. Each field
-	 * editor knows how to save and restore itself.
-	 */
-	public void createFieldEditors() {
-	
-		addField(new ComboFieldEditor(PreferenceConstants.P_CHOICE, "Name:",
-				new String[][] { { "Python on PATH", "choice1" }, { "Manually specify path to interpreter", "choice2" }, { "Use PyDev Intepreter", "choice2" } }, getFieldEditorParent()));
+
+	@Override
+	public void init(IWorkbench workbench) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
+	@Override
+	protected Control createContents(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NULL);
+		GridLayout gridLayout = GridLayoutFactory.swtDefaults().create();
+		composite.setLayout(gridLayout);
+		composite.setLayoutData(GridDataFactory.swtDefaults().create());
+		
+//		Label label = new Label(composite, SWT.NONE);
+//		label.setText("Python Interpreter Provider:");
+		
+		viewer = new ComboViewer(composite, SWT.READ_ONLY);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(viewer.getControl());
+		viewer.setContentProvider(ArrayContentProvider.getInstance());
+		viewer.setLabelProvider(new LabelProvider(){
+			@Override
+			public String getText(Object element) {
+				// TODO Auto-generated method stub
+				return super.getText(element);
+			}
+		});
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				displaySelectedProviderPage();
+				updateButtons();
+			}
+		});
+		
+		initializeProviders();
+		return composite;
+	}
+
+
+	private void initializeProviders() {
+		// TODO: create the providers
+	
+	}
+
+
+	protected void updateButtons() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	protected void displaySelectedProviderPage() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
