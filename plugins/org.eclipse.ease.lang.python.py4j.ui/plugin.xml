@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="PythonIntepreterProviderPage" name="Python Interpreter Provider Page" schema="schema/PythonIntepreterProviderPage.exsd"/>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ease.preferences.root"
+            class="org.eclipse.ease.lang.python.py4j.ui.preferences.Py4JPreferencePage"
+            id="org.eclipse.ease.lang.python.py4j.ui.preferences.Py4JPreferencePage"
+            name="Python Py4J Preferences">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.ease.lang.python.py4j.ui.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>
