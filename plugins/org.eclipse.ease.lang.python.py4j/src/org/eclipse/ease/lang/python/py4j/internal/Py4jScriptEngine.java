@@ -10,20 +10,15 @@
  *******************************************************************************/
 package org.eclipse.ease.lang.python.py4j.internal;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
@@ -44,23 +39,10 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	public static final String ENGINE_ID = "org.eclipse.ease.lang.python.py4j.engine";
 
 	// TODO: Add preference for this
-	private static final String PYTHON_EXECUTABLE_PATH = "python";
-
-	// TODO: Add preference for this
 	private static final int PYTHON_STARTUP_TIMEOUT_SECONDS = 10;
 
 	// TODO: Add preference for this
 	private static final int PYTHON_SHUTDOWN_TIMEOUT_SECONDS = 10;
-
-	/**
-	 * Path within this plug-in to the main python file.
-	 */
-	private static final String PYSRC_EASE_PY4J_MAIN_PY = "/pysrc/ease_py4j_main.py";
-
-	/**
-	 * The ID of the py4j sources plug-in, needs to match the name of the dependent plug-in.
-	 */
-	private static final String PY4J_PYTHON_BUNDLE_ID = "py4j-python";
 
 	private ClientServer fGatewayServer;
 	protected IPythonSideEngine fPythonSideEngine;
@@ -112,7 +94,9 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 			fGatewayServer.startServer(true);
 			int javaListeningPort = ((JavaServer) fGatewayServer.getJavaServer()).getListeningPort();
 
-			fPythonProcess = startPythonProcess(javaListeningPort);
+			Py4JPythonRunner py4jPythonRunner = new Py4JPythonRunner(javaListeningPort);
+			py4jPythonRunner.run();
+			fPythonProcess = py4jPythonRunner.getProcess();
 			fInputGobbler = new Thread(new StreamGobbler(fPythonProcess.getInputStream(), getOutputStream(), "stdout"),
 					"EASE py4j engine output stream gobbler");
 			fInputGobbler.start();
@@ -132,39 +116,6 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 			teardownEngine();
 			throw new ScriptEngineException(e);
 		}
-	}
-
-	private Process startPythonProcess(int javaListeningPort) throws IOException, MalformedURLException, URISyntaxException {
-		ProcessBuilder pb = new ProcessBuilder();
-
-		pb.environment().put("PYTHONPATH", getPy4jPythonSrc().toString());
-		pb.command().add(PYTHON_EXECUTABLE_PATH);
-		pb.command().add("-u");
-		pb.command().add(getPy4jEaseMainPy().toString());
-		pb.command().add(Integer.toString(javaListeningPort));
-
-		Process start = pb.start();
-		return start;
-	}
-
-	private File getPy4jPythonSrc() throws IOException {
-		File py4jPythonBundleFile = FileLocator.getBundleFile(Platform.getBundle(PY4J_PYTHON_BUNDLE_ID));
-		File py4jPythonSrc = new File(py4jPythonBundleFile, "/src");
-		File py4j = new File(py4jPythonSrc, "py4j");
-		if (!py4j.exists() || !py4j.isDirectory()) {
-			throw new IOException("Failed to find py4j python directory, expected it here: " + py4j);
-		}
-		return py4jPythonSrc;
-	}
-
-	private File getPy4jEaseMainPy() throws MalformedURLException, IOException, URISyntaxException {
-		URL url = new URL("platform:/plugin/" + Activator.PLUGIN_ID + PYSRC_EASE_PY4J_MAIN_PY);
-		URL fileURL = FileLocator.toFileURL(url);
-		File py4jEaseMain = new File(fileURL.toURI());
-		if (!py4jEaseMain.exists()) {
-			throw new IOException("Failed to find " + PYSRC_EASE_PY4J_MAIN_PY + ", expected it here: " + py4jEaseMain);
-		}
-		return py4jEaseMain;
 	}
 
 	public void pythonStartupComplete(int pythonPort, IPythonSideEngine pythonSideEngine) {

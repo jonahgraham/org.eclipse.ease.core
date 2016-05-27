@@ -29,3 +29,7 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2015051921075
 location "https://dl.bintray.com/py4j/py4j-eclipse/0.10.1/" py4j-eclipse {
 	org.py4j.feature.feature.group [0.10.1,0.10.2)
 }
+
+location "http://pydev.org/updates/" {
+	org.python.pydev.feature.feature.group [5.0.0,6.0.0)
+}
