@@ -1,6 +1,8 @@
 package org.eclipse.ease.lang.python.py4j.ui.preferences;
 
 import org.eclipse.ease.lang.python.py4j.ui.Activator;
+import org.eclipse.ease.lang.python.py4j.ui.dialogs.DefaultPythonInterpreterPage;
+import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
@@ -45,14 +47,15 @@ public class Py4JPreferencePage extends PreferencePage implements IWorkbenchPref
 	@Override
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
-		GridLayout gridLayout = GridLayoutFactory.swtDefaults().create();
+		GridLayout gridLayout = GridLayoutFactory.fillDefaults().create();
 		composite.setLayout(gridLayout);
-		composite.setLayoutData(GridDataFactory.swtDefaults().create());
+		composite.setLayoutData(GridDataFactory.fillDefaults().create());
 		
 		viewer = new ComboViewer(composite, SWT.READ_ONLY);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(viewer.getControl());
 		
 		Group group = new Group(composite, SWT.NONE);
+		GridLayoutFactory.fillDefaults().applyTo(group);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
 		
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -73,7 +76,18 @@ public class Py4JPreferencePage extends PreferencePage implements IWorkbenchPref
 		});
 		
 		initializeProviders();
+		createOptionsPage(group);
 		return composite;
+	}
+
+
+	private void createOptionsPage(Composite composite) {
+		IDialogPage page = new DefaultPythonInterpreterPage();
+		page.createControl(composite);
+		page.setVisible(true);
+		composite.layout(true); 
+		
+		
 	}
 
 
