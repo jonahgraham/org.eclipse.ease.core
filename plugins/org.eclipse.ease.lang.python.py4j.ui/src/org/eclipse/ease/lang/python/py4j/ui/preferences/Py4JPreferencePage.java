@@ -9,13 +9,12 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -50,11 +49,12 @@ public class Py4JPreferencePage extends PreferencePage implements IWorkbenchPref
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(GridDataFactory.swtDefaults().create());
 		
-//		Label label = new Label(composite, SWT.NONE);
-//		label.setText("Python Interpreter Provider:");
-		
 		viewer = new ComboViewer(composite, SWT.READ_ONLY);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(viewer.getControl());
+		
+		Group group = new Group(composite, SWT.NONE);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(group);
+		
 		viewer.setContentProvider(ArrayContentProvider.getInstance());
 		viewer.setLabelProvider(new LabelProvider(){
 			@Override
@@ -79,7 +79,11 @@ public class Py4JPreferencePage extends PreferencePage implements IWorkbenchPref
 
 	private void initializeProviders() {
 		// TODO: create the providers
-	
+		String[] strings = new String[] {"Use Python Inpterpreter on PATH", "Specify Path to Python Interpreter", "Use PyDev Python Interpreter"};
+		
+		viewer.setInput(strings);
+		viewer.setSelection(new StructuredSelection(strings[0]));
+		
 	}
 
 
