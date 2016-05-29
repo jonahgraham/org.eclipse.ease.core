@@ -40,13 +40,11 @@ public class AbstractScriptEngineTest {
 			}
 
 			@Override
-			protected boolean teardownEngine() {
-				return true;
+			protected void teardownEngine() throws ScriptEngineException {
 			}
 
 			@Override
-			protected boolean setupEngine() {
-				return true;
+			protected void setupEngine() throws ScriptEngineException {
 			}
 
 			@Override

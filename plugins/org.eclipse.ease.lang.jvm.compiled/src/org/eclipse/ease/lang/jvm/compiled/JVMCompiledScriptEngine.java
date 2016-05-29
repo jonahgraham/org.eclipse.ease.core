@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.ScriptEngineException;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -130,13 +131,11 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 	}
 
 	@Override
-	protected boolean setupEngine() {
-		return true;
+	protected void setupEngine() throws ScriptEngineException {
 	}
 
 	@Override
-	protected boolean teardownEngine() {
-		return true;
+	protected void teardownEngine() throws ScriptEngineException {
 	}
 
 	@Override

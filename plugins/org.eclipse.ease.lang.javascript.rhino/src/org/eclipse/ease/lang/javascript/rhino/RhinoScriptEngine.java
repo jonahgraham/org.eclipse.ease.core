@@ -23,6 +23,7 @@ import java.util.TreeMap;
 
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.ScriptEngineException;
 import org.eclipse.ease.ScriptExecutionException;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
@@ -98,7 +99,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	protected synchronized boolean setupEngine() {
+	protected synchronized void setupEngine() throws ScriptEngineException {
 		fContext = getContext();
 
 		if (fDebugger != null) {
@@ -121,12 +122,10 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		// enable JS v1.8 language constructs
 		fContext.setLanguageVersion(Context.VERSION_1_8);
-
-		return true;
 	}
 
 	@Override
-	protected synchronized boolean teardownEngine() {
+	protected synchronized void teardownEngine() throws ScriptEngineException {
 		// remove debugger to allow for garbage collection
 		fContext.setDebugger(null, null);
 
@@ -137,8 +136,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		// unregister from classloader
 		RhinoClassLoader.unregisterEngine(this);
-
-		return true;
 	}
 
 	@Override
@@ -290,7 +287,17 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		super.reset();
 
-		setupEngine();
+		try {
+			// XXX: As of writing this setupEngine never raises an exception,
+			// but it may in the future or a subclass may
+			// However, rather than pass ScriptEngineException up through
+			// reset I recommend (see Bug 494848) to get rid of reset completely
+			// and handle the reset functionality as a shutdown and creare a new
+			// engine.
+			setupEngine();
+		} catch (ScriptEngineException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

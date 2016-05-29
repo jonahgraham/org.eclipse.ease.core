@@ -13,6 +13,7 @@ import javax.script.ScriptEngineManager;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.ScriptEngineException;
 import org.eclipse.ease.lang.javascript.JavaScriptHelper;
 
 public class NashornScriptEngine extends AbstractScriptEngine implements IScriptEngine {
@@ -72,18 +73,18 @@ public class NashornScriptEngine extends AbstractScriptEngine implements IScript
 	}
 
 	@Override
-	protected boolean setupEngine() {
+	protected void setupEngine() throws ScriptEngineException {
 		ScriptEngineManager engineManager = new ScriptEngineManager();
 		fEngine = engineManager.getEngineByName("nashorn");
 
-		return fEngine != null;
+		if (fEngine == null) {
+			throw new ScriptEngineException("Unable to load Nashorn Script Engine");
+		}
 	}
 
 	@Override
-	protected boolean teardownEngine() {
+	protected void teardownEngine() throws ScriptEngineException {
 		fEngine = null;
-
-		return true;
 	}
 
 	@Override

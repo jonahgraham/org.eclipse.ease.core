@@ -212,9 +212,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
-		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
-		final boolean setup = setupEngine();
-		if (setup) {
+		IStatus returnStatus = Status.OK_STATUS;
+		try {
+			Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
+
+			setupEngine();
 			fSetupDone = true;
 
 			// engine is initialized, set buffered variables
@@ -251,6 +253,14 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				}
 			}
 
+			if (!isTerminated()) {
+				returnStatus = Status.OK_STATUS;
+			} else {
+				returnStatus = Status.CANCEL_STATUS;
+			}
+		} catch (ScriptEngineException e) {
+			returnStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not setup script engine", e);
+		} finally {
 			// discard pending code pieces
 			synchronized (fCodePieces) {
 				for (final Script script : fCodePieces)
@@ -261,24 +271,33 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_END);
 
-			teardownEngine();
-			fTerminated = true;
-			synchronized (this) {
-				notifyAll();
+			try {
+				teardownEngine();
+			} catch (ScriptEngineException e) {
+				if (returnStatus.getSeverity() < IStatus.ERROR) {
+					// We were almost all OK (or just warnings/infos) but then we failed at shutdown
+					// Note we don't override a CANCEL
+					returnStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not teardown script engine", e);
+				}
+			} finally {
+				fTerminated = true;
+				synchronized (this) {
+					notifyAll();
+				}
+
+				// discard pending code pieces
+				synchronized (fCodePieces) {
+					for (final Script script : fCodePieces)
+						script.setException(new ExitException());
+					fCodePieces.clear();
+				}
+
+				closeStreams();
+				Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
 			}
 		}
 
-		closeStreams();
-
-		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
-
-		if (!setup)
-			throw new RuntimeException("Could not setup script engine, terminating");
-
-		if (isTerminated())
-			return Status.OK_STATUS;
-
-		return Status.CANCEL_STATUS;
+		return returnStatus;
 	}
 
 	private void closeStreams() {
@@ -545,19 +564,16 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	protected abstract Object internalRemoveVariable(String name);
 
 	/**
-	 * Setup method for script engine. Run directly after the engine is activated. Needs to return <code>true</code>. Otherwise the engine will terminate
-	 * instantly.
+	 * Setup method for script engine. Run directly after the engine is activated.
 	 *
-	 * @return <code>true</code> when setup succeeds
+	 * Unresolvable errors should be indicated by throwing a ScriptEngineException with details as to what went wrong.
 	 */
-	protected abstract boolean setupEngine();
+	protected abstract void setupEngine() throws ScriptEngineException;
 
 	/**
-	 * Teardown engine. Called immediately before the engine terminates. This method is not called when {@link #setupEngine()} fails.
-	 *
-	 * @return teardown result
+	 * Teardown engine. Called immediately before the engine terminates. This method is called even when {@link #setupEngine()} fails.
 	 */
-	protected abstract boolean teardownEngine();
+	protected abstract void teardownEngine() throws ScriptEngineException;
 
 	/**
 	 * Execute script code.
