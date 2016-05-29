@@ -19,24 +19,24 @@ import org.eclipse.equinox.p2.engine.spi.ProvisioningAction;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * Touchpoint to register a new script location for a given plug-in. Requires parameter <i>plugin</i> which contains to plug-in name to be registered.
+ * Touchpoint to register a new script location. Requires parameter <i>location</i> which contains the absolute location to be registered.
+ * <p>
+ * <b>How to use this touchpoint:</b><br />
+ * Add a file p2.inf to the root folder of a feature project. Set the content to:<br />
+ * instructions.configure = org.eclipse.ease.ui.scripts.addScriptLocation(location:platform:/plugin/your.plugin/subfolder,recursive:true);
+ * </p>
  */
 public class AddScriptLocationTouchpoint extends ProvisioningAction {
-
-	public static void main(final String[] args) {
-		System.out.println(Boolean.parseBoolean(null));
-	}
 
 	@Override
 	public IStatus execute(final Map<String, Object> parameters) {
 
-		Object pluginName = parameters.get("plugin");
-		if (pluginName != null) {
+		Object location = parameters.get("location");
+		if (location != null) {
 			boolean recursive = parameters.containsKey("recursive") ? Boolean.parseBoolean(parameters.get("recursive").toString()) : true;
-			String subFolder = parameters.containsKey("folder") ? "/" + parameters.get("folder") : "";
 
 			IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
-			repositoryService.addLocation("platform:/plugin/" + pluginName + subFolder, false, recursive);
+			repositoryService.addLocation(location.toString(), false, recursive);
 		}
 
 		return Status.OK_STATUS;
@@ -44,6 +44,12 @@ public class AddScriptLocationTouchpoint extends ProvisioningAction {
 
 	@Override
 	public IStatus undo(final Map<String, Object> parameters) {
+		Object location = parameters.get("location");
+		if (location != null) {
+			IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+			repositoryService.removeLocation(location.toString());
+		}
+
 		return Status.OK_STATUS;
 	}
 }
