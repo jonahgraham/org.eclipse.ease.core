@@ -15,6 +15,7 @@ import java.io.InputStream;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.ease.IDebugEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.ScriptEngineException;
 import org.eclipse.ease.debugging.EventDispatchJob;
 import org.eclipse.ease.lang.python.jython.JythonScriptEngine;
 import org.eclipse.ease.lang.python.jython.debugger.model.JythonDebugTarget;
@@ -33,13 +34,11 @@ public class JythonDebuggerEngine extends JythonScriptEngine implements IDebugEn
 	}
 
 	@Override
-	protected boolean setupEngine() {
-		if (super.setupEngine()) {
+	protected void setupEngine() throws ScriptEngineException {
+		super.setupEngine();
 
-			if (fDebugger == null)
-				// in case we were called using "Run as"
-				return true;
-
+		// in case we were called using "Run as"
+		if (fDebugger != null) {
 			// load python part of debugger
 			final InputStream stream = ResourceHelper.getResourceStream("org.eclipse.ease.lang.python.jython.debugger", "python/edb.py");
 
@@ -51,16 +50,12 @@ public class JythonDebuggerEngine extends JythonScriptEngine implements IDebugEn
 				final Object pyDebugger = internalGetVariable("eclipse_jython_debugger");
 				if (pyDebugger instanceof PyObject) {
 					fDebugger.setupJythonObjects((PyObject) pyDebugger);
-					return true;
 				}
 
 			} catch (final Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new ScriptEngineException("Failed to load Python Debugger", e);
 			}
 		}
-
-		return false;
 	}
 
 	@Override

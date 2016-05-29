@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.ScriptEngineException;
 import org.eclipse.ease.lang.python.PythonHelper;
 import org.eclipse.ease.lang.python.preferences.IPreferenceConstants;
 import org.eclipse.ease.tools.RunnableWithResult;
@@ -80,7 +81,7 @@ public class JythonScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	protected boolean setupEngine() {
+	protected void setupEngine() throws ScriptEngineException {
 		mEngine = new InteractiveInterpreter();
 
 		// register display callback method to extract execution result
@@ -112,12 +113,10 @@ public class JythonScriptEngine extends AbstractScriptEngine {
 		getEngine().getSystemState().settrace(new JythonTracer());
 
 		// FIXME ev we need to set the system path to make jython aware of the changes
-		return true;
 	}
 
 	@Override
-	protected boolean teardownEngine() {
-		return true;
+	protected void teardownEngine() throws ScriptEngineException {
 	}
 
 	@Override

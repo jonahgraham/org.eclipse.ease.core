@@ -98,7 +98,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	protected synchronized boolean setupEngine() {
+	protected synchronized void setupEngine() {
 		fContext = getContext();
 
 		if (fDebugger != null) {
@@ -121,12 +121,10 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		// enable JS v1.8 language constructs
 		fContext.setLanguageVersion(Context.VERSION_1_8);
-
-		return true;
 	}
 
 	@Override
-	protected synchronized boolean teardownEngine() {
+	protected synchronized void teardownEngine() {
 		// remove debugger to allow for garbage collection
 		fContext.setDebugger(null, null);
 
@@ -137,8 +135,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 		// unregister from classloader
 		RhinoClassLoader.unregisterEngine(this);
-
-		return true;
 	}
 
 	@Override

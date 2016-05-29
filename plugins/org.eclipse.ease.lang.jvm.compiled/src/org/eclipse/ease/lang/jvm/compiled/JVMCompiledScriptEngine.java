@@ -130,13 +130,11 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 	}
 
 	@Override
-	protected boolean setupEngine() {
-		return true;
+	protected void setupEngine() {
 	}
 
 	@Override
-	protected boolean teardownEngine() {
-		return true;
+	protected void teardownEngine() {
 	}
 
 	@Override
