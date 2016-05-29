@@ -28,11 +28,11 @@ public class Reset extends AbstractHandler implements IHandler {
 		if (part instanceof IScriptEngineProvider) {
 			final IScriptEngine engine = ((IScriptEngineProvider) part).getScriptEngine();
 			if (engine != null) {
-				engine.reset();
+				String id = engine.getDescription().getID();
 
-				// run startup commands again
-				if (part instanceof ScriptShell)
-					((ScriptShell) part).runStartupCommands();
+				if (part instanceof ScriptShell) {
+					((ScriptShell) part).setEngine(id);
+				}
 			}
 		}
 

@@ -282,25 +282,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	public synchronized void reset() {
-		RhinoClassLoader.unregisterEngine(this);
-
-		super.reset();
-
-		try {
-			// XXX: As of writing this setupEngine never raises an exception,
-			// but it may in the future or a subclass may
-			// However, rather than pass ScriptEngineException up through
-			// reset I recommend (see Bug 494848) to get rid of reset completely
-			// and handle the reset functionality as a shutdown and creare a new
-			// engine.
-			setupEngine();
-		} catch (ScriptEngineException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
 	protected Object internalGetVariable(final String name) {
 		return getVariable(fScope, name);
 	}

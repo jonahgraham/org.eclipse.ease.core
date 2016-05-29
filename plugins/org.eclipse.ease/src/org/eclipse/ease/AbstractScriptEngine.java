@@ -31,8 +31,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.service.EngineDescription;
-import org.eclipse.ease.service.IScriptService;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.service.prefs.Preferences;
 
 /**
@@ -425,20 +423,6 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		cancel();
 		if (getThread() != null)
 			getThread().interrupt();
-	}
-
-	@Override
-	public void reset() {
-		// make sure that everybody gets notified that script engine got a reset
-		for (final Script script : fCodePieces)
-			script.setException(new ExitException("Script engine got resetted."));
-
-		fCodePieces.clear();
-
-		// re-enable launch extensions to register themselves
-		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
-		for (final IScriptEngineLaunchExtension extension : scriptService.getLaunchExtensions(getDescription().getID()))
-			extension.createEngine(this);
 	}
 
 	public List<IScriptDebugFrame> getStackTrace() {

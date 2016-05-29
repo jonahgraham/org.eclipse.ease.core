@@ -103,11 +103,6 @@ public class JavaEngine implements IScriptEngine {
 	}
 
 	@Override
-	public void reset() {
-		// do nothing
-	}
-
-	@Override
 	public boolean isIdle() {
 		return true;
 	}
