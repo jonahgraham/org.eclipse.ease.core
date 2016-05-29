@@ -238,6 +238,13 @@
             keywords="onEventBus"
             name="Event Bus">
       </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.ResourceChangeHandler"
+            description="Run scripts when a workspace resource changes. Accepts a file pattern for files to listen to. Either use simple * wildcards or use a regular expression by starting your pattern with ^. The first parameter passed to the script is the affected file, the 2nd parameter denotes the type of change."
+            id="org.eclipse.ease.ui.scripts.handler.resourceChange"
+            keywords="onResourceChange"
+            name="Resource Change">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.equinox.p2.engine.actions">
