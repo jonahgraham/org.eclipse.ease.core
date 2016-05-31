@@ -1,0 +1,90 @@
+target "EASE Mars Product"
+
+with source requirements
+
+// limit to only mars.2 repo for faster resolution
+location "http://download.eclipse.org/releases/mars/201602261000/" eclipse-mars-2 {
+	org.eclipse.platform.feature.group lazy
+	org.eclipse.equinox.executable.feature.group lazy
+	org.eclipse.rcp.feature.group lazy
+	org.eclipse.jdt.feature.group lazy
+	org.eclipse.equinox.p2.discovery.feature.feature.group lazy
+
+	// javascript support (rhino & editors)
+	org.eclipse.wst.jsdt.feature.feature.group lazy
+
+	// for modeling stuff
+	org.eclipse.emf.feature.group lazy
+
+	// java module
+	org.eclipse.pde.feature.group lazy
+	org.eclipse.jdt lazy
+
+	// mylyn
+	org.eclipse.mylyn.gerrit.feature.feature.group lazy
+	org.eclipse.mylyn.git.feature.group lazy
+	org.eclipse.mylyn.commons.feature.group lazy
+	org.eclipse.mylyn.team_feature.feature.group lazy
+	org.eclipse.mylyn.commons.repositories.feature.group lazy
+	org.eclipse.mylyn.ide_feature.feature.group lazy
+
+	// modeling modules
+	org.eclipse.papyrus.infra.feature.feature.group lazy
+	org.eclipse.papyrus.infra.gmfdiag.feature.feature.group lazy
+	org.eclipse.papyrus.sysml.feature.feature.group lazy
+	org.eclipse.papyrus.uml.diagram.feature.feature.group lazy
+	org.eclipse.uml2.uml lazy
+	org.eclipse.gmf.runtime.diagram.ui lazy
+	org.eclipse.emf.emfstore.client.ui.feature.feature.group lazy
+	org.eclipse.ocl.examples.classic.feature.group lazy
+	org.eclipse.ocl.examples.feature.group lazy
+
+	// unit test modules
+	org.eclipse.wst.xml_core.feature.feature.group lazy
+	org.eclipse.wst.xml_ui.feature.feature.group lazy
+
+	// svn module
+	org.eclipse.team.svn.feature.group lazy
+
+	// git module
+	org.eclipse.egit.feature.group lazy
+	org.eclipse.jgit.feature.group lazy
+}
+
+location "https://bintray.com/artifact/download/pontesegger/ease-engines/" ease-engines {
+	org.eclipse.ease.engine.jython.feature.feature.group [2.7.0,3.0.0)
+}
+
+location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/" eclipse-orbit {
+	org.mockito [1.9.5,2.0.0)
+	org.hamcrest [1.1.0,2.0.0)
+}
+
+location "https://dl.bintray.com/py4j/py4j-eclipse/0.10.1/" py4j-eclipse {
+	org.py4j.feature.feature.group [0.10.1,0.10.2)
+}
+
+location "http://pydev.org/updates/" pydev {
+	org.python.pydev.feature.feature.group [5.0.0,6.0.0)
+}
+
+
+location "http://download.eclipse.org/ease/update/nightly" {
+	// EASE core dependencies
+	org.eclipse.ease.feature.feature.group lazy
+	org.eclipse.ease.ui.feature.feature.group lazy
+	org.eclipse.ease.javascript.feature.feature.group lazy
+
+	// All the modules
+	org.eclipse.ease.modules.charting.feature.feature.group lazy
+	org.eclipse.ease.modules.feature.feature.group lazy
+	org.eclipse.ease.modules.modeling.feature.feature.group lazy
+	org.eclipse.ease.modules.team.git.feature.feature.group lazy
+	org.eclipse.ease.modules.team.svn.feature.feature.group lazy
+	org.eclipse.ease.modules.unittest.feature.feature.group lazy
+}
+
+location "http://download.eclipse.org/technology/nebula/snapshot" {
+	// charting module
+	org.eclipse.nebula.visualization.feature.feature.group lazy
+}

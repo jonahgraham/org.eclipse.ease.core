@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="EASE Demo Product" uid="org.eclipse.ease.product" id="org.eclipse.platform.ide" application="org.eclipse.ui.ide.workbench" version="0.4.0" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.8
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
+   </launcherArgs>
+
+   <windowImages/>
+
+   <splash
+      location="org.eclipse.ui.ide"
+      startupProgressRect="2,290,448,10"
+      startupMessageRect="7,265,320,20"
+      startupForegroundColor="9c9696" />
+   <launcher name="eclipse">
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.platform"/>
+      <feature id="org.eclipse.rcp"/>
+      <feature id="org.eclipse.jdt"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
+      <feature id="org.eclipse.wst.jsdt.feature"/>
+      <feature id="org.eclipse.emf"/>
+      <feature id="org.eclipse.pde"/>
+      <feature id="org.eclipse.ease.engine.jython.feature"/>
+      <feature id="org.py4j.feature"/>
+      <feature id="org.python.pydev.feature"/>
+      <feature id="org.eclipse.mylyn.gerrit.feature"/>
+      <feature id="org.eclipse.mylyn.git"/>
+      <feature id="org.eclipse.mylyn.commons"/>
+      <feature id="org.eclipse.mylyn.team_feature"/>
+      <feature id="org.eclipse.mylyn.commons.repositories"/>
+      <feature id="org.eclipse.mylyn.ide_feature"/>
+      <feature id="org.eclipse.papyrus.infra.feature"/>
+      <feature id="org.eclipse.papyrus.infra.gmfdiag.feature"/>
+      <feature id="org.eclipse.papyrus.sysml.feature"/>
+      <feature id="org.eclipse.papyrus.uml.diagram.feature"/>
+      <feature id="org.eclipse.emf.emfstore.client.ui.feature"/>
+      <feature id="org.eclipse.ocl.examples.classic"/>
+      <feature id="org.eclipse.ocl.examples"/>
+      <feature id="org.eclipse.wst.xml_core.feature"/>
+      <feature id="org.eclipse.wst.xml_ui.feature"/>
+      <feature id="org.eclipse.team.svn"/>
+      <feature id="org.eclipse.egit"/>
+      <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.nebula.visualization.feature"/>
+      <feature id="org.eclipse.ease.feature"/>
+      <feature id="org.eclipse.ease.ui.feature"/>
+      <feature id="org.eclipse.ease.javascript.feature"/>
+      <feature id="org.eclipse.ease.modules.charting.feature"/>
+      <feature id="org.eclipse.ease.modules.feature"/>
+      <feature id="org.eclipse.ease.modules.modeling.feature"/>
+      <feature id="org.eclipse.ease.modules.team.git.feature"/>
+      <feature id="org.eclipse.ease.modules.team.svn.feature"/>
+      <feature id="org.eclipse.ease.modules.unittest.feature"/>
+   </features>
+
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.update.configurator" autoStart="true" startLevel="4" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
+   </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
+
+</product>
