@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.ease.all.feature"
+      label="All of EASE feature"
+      version="0.4.0.qualifier"
+      plugin="org.eclipse.ease">
+
+   <description url="http://www.example.com/description">
+      All the components of EASE
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      Copyright (c) 2013 Christian Pontesegger and Arthur Daussy
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License
+v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+Contributors:
+Christian Pontesegger - initial API and implementation
+Arthur Daussy - initial API and implementation
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <includes
+         id="org.eclipse.ease.engine.jython.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.javascript.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.lang.groovy.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.lang.jvm.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.lang.ruby.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.modules.charting.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.modules.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.modules.modeling.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.modules.team.git.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.modules.team.svn.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.modules.unittest.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.python.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.python.jython.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.ease.ui.feature"
+         version="0.0.0"/>
+
+</feature>
