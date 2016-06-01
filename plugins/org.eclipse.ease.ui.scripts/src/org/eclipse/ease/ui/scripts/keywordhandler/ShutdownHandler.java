@@ -14,10 +14,15 @@ package org.eclipse.ease.ui.scripts.keywordhandler;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.scripts.Activator;
 import org.eclipse.ease.ui.scripts.repository.IScript;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchListener;
 import org.eclipse.ui.PlatformUI;
@@ -26,8 +31,43 @@ import org.osgi.service.event.EventHandler;
 
 public class ShutdownHandler implements EventHandler, IWorkbenchListener {
 
-	public ShutdownHandler() {
-		PlatformUI.getWorkbench().addWorkbenchListener(this);
+	private class ShutdownJob extends Job {
+
+		public ShutdownJob() {
+			super("Wait for shutdown scripts");
+		}
+
+		@Override
+		protected IStatus run(final IProgressMonitor monitor) {
+			// wait for engines to be completed
+			for (IScriptEngine engine : fEngines) {
+				long timeout = (fStartTime + fShutdownTimeout) - System.currentTimeMillis();
+				if (timeout > 0) {
+					try {
+						engine.join(timeout);
+					} catch (InterruptedException e) {
+					}
+				} else
+					break;
+			}
+
+			// terminate engines that are not completed
+			for (IScriptEngine engine : fEngines) {
+				if (!engine.isFinished())
+					engine.terminate();
+			}
+
+			// call final shutdown
+			Display.getDefault().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					fShutdownScripts.clear();
+					PlatformUI.getWorkbench().close();
+				}
+			});
+
+			return Status.OK_STATUS;
+		}
 	}
 
 	/** Registered shutdown scripts. */
@@ -35,6 +75,12 @@ public class ShutdownHandler implements EventHandler, IWorkbenchListener {
 
 	/** Default script timeout: 10s. */
 	private long fShutdownTimeout = 10 * 1000;
+
+	/** Running engines for shutdown scripts. */
+	Collection<IScriptEngine> fEngines = null;
+
+	/** Start timestamp for shutdown script execution. */
+	private long fStartTime;
 
 	@Override
 	public void handleEvent(final Event event) {
@@ -54,33 +100,24 @@ public class ShutdownHandler implements EventHandler, IWorkbenchListener {
 				}
 			}
 		}
+
+		if (fShutdownScripts.isEmpty())
+			PlatformUI.getWorkbench().removeWorkbenchListener(this);
+		else
+			PlatformUI.getWorkbench().addWorkbenchListener(this);
 	}
 
 	@Override
 	public boolean preShutdown(final IWorkbench workbench, final boolean forced) {
-		if (!forced) {
-			long startTime = System.currentTimeMillis();
-			Collection<IScriptEngine> engines = new HashSet<IScriptEngine>();
+		if ((!forced) && (!fShutdownScripts.isEmpty())) {
+			fStartTime = System.currentTimeMillis();
+			fEngines = new HashSet<IScriptEngine>();
 			for (IScript script : fShutdownScripts)
-				engines.add(script.run());
+				fEngines.add(script.run());
 
-			// wait for engines to be completed
-			for (IScriptEngine engine : engines) {
-				long timeout = (startTime + fShutdownTimeout) - System.currentTimeMillis();
-				if (timeout > 0) {
-					try {
-						engine.join(timeout);
-					} catch (InterruptedException e) {
-					}
-				} else
-					break;
-			}
+			new ShutdownJob().schedule();
 
-			// terminate engines that are not completed
-			for (IScriptEngine engine : engines) {
-				if (!engine.isFinished())
-					engine.terminate();
-			}
+			return false;
 		}
 
 		return true;
