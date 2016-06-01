@@ -245,6 +245,13 @@
             keywords="onResourceChange"
             name="Resource Change">
       </handler>
+      <handler
+            class="org.eclipse.ease.ui.scripts.keywordhandler.KeyHandler"
+            description="Binds a script to a keyboard shortcut. Syntax for keyboard mappings is the same as in the &apos;Keys&apos; preferences page."
+            id="org.eclipse.ease.ui.scripts.handler.keyboard"
+            keywords="keyboard"
+            name="Key Shortcut">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.equinox.p2.engine.actions">
