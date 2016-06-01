@@ -68,13 +68,27 @@ location "http://pydev.org/updates/" pydev {
 	org.python.pydev.feature.feature.group [5.0.0,6.0.0)
 }
 
+location "file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.releng.p2.source/target/repository" {
+	// TODO CHECK
+}
 
-location "http://download.eclipse.org/ease/update/nightly" {
+location "file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.releng.p2/target/repository" {
 	// EASE core dependencies
 	org.eclipse.ease.feature.feature.group lazy
 	org.eclipse.ease.ui.feature.feature.group lazy
 	org.eclipse.ease.javascript.feature.feature.group lazy
+	org.eclipse.ease.python.py4j.feature.feature.group lazy
+	org.eclipse.ease.python.jython.feature.feature.group lazy
+	org.eclipse.ease.lang.jvm.feature.feature.group lazy
+	org.eclipse.ease.python.feature.feature.group lazy
+}
 
+location "file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.modules.releng.p2.source/target/repository" {
+	// TODO CHECK
+
+}
+
+location "file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.modules.releng.p2/target/repository" {
 	// All the modules
 	org.eclipse.ease.modules.charting.feature.feature.group lazy
 	org.eclipse.ease.modules.feature.feature.group lazy
