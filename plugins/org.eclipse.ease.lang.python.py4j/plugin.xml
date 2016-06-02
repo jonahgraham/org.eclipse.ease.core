@@ -17,4 +17,20 @@
       </launchExtension>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ease.preferences.root"
+            class="org.eclipse.ease.lang.python.py4j.internal.ui.Py4JPreferencePage"
+            id="org.eclipse.ease.lang.python.py4j.ui.preferences.Py4JPreferencePage"
+            name="Python Scripting (using Py4J)">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipse.ease.lang.python.py4j.internal.ui.PreferenceInitializer">
+      </initializer>
+   </extension>
+
 </plugin>

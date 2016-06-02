@@ -44,9 +44,6 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	public static final String ENGINE_ID = "org.eclipse.ease.lang.python.py4j.engine";
 
 	// TODO: Add preference for this
-	private static final String PYTHON_EXECUTABLE_PATH = "python";
-
-	// TODO: Add preference for this
 	private static final int PYTHON_STARTUP_TIMEOUT_SECONDS = 10;
 
 	// TODO: Add preference for this
@@ -137,7 +134,8 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 		ProcessBuilder pb = new ProcessBuilder();
 
 		pb.environment().put("PYTHONPATH", getPy4jPythonSrc().toString());
-		pb.command().add(PYTHON_EXECUTABLE_PATH);
+		String interpreter = Activator.getDefault().getPreferenceStore().getString(Py4JScriptEnginePrefConstants.INTERPRETER);
+		pb.command().add(interpreter);
 		pb.command().add("-u");
 		pb.command().add(getPy4jEaseMainPy().toString());
 		pb.command().add(Integer.toString(javaListeningPort));

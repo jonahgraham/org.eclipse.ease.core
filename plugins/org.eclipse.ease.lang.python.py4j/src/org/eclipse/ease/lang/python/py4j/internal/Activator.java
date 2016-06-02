@@ -10,19 +10,29 @@
  *******************************************************************************/
 package org.eclipse.ease.lang.python.py4j.internal;
 
-import org.osgi.framework.BundleActivator;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+public class Activator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.ease.lang.python.py4j";
 
-	@Override
+	// The shared instance
+	private static Activator plugin;
+
+
 	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		plugin = this;
 	}
 
-	@Override
 	public void stop(BundleContext context) throws Exception {
+		plugin = null;
+		super.stop(context);
+	}
+
+	public static Activator getDefault() {
+		return plugin;
 	}
 
 }

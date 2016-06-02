@@ -4,10 +4,14 @@ Bundle-Name: Py4j
 Bundle-SymbolicName: org.eclipse.ease.lang.python.py4j;singleton:=true
 Bundle-Version: 0.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.ease,
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ease,
  org.eclipse.ease.lang.python,
  py4j-java;bundle-version="[0.10.1,0.10.2)",
  py4j-python;bundle-version="[0.10.1,0.10.2)",
  org.eclipse.swt
-Export-Package: org.eclipse.ease.lang.python.py4j.internal;x-internal:=true
+Export-Package: org.eclipse.ease.lang.python.py4j,
+ org.eclipse.ease.lang.python.py4j.internal;x-internal:=true
 Bundle-Activator: org.eclipse.ease.lang.python.py4j.internal.Activator
+Bundle-ActivationPolicy: lazy
