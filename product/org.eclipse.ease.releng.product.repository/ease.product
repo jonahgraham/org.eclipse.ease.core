@@ -59,7 +59,6 @@
       <feature id="org.eclipse.ocl.examples"/>
       <feature id="org.eclipse.wst.xml_core.feature"/>
       <feature id="org.eclipse.wst.xml_ui.feature"/>
-      <feature id="org.eclipse.team.svn"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.jgit"/>
       <feature id="org.eclipse.nebula.visualization.feature"/>
@@ -70,7 +69,6 @@
       <feature id="org.eclipse.ease.modules.feature"/>
       <feature id="org.eclipse.ease.modules.modeling.feature"/>
       <feature id="org.eclipse.ease.modules.team.git.feature"/>
-      <feature id="org.eclipse.ease.modules.team.svn.feature"/>
       <feature id="org.eclipse.ease.modules.unittest.feature"/>
       <feature id="org.eclipse.ease.python.py4j.feature"/>
       <feature id="org.eclipse.ease.python.jython.feature"/>
