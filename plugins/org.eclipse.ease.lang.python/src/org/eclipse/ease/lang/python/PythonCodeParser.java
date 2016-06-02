@@ -11,6 +11,8 @@
 package org.eclipse.ease.lang.python;
 
 import org.eclipse.ease.AbstractCodeParser;
+import org.eclipse.ease.ICompletionContext;
+import org.eclipse.ease.IScriptEngine;
 
 public class PythonCodeParser extends AbstractCodeParser {
 
@@ -34,5 +36,16 @@ public class PythonCodeParser extends AbstractCodeParser {
 	@Override
 	protected String getBlockCommentStartToken() {
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ease.AbstractCodeParser#getContext(org.eclipse.ease.IScriptEngine, java.lang.Object, java.lang.String, int, int)
+	 */
+	@Override
+	public ICompletionContext getContext(IScriptEngine scriptEngine, Object resource, String contents, int position, int selectionRange) {
+		final PythonCompletionContext context = new PythonCompletionContext(scriptEngine);
+		context.calculateContext(resource, contents, position, selectionRange);
+
+		return context;
 	}
 }

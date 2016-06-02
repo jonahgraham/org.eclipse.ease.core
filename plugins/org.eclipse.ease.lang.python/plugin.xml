@@ -28,5 +28,11 @@
          </binding>
       </scriptType>
    </extension>
+   <extension
+         point="org.python.pydev.pydev_completion">
+      <completion_participant
+            class="org.eclipse.ease.lang.python.PydevCompletionParticipant">
+      </completion_participant>
+   </extension>
 
 </plugin>
