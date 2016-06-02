@@ -6,7 +6,8 @@
       <engine
             class="org.eclipse.ease.lang.python.py4j.internal.Py4jScriptEngine"
             id="org.eclipse.ease.lang.python.py4j.engine"
-            name="Py4j Python Script Engine">
+            name="Python (CPython or PyPy)"
+            priority="50">
          <binding
                scriptType="Python">
          </binding>
