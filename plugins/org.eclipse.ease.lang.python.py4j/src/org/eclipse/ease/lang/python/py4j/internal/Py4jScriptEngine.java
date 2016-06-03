@@ -98,7 +98,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	}
 
 	public Py4jScriptEngine() {
-		super("Python (CPython or PyPy)");
+		super("Python");
 	}
 
 	@Override
