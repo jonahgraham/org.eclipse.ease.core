@@ -16,10 +16,7 @@
    <windowImages/>
 
    <splash
-      location="org.eclipse.ui.ide"
-      startupProgressRect="2,290,448,10"
-      startupMessageRect="7,265,320,20"
-      startupForegroundColor="9c9696" />
+      location="org.eclipse.platform" />
    <launcher name="eclipse">
       <solaris/>
       <win useIco="false">
