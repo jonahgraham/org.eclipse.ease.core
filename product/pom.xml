@@ -14,6 +14,8 @@ items that cannot be officially released (e.g. PyDev).
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>org.eclipse.ease.product</module>
+		<module>org.eclipse.ease.product.feature</module>
 		<module>org.eclipse.ease.releng.product.target</module>
 		<module>org.eclipse.ease.releng.product.repository</module>
 	</modules>

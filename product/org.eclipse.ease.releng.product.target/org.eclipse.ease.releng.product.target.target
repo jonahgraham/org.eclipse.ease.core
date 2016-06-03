@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="EASE Mars Product" sequenceNumber="1464737648">
+<target name="EASE Mars Product" sequenceNumber="1464946841">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.platform.source.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.rcp.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.rcp.source.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jdt.source.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
@@ -50,10 +54,8 @@
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.python.pydev.feature.feature.group" version="5.0.0.201605051159"/>
+      <unit id="org.python.pydev.source" version="5.0.0.201605051159"/>
       <repository id="pydev" location="http://pydev.org/updates/"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <repository location="file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.releng.p2.source/target/repository"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.ease.feature.feature.group" version="0.0.0"/>
@@ -63,19 +65,26 @@
       <unit id="org.eclipse.ease.python.jython.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.python.feature.feature.group" version="0.0.0"/>
-      <repository location="file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.releng.p2/target/repository"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <repository location="file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.modules.releng.p2.source/target/repository"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.modules.team.git.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.modules.team.svn.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.modules.unittest.feature.feature.group" version="0.0.0"/>
-      <repository location="file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.modules.releng.p2/target/repository"/>
+      <unit id="org.eclipse.ease.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.ui.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.javascript.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.py4j.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.jython.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.lang.jvm.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.charting.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.modeling.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.team.git.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.team.svn.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.unittest.feature.source.feature.group" version="0.0.0"/>
+      <repository location="file:///scratch/ease/org.eclipse.ease.core/product/combined_repo"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.0.0"/>

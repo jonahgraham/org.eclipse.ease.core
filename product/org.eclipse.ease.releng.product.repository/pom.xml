@@ -23,7 +23,7 @@
 					</formats>
 					<products>
 						<product>
-							<id>org.eclipse.ease.product</id>
+							<id>ease.product</id>
 							<rootFolder>eclipse</rootFolder>
 						</product>
 					</products>

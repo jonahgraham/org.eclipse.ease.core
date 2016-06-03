@@ -5,10 +5,14 @@ with source requirements
 // limit to only mars.2 repo for faster resolution
 location "http://download.eclipse.org/releases/mars/201602261000/" eclipse-mars-2 {
 	org.eclipse.platform.feature.group lazy
+	org.eclipse.platform.source.feature.group lazy
 	org.eclipse.equinox.executable.feature.group lazy
 	org.eclipse.rcp.feature.group lazy
+	org.eclipse.rcp.source.feature.group lazy
 	org.eclipse.jdt.feature.group lazy
+	org.eclipse.jdt.source.feature.group lazy
 	org.eclipse.equinox.p2.discovery.feature.feature.group lazy
+	org.eclipse.equinox.p2.sdk.feature.group lazy
 
 	// javascript support (rhino & editors)
 	org.eclipse.wst.jsdt.feature.feature.group lazy
@@ -66,13 +70,11 @@ location "https://dl.bintray.com/py4j/py4j-eclipse/0.10.1/" py4j-eclipse {
 
 location "http://pydev.org/updates/" pydev {
 	org.python.pydev.feature.feature.group [5.0.0,6.0.0)
+	org.python.pydev.source [5.0.0,6.0.0)
 }
 
-location "file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.releng.p2.source/target/repository" {
-	// TODO CHECK
-}
 
-location "file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.releng.p2/target/repository" {
+location "file:///scratch/ease/org.eclipse.ease.core/product/combined_repo" {
 	// EASE core dependencies
 	org.eclipse.ease.feature.feature.group lazy
 	org.eclipse.ease.ui.feature.feature.group lazy
@@ -81,14 +83,7 @@ location "file:///scratch/ease/org.eclipse.ease.core/releng/org.eclipse.ease.rel
 	org.eclipse.ease.python.jython.feature.feature.group lazy
 	org.eclipse.ease.lang.jvm.feature.feature.group lazy
 	org.eclipse.ease.python.feature.feature.group lazy
-}
 
-location "file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.modules.releng.p2.source/target/repository" {
-	// TODO CHECK
-
-}
-
-location "file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.modules.releng.p2/target/repository" {
 	// All the modules
 	org.eclipse.ease.modules.charting.feature.feature.group lazy
 	org.eclipse.ease.modules.feature.feature.group lazy
@@ -96,6 +91,23 @@ location "file:///scratch/ease/org.eclipse.ease.modules/releng/org.eclipse.ease.
 	org.eclipse.ease.modules.team.git.feature.feature.group lazy
 	org.eclipse.ease.modules.team.svn.feature.feature.group lazy
 	org.eclipse.ease.modules.unittest.feature.feature.group lazy
+
+	// EASE core dependencies
+	org.eclipse.ease.feature.source.feature.group lazy
+	org.eclipse.ease.ui.feature.source.feature.group lazy
+	org.eclipse.ease.javascript.feature.source.feature.group lazy
+	org.eclipse.ease.python.py4j.feature.source.feature.group lazy
+	org.eclipse.ease.python.jython.feature.source.feature.group lazy
+	org.eclipse.ease.lang.jvm.feature.source.feature.group lazy
+	org.eclipse.ease.python.feature.source.feature.group lazy
+
+	// All the modules
+	org.eclipse.ease.modules.charting.feature.source.feature.group lazy
+	org.eclipse.ease.modules.feature.source.feature.group lazy
+	org.eclipse.ease.modules.modeling.feature.source.feature.group lazy
+	org.eclipse.ease.modules.team.git.feature.source.feature.group lazy
+	org.eclipse.ease.modules.team.svn.feature.source.feature.group lazy
+	org.eclipse.ease.modules.unittest.feature.source.feature.group lazy
 }
 
 location "http://download.eclipse.org/technology/nebula/snapshot" {

@@ -14,26 +14,14 @@
           <!-- the rest of these properties are copied from org.eclipse.platform -->
           <property name="windowImages" value="eclipse16.png,eclipse32.png,eclipse48.png"/>
           <property name="aboutImage" value="eclipse_lg.png"/>
-          <property name="aboutText" value="%productBlurb"/>
+          <property name="aboutText" value="An Eclipse Product to demo EASE. Based on Mars.2."/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
-          		value="%productIntroTitle"/>
+          		value="EASE Demo Product"/>
           <property
           		name="introBrandingImage"
           		value="product:intro-eclipse.png"/>
-          <property
-          		name="introBrandingImageText"
-          		value="%productIntroBrandingText"/>
-		  <property
-				name="introDescription-overview"
-				value="%introDescription-overview"/>
-		  <property
-				name="introDescription-tutorials"
-				value="%introDescription-tutorials"/>
-		  <property
-				name="introDescription-samples"
-				value="%introDescription-samples"/>
 		  <property
 				name="applicationXMI"
 				value="org.eclipse.platform/LegacyIDE.e4xmi">
