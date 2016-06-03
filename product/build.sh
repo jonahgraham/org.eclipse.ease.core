@@ -33,8 +33,8 @@ fi
 PROFILES="-P api-docs -P module-docs -P source"
 PROFILES="-P module-docs -P source"
 
-#cd $ROOT/org.eclipse.ease.core && mvn clean package -Dtycho.localArtifacts=ignore $PROFILES
-#cd $ROOT/org.eclipse.ease.modules && mvn clean package -Dtycho.localArtifacts=ignore -Ddoclet.path=$ROOT/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin $PROFILES
+cd $ROOT/org.eclipse.ease.core && mvn clean package -Dtycho.localArtifacts=ignore $PROFILES
+cd $ROOT/org.eclipse.ease.modules && mvn clean package -Dtycho.localArtifacts=ignore -Ddoclet.path=$ROOT/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin $PROFILES
 
 
 # Copy without append the first repo
@@ -47,4 +47,4 @@ done
 rm -f $P2_COMBINED.zip
 cd $P2_COMBINED && zip -r $P2_COMBINED.zip $P2_COMBINED
 
-cd $ROOT/org.eclipse.ease.core/product && mvn clean package -Dtycho.localArtifacts=ignore 
+cd $ROOT/org.eclipse.ease.core/product && mvn clean package -Dtycho.localArtifacts=ignore
