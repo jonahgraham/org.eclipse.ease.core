@@ -45,6 +45,6 @@ do
     mvn -f $ROOT/org.eclipse.ease.core/releng/org.eclipse.ease.releng/hudson/publish-p2-pom.xml install -Dp2.source=$ROOT/$p2_input/target/repository -Dp2.destination=$P2_COMBINED -Dp2.keepLatestOnly=true -Dp2.append=true
 done
 rm -f $P2_COMBINED.zip
-cd $P2_COMBINED && zip -r $P2_COMBINED.zip $P2_COMBINED
+cd $P2_COMBINED && zip -r $P2_COMBINED.zip *
 
 cd $ROOT/org.eclipse.ease.core/product && mvn clean package -Dtycho.localArtifacts=ignore
