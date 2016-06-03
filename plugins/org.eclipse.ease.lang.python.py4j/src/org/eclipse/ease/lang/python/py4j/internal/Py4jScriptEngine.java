@@ -197,9 +197,6 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 			interactiveReturn = fPythonSideEngine.executeInteractive(script.getCode());
 		} else {
 			String code = script.getCode();
-			if ("jfaceHello()".equals(code)) {
-				System.out.println("JERE");
-			}
 			interactiveReturn = fPythonSideEngine.executeScript(code, fileName);
 		}
 		Object exception = interactiveReturn.getException();
