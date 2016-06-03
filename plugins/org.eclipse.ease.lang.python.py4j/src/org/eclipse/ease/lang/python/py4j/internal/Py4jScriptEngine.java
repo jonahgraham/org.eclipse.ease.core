@@ -211,6 +211,13 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	public void terminateCurrent() {
+		// TODO: It isn't possible to safely/reliablily interrupt a thread in Python
+		// For now, as terminateCurrent is called when the running script is called,
+		// we tear down the engine instead. This prevent the script from having a chance
+		// to cleanup.
+		// XXX: This is an issue solved by PyDev, resolving it here fully is not
+		// the logical course of action.
+		fPythonProcess.destroyForcibly();
 	}
 
 	@Override
