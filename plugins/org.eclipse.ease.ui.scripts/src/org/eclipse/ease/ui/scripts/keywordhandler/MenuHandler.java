@@ -22,13 +22,14 @@ public class MenuHandler extends ToolbarHandler {
 
 	/**
 	 * Add a menu script contribution.
-	 * 
+	 *
 	 * @param script
 	 *            script to add
 	 * @param value
 	 *            menu keyword value
 	 */
-	protected void addContribution(IScript script, String value) {
+	@Override
+	protected void addContribution(final IScript script, final String value) {
 
 		// process each location
 		for (Location location : toLocations(value)) {
@@ -57,13 +58,14 @@ public class MenuHandler extends ToolbarHandler {
 
 	/**
 	 * Remove a menu script contribution.
-	 * 
+	 *
 	 * @param script
 	 *            script to remove
 	 * @param value
 	 *            menu keyword value
 	 */
-	protected void removeContribution(IScript script, String value) {
+	@Override
+	protected void removeContribution(final IScript script, final String value) {
 		// process each location
 		for (Location location : toLocations(value)) {
 			Logger.trace(Activator.PLUGIN_ID, TRACE_UI_INTEGRATION, Activator.PLUGIN_ID,
@@ -84,5 +86,10 @@ public class MenuHandler extends ToolbarHandler {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected String getHandlerType() {
+		return "menu";
 	}
 }

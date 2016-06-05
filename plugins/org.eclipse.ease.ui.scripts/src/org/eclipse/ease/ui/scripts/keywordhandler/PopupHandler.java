@@ -22,7 +22,7 @@ public class PopupHandler extends ToolbarHandler {
 	}
 
 	/**
-	 * Add a menu script contribution.
+	 * Add a popup menu script contribution.
 	 *
 	 * @param script
 	 *            script to add
@@ -35,7 +35,7 @@ public class PopupHandler extends ToolbarHandler {
 	}
 
 	/**
-	 * Remove a menu script contribution.
+	 * Remove a popup menu script contribution.
 	 *
 	 * @param script
 	 *            script to remove
@@ -45,5 +45,10 @@ public class PopupHandler extends ToolbarHandler {
 	@Override
 	protected void removeContribution(final IScript script, final String value) {
 		getContributionFactory(POPUP_LOCATION).removeScript(script);
+	}
+
+	@Override
+	protected String getHandlerType() {
+		return "popup";
 	}
 }

@@ -23,8 +23,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.ui.scripts.Activator;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWindowListener;
@@ -123,30 +125,46 @@ public class ToolbarHandler implements EventHandler {
 				fKeywordEvents = new ArrayList<Event>();
 			}
 
+			// do not process the same script multiple times in the same event loop
+			Collection<IScript> processedScripts = new HashSet<IScript>();
+
 			for (Event event : events) {
 				IScript script = (IScript) event.getProperty("script");
-				String value = (String) event.getProperty("value");
-				String oldValue = (String) event.getProperty("oldValue");
 
-				if ((oldValue != null) && (!oldValue.isEmpty()))
-					removeContribution(script, oldValue);
+				if (!processedScripts.contains(script)) {
+					processedScripts.add(script);
 
-				if ((value != null) && (!value.isEmpty()))
-					addContribution(script, value);
+					String value = (String) event.getProperty("value");
+					String oldValue = (String) event.getProperty("oldValue");
+					String keyword = (String) event.getProperty("keyword");
+
+					if ((("image".equals(keyword)) || ("name".equals(keyword))) && (script.getParameters().get(getHandlerType()) != null)) {
+						removeContribution(script, script.getParameters().get(getHandlerType()));
+						addContribution(script, script.getParameters().get(getHandlerType()));
+					} else {
+
+						if ((oldValue != null) && (!oldValue.isEmpty()))
+							removeContribution(script, oldValue);
+
+						if ((value != null) && (!value.isEmpty()))
+							addContribution(script, value);
+					}
+				}
 			}
 
 			return Status.OK_STATUS;
 		}
+
 	}
 
 	/**
 	 * @param value
 	 */
-	public static Collection<Location> toLocations(final String value) {
+	public Collection<Location> toLocations(final String value) {
 		Collection<Location> locations = new HashSet<Location>();
 
 		for (String part : value.split(";"))
-			locations.add(new Location("toolbar", part));
+			locations.add(new Location(getHandlerType(), part));
 
 		return locations;
 	}
@@ -159,6 +177,12 @@ public class ToolbarHandler implements EventHandler {
 
 	/** UI contribution factories. */
 	private final Map<String, ScriptContributionFactory> fContributionFactories = new HashMap<String, ScriptContributionFactory>();
+
+	public ToolbarHandler() {
+		IEventBroker eventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		eventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPT_KEYWORDS + "name", this);
+		eventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPT_KEYWORDS + "image", this);
+	}
 
 	@Override
 	public void handleEvent(final Event event) {
@@ -240,5 +264,9 @@ public class ToolbarHandler implements EventHandler {
 			fContributionFactories.put(location, new ScriptContributionFactory(location));
 
 		return fContributionFactories.get(location);
+	}
+
+	protected String getHandlerType() {
+		return "toolbar";
 	}
 }
