@@ -218,7 +218,9 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 		// to cleanup.
 		// XXX: This is an issue solved by PyDev, resolving it here fully is not
 		// the logical course of action.
-		fPythonProcess.destroyForcibly();
+		if (fPythonProcess != null) {
+			fPythonProcess.destroyForcibly();
+		}
 	}
 
 	@Override
