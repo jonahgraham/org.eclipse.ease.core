@@ -70,7 +70,8 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 	}
 
 	public void addScript(final IScript script) {
-		fScripts.add(script);
+		if (!fScripts.contains(script))
+			fScripts.add(script);
 	}
 
 	public void removeScript(final IScript script) {

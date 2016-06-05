@@ -119,36 +119,39 @@ public class ToolbarHandler implements EventHandler {
 				return Status.CANCEL_STATUS;
 			}
 
-			List<Event> events;
+			List<Event> keywordEvents;
+			List<Event> refreshEvents;
 			synchronized (ToolbarHandler.this) {
-				events = fKeywordEvents;
+				keywordEvents = fKeywordEvents;
 				fKeywordEvents = new ArrayList<Event>();
+
+				refreshEvents = fRefreshEvents;
+				fRefreshEvents = new ArrayList<Event>();
 			}
 
 			// do not process the same script multiple times in the same event loop
 			Collection<IScript> processedScripts = new HashSet<IScript>();
 
-			for (Event event : events) {
+			for (Event event : keywordEvents) {
 				IScript script = (IScript) event.getProperty("script");
+				processedScripts.add(script);
 
+				String value = (String) event.getProperty("value");
+				String oldValue = (String) event.getProperty("oldValue");
+
+				if ((oldValue != null) && (!oldValue.isEmpty()))
+					removeContribution(script, oldValue);
+
+				if ((value != null) && (!value.isEmpty()))
+					addContribution(script, value);
+			}
+
+			// refresh scripts where appearance was updated
+			for (Event event : refreshEvents) {
+				IScript script = (IScript) event.getProperty("script");
 				if (!processedScripts.contains(script)) {
-					processedScripts.add(script);
-
-					String value = (String) event.getProperty("value");
-					String oldValue = (String) event.getProperty("oldValue");
-					String keyword = (String) event.getProperty("keyword");
-
-					if ((("image".equals(keyword)) || ("name".equals(keyword))) && (script.getParameters().get(getHandlerType()) != null)) {
-						removeContribution(script, script.getParameters().get(getHandlerType()));
-						addContribution(script, script.getParameters().get(getHandlerType()));
-					} else {
-
-						if ((oldValue != null) && (!oldValue.isEmpty()))
-							removeContribution(script, oldValue);
-
-						if ((value != null) && (!value.isEmpty()))
-							addContribution(script, value);
-					}
+					removeContribution(script, script.getParameters().get(getHandlerType()));
+					addContribution(script, script.getParameters().get(getHandlerType()));
 				}
 			}
 
@@ -172,8 +175,11 @@ public class ToolbarHandler implements EventHandler {
 	/** Event process job. */
 	private final Job fUpdateUIJob = new UIIntegrationJob();
 
-	/** Event queue to be processed. */
+	/** Event queue to be processed. Main events for location additions/removals. */
 	private List<Event> fKeywordEvents = new ArrayList<Event>();
+
+	/** Event queue to be processed. Reresh events due to name/image changes. */
+	private List<Event> fRefreshEvents = new ArrayList<Event>();
 
 	/** UI contribution factories. */
 	private final Map<String, ScriptContributionFactory> fContributionFactories = new HashMap<String, ScriptContributionFactory>();
@@ -186,11 +192,21 @@ public class ToolbarHandler implements EventHandler {
 
 	@Override
 	public void handleEvent(final Event event) {
-		synchronized (this) {
-			fKeywordEvents.add(event);
-		}
+		IScript script = (IScript) event.getProperty("script");
+		String keyword = (String) event.getProperty("keyword");
 
-		fUpdateUIJob.schedule(300);
+		synchronized (this) {
+			if (("image".equals(keyword)) || ("name".equals(keyword))) {
+				if (script.getParameters().get(getHandlerType()) != null) {
+					fRefreshEvents.add(event);
+					fUpdateUIJob.schedule(300);
+				}
+
+			} else {
+				fKeywordEvents.add(event);
+				fUpdateUIJob.schedule(300);
+			}
+		}
 	}
 
 	/**
