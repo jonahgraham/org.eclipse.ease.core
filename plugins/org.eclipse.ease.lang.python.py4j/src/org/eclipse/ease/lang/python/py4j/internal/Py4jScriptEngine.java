@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.Script;
@@ -157,7 +158,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	private File getPy4jEaseMainPy() throws MalformedURLException, IOException, URISyntaxException {
 		URL url = new URL("platform:/plugin/" + Activator.PLUGIN_ID + PYSRC_EASE_PY4J_MAIN_PY);
 		URL fileURL = FileLocator.toFileURL(url);
-		File py4jEaseMain = new File(fileURL.toURI());
+		File py4jEaseMain = new File(URIUtil.toURI(fileURL));
 		if (!py4jEaseMain.exists()) {
 			throw new IOException("Failed to find " + PYSRC_EASE_PY4J_MAIN_PY + ", expected it here: " + py4jEaseMain);
 		}
