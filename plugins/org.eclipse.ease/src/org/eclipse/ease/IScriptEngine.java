@@ -155,11 +155,6 @@ public interface IScriptEngine {
 	void removeExecutionListener(IExecutionListener listener);
 
 	/**
-	 * Resets the script engine to a fresh state (removes all variables and code history).
-	 */
-	void reset();
-
-	/**
 	 * Returns the execution state of the engine. If the engine is processing code or is terminated this will return <code>false</code>. If the engine is
 	 * waiting for further scripts to execute this will return <code>true</code>.
 	 *

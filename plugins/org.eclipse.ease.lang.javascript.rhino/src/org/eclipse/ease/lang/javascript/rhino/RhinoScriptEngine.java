@@ -281,15 +281,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	@Override
-	public synchronized void reset() {
-		RhinoClassLoader.unregisterEngine(this);
-
-		super.reset();
-
-		setupEngine();
-	}
-
-	@Override
 	protected Object internalGetVariable(final String name) {
 		return getVariable(fScope, name);
 	}
