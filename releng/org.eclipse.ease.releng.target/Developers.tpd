@@ -48,7 +48,7 @@ location "http://download.eclipse.org/ease/update/nightly" {
 	org.eclipse.ease.javascript.feature.feature.group lazy
 }
 
-location "http://download.eclipse.org/technology/nebula/snapshot" {
+location "http://download.eclipse.org/nebula/releases/1.0.0" {
 	// charting module
 	org.eclipse.nebula.visualization.feature.feature.group lazy
 }
