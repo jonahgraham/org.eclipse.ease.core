@@ -22,6 +22,7 @@ import org.eclipse.ease.ui.scripts.repository.IRawLocation;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.PreferencePage;
@@ -58,7 +59,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
 public class LocationsPage extends PreferencePage implements IWorkbenchPreferencePage {
-	private TableViewer tableViewer;
+	private TableViewer fTableViewer;
 	private final Set<IScriptLocation> fScriptLocations = new HashSet<IScriptLocation>();;
 
 	public LocationsPage() {
@@ -76,8 +77,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 		{
 			Label lblProvideLocationsTo = new Label(container, SWT.NONE);
 			lblProvideLocationsTo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-			lblProvideLocationsTo
-					.setText("Provide locations to look for scripts. The default location will be used to store your recorded scripts.");
+			lblProvideLocationsTo.setText("Provide locations to look for scripts. The default location will be used to store your recorded scripts.");
 		}
 		{
 			Composite composite = new Composite(container, SWT.NONE);
@@ -85,13 +85,13 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 			TableColumnLayout tcl_composite = new TableColumnLayout();
 			composite.setLayout(tcl_composite);
 			{
-				tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
-				final Table table = tableViewer.getTable();
+				fTableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
+				final Table table = fTableViewer.getTable();
 				table.setHeaderVisible(true);
 				table.setLinesVisible(true);
 				{
-					TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-					tableViewerColumn.setEditingSupport(new EditingSupport(tableViewer) {
+					TableViewerColumn tableViewerColumn = new TableViewerColumn(fTableViewer, SWT.NONE);
+					tableViewerColumn.setEditingSupport(new EditingSupport(fTableViewer) {
 						@Override
 						protected boolean canEdit(final Object element) {
 							return true;
@@ -114,13 +114,12 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 						protected void setValue(final Object element, final Object value) {
 							if (element instanceof IScriptLocation) {
 								((IScriptLocation) element).setLocation(value.toString());
-								tableViewer.update(element, null);
+								fTableViewer.update(element, null);
 							}
 						}
 					});
 					TableColumn tblclmnLocation = tableViewerColumn.getColumn();
-					tcl_composite.setColumnData(tblclmnLocation, new ColumnWeightData(5,
-							ColumnWeightData.MINIMUM_WIDTH, true));
+					tcl_composite.setColumnData(tblclmnLocation, new ColumnWeightData(5, ColumnWeightData.MINIMUM_WIDTH, true));
 					tblclmnLocation.setText("Location");
 					tableViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 						@Override
@@ -147,8 +146,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 					});
 				}
 				{
-					TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-					tableViewerColumn.setEditingSupport(new EditingSupport(tableViewer) {
+					TableViewerColumn tableViewerColumn = new TableViewerColumn(fTableViewer, SWT.NONE);
+					tableViewerColumn.setEditingSupport(new EditingSupport(fTableViewer) {
 						@Override
 						protected boolean canEdit(final Object element) {
 							return true;
@@ -171,13 +170,12 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 						protected void setValue(final Object element, final Object value) {
 							if (element instanceof IScriptLocation) {
 								((IScriptLocation) element).setRecursive((Boolean) value);
-								tableViewer.update(element, null);
+								fTableViewer.update(element, null);
 							}
 						}
 					});
 					TableColumn tblclmnRecursive = tableViewerColumn.getColumn();
-					tcl_composite.setColumnData(tblclmnRecursive, new ColumnWeightData(1,
-							ColumnWeightData.MINIMUM_WIDTH, true));
+					tcl_composite.setColumnData(tblclmnRecursive, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
 					tblclmnRecursive.setText("Recursive");
 					tableViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 						@Override
@@ -190,8 +188,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 					});
 				}
 
-				tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-				tableViewer.setComparator(new ViewerComparator() {
+				fTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+				fTableViewer.setComparator(new ViewerComparator() {
 					@Override
 					public int compare(final Viewer viewer, final Object e1, final Object e2) {
 						if ((e1 instanceof IRawLocation) && (e2 instanceof IRawLocation))
@@ -201,7 +199,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 					}
 				});
 
-				tableViewer.setInput(fScriptLocations);
+				fTableViewer.setInput(fScriptLocations);
 			}
 		}
 		{
@@ -209,8 +207,8 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 			btnAddWorkspace.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
-					ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin
-							.getWorkspace().getRoot(), true, "Select script folder");
+					ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true,
+							"Select script folder");
 					if (dialog.open() == Window.OK) {
 						Object[] result = dialog.getResult();
 						if ((result.length > 0) && (result[0] instanceof IPath))
@@ -240,8 +238,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 			btnAddUri.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
-					InputDialog dialog = new InputDialog(getShell(), "Enter location URI",
-							"Enter the URI of a location to add", "", new URIValidator());
+					InputDialog dialog = new InputDialog(getShell(), "Enter location URI", "Enter the URI of a location to add", "", new URIValidator());
 					if (dialog.open() == Window.OK)
 						addEntry(dialog.getValue());
 				}
@@ -257,14 +254,14 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 			btnSetAsDefault.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
-					IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+					IStructuredSelection selection = (IStructuredSelection) fTableViewer.getSelection();
 					if (!selection.isEmpty()) {
-						Collection<IScriptLocation> entries = (Collection<IScriptLocation>) tableViewer.getInput();
+						Collection<IScriptLocation> entries = (Collection<IScriptLocation>) fTableViewer.getInput();
 						for (IScriptLocation entry : entries)
 							entry.setDefault(entry.equals(selection.getFirstElement()));
 					}
 
-					tableViewer.refresh();
+					fTableViewer.refresh();
 				}
 			});
 			btnSetAsDefault.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, false, true, 1, 1));
@@ -275,7 +272,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 			btnDelete.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(final SelectionEvent e) {
-					IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+					IStructuredSelection selection = (IStructuredSelection) fTableViewer.getSelection();
 					if (!selection.isEmpty()) {
 						for (Object location : selection.toList())
 							fScriptLocations.remove(location);
@@ -289,7 +286,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 							fScriptLocations.iterator().next().setDefault(true);
 
 						// refresh UI
-						tableViewer.refresh();
+						fTableViewer.refresh();
 					}
 				}
 			});
@@ -312,7 +309,7 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 
 		fScriptLocations.add(entry);
 
-		tableViewer.refresh();
+		fTableViewer.refresh();
 	}
 
 	@Override
@@ -321,36 +318,38 @@ public class LocationsPage extends PreferencePage implements IWorkbenchPreferenc
 		fScriptLocations.addAll(PreferencesHelper.getLocations());
 
 		// update UI
-		if (tableViewer != null)
-			tableViewer.refresh();
+		if ((fTableViewer != null) && (!fTableViewer.getTable().isDisposed()))
+			fTableViewer.refresh();
 
 		super.performDefaults();
 	}
 
 	@Override
 	public boolean performOk() {
+		saveLocations();
+
+		performDefaults();
+
+		return super.performOk();
+	}
+
+	private void saveLocations() {
 		Collection<IScriptLocation> oldLocations = PreferencesHelper.getLocations();
 
 		for (IScriptLocation oldLocation : new HashSet<IScriptLocation>(oldLocations)) {
 			for (IScriptLocation newLocation : new HashSet<IScriptLocation>(fScriptLocations)) {
-				// we need to use ecore to compare objects as we may not
-				// override equals()
-				if (oldLocation.getLocation().equals(newLocation.getLocation())) {
+				if (EcoreUtil.equals(oldLocation, newLocation)) {
 					oldLocations.remove(oldLocation);
 					fScriptLocations.remove(newLocation);
 				}
 			}
 		}
 
-		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-				IRepositoryService.class);
+		final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
 		for (IScriptLocation oldLocation : oldLocations)
 			repositoryService.removeLocation(oldLocation.getLocation());
 
 		for (IScriptLocation newLocation : fScriptLocations)
-			repositoryService
-					.addLocation(newLocation.getLocation(), newLocation.isDefault(), newLocation.isRecursive());
-
-		return super.performOk();
+			repositoryService.addLocation(newLocation.getLocation(), newLocation.isDefault(), newLocation.isRecursive());
 	}
 }
