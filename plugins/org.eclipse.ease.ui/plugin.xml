@@ -178,20 +178,6 @@
          </command>
       </menuContribution>
       <menuContribution
-            allPopups="false"
-            locationURI="menu:help?after=additions">
-         <command
-               commandId="org.eclipse.equinox.p2.ui.discovery.commands.ShowRepositoryCatalog"
-               icon="icons/eobj16/ease_component.png"
-               label="Install EASE Components"
-               tooltip="Install EASE Additional Components">
-            <parameter
-                  name="org.eclipse.equinox.p2.ui.discovery.commands.RepositoryParameter"
-                  value="https://dl.bintray.com/pontesegger/ease-jython/">
-            </parameter>
-         </command>
-      </menuContribution>
-      <menuContribution
             allPopups="true"
             locationURI="menu:org.eclipse.ease.commands.scriptShell.loadModule.popup">
          <dynamic
