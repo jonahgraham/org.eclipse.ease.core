@@ -15,11 +15,19 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Base64;
 
 import org.eclipse.ease.Activator;
+import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
+import org.eclipse.ease.service.ScriptType;
 
 /**
  * Class containing helper methods for conversion of format and appending signature to file.
@@ -46,22 +54,36 @@ public class SignatureHelper {
 	}
 
 	/**
-	 * Appends given signature, messageSigestAlgorithm ,provider, and certificate to given file.
+	 * Converts given {@link Base64} string to bytes.
+	 *
+	 * @param str
+	 *            provide {@link Base64} string to convert
+	 * @return bytes is conversion is successful and <code>null</code> if input is null
+	 */
+	public static byte[] convertBase64ToBytes(final String str) {
+
+		if (str == null)
+			return null;
+
+		Base64.Decoder decoder = Base64.getDecoder();
+		return decoder.decode(str);
+	}
+
+	/**
+	 * Appends given signature, messageSigestAlgorithm, provider, and certificate to given file.<br/>
+	 * Format for appending signature will be as follows:
 	 * <p>
-	 * Format for appending will be as follows:
-	 * <p>
-	 * <i>blockCommentStart</i><br>
-	 * -----BEGIN SIGNATURE-----<br>
-	 * Hash:SHA1 Provider:SUN
-	 * <p>
-	 * <p>
-	 * signature in {@link Base64} format (48 bytes)
-	 * <p>
-	 * <p>
-	 * certificate chain in {@link Base64} format (multiple lines)(each line containing 64 bytes)<br>
-	 * <p>
-	 * -----END SIGNSTURE-----<br>
+	 * <i>blockCommentStart</i><br/>
+	 * -----BEGIN SIGNATURE-----<br/>
+	 * Hash:SHA1 Provider:SUN <br/>
+	 * <br/>
+	 * signature in {@link Base64} format (48 bytes) <br/>
+	 * <br/>
+	 * certificate chain in {@link Base64} format (multiple lines)(each line containing 64 bytes)<br/>
+	 * <br/>
+	 * -----END SIGNSTURE-----<br/>
 	 * <i>blockCommentEnd</i>
+	 * </p>
 	 *
 	 * @param signStr
 	 *            string representation of signature in Base64 format
@@ -107,6 +129,8 @@ public class SignatureHelper {
 			// TODO remember while appending to file
 			// bufferedOutputStream.write("\n\n".getBytes());
 
+			// TODO use createCommentedString method of ICodeFactory
+
 			bufferedOutputStream.write(begin.getBytes());
 			bufferedOutputStream.write("\n".getBytes());
 
@@ -147,9 +171,55 @@ public class SignatureHelper {
 		return false;
 	}
 
-	// TODO check whether file contains signature. If it contains signature then update it
-	public static boolean containSignature(final InputStream inputStream) {
+	/**
+	 * Checks the given input stream to see whether it contains signature or not.
+	 *
+	 * @param scriptType
+	 *            provide {@link ScriptType} instance of stream for script
+	 * @param inputStream
+	 *            provide {@link InputStream} to check for signature
+	 * @return <code>true</code> if signature is found or <code>false</code> if signature is not found
+	 * @throws ScriptSignatureException
+	 *             when signature format is improper
+	 */
+	public boolean containSignature(final ScriptType scriptType, final InputStream inputStream) throws ScriptSignatureException {
 
-		return false;
+		ICodeParser iCodeParser = scriptType.getCodeParser();
+		return iCodeParser.getSignatureInfo(inputStream) != null;
+	}
+
+	/**
+	 * Checks whether provided certificate or certificate attached with is self-signed or not.
+	 *
+	 * @param certificate
+	 *            provide certificate to check for
+	 * @return <code>true</code> if certificate is self-signed or <code>false</code> if certificate is CA signed
+	 * @throws ScriptSignatureException
+	 *             when certificate is not provided or there is an error while retrieving certificate
+	 */
+	public static boolean isSelfSignedCertificate(Certificate certificate) throws ScriptSignatureException {
+		if (certificate == null)
+			throw new ScriptSignatureException("Provide appropriate certificate");
+
+		try {
+			certificate.verify(certificate.getPublicKey());
+			return true;
+
+		} catch (CertificateException e) {
+			Logger.error(Activator.PLUGIN_ID, "Error while parsing certificate.", e);
+			throw new ScriptSignatureException("Error while parsing certificate.", e);
+		} catch (InvalidKeyException e) {
+			throw new ScriptSignatureException("Key of the certificate is invalid.", e);
+
+		} catch (NoSuchAlgorithmException e) {
+			throw new ScriptSignatureException("No aprovider support this type of algorithm.", e);
+
+		} catch (NoSuchProviderException e) {
+			throw new ScriptSignatureException("No provider for this certificate.", e);
+
+		} catch (SignatureException e) {
+			// private key with which certificate was signed does not correspond to this public key. Hence it is not self-signed certificate
+			return false;
+		}
 	}
 }
