@@ -2,6 +2,22 @@ This project requires tools.jar from a Java JDK in its build path. Due to licens
 
 How to fix:
 
-	1) Right click the project and select Properties
-	2) switch to Java Build Path/Libraries
-	3) Add External JARs... and select <your JDK folder>/lib/tools.jar
+	1) Window -> Preferences -> Java -> Installed JREs
+	2) Edit on Default JRE
+	3) Add External Jars
+	4) Select <your JDK folder>/lib/tools.jar
+
+This works because the project's JRE is the default JRE set in Eclipse.
+It will not work if the project is set to an Execution Environment because
+that prevents the com.sun.javadoc packages from being visible.
+
+The advantage of the above method is that the tracked files (e.g. .classpath) does
+not need to be modified. However, If it is not possible to modify the default
+JRE for the current Eclipse workspace, the alternatives are:
+
+    - Add tools.jar as an external jar on a non-default JRE and
+        edit the project settings (Java -> Build Path -> Libraries ->
+        JRE System Library -> Edit -> Select the correct JRE)
+    - Add tools.jar as an external jar on this project (Java ->
+        Build Path -> Libraries -> Add External JARs -> select
+        <your JDK folder>/lib/tools.jar)
