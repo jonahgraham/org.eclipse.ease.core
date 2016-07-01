@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="EASE Demo Product">
+         <property
+               name="appName"
+               value="EASE Demo Product"/>
+          <!-- the rest of these properties are copied from org.eclipse.platform -->
+          <property name="windowImages" value="eclipse16.png,eclipse32.png,eclipse48.png"/>
+          <property name="aboutImage" value="eclipse_lg.png"/>
+          <property name="aboutText" value="An Eclipse Product to demo EASE. Based on Mars.2."/>
+          <property name="preferenceCustomization" value="plugin_customization.ini"/>
+         <property
+          		name="introTitle"
+          		value="EASE Demo Product"/>
+          <property
+          		name="introBrandingImage"
+          		value="product:intro-eclipse.png"/>
+		  <property
+				name="applicationXMI"
+				value="org.eclipse.platform/LegacyIDE.e4xmi">
+		  </property>
+		  <property
+				name="cssTheme"
+				value="org.eclipse.e4.ui.css.theme.e4_default">
+		  </property>
+		  <property
+				name="applicationCSSResources"
+          value="platform:/plugin/org.eclipse.ui.themes/images/">
+		  </property>
+
+          <property
+        		name="startupForegroundColor"
+        		value="FFFFFF"/>
+          <property
+                name="startupMessageRect"
+                value="7,265,320,20"/>
+          <property
+                name="startupProgressRect"
+                value="2,290,448,10"/>
+          <property
+                name="buildIdLocation"
+                value="0,220">
+          </property>
+          <property
+                name="buildIdSize"
+                value="404,40">
+          </property>
+      </product>
+   </extension>
+
+</plugin>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="EASE Demo Product" uid="ease.product" id="org.eclipse.ease.product.product" application="org.eclipse.ui.ide.workbench" version="0.4.0" useFeatures="true" includeLaunchers="true">
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.8
+      </vmArgs>
+      <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
+      </vmArgsMac>
+   </launcherArgs>
+
+   <windowImages/>
+
+   <splash
+      location="org.eclipse.platform" />
+   <launcher name="eclipse">
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.platform"/>
+      <feature id="org.eclipse.rcp"/>
+      <feature id="org.eclipse.jdt"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
+      <feature id="org.eclipse.wst.jsdt.feature"/>
+      <feature id="org.eclipse.emf"/>
+      <feature id="org.eclipse.pde"/>
+      <feature id="org.eclipse.ease.engine.jython.feature"/>
+      <feature id="org.py4j.feature"/>
+      <feature id="org.python.pydev.feature"/>
+      <feature id="org.eclipse.mylyn.gerrit.feature"/>
+      <feature id="org.eclipse.mylyn.git"/>
+      <feature id="org.eclipse.mylyn.commons"/>
+      <feature id="org.eclipse.mylyn.team_feature"/>
+      <feature id="org.eclipse.mylyn.commons.repositories"/>
+      <feature id="org.eclipse.mylyn.ide_feature"/>
+      <feature id="org.eclipse.papyrus.infra.feature"/>
+      <feature id="org.eclipse.papyrus.infra.gmfdiag.feature"/>
+      <feature id="org.eclipse.papyrus.sysml.feature"/>
+      <feature id="org.eclipse.papyrus.uml.diagram.feature"/>
+      <feature id="org.eclipse.emf.emfstore.client.ui.feature"/>
+      <feature id="org.eclipse.ocl.examples.classic"/>
+      <feature id="org.eclipse.ocl.examples"/>
+      <feature id="org.eclipse.wst.xml_core.feature"/>
+      <feature id="org.eclipse.wst.xml_ui.feature"/>
+      <feature id="org.eclipse.egit"/>
+      <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.nebula.visualization.feature"/>
+      <feature id="org.eclipse.ease.feature"/>
+      <feature id="org.eclipse.ease.ui.feature"/>
+      <feature id="org.eclipse.ease.javascript.feature"/>
+      <feature id="org.eclipse.ease.modules.charting.feature"/>
+      <feature id="org.eclipse.ease.modules.feature"/>
+      <feature id="org.eclipse.ease.modules.modeling.feature"/>
+      <feature id="org.eclipse.ease.modules.team.git.feature"/>
+      <feature id="org.eclipse.ease.modules.unittest.feature"/>
+      <feature id="org.eclipse.ease.python.py4j.feature"/>
+      <feature id="org.eclipse.ease.python.jython.feature"/>
+      <feature id="org.eclipse.ease.lang.jvm.feature"/>
+      <feature id="org.eclipse.ease.python.feature"/>
+      <feature id="org.eclipse.e4.rcp"/>
+      <feature id="org.eclipse.ecf.core.feature"/>
+      <feature id="org.eclipse.ecf.core.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
+      <feature id="org.eclipse.emf.codegen"/>
+      <feature id="org.eclipse.emf.codegen.ecore"/>
+      <feature id="org.eclipse.emf.codegen.ecore.ui"/>
+      <feature id="org.eclipse.emf.codegen.ui"/>
+      <feature id="org.eclipse.emf.common"/>
+      <feature id="org.eclipse.emf.common.ui"/>
+      <feature id="org.eclipse.emf.converter"/>
+      <feature id="org.eclipse.emf.databinding"/>
+      <feature id="org.eclipse.emf.databinding.edit"/>
+      <feature id="org.eclipse.emf.ecore"/>
+      <feature id="org.eclipse.emf.ecore.edit"/>
+      <feature id="org.eclipse.emf.ecore.editor"/>
+      <feature id="org.eclipse.emf.edit"/>
+      <feature id="org.eclipse.emf.edit.ui"/>
+      <feature id="org.eclipse.emf.mapping"/>
+      <feature id="org.eclipse.emf.mapping.ecore"/>
+      <feature id="org.eclipse.emf.mapping.ecore.editor"/>
+      <feature id="org.eclipse.emf.mapping.ui"/>
+      <feature id="org.eclipse.equinox.executable"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
+      <feature id="org.eclipse.equinox.p2.user.ui"/>
+      <feature id="org.eclipse.help"/>
+      <feature id="org.eclipse.mylyn.commons.identity"/>
+      <feature id="org.eclipse.mylyn.commons.notifications"/>
+      <feature id="org.eclipse.mylyn.context_feature"/>
+      <feature id="org.eclipse.mylyn.discovery"/>
+      <feature id="org.eclipse.mylyn.monitor"/>
+      <feature id="org.eclipse.mylyn.reviews.feature"/>
+      <feature id="org.eclipse.mylyn.tasks.ide"/>
+      <feature id="org.eclipse.mylyn.versions"/>
+      <feature id="org.eclipse.mylyn_feature"/>
+      <feature id="org.eclipse.ocl"/>
+      <feature id="org.eclipse.ocl.all"/>
+      <feature id="org.eclipse.ocl.all.sdk"/>
+      <feature id="org.eclipse.ocl.all.sdk.source"/>
+      <feature id="org.eclipse.ocl.all.source"/>
+      <feature id="org.eclipse.ocl.core.sdk"/>
+      <feature id="org.eclipse.ocl.core.sdk.source"/>
+      <feature id="org.eclipse.ocl.doc"/>
+      <feature id="org.eclipse.ocl.doc.source"/>
+      <feature id="org.eclipse.ocl.edit"/>
+      <feature id="org.eclipse.ocl.edit.source"/>
+      <feature id="org.eclipse.ocl.examples.classic.source"/>
+      <feature id="org.eclipse.ocl.examples.source"/>
+      <feature id="org.eclipse.ocl.examples.unified"/>
+      <feature id="org.eclipse.ocl.examples.unified.source"/>
+      <feature id="org.eclipse.ocl.source"/>
+      <feature id="org.eclipse.ocl.ui"/>
+      <feature id="org.eclipse.ocl.ui.source"/>
+      <feature id="org.eclipse.ocl.uml"/>
+      <feature id="org.eclipse.ocl.uml.source"/>
+      <feature id="org.eclipse.ocl.unified.core"/>
+      <feature id="org.eclipse.ocl.unified.core.source"/>
+      <feature id="org.eclipse.ocl.unified.ui"/>
+      <feature id="org.eclipse.ocl.unified.ui.source"/>
+      <feature id="org.eclipse.wst.common_core.feature"/>
+      <feature id="org.eclipse.wst.common_ui.feature"/>
+      <feature id="org.eclipse.wst.xml_userdoc.feature"/>
+      <feature id="org.eclipse.e4.rcp.source"/>
+      <feature id="org.eclipse.ease.feature.source"/>
+      <feature id="org.eclipse.ease.javascript.feature.source"/>
+      <feature id="org.eclipse.ease.lang.jvm.feature.source"/>
+      <feature id="org.eclipse.ease.modules.charting.feature.source"/>
+      <feature id="org.eclipse.ease.modules.feature.source"/>
+      <feature id="org.eclipse.ease.modules.modeling.feature.source"/>
+      <feature id="org.eclipse.ease.modules.team.git.feature.source"/>
+      <feature id="org.eclipse.ease.modules.unittest.feature.source"/>
+      <feature id="org.eclipse.ease.python.feature.source"/>
+      <feature id="org.eclipse.ease.python.jython.feature.source"/>
+      <feature id="org.eclipse.ease.python.py4j.feature.source"/>
+      <feature id="org.eclipse.ease.ui.feature.source"/>
+      <feature id="org.eclipse.ecf.core.source.feature"/>
+      <feature id="org.eclipse.ecf.core.ssl.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.source.feature"/>
+      <feature id="org.eclipse.ecf.filetransfer.ssl.source.feature"/>
+      <feature id="org.eclipse.equinox.p2.core.feature.source"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature.source"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature.source"/>
+      <feature id="org.eclipse.equinox.p2.sdk"/>
+      <feature id="org.eclipse.equinox.p2.user.ui.source"/>
+      <feature id="org.eclipse.help.source"/>
+      <feature id="org.eclipse.jdt.source"/>
+      <feature id="org.eclipse.platform.source"/>
+      <feature id="org.eclipse.rcp.source"/>
+      <feature id="org.eclipse.ease.product.feature"/>
+   </features>
+
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.update.configurator" autoStart="true" startLevel="4" />
+      <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
+   </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
+
+</product>

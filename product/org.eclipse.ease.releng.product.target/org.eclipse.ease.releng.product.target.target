@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<target name="EASE Mars Product" sequenceNumber="1467292769">
+  <locations>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.platform.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.rcp.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.rcp.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jdt.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.equinox.p2.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.emf.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jdt" version="0.0.0"/>
+      <unit id="org.eclipse.mylyn.gerrit.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.mylyn.git.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.mylyn.commons.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.mylyn.team_feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.mylyn.commons.repositories.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.mylyn.ide_feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.papyrus.infra.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.papyrus.infra.gmfdiag.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.papyrus.sysml.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.papyrus.uml.diagram.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.uml2.uml" version="0.0.0"/>
+      <unit id="org.eclipse.gmf.runtime.diagram.ui" version="0.0.0"/>
+      <unit id="org.eclipse.emf.emfstore.client.ui.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ocl.examples.classic.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ocl.examples.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.wst.xml_core.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.team.svn.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
+      <repository id="eclipse-mars-2" location="http://download.eclipse.org/releases/mars/201602261000/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.ease.engine.jython.feature.feature.group" version="2.7.0.I201604140914"/>
+      <repository id="ease-engines" location="https://bintray.com/artifact/download/pontesegger/ease-engines/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.mockito" version="1.9.5.v201311280930"/>
+      <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
+      <repository id="eclipse-orbit" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150519210750/repository/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.py4j.feature.feature.group" version="0.10.2.1-bnd-ATsnw"/>
+      <repository id="py4j-eclipse" location="https://dl.bintray.com/py4j/py4j-eclipse/0.10.2.1/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.python.pydev.feature.feature.group" version="5.1.2.201606231256"/>
+      <unit id="org.python.pydev.source" version="5.1.2.201606231256"/>
+      <repository id="pydev" location="http://pydev.org/updates/"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.ease.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.javascript.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.py4j.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.jython.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.team.git.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.team.svn.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.unittest.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.ui.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.javascript.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.py4j.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.jython.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.lang.jvm.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.python.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.charting.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.modeling.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.team.git.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.team.svn.feature.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.modules.unittest.feature.source.feature.group" version="0.0.0"/>
+      <repository location="file:///scratch/ease/org.eclipse.ease.core/product/combined_repo"/>
+    </location>
+    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/technology/nebula/snapshot"/>
+    </location>
+  </locations>
+</target>

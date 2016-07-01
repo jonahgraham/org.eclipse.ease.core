@@ -46,7 +46,10 @@ public interface IPreferenceConstants {
 	boolean DEFAULT_SHELL_MODULES_AS_LIST = false;
 
 	String SHELL_DEFAULT_ENGINE = "shellDefaultEngine";
-	String DEFAULT_SHELL_DEFAULT_ENGINE = "org.eclipse.ease.javascript.rhino";
+	// String DEFAULT_SHELL_DEFAULT_ENGINE = "org.eclipse.ease.javascript.rhino";
+	// XXX: For some reason I can't set this with plugin_customization.ini, instead
+	// change the default default in the code for EclipseCon France 2016
+	String DEFAULT_SHELL_DEFAULT_ENGINE = "org.eclipse.ease.lang.python.py4j.engine";
 
 	String SCRIPTS_ALLOW_REMOTE_ACCESS = "scriptRemoteAccess";
 	boolean DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS = false;
