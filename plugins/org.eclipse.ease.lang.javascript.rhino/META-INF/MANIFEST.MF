@@ -7,8 +7,8 @@ Bundle-Vendor: Eclipse.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.mozilla.javascript;bundle-version="[1.7.2,2.0.0)",
  org.eclipse.jface;bundle-version="[3.7.0,4.0.0)",
- org.eclipse.ease.ui;bundle-version="0.1.0",
- org.eclipse.ease.lang.javascript;bundle-version="0.1.0",
- org.eclipse.ease;bundle-version="0.1.0"
+ org.eclipse.ease.ui,
+ org.eclipse.ease.lang.javascript,
+ org.eclipse.ease
 Eclipse-BuddyPolicy: global
 Export-Package: org.eclipse.ease.lang.javascript.rhino

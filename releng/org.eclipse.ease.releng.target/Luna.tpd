@@ -1,17 +1,17 @@
-target "Mars" with source requirements
+target "Luna" with source requirements
 
-location "http://download.eclipse.org/releases/mars/" eclipse-mars {
+location "http://download.eclipse.org/releases/luna/" eclipse-luna {
 	org.eclipse.platform.feature.group
 	org.eclipse.rcp.feature.group
 	org.eclipse.jdt.feature.group
 	org.eclipse.equinox.p2.discovery.feature.feature.group
-
+	
 	// javascript support (rhino & editors)
 	org.eclipse.wst.jsdt.feature.feature.group
-
+	
 	// for modeling stuff
 	org.eclipse.emf.feature.group
-
+	
 	// java module
 	org.eclipse.pde.feature.group
 	org.eclipse.jdt
@@ -22,7 +22,7 @@ location "https://bintray.com/artifact/download/pontesegger/ease-engines/" ease-
 	org.eclipse.ease.engine.jython.feature.feature.group [2.7.0,3.0.0)
 }
 
-location "http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/" eclipse-orbit-mars {
+location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/" eclipse-orbit-luna {
 	// needed for unit tests
 	org.mockito [1.9.5,2.0.0)
 	org.hamcrest [1.1.0,2.0.0)

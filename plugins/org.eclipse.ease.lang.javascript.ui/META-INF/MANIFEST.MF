@@ -4,18 +4,18 @@ Bundle-Name: EASE JavaScript UI
 Bundle-SymbolicName: org.eclipse.ease.lang.javascript.ui;singleton:=true
 Bundle-Version: 0.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.wst.jsdt.ui;bundle-version="[1.1.102,2.0.0)",
+Require-Bundle: org.eclipse.wst.jsdt.ui;bundle-version="[1.1.102,3.0.0)",
  org.eclipse.jface.text;bundle-version="[3.7.2,4.0.0)",
- org.eclipse.ease;bundle-version="0.1.0",
+ org.eclipse.ease,
  org.eclipse.ui.workbench;bundle-version="[3.7.1,4.0.0)",
  org.eclipse.ui.workbench.texteditor;bundle-version="[3.7.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.7.101,4.0.0)",
  org.eclipse.ui.editors;bundle-version="[3.7.0,4.0.0)",
  org.eclipse.ui.ide;bundle-version="[3.7.0,4.0.0)",
- org.eclipse.ease.lang.javascript;bundle-version="0.3.0",
- org.eclipse.ease.ui;bundle-version="0.3.0",
- org.eclipse.wst.jsdt.core,
- org.eclipse.swt;bundle-version="3.7.2",
- org.eclipse.jface;bundle-version="3.7.0"
+ org.eclipse.ease.lang.javascript,
+ org.eclipse.ease.ui,
+ org.eclipse.wst.jsdt.core;bundle-version="[1.3.300,3.0.0)",
+ org.eclipse.swt;bundle-version="[3.7.2,4.0.0)",
+ org.eclipse.jface;bundle-version="[3.7.0,4.0.0)"
 Bundle-Vendor: Eclipse.org
 Bundle-ActivationPolicy: lazy

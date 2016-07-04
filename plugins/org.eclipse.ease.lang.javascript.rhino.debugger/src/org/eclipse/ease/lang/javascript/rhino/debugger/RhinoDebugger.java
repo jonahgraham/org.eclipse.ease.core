@@ -14,7 +14,6 @@ package org.eclipse.ease.lang.javascript.rhino.debugger;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.eclipse.ease.IScriptEngine;
@@ -111,16 +110,17 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 		public Map<String, Object> getVariables(final Object parent) {
 			if (parent instanceof NativeObject) {
 				Map<String, Object> children = new TreeMap<String, Object>();
-
-				for (Entry<Object, Object> entry : ((NativeObject) parent).entrySet())
-					children.put(entry.getKey().toString(), entry.getValue());
+				for (Object key : ((NativeObject) parent).getIds())
+					// for (Entry<Object, Object> entry : ((NativeObject) parent).entrySet())
+					children.put(key.toString(), ((NativeObject) parent).getAssociatedValue(key));
 
 				return children;
 			} else if (parent instanceof NativeArray) {
 				Map<String, Object> children = new LinkedHashMap<String, Object>();
 
-				for (Object id : ((NativeArray) parent).getIndexIds())
-					children.put("[" + id + "]", ((NativeArray) parent).get(id));
+				// for (Object id : ((NativeArray) parent).getIndexIds())
+				for (Object id : ((NativeArray) parent).getIds())
+					children.put("[" + id + "]", ((NativeArray) parent).getAssociatedValue(id));
 
 				return children;
 			}

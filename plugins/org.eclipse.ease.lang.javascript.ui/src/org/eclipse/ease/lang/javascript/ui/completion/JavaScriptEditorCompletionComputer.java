@@ -22,9 +22,9 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.completion.CodeCompletionAggregator;
 import org.eclipse.ease.ui.completion.ICompletionProvider;
-import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -58,7 +58,7 @@ public class JavaScriptEditorCompletionComputer implements IJavaCompletionPropos
 	}
 
 	@Override
-	public List<ScriptCompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
+	public List<ICompletionProposal> computeCompletionProposals(final ContentAssistInvocationContext context, final IProgressMonitor monitor) {
 		if (context != null) {
 			// get content of document
 			final IDocument document = context.getDocument();
