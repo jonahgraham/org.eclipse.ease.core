@@ -1,16 +1,16 @@
-target "Mars for Developers"
+target "Neon for Developers"
 
 // target platform containing all necessary sources for EASE core and EASE module developers
 
 with source requirements
 
-include "Mars.tpd"
+include "Neon.tpd"
 
 location "http://pydev.org/updates/" {
 	org.python.pydev.feature.feature.group
 }
 
-location "http://download.eclipse.org/releases/mars/" eclipse-mars {
+location "http://download.eclipse.org/releases/neon/" eclipse-neon {
 	org.eclipse.mylyn.gerrit.feature.feature.group
 	org.eclipse.mylyn.git.feature.group
 	org.eclipse.mylyn.commons.feature.group
@@ -21,7 +21,6 @@ location "http://download.eclipse.org/releases/mars/" eclipse-mars {
 	// modeling modules
 	org.eclipse.papyrus.infra.feature.feature.group
 	org.eclipse.papyrus.infra.gmfdiag.feature.feature.group
-	org.eclipse.papyrus.sysml.feature.feature.group
 	org.eclipse.papyrus.uml.diagram.feature.feature.group
 	org.eclipse.uml2.uml
 	org.eclipse.gmf.runtime.diagram.ui
@@ -46,6 +45,7 @@ location "http://download.eclipse.org/ease/update/nightly" {
 	org.eclipse.ease.feature.feature.group lazy
 	org.eclipse.ease.ui.feature.feature.group lazy
 	org.eclipse.ease.javascript.feature.feature.group lazy
+	org.eclipse.ease.lang.jvm.feature.feature.group lazy
 }
 
 location "http://download.eclipse.org/nebula/releases/1.0.0" {
