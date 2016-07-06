@@ -394,24 +394,26 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 	@Override
 	public void resourceChanged(final IResourceChangeEvent event) {
 		try {
-			event.getDelta().accept(new IResourceDeltaVisitor() {
+			if (event.getDelta() != null) {
+				event.getDelta().accept(new IResourceDeltaVisitor() {
 
-				@Override
-				public boolean visit(final IResourceDelta delta) throws CoreException {
-					// TODO currently we update the whole location on a simple change, just focus on the changed files in future
-					final IResource resource = delta.getResource();
-					final String location = "workspace:/" + resource.getFullPath();
-					for (final IScriptLocation entry : getLocations()) {
-						if (entry.getLocation().equals(location)) {
-							// TODO currently updates a whole repository for eg a small file content change
-							fUpdateJob.update(entry);
-							return false;
+					@Override
+					public boolean visit(final IResourceDelta delta) throws CoreException {
+						// TODO currently we update the whole location on a simple change, just focus on the changed files in future
+						final IResource resource = delta.getResource();
+						final String location = "workspace:/" + resource.getFullPath();
+						for (final IScriptLocation entry : getLocations()) {
+							if (entry.getLocation().equals(location)) {
+								// TODO currently updates a whole repository for eg a small file content change
+								fUpdateJob.update(entry);
+								return false;
+							}
 						}
-					}
 
-					return true;
-				}
-			});
+						return true;
+					}
+				});
+			}
 		} catch (final CoreException e) {
 			// TODO handle this exception (but for now, at least know it happened)
 			throw new RuntimeException(e);
