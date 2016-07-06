@@ -1,61 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde?>
-<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Neon for Developers" sequenceNumber="1467804081">
-  <locations>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.ease.engine.jython.feature.feature.group" version="2.7.0.I201604140914"/>
-      <repository id="ease-engines" location="https://bintray.com/artifact/download/pontesegger/ease-engines/"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.mockito" version="1.9.5.v201605172210"/>
-      <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
-      <repository id="eclipse-orbit-neon" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.python.pydev.feature.feature.group" version="5.1.2.201606231256"/>
-      <repository location="http://pydev.org/updates/"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.mylyn.gerrit.feature.feature.group" version="2.11.0.v20160421-1821"/>
-      <unit id="org.eclipse.mylyn.git.feature.group" version="1.12.0.v20160421-1824"/>
-      <unit id="org.eclipse.mylyn.commons.feature.group" version="3.20.0.v20160421-1819"/>
-      <unit id="org.eclipse.mylyn.team_feature.feature.group" version="3.20.0.v20160421-1902"/>
-      <unit id="org.eclipse.mylyn.commons.repositories.feature.group" version="1.12.0.v20160421-1819"/>
-      <unit id="org.eclipse.mylyn.ide_feature.feature.group" version="3.20.0.v20160421-1902"/>
-      <unit id="org.eclipse.papyrus.infra.feature.feature.group" version="2.0.0.201606080854"/>
-      <unit id="org.eclipse.papyrus.infra.gmfdiag.feature.feature.group" version="2.0.0.201606080854"/>
-      <unit id="org.eclipse.papyrus.uml.diagram.feature.feature.group" version="2.0.0.201606080854"/>
-      <unit id="org.eclipse.uml2.uml" version="5.2.0.v20160516-0939"/>
-      <unit id="org.eclipse.gmf.runtime.diagram.ui" version="1.8.0.201606071959"/>
-      <unit id="org.eclipse.emf.emfstore.client.ui.feature.feature.group" version="1.8.0.v20160606-1028"/>
-      <unit id="org.eclipse.ocl.examples.classic.feature.group" version="5.2.0.v20160523-1914"/>
-      <unit id="org.eclipse.ocl.examples.feature.group" version="6.1.0.v20160526-1513"/>
-      <unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.8.0.v201605120036"/>
-      <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.8.0.v201605120129"/>
-      <unit id="org.eclipse.team.svn.feature.group" version="4.0.0.I20160604-1700"/>
-      <unit id="org.eclipse.egit.feature.group" version="4.4.0.201606070830-r"/>
-      <unit id="org.eclipse.jgit.feature.group" version="4.4.0.201606070830-r"/>
-      <unit id="org.eclipse.platform.feature.group" version="4.6.0.v20160606-1342"/>
-      <unit id="org.eclipse.rcp.feature.group" version="4.6.0.v20160606-1342"/>
-      <unit id="org.eclipse.jdt.feature.group" version="3.12.0.v20160606-1100"/>
-      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.0.400.v20160504-1450"/>
-      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.0.0.v201605311817"/>
-      <unit id="org.eclipse.emf.feature.group" version="2.12.0.v20160526-0356"/>
-      <unit id="org.eclipse.pde.feature.group" version="3.12.0.v20160606-1100"/>
-      <unit id="org.eclipse.jdt" version="3.12.0.v20160606-1100"/>
-      <repository id="eclipse-neon" location="http://download.eclipse.org/releases/neon/"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.ease.feature.feature.group" version="0.0.0"/>
-      <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.0.0"/>
-      <unit id="org.eclipse.ease.javascript.feature.feature.group" version="0.0.0"/>
-      <unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.0.0"/>
-      <repository location="http://download.eclipse.org/ease/update/nightly"/>
-    </location>
-    <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.0.0"/>
-      <repository location="http://download.eclipse.org/nebula/releases/1.0.0"/>
-    </location>
-  </locations>
+<?pde version="3.8"?><target name="Neon for Developers" sequenceNumber="1467804081">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.ease.engine.jython.feature.feature.group" version="2.7.0.I201604140914"/>
+<repository location="https://bintray.com/artifact/download/pontesegger/ease-engines/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.mockito" version="1.9.5.v201605172210"/>
+<unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.python.pydev.feature.feature.group" version="5.1.2.201606231256"/>
+<repository location="http://pydev.org/updates/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.mylyn.gerrit.feature.feature.group" version="2.11.0.v20160421-1821"/>
+<unit id="org.eclipse.mylyn.git.feature.group" version="1.12.0.v20160421-1824"/>
+<unit id="org.eclipse.mylyn.commons.feature.group" version="3.20.0.v20160421-1819"/>
+<unit id="org.eclipse.mylyn.team_feature.feature.group" version="3.20.0.v20160421-1902"/>
+<unit id="org.eclipse.mylyn.commons.repositories.feature.group" version="1.12.0.v20160421-1819"/>
+<unit id="org.eclipse.mylyn.ide_feature.feature.group" version="3.20.0.v20160421-1902"/>
+<unit id="org.eclipse.papyrus.infra.feature.feature.group" version="2.0.0.201606080854"/>
+<unit id="org.eclipse.papyrus.infra.gmfdiag.feature.feature.group" version="2.0.0.201606080854"/>
+<unit id="org.eclipse.papyrus.uml.diagram.feature.feature.group" version="2.0.0.201606080854"/>
+<unit id="org.eclipse.uml2.uml" version="5.2.0.v20160516-0939"/>
+<unit id="org.eclipse.gmf.runtime.diagram.ui" version="1.8.0.201606071959"/>
+<unit id="org.eclipse.emf.emfstore.client.ui.feature.feature.group" version="1.8.0.v20160606-1028"/>
+<unit id="org.eclipse.ocl.examples.classic.feature.group" version="5.2.0.v20160523-1914"/>
+<unit id="org.eclipse.ocl.examples.feature.group" version="6.1.0.v20160526-1513"/>
+<unit id="org.eclipse.wst.xml_core.feature.feature.group" version="3.8.0.v201605120036"/>
+<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.8.0.v201605120129"/>
+<unit id="org.eclipse.team.svn.feature.group" version="4.0.0.I20160604-1700"/>
+<unit id="org.eclipse.egit.feature.group" version="4.4.0.201606070830-r"/>
+<unit id="org.eclipse.jgit.feature.group" version="4.4.0.201606070830-r"/>
+<unit id="org.eclipse.platform.feature.group" version="4.6.0.v20160606-1342"/>
+<unit id="org.eclipse.rcp.feature.group" version="4.6.0.v20160606-1342"/>
+<unit id="org.eclipse.jdt.feature.group" version="3.12.0.v20160606-1100"/>
+<unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.0.400.v20160504-1450"/>
+<unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.0.0.v201605311817"/>
+<unit id="org.eclipse.emf.feature.group" version="2.12.0.v20160526-0356"/>
+<unit id="org.eclipse.pde.feature.group" version="3.12.0.v20160606-1100"/>
+<unit id="org.eclipse.jdt" version="3.12.0.v20160606-1100"/>
+<repository location="http://download.eclipse.org/releases/neon/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.ease.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ease.javascript.feature.feature.group" version="0.0.0"/>
+<unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/ease/update/nightly"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.visualization.feature.feature.group" version="0.0.0"/>
+<repository location="http://download.eclipse.org/nebula/releases/1.0.0"/>
+</location>
+</locations>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+<launcherArgs>
+<vmArgs>-Dosgi.framework.extensions=org.eclipse.wst.jsdt.nashorn.extension</vmArgs>
+</launcherArgs>
 </target>
