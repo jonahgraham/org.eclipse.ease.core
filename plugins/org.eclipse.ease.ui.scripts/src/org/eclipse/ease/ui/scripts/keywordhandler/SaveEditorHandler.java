@@ -49,7 +49,7 @@ public class SaveEditorHandler implements EventHandler, IPartListener, IProperty
 	private final Map<String, Collection<IScript>> fRegisteredScripts = new HashMap<String, Collection<IScript>>();
 
 	public SaveEditorHandler() {
-		IPartService service = PlatformUI.getWorkbench().getService(IPartService.class);
+		IPartService service = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getService(IPartService.class);
 		service.addPartListener(this);
 
 		if (PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null) {
