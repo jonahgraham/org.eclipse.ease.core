@@ -211,6 +211,9 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 							final URL url = binPath.toFile().toURI().toURL();
 							urls.add(url);
 						}
+					} else if ((cpEntry.getEntryKind() == IClasspathEntry.CPE_LIBRARY) && (cpEntry.getContentKind() == IPackageFragmentRoot.K_BINARY)) {
+						IPath path = cpEntry.getPath();
+						urls.add(path.toFile().toURL());
 					}
 				}
 			}
