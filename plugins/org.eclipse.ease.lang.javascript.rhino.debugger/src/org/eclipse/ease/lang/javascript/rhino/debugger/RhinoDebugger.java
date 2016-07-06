@@ -111,16 +111,14 @@ public class RhinoDebugger extends AbstractScriptDebugger implements Debugger {
 			if (parent instanceof NativeObject) {
 				Map<String, Object> children = new TreeMap<String, Object>();
 				for (Object key : ((NativeObject) parent).getIds())
-					// for (Entry<Object, Object> entry : ((NativeObject) parent).entrySet())
-					children.put(key.toString(), ((NativeObject) parent).getAssociatedValue(key));
+					children.put(key.toString(), ((NativeObject) parent).get(key));
 
 				return children;
 			} else if (parent instanceof NativeArray) {
 				Map<String, Object> children = new LinkedHashMap<String, Object>();
 
-				// for (Object id : ((NativeArray) parent).getIndexIds())
-				for (Object id : ((NativeArray) parent).getIds())
-					children.put("[" + id + "]", ((NativeArray) parent).getAssociatedValue(id));
+				for (Object key : ((NativeArray) parent).getIds())
+					children.put("[" + key + "]", ((NativeArray) parent).get(key));
 
 				return children;
 			}
