@@ -168,4 +168,14 @@ public class PythonCodeFactory extends AbstractCodeFactory {
 	protected String getSingleLineCommentToken() {
 		return "# ";
 	}
+
+	@Override
+	protected String getMultiLineCommentStartToken() {
+		return "\"\"\"";
+	}
+
+	@Override
+	protected String getMultiLineCommentEndToken() {
+		return "\"\"\"";
+	}
 }

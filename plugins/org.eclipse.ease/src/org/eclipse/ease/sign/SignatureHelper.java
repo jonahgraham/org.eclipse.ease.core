@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import org.eclipse.ease.Activator;
+import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.ScriptType;
@@ -85,6 +86,8 @@ public class SignatureHelper {
 	 * <i>blockCommentEnd</i>
 	 * </p>
 	 *
+	 * @param scriptType
+	 *            provide {@link ScriptType} instance of stream for script
 	 * @param signStr
 	 *            string representation of signature in Base64 format
 	 * @param certStr
@@ -95,18 +98,14 @@ public class SignatureHelper {
 	 *            name the provider used to perform signature. Provide <code>null</code> or empty string to set 'preferred'
 	 * @param dataStream
 	 *            stream to which signature and certificate are to be attached
-	 * @param blockComStart
-	 *            provide starting block comment string
-	 * @param blockComEnd
-	 *            provide ending block comment string
 	 * @return <code>true</code> if signature is written to dataStream and <code>false</code> if signature can't be written for e.g. due to IOException
 	 * @throws ScriptSignatureException
 	 *             when one or more parameter are <code>null</code> or empty
 	 */
-	public static boolean appendSignature(final String signStr, final String certStr, String messageDigestAlgo, String provider, final OutputStream dataStream,
-			final String blockComStart, final String blockComEnd) throws ScriptSignatureException {
+	public static boolean appendSignature(final ScriptType scriptType, final String signStr, final String certStr, String messageDigestAlgo, String provider,
+			final OutputStream dataStream) throws ScriptSignatureException {
 
-		if (signStr == null || signStr.isEmpty() || certStr == null || certStr.isEmpty() || dataStream == null || blockComStart == null || blockComEnd == null)
+		if (scriptType == null || signStr == null || signStr.isEmpty() || certStr == null || certStr.isEmpty() || dataStream == null)
 			throw new ScriptSignatureException("One or more parameters are null or empty");
 
 		if (messageDigestAlgo == null || messageDigestAlgo.isEmpty() || "default".equalsIgnoreCase(messageDigestAlgo))
@@ -115,46 +114,49 @@ public class SignatureHelper {
 		if (provider == null || provider.isEmpty())
 			provider = "preferred";
 
-		final String begin = blockComStart + "\n" + BEGIN_STRING, end = END_STRING + "\n" + blockComEnd,
-				signatureParam = "Hash:" + messageDigestAlgo + " Provider:" + provider;
+		final String begin = "\n" + BEGIN_STRING, end = END_STRING + "\n", signatureParam = "Hash:" + messageDigestAlgo + " Provider:" + provider;
 
 		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(dataStream);
 		try {
 			/*
-			 * By default, last line in every file is ended by \n which is not visible directly. But if generated programmatically, it may not. To be sure, two
-			 * \n characters are added.
+			 * By default, last line in every file is ended by \n which is not visible directly. But if generated programmatically, it may not.
 			 *
-			 * Fist to add \n if not already there and second to bring pointer to next line. This gives at most two empty lines and at least one empty line.
+			 * A single \n character is added always to start signature block from new line. It may give atmost a single blank line in case \n character is
+			 * already present.
 			 */
 			// TODO remember while appending to file
-			// bufferedOutputStream.write("\n\n".getBytes());
+			// bufferedOutputStream.write("\n".getBytes());
 
-			// TODO use createCommentedString method of ICodeFactory
+			// using createCommentedString method of ICodeFactory to make comment of signature block
 
-			bufferedOutputStream.write(begin.getBytes());
-			bufferedOutputStream.write("\n".getBytes());
+			StringBuffer strBuf = new StringBuffer();
 
-			bufferedOutputStream.write(signatureParam.getBytes());
-			bufferedOutputStream.write("\n\n".getBytes());
+			strBuf.append(begin);
+			strBuf.append("\n");
 
-			bufferedOutputStream.write(signStr.getBytes());
-			bufferedOutputStream.write("\n\n".getBytes());
+			strBuf.append(signatureParam);
+			strBuf.append("\n\n");
+
+			strBuf.append(signStr);
+			strBuf.append("\n\n");
 
 			int i = 0;
 			for (String s : certStr.split("")) {
-				bufferedOutputStream.write(s.getBytes());
+				strBuf.append(s);
 				i++;
 				if (i % 48 == 0)
-					bufferedOutputStream.write("\n".getBytes());
+					strBuf.append("\n");
 			}
 
 			if (i % 48 != 0)
-				bufferedOutputStream.write("\n".getBytes());
+				strBuf.append("\n");
 
-			bufferedOutputStream.write("\n".getBytes());
-			bufferedOutputStream.write(end.getBytes());
-			bufferedOutputStream.write("\n".getBytes());
+			strBuf.append("\n");
+			strBuf.append(end);
 
+			ICodeFactory iCodeFactory = scriptType.getCodeFactory();
+			bufferedOutputStream.write(iCodeFactory.createCommentedString(strBuf.toString(), true).getBytes());
+			bufferedOutputStream.write("\n".getBytes());
 			return true;
 
 		} catch (IOException e) {
