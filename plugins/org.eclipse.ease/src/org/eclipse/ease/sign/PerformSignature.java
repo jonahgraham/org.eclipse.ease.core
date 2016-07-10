@@ -27,13 +27,13 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.tools.ResourceTools;
 
 /**
  * Class containing methods to perform signature. Methods include loading of keystore, private key and performing signature to provided file.
@@ -42,11 +42,11 @@ import org.eclipse.ease.tools.ResourceTools;
 public class PerformSignature {
 
 	/**
-	 * Checks whether file provided for keystore exists. Checks keystore of given type and provider can be instantiated and if so, instantiates keystore. Then,
-	 * loads the keyStore from file using provided password.
+	 * Checks keystore of given type and provider can be instantiated and if so, instantiates keystore. Then, loads the keyStore from file using provided
+	 * password.
 	 *
-	 * @param locationOfKeyStore
-	 *            provide location of user keystore
+	 * @param inputStream
+	 *            provide inputStream of keystore
 	 * @param type
 	 *            name type of the keystore like JKS, JCEKS, PKCS12, PKCS12S2. Provide <code>null</code> or empty string or 'default' to set default type
 	 * @param provider
@@ -58,12 +58,15 @@ public class PerformSignature {
 	 * @throws ScriptSignatureException
 	 *             when exception can be recovered without closing the application. For e.g., arguments provided for keystore or password are invalid, keystore
 	 *             file can't be read, etc.
+	 * @throws UnrecoverableKeyException
+	 *             when password for keystore is incorrect
+	 * @throws IOException
+	 *             when there is an error loading keystore because of IO of format problem
 	 */
-	public static KeyStore loadKeyStore(final Object locationOfKeyStore, String type, String provider, final String keyStorePass)
-			throws ScriptSignatureException {
+	public static KeyStore loadKeyStore(final InputStream inputStream, String type, String provider, final String keyStorePass)
+			throws ScriptSignatureException, UnrecoverableKeyException, IOException {
 		KeyStore keyStore;
 
-		InputStream inputStream = ResourceTools.getInputStream(locationOfKeyStore);
 		if (inputStream == null)
 			throw new ScriptSignatureException("Given location of keystore can't be accessed.");
 
@@ -84,8 +87,8 @@ public class PerformSignature {
 			keyStore.load(inputStream, keyStorePass.toCharArray());
 
 			Logger.info(Activator.PLUGIN_ID, "Keystore loaded");
-
 			return keyStore;
+
 		} catch (KeyStoreException e) {
 			Logger.error(Activator.PLUGIN_ID, Arrays.toString(e.getStackTrace()), e);
 			throw new ScriptSignatureException("No provider support '" + type + "' type of keystore.", e);
@@ -94,13 +97,13 @@ public class PerformSignature {
 			throw new ScriptSignatureException("No such provider available.", e);
 
 		} catch (IOException e) {
+			Logger.error(Activator.PLUGIN_ID, Arrays.toString(e.getStackTrace()), e);
 			if (e.getCause() instanceof UnrecoverableKeyException)
-				throw new ScriptSignatureException("Invalid Keystore Password", e);
+				throw new UnrecoverableKeyException("Invalid Keystore Password");
 			else if (e.getCause() instanceof FileNotFoundException || e.getCause() instanceof SecurityException)
 				throw new ScriptSignatureException("File can't be read. Chose another keystore or try again.", e);
 
-			Logger.error(Activator.PLUGIN_ID, Arrays.toString(e.getStackTrace()), e);
-			throw new ScriptSignatureException("Error loading keystore. Try again.", e);
+			throw new IOException("Error loading keystore");
 
 		} catch (NoSuchAlgorithmException e) {
 			throw new ScriptSignatureException("Algorithm used for securing keystore can't be found. Chose another Keystore", e);
@@ -108,13 +111,6 @@ public class PerformSignature {
 		} catch (CertificateException e) {
 			throw new ScriptSignatureException("Some certificate/s in keystore can't be loaded", e);
 
-		} finally {
-			try {
-				if (inputStream != null)
-					inputStream.close();
-			} catch (IOException e) {
-				Logger.error(Activator.PLUGIN_ID, Arrays.toString(e.getStackTrace()), e);
-			}
 		}
 	}
 
@@ -127,8 +123,17 @@ public class PerformSignature {
 	 */
 	public static Collection<String> getAliases(final KeyStore keyStore) {
 		try {
-			if (keyStore != null)
-				return Collections.list(keyStore.aliases());
+			if (keyStore != null) {
+				Collection<String> aliasList = new ArrayList<>();
+				for (String alias : Collections.list(keyStore.aliases())) {
+					// check whether alias contain private key
+					if (keyStore.isKeyEntry(alias))
+						aliasList.add(alias);
+
+				}
+
+				return aliasList;
+			}
 
 		} catch (KeyStoreException e) {
 			// keystore is not initialized properly
@@ -161,11 +166,14 @@ public class PerformSignature {
 				if (!keyStore.containsAlias(alias))
 					throw new ScriptSignatureException("Alias can't be found");
 
-				if (!keyStore.isCertificateEntry(alias) && !canAttachSelfSign)
+				if (SignatureHelper.isSelfSignedCertificate(keyStore.getCertificateChain(alias)[0]) && !canAttachSelfSign)
 					throw new ScriptSignatureException("This certificate is self-signed certificate. Chose another trusted certificate.");
 
 				// get certificate chain from keyStore, convert it to bytes and then to base64
 				Certificate certificateChain[] = keyStore.getCertificateChain(alias);
+
+				if (certificateChain == null)
+					throw new ScriptSignatureException("Not a valid Certificate chain");
 
 				StringBuffer certStrBuf = new StringBuffer();
 				for (Certificate cert : certificateChain) {
@@ -244,20 +252,22 @@ public class PerformSignature {
 	 * @throws ScriptSignatureException
 	 *             if alias or privateKeyPass is <code>null</code>, signature can't be performed, password to alias is wrong, parameters for private key are
 	 *             wrong
+	 * @throws UnrecoverableKeyException
+	 *             when password for alias is incorrect
 	 */
 	public static String createSignature(final KeyStore keyStore, final InputStream dataStream, final String alias, final String privateKeyPass,
-			String provider, String messageDigestAlgo) throws ScriptSignatureException {
+			String provider, String messageDigestAlgo) throws ScriptSignatureException, UnrecoverableKeyException {
 
 		Signature signature;
 
-		if (alias != null && privateKeyPass != null)
+		if (alias == null || privateKeyPass == null)
 			throw new ScriptSignatureException("Alias or private key password is null. Try again.");
 
 		if ("".equals(provider) || "preferred".equalsIgnoreCase(provider))
 			provider = null;
 
 		if (messageDigestAlgo == null || messageDigestAlgo.isEmpty() || "default".equalsIgnoreCase(messageDigestAlgo))
-			messageDigestAlgo = "SHA1";
+			messageDigestAlgo = SignatureHelper.DEFAULT_MESSAGE_DIGEST_ALGO;
 
 		if (keyStore != null) {
 			try {
@@ -302,10 +312,7 @@ public class PerformSignature {
 				return null;
 
 			} catch (NoSuchAlgorithmException e) {
-				throw new ScriptSignatureException("Algorithm for key is not recognized. Please try again or chose another alias.", e);
-
-			} catch (UnrecoverableKeyException e) {
-				throw new ScriptSignatureException("Invalid Alias-Password combination. Please try Again.", e);
+				throw new ScriptSignatureException(e.getMessage(), e);
 
 			} catch (NoSuchProviderException e) {
 				throw new ScriptSignatureException("No such provider available. Chose another provider.", e);

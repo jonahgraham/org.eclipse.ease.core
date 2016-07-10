@@ -92,6 +92,11 @@
             id="org.eclipse.ease.commands.scriptShell.openScriptHelp"
             name="Open Script Help">
       </command>
+      <command
+            defaultHandler="org.eclipse.ease.ui.handler.PerformSignature"
+            id="org.eclipse.ease.commands.sign.contextMenu"
+            name="Perform Signature...">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -209,6 +214,43 @@
                name="additions"
                visible="false">
          </separator>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any">
+         <command
+               commandId="org.eclipse.ease.commands.sign.contextMenu"
+               label="Perform Signature..."
+               mnemonic="P"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <or>
+                  <with
+                        variable="selection">
+                     <iterate
+                           ifEmpty="false">
+                        <reference
+                              definitionId="org.eclipse.ease.ui.sign.definition.testType">
+                        </reference>
+                     </iterate>
+                  </with>
+                  <and>
+                     <with
+                           variable="activePart">
+                        <instanceof
+                              value="org.eclipse.ui.IEditorPart">
+                        </instanceof>
+                     </with>
+                     <with
+                           variable="activeEditorInput">
+                        <reference
+                              definitionId="org.eclipse.ease.ui.sign.definition.testType">
+                        </reference>
+                     </with>
+                  </and>
+               </or>
+            </visibleWhen>
+         </command>
       </menuContribution>
    </extension>
    <extension
@@ -432,5 +474,24 @@
             %Color.errorTextDesc
          </description>
       </colorDefinition>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="org.eclipse.ease.ui.sign.definition.testType">
+         <adapt
+               type="org.eclipse.core.resources.IFile">
+            <or>
+               <test
+                     property="org.eclipse.core.resources.name"
+                     value="*.py">
+               </test>
+               <test
+                     property="org.eclipse.core.resources.name"
+                     value="*.js">
+               </test>
+            </or>
+         </adapt>
+      </definition>
    </extension>
 </plugin>

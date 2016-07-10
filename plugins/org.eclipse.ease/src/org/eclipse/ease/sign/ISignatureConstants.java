@@ -30,4 +30,6 @@ public interface ISignatureConstants {
 
 	// set default signature provider
 	public static final String DEFAULT_SIGNATURE_PROVIDER = "preferred";
+
+	// set parameters format for signature block
 }

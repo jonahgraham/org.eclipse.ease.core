@@ -20,8 +20,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.Base64;
 
+import org.eclipse.ease.AbstractCodeFactory;
 import org.eclipse.ease.Activator;
-import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.ScriptType;
@@ -32,7 +32,9 @@ import org.eclipse.ease.service.ScriptType;
  */
 public class SignatureHelper {
 
-	private static final String BEGIN_STRING = "-----BEGIN SIGNATURE-----", END_STRING = "-----END SIGNATURE-----";
+	private static final String BEGIN_STRING = "-----BEGIN SIGNATURE-----", END_STRING = "-----END SIGNATURE-----", SIGNATURE_TAG = "signature:",
+			CERTIFICATE_TAG = "certificate/s:", HASH_PARAM_TAG = "hash:", PROVIDER_PARAM_TAG = "provider:";
+	static final int MAX_LENGTH = 80;
 
 	// set default message digest algorithm
 	public static final String DEFAULT_MESSAGE_DIGEST_ALGO = "SHA256";
@@ -76,18 +78,20 @@ public class SignatureHelper {
 	 * Converts given signature, messageSigestAlgorithm, provider, and certificate in proper format.<br/>
 	 * Format for signature block will be as follows:
 	 * <p>
-	 * newline <br/>
-	 * <i>blockCommentStart</i><br/>
 	 * -----BEGIN SIGNATURE-----<br/>
-	 * Hash:SHA1 Provider:SUN <br/>
+	 * hash:<br/>
+	 * SHA1<br/>
 	 * <br/>
-	 * signature in {@link Base64} format (48 bytes) <br/>
+	 * provider:<br/>
+	 * SUN <br/>
 	 * <br/>
-	 * certificate chain in {@link Base64} format (multiple lines)(each line containing 64 bytes)<br/>
+	 * signature:<br/>
+	 * signature in {@link Base64} format<br/>
+	 * <br/>
+	 * certificate/s:<br/>
+	 * certificate chain in {@link Base64} format (multiple lines)(each line containing 80 chars)<br/>
 	 * <br/>
 	 * -----END SIGNSTURE-----<br/>
-	 * <i>blockCommentEnd</i><br/>
-	 * newline
 	 * </p>
 	 *
 	 * @param scriptType
@@ -117,7 +121,7 @@ public class SignatureHelper {
 		if ((provider == null) || provider.isEmpty())
 			provider = DEFAULT_SIGNATURE_PROVIDER;
 
-		final String begin = "\n" + BEGIN_STRING, end = END_STRING + "\n", signatureParam = "Hash:" + messageDigestAlgo + " Provider:" + provider;
+		final String begin = AbstractCodeFactory.LINE_DELIMITER + BEGIN_STRING, end = END_STRING + AbstractCodeFactory.LINE_DELIMITER;
 
 		/*
 		 * By default, last line in every file is ended by \n which is not visible directly. But if generated programmatically, it may not.
@@ -131,41 +135,47 @@ public class SignatureHelper {
 		final StringBuffer strBuf = new StringBuffer();
 
 		strBuf.append(begin);
-		strBuf.append("\n");
+		strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
 
-		strBuf.append(signatureParam);
-		strBuf.append("\n\n");
+		strBuf.append(HASH_PARAM_TAG + AbstractCodeFactory.LINE_DELIMITER);
+		strBuf.append(messageDigestAlgo + AbstractCodeFactory.LINE_DELIMITER);
+		strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
 
-		strBuf.append(signStr);
-		strBuf.append("\n\n");
+		strBuf.append(PROVIDER_PARAM_TAG + AbstractCodeFactory.LINE_DELIMITER);
+		strBuf.append(provider + AbstractCodeFactory.LINE_DELIMITER);
+		strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
 
+		strBuf.append(SIGNATURE_TAG + AbstractCodeFactory.LINE_DELIMITER);
 		int i = 0;
-		for (final String s : certStr.split("")) {
-			strBuf.append(s);
-			i++;
-			if ((i % 48) == 0)
-				strBuf.append("\n");
+		while (i <= (signStr.length() - MAX_LENGTH)) {
+			strBuf.append(signStr.substring(i, i + MAX_LENGTH));
+			strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
+			i += MAX_LENGTH;
 		}
+		if (i < signStr.length())
+			strBuf.append(signStr.substring(i));
 
-		if ((i % 48) != 0)
-			strBuf.append("\n");
+		if (i != MAX_LENGTH)
+			strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
 
-		strBuf.append("\n");
+		strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
+		strBuf.append(CERTIFICATE_TAG + AbstractCodeFactory.LINE_DELIMITER);
+		i = 0;
+		while (i <= (certStr.length() - MAX_LENGTH)) {
+			strBuf.append(certStr.substring(i, i + MAX_LENGTH));
+			strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
+			i += MAX_LENGTH;
+		}
+		if (i < certStr.length())
+			strBuf.append(certStr.substring(i));
+
+		if (i != MAX_LENGTH)
+			strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
+
+		strBuf.append(AbstractCodeFactory.LINE_DELIMITER);
 		strBuf.append(end);
 
-		final ICodeFactory iCodeFactory = scriptType.getCodeFactory();
-
-		final StringBuffer finalBuf = new StringBuffer();
-
-		// appending initial required new line character
-		finalBuf.append("\n");
-
-		// using createCommentedString method of ICodeFactory to make comment of signature block
-		finalBuf.append(iCodeFactory.createCommentedString(strBuf.toString(), true));
-
-		// appending final required new line character
-		finalBuf.append("\n");
-		return finalBuf.toString();
+		return strBuf.toString();
 	}
 
 	/**
