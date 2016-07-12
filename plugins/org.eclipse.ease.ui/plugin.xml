@@ -253,6 +253,12 @@
             id="org.eclipse.ease.preferences.scriptShell"
             name="Shell">
       </page>
+      <page
+            category="org.eclipse.ease.preferences.root"
+            class="org.eclipse.ease.ui.preferences.SignaturePreferencePage"
+            id="org.eclipse.ease.preferences.signature"
+            name="Signature Properties">
+      </page>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
