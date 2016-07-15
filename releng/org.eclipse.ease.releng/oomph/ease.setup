@@ -7,12 +7,11 @@
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
     xmlns:mylyn="http://www.eclipse.org/oomph/setup/mylyn/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
-    xmlns:projects="http://www.eclipse.org/oomph/setup/projects/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.targlets="http://www.eclipse.org/oomph/setup/targlets/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/mylyn/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Mylyn.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/projects/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Projects.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/mylyn/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Mylyn.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/targlets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupTarglets.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore"
     name="ease"
     label="EASE">
   <setupTask
@@ -41,7 +40,9 @@
       name="Mylyn Integration">
     <setupTask
         xsi:type="mylyn:MylynBuildsTask"
-        serverURL="https://hudson.eclipse.org/ease">
+        serverURL="https://hudson.eclipse.org/ease"
+        userID="${bugzilla.id}"
+        password="${eclipse.user.password}">
       <buildPlan
           name="ease-build-core"/>
       <buildPlan
@@ -53,7 +54,9 @@
     </setupTask>
     <setupTask
         xsi:type="mylyn:MylynQueriesTask"
-        repositoryURL="https://bugs.eclipse.org/bugs">
+        repositoryURL="https://bugs.eclipse.org/bugs"
+        userID="${bugzilla.id}"
+        password="${eclipse.user.password}">
       <query
           summary="EASE bugs"
           url="https://bugs.eclipse.org/bugs/buglist.cgi?bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;product=Ease"/>
@@ -61,7 +64,9 @@
     <setupTask
         xsi:type="mylyn:MylynQueriesTask"
         connectorKind="org.eclipse.mylyn.gerrit"
-        repositoryURL="https://git.eclipse.org/r">
+        repositoryURL="https://git.eclipse.org/r"
+        userID="${bugzilla.id}"
+        password="${eclipse.user.password}">
       <query
           summary="EASE reviews">
         <attribute
@@ -122,6 +127,11 @@
   <project name="core"
       label="Core Framework">
     <setupTask
+        xsi:type="setup:EclipseIniTask"
+        option="-Doomph.redirection.ease"
+        value="=https://git.eclipse.org/c/ease/org.eclipse.ease.core.git/plain/releng/org.eclipse.ease.releng/oomph/ease.setup->${ease.core.git.clone.location|uri}/releng/org.eclipse.ease.releng/oomph/ease.setup"
+        vm="true"/>
+    <setupTask
         xsi:type="git:GitCloneTask"
         id="ease.core.git.clone"
         remoteURI="ease/org.eclipse.ease.core">
@@ -149,22 +159,14 @@
       <description>${scope.project.label}</description>
     </setupTask>
     <setupTask
-        xsi:type="projects:ProjectsImportTask">
-      <sourceLocator
-          rootFolder="${ease.core.git.clone.location}">
-        <excludedPath>developers</excludedPath>
-        <excludedPath>plugins/integration</excludedPath>
-        <excludedPath>features/org.eclipse.ease.integration.modeling.papyrus.feature</excludedPath>
-        <excludedPath>features/org.eclipse.ease.integration.modeling.uml.feature</excludedPath>
-      </sourceLocator>
-    </setupTask>
-    <setupTask
         xsi:type="setup.targlets:TargletTask"
         programArguments="-consolelog"
         vmArguments="-Xms40m -Xmx512M -XX:MaxPermSize=256m -ea">
       <targlet
           name="EASE Core"
           activeRepositoryList="${eclipse.target.platform}">
+        <requirement
+            name="*"/>
         <requirement
             name="org.eclipse.platform.feature.group"/>
         <requirement
@@ -189,6 +191,13 @@
             name="org.eclipse.wst.jsdt.feature.feature.group"/>
         <requirement
             name="org.eclipse.emf.feature.group"/>
+        <sourceLocator
+            rootFolder="${ease.core.git.clone.location}">
+          <excludedPath>developers</excludedPath>
+          <excludedPath>plugins/integration</excludedPath>
+          <excludedPath>features/org.eclipse.ease.integration.modeling.papyrus.feature</excludedPath>
+          <excludedPath>features/org.eclipse.ease.integration.modeling.uml.feature</excludedPath>
+        </sourceLocator>
         <repositoryList
             name="Neon">
           <repository
@@ -297,17 +306,14 @@
       <description>${scope.project.label} Modules</description>
     </setupTask>
     <setupTask
-        xsi:type="projects:ProjectsImportTask">
-      <sourceLocator
-          rootFolder="${ease.modules.git.clone.location}"/>
-    </setupTask>
-    <setupTask
         xsi:type="setup.targlets:TargletTask"
         programArguments="-consolelog"
         vmArguments="-Xms40m -Xmx512M -XX:MaxPermSize=256m -ea">
       <targlet
           name="EASE Modules"
           activeRepositoryList="${eclipse.target.platform}">
+        <requirement
+            name="*"/>
         <requirement
             name="org.eclipse.platform.feature.group"/>
         <requirement
@@ -366,6 +372,8 @@
             name="org.eclipse.ease.javascript.feature.feature.group"/>
         <requirement
             name="org.eclipse.ease.lang.jvm.feature.feature.group"/>
+        <sourceLocator
+            rootFolder="${ease.modules.git.clone.location}"/>
         <repositoryList
             name="Neon">
           <repository
