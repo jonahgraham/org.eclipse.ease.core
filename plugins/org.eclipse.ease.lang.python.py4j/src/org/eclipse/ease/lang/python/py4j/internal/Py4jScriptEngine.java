@@ -135,7 +135,13 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	private Process startPythonProcess(int javaListeningPort) throws IOException, MalformedURLException, URISyntaxException {
 		ProcessBuilder pb = new ProcessBuilder();
 
-		pb.environment().put("PYTHONPATH", getPy4jPythonSrc().toString());
+		String pythonPathBefore = pb.environment().get("PYTHONPATH");
+		StringBuilder pythonPath = new StringBuilder(pythonPathBefore == null ? "" : pythonPathBefore);
+		if (pythonPath.length() != 0) {
+			pythonPath.insert(0, File.pathSeparatorChar);
+		}
+		pythonPath.insert(0, getPy4jPythonSrc());
+		pb.environment().put("PYTHONPATH", pythonPath.toString());
 		String interpreter = Activator.getDefault().getPreferenceStore().getString(Py4JScriptEnginePrefConstants.INTERPRETER);
 		pb.command().add(interpreter);
 		pb.command().add("-u");
