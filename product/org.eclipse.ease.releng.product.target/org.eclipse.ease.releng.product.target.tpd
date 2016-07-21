@@ -1,9 +1,8 @@
-target "EASE Mars Product"
+target "EASE Neon Product"
 
 with source requirements
 
-// limit to only mars.2 repo for faster resolution
-location "http://download.eclipse.org/releases/mars/201602261000/" eclipse-mars-2 {
+location "http://download.eclipse.org/releases/neon/" eclipse-neon {
 	org.eclipse.platform.feature.group lazy
 	org.eclipse.platform.source.feature.group lazy
 	org.eclipse.equinox.executable.feature.group lazy
@@ -35,7 +34,6 @@ location "http://download.eclipse.org/releases/mars/201602261000/" eclipse-mars-
 	// modeling modules
 	org.eclipse.papyrus.infra.feature.feature.group lazy
 	org.eclipse.papyrus.infra.gmfdiag.feature.feature.group lazy
-	org.eclipse.papyrus.sysml.feature.feature.group lazy
 	org.eclipse.papyrus.uml.diagram.feature.feature.group lazy
 	org.eclipse.uml2.uml lazy
 	org.eclipse.gmf.runtime.diagram.ui lazy

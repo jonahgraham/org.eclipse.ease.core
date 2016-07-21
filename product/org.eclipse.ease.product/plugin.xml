@@ -14,7 +14,7 @@
           <!-- the rest of these properties are copied from org.eclipse.platform -->
           <property name="windowImages" value="eclipse16.png,eclipse32.png,eclipse48.png"/>
           <property name="aboutImage" value="eclipse_lg.png"/>
-          <property name="aboutText" value="An Eclipse Product to demo EASE. Based on Mars.2."/>
+          <property name="aboutText" value="An Eclipse Product to demo EASE. Based on Neon.0."/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="EASE Mars Product" sequenceNumber="1467292769">
+<target name="EASE Neon Product" sequenceNumber="1469097040">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
@@ -25,7 +25,6 @@
       <unit id="org.eclipse.mylyn.ide_feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.papyrus.infra.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.papyrus.infra.gmfdiag.feature.feature.group" version="0.0.0"/>
-      <unit id="org.eclipse.papyrus.sysml.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.papyrus.uml.diagram.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.uml2.uml" version="0.0.0"/>
       <unit id="org.eclipse.gmf.runtime.diagram.ui" version="0.0.0"/>
@@ -37,7 +36,7 @@
       <unit id="org.eclipse.team.svn.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-      <repository id="eclipse-mars-2" location="http://download.eclipse.org/releases/mars/201602261000/"/>
+      <repository id="eclipse-neon" location="http://download.eclipse.org/releases/neon/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.ease.engine.jython.feature.feature.group" version="2.7.0.I201604140914"/>
