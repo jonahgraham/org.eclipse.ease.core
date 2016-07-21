@@ -14,6 +14,7 @@ package org.eclipse.ease.ui.completion;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 /**
  * Dispatcher class create code completion proposals.
@@ -145,9 +147,9 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 * @param i
 	 * @return
 	 */
-	public List<ScriptCompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset,
-			final int selectionRange, final IProgressMonitor monitor) {
-		final LinkedList<ScriptCompletionProposal> proposals = new LinkedList<ScriptCompletionProposal>();
+	public List<ICompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset, final int selectionRange,
+			final IProgressMonitor monitor) {
+		final LinkedList<ICompletionProposal> proposals = new LinkedList<ICompletionProposal>();
 
 		final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
 
@@ -157,8 +159,7 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 
 					proposals.addAll(provider.getProposals(context));
 			} catch (Exception ex) {
-				Logger.error(Activator.PLUGIN_ID,
-						"Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">",ex);
+				Logger.error(Activator.PLUGIN_ID, "Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">", ex);
 			}
 		}
 
@@ -181,8 +182,17 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 
 	@Override
 	public IContentProposal[] getProposals(final String contents, final int position) {
-		final List<ScriptCompletionProposal> proposals = getCompletionProposals(null, contents, position, 0, null);
-		Collections.sort(proposals);
+		final List<ICompletionProposal> proposals = getCompletionProposals(null, contents, position, 0, null);
+		Collections.sort(proposals, new Comparator<ICompletionProposal>() {
+
+			@Override
+			public int compare(final ICompletionProposal o1, final ICompletionProposal o2) {
+				if ((o1 instanceof ScriptCompletionProposal) && (o1 instanceof ScriptCompletionProposal))
+					return ((ScriptCompletionProposal) o1).compareTo((ScriptCompletionProposal) o2);
+
+				return o1.getDisplayString().compareTo(o2.getDisplayString());
+			}
+		});
 
 		return proposals.toArray(new IContentProposal[proposals.size()]);
 	}

@@ -15,6 +15,8 @@ import org.eclipse.ease.AbstractCodeParser;
 public class PythonCodeParser extends AbstractCodeParser {
 
 	private static final String LINE_COMMENT = "#";
+	private static final String BLOCK_COMMENT_START = "\"\"\"";
+	private static final String BLOCK_COMMENT_END = "\"\"\"";
 
 	@Override
 	protected String getLineCommentToken() {
@@ -23,16 +25,16 @@ public class PythonCodeParser extends AbstractCodeParser {
 
 	@Override
 	protected boolean hasBlockComment() {
-		return false;
+		return true;
 	}
 
 	@Override
 	protected String getBlockCommentEndToken() {
-		return null;
+		return BLOCK_COMMENT_END;
 	}
 
 	@Override
 	protected String getBlockCommentStartToken() {
-		return null;
+		return BLOCK_COMMENT_START;
 	}
 }

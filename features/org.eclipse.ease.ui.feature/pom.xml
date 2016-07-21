@@ -19,6 +19,4 @@
   </parent>
   <artifactId>org.eclipse.ease.ui.feature</artifactId>
   <packaging>eclipse-feature</packaging>
-
-  <name>EASE core UI feature</name>
 </project> 

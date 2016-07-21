@@ -25,17 +25,26 @@ public class AbstractCodeFactoryTest {
 	public void testCommentCreator() {
 		AbstractCodeFactory factory = mock(AbstractCodeFactory.class, Mockito.CALLS_REAL_METHODS);
 		assertEquals("// Comment", factory.createCommentedString("Comment"));
-		assertEquals(String.format("// Multi%n// Line%n// Comment"),
-				factory.createCommentedString("Multi\nLine\nComment"));
+		assertEquals(String.format("// Multi%n// Line%n// Comment"), factory.createCommentedString("Multi\nLine\nComment"));
 	}
 
 	@Test
 	public void testCommentCreatorCustomToken() {
 		AbstractCodeFactory factory = mock(AbstractCodeFactory.class);
-		when(factory.getSingleLineCommentToken()).thenReturn("# ");
+
 		when(factory.createCommentedString(anyString())).thenCallRealMethod();
+		when(factory.createCommentedString(anyString(), Mockito.anyBoolean())).thenCallRealMethod();
+
+		when(factory.getSingleLineCommentToken()).thenReturn("# ");
 		assertEquals("# Comment", factory.createCommentedString("Comment"));
-		assertEquals(String.format("# Multi%n# Line%n# Comment"),
-				factory.createCommentedString("Multi\nLine\nComment"));
+		assertEquals(String.format("# Multi%n# Line%n# Comment"), factory.createCommentedString("Multi\nLine\nComment"));
+
+		when(factory.getMultiLineCommentStartToken()).thenReturn("/*");
+		when(factory.getMultiLineCommentEndToken()).thenReturn("*/");
+		assertEquals(String.format("/*Multi%nLine%nComment*/"), factory.createCommentedString("Multi\nLine\nComment", true));
+
+		when(factory.getMultiLineCommentStartToken()).thenReturn("\"\"\"");
+		when(factory.getMultiLineCommentEndToken()).thenReturn("\"\"\"");
+		assertEquals(String.format("\"\"\"Multi%nLine%nComment\"\"\""), factory.createCommentedString("Multi\nLine\nComment", true));
 	}
 }

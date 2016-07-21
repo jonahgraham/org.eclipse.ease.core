@@ -80,7 +80,7 @@ public final class ModuleHelper {
 
 		final List<Field> fields = new ArrayList<Field>();
 		final boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
-		for (final Field field : clazz.getDeclaredFields()) {
+		for (final Field field : clazz.getFields()) {
 			if ((Modifier.isFinal(field.getModifiers()))
 					&& (Modifier.isPublic(field.getModifiers()) && (!wrapping || field.isAnnotationPresent(WrapToScript.class))))
 				fields.add(field);

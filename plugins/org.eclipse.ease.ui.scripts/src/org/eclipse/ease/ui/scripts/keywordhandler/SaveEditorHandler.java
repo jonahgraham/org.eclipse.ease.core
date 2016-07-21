@@ -52,9 +52,11 @@ public class SaveEditorHandler implements EventHandler, IPartListener, IProperty
 		IPartService service = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getService(IPartService.class);
 		service.addPartListener(this);
 
-		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-		if (editor != null)
-			editor.addPropertyListener(this);
+		if (PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null) {
+			IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+			if (editor != null)
+				editor.addPropertyListener(this);
+		}
 	}
 
 	@Override

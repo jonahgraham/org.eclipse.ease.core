@@ -201,14 +201,28 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 		return "// ";
 	}
 
+	protected abstract String getMultiLineCommentStartToken();
+
+	protected abstract String getMultiLineCommentEndToken();
+
 	/**
 	 * Provide a default implementation that adds a single line comment token to the beginning of each line of the comment. Extenders can override
 	 * {@link #getSingleLineCommentToken()} to return that token.
 	 */
 	@Override
 	public String createCommentedString(String comment) {
-		String token = getSingleLineCommentToken();
-		Stream<String> split = Pattern.compile("\r?\n").splitAsStream(comment);
-		return split.map(s -> token + s).collect(Collectors.joining(System.lineSeparator()));
+		return createCommentedString(comment, false);
+	}
+
+	@Override
+	public String createCommentedString(String comment, boolean addBlockComment) {
+		if (addBlockComment) {
+			return getMultiLineCommentStartToken() + comment + getMultiLineCommentEndToken();
+
+		} else {
+			String token = getSingleLineCommentToken();
+			Stream<String> split = Pattern.compile("\r?\n").splitAsStream(comment);
+			return split.map(s -> token + s).collect(Collectors.joining(System.lineSeparator()));
+		}
 	}
 }

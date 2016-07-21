@@ -54,4 +54,6 @@ public interface IPreferenceConstants {
 	String SCRIPTS_ALLOW_REMOTE_ACCESS = "scriptRemoteAccess";
 	boolean DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS = false;
 
+	String RUN_WITHOUT_SIGN_LOCAL = "runWithoutSignLocal";
+	String RUN_WITHOUT_SIGN_REMOTE = "runWithoutSignRemote";
 }

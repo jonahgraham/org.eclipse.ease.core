@@ -146,4 +146,16 @@ public interface ICodeFactory {
 	 * @return the comment with comment tokens.
 	 */
 	String createCommentedString(String comment);
+
+	/**
+	 * Create code for the provided comment. Typically line or block comment tokens will be added around the comment. Start block comment token will be added
+	 * immediately before comment and end block comment token will be added immediately after comment. Format comment properly to get proper result.
+	 *
+	 * @param comment
+	 *            the comment
+	 * @param addBlockComment
+	 *            <code>true</code> for adding block comment or <code>false</code> for adding single line comment
+	 * @return the comment with comment tokens.
+	 */
+	String createCommentedString(String comment, boolean addBlockComment);
 }

@@ -5,9 +5,9 @@ Bundle-SymbolicName: org.eclipse.ease.ui.test;singleton:=true
 Bundle-Version: 0.4.0.qualifier
 Fragment-Host: org.eclipse.ease.ui;bundle-version="0.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.junit,
- org.eclipse.help,
- org.eclipse.help.ui;bundle-version="4.0.100",
- org.eclipse.help.webapp;bundle-version="3.7.0",
- org.eclipse.equinox.http.jetty;bundle-version="3.1.0",
- org.eclipse.ui.browser;bundle-version="3.4.300"
+Require-Bundle: org.junit;bundle-version="[4.11.0,5.0.0)",
+ org.eclipse.help;bundle-version="[3.6.0,4.0.0)",
+ org.eclipse.help.ui;bundle-version="[4.0.100,5.0.0)",
+ org.eclipse.help.webapp;bundle-version="[3.6.200,4.0.0)",
+ org.eclipse.equinox.http.jetty;bundle-version="[3.0.100,4.0.0)",
+ org.eclipse.ui.browser;bundle-version="[3.4.100,4.0.0)"

@@ -19,6 +19,4 @@
   </parent>
   <artifactId>org.eclipse.ease.feature</artifactId>
   <packaging>eclipse-feature</packaging>
-
-  <name>EASE Core feature</name>
 </project> 

@@ -120,7 +120,12 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		fContext.setInstructionObserverThreshold(10);
 
 		// enable JS v1.8 language constructs
-		fContext.setLanguageVersion(Context.VERSION_1_8);
+		try {
+			Context.class.getDeclaredField("VERSION_1_8");
+			fContext.setLanguageVersion(Context.VERSION_1_8);
+		} catch (Exception e) {
+			fContext.setLanguageVersion(Context.VERSION_1_7);
+		}
 	}
 
 	@Override

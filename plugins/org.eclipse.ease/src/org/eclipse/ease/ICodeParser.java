@@ -13,6 +13,9 @@ package org.eclipse.ease;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.eclipse.ease.sign.ScriptSignatureException;
+import org.eclipse.ease.sign.SignatureInfo;
+
 /**
  * Parser interface for source code parsers to extract script keywords. The parser should fetch the very first comment in a source stream and extract key:value
  * pairs. Where keys are single words followed by a ':'. The rest of the line should be treated as value.
@@ -53,4 +56,16 @@ public interface ICodeParser {
 	 * @return {@link ICompletionContext} with parsed information if successful, <code>null</code> in case invalid syntax given.
 	 */
 	ICompletionContext getContext(IScriptEngine scriptEngine, Object resource, String contents, int position, int selectionRange);
+
+	/**
+	 * Gets signature, certificates, provider and message-digest algorithm of signature, and content excluding signature block.
+	 *
+	 * @param stream
+	 *            provide {@link InputStream} to get signature from
+	 * @return {@link SignatureInfo} instance containing signature, certificates, provider and message-digest algorithm, and content excluding signature block
+	 *         or <code>null</code> if signature is not found or is not in proper format
+	 * @throws ScriptSignatureException
+	 *             when there is text after signature block or error occurs while reading from provided input stream
+	 */
+	SignatureInfo getSignatureInfo(InputStream stream) throws ScriptSignatureException;
 }

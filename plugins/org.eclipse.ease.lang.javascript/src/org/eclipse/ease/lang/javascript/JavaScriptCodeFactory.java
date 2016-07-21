@@ -202,4 +202,15 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 
 		return data;
 	}
+
+	@Override
+	protected String getMultiLineCommentStartToken() {
+		return "/*";
+	}
+
+	@Override
+	protected String getMultiLineCommentEndToken() {
+		return "*/";
+	}
+
 }
