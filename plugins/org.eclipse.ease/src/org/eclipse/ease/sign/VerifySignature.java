@@ -11,6 +11,7 @@
 
 package org.eclipse.ease.sign;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -49,27 +50,99 @@ public class VerifySignature {
 	private final SignatureInfo fSignatureInfo;
 
 	/**
-	 * Use this constructor to use methods of this class.
+	 * Use this method to get constructor when signature is attached to script file.
 	 *
 	 * @param scriptType
 	 *            provide {@link ScriptType} instance of stream for script
 	 * @param inputStream
 	 *            provide stream of script to verify
+	 * @return instance of {@link VerifySignature} when signature is present and can be properly loaded or null when signature is not present
 	 * @throws ScriptSignatureException
 	 *             when one or more parameters are not provided or signature format is improper
 	 */
-	public VerifySignature(final ScriptType scriptType, final InputStream inputStream) throws ScriptSignatureException {
+	public static VerifySignature getInstance(final ScriptType scriptType, final InputStream inputStream) throws ScriptSignatureException {
+		return getInstance(scriptType, inputStream, null);
+	}
+
+	/**
+	 * Use this method to get constructor when script contents and signature are separate. Use only when it is guaranteed that input stream of signature is for
+	 * corresponding input stream of file.
+	 *
+	 * @param scriptType
+	 *            provide {@link ScriptType} instance of stream for script
+	 * @param inputStream
+	 *            provide stream of script to verify
+	 * @param signatureInputStream
+	 *            provide stream where signature is stored
+	 * @return instance of {@link VerifySignature} when signature can be properly loaded or null when signature is not present
+	 * @throws ScriptSignatureException
+	 *             when one or more parameters are not provided or signature format is improper
+	 */
+	public static VerifySignature getInstance(final ScriptType scriptType, final InputStream inputStream, final InputStream signatureInputStream)
+			throws ScriptSignatureException {
 
 		if (scriptType == null || inputStream == null)
 			throw new ScriptSignatureException("One or more parameters are not provided");
 
 		ICodeParser iCodeParser = scriptType.getCodeParser();
-		fSignatureInfo = iCodeParser.getSignatureInfo(inputStream);
-		if (fSignatureInfo != null) {
-			if (fSignatureInfo.getSignature() == null || fSignatureInfo.getProvider() == null || fSignatureInfo.getMessageDigestAlgo() == null
-					|| fSignatureInfo.getCertificateChain() == null || fSignatureInfo.getContentOnly() == null)
-				throw new ScriptSignatureException("Error while parsing script. Try again.");
+		if (signatureInputStream == null) {
+			SignatureInfo signatureInfo = iCodeParser.getSignatureInfo(inputStream);
+			if (signatureInfo != null) {
+				if (signatureInfo.getSignature() == null || signatureInfo.getProvider() == null || signatureInfo.getMessageDigestAlgo() == null
+						|| signatureInfo.getCertificateChain() == null || signatureInfo.getContentOnly() == null)
+					throw new ScriptSignatureException("Error while parsing script. Try again.");
+
+				return new VerifySignature(signatureInfo);
+
+			} else
+				return null;
+
+		} else {
+			SignatureInfo signatureInfo = iCodeParser.getSignatureInfo(signatureInputStream);
+			if (signatureInfo != null) {
+				if (signatureInfo.getSignature() == null || signatureInfo.getProvider() == null || signatureInfo.getMessageDigestAlgo() == null
+						|| signatureInfo.getCertificateChain() == null)
+					throw new ScriptSignatureException("Error while parsing script. Try again.");
+
+				BufferedInputStream bInput = new BufferedInputStream(inputStream);
+				StringBuffer sBuf = new StringBuffer();
+
+				int cur;
+				try {
+					while ((cur = bInput.read()) >= 0)
+						sBuf.append((char) cur);
+
+					signatureInfo.setContentOnly(sBuf.toString());
+
+					return new VerifySignature(signatureInfo);
+
+				} catch (IOException e) {
+					Logger.error(Activator.PLUGIN_ID, e.getMessage(), e);
+					throw new ScriptSignatureException("An IO error occurred while reading file.", e);
+
+				} finally {
+					try {
+						if (bInput != null)
+							bInput.close();
+					} catch (IOException e) {
+						Logger.error(Activator.PLUGIN_ID, e.getMessage(), e);
+					}
+
+				}
+
+			} else
+				return null;
+
 		}
+	}
+
+	/**
+	 *
+	 * @param signatureInfo
+	 *            provide {@link SignatureInfo} containing the signature and contents of file on which signature was applied
+	 */
+	private VerifySignature(SignatureInfo signatureInfo) {
+		fSignatureInfo = signatureInfo;
 	}
 
 	/**

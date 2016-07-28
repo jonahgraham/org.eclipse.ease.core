@@ -13,7 +13,8 @@ package org.eclipse.ease.sign;
 
 public class SignatureInfo {
 
-	private final String fSignature, fProvider, fMessageDigestAlgo, fCertificates[], fContentOnly;
+	private final String fSignature, fProvider, fMessageDigestAlgo, fCertificates[];
+	private String fContentOnly;
 
 	/**
 	 * Public constructor to store variables related to signature of script. It is preferable to provide the required values.
@@ -101,5 +102,15 @@ public class SignatureInfo {
 	 */
 	public String getContentOnly() {
 		return fContentOnly;
+	}
+
+	/**
+	 * Set content corresponding to signature explicitly. Helpful when content and signature are not all in single file.
+	 *
+	 * @param fileContent
+	 *            provide file content corresponding to the stored signature
+	 */
+	public void setContentOnly(String fileContent) {
+		fContentOnly = fileContent;
 	}
 }

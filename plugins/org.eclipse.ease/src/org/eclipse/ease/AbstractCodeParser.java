@@ -201,7 +201,8 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				StringBuffer contentOnlyBuffer = new StringBuffer(contentBuffer);
 				// remove an extra \n character at end. Since this content is used for verification. Same script is required in contentOnly as it was before
 				// signing
-				contentOnlyBuffer.deleteCharAt(contentOnlyBuffer.length() - 1);
+				if (contentOnlyBuffer.length() > 0)
+					contentOnlyBuffer.deleteCharAt(contentOnlyBuffer.length() - 1);
 
 				contentBuffer.append(prev + "\n");
 				if (!prev.equals(getBlockCommentStartToken())) {
