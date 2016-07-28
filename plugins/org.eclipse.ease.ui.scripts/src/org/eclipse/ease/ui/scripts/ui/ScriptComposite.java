@@ -18,8 +18,10 @@ import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -78,9 +80,11 @@ public class ScriptComposite extends Composite implements EventHandler {
 
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 
+		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
 		treeViewer = new TreeViewer(this, SWT.BORDER);
 
-		treeViewer.setLabelProvider(new LabelProvider() {
+		treeViewer.setContentProvider(new ScriptContentProvider());
+		treeViewer.setLabelProvider(new DecoratingLabelProvider(new LabelProvider() {
 			@Override
 			public String getText(final Object element) {
 				if (element instanceof IPath)
@@ -102,8 +106,7 @@ public class ScriptComposite extends Composite implements EventHandler {
 
 				return super.getImage(element);
 			}
-		});
-		treeViewer.setContentProvider(new ScriptContentProvider());
+		}, decorator));
 
 		treeViewer.setComparator(new ViewerComparator() {
 			@Override
