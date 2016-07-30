@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.AbstractCodeParser;
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.ICodeParser;
@@ -35,6 +36,7 @@ import org.eclipse.ease.sign.VerifySignature;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryPackage;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
 import org.eclipse.emf.common.notify.Notification;
@@ -598,6 +600,39 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	@Override
 	public Boolean getSignatureState() {
 		return signatureState;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.eclipse.ease.ui.scripts.repository.IScript#setUserParameter(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void setUserKeyword(String keyword, String value) {
+		final String oldContent = getKeywords().get(keyword);
+
+		if (value == null)
+			getUserKeywords().remove(keyword);
+		else
+			getUserKeywords().put(keyword, value);
+
+		final String newContent = getKeywords().get(keyword);
+
+		if (newContent != oldContent)
+			// changed script parameters, push events
+			fireKeywordEvent(keyword, newContent, oldContent);
+	}
+
+	public void fireKeywordEvent(final String key, final String value, final String oldValue) {
+		final Object service = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		if (service instanceof IEventBroker) {
+			final HashMap<String, Object> eventData = new HashMap<>();
+			eventData.put("script", this);
+			eventData.put("keyword", key);
+			eventData.put("value", value);
+			eventData.put("oldValue", oldValue);
+			((IEventBroker) service).post(IRepositoryService.BROKER_CHANNEL_SCRIPT_KEYWORDS + key, eventData);
+		}
 	}
 
 } // ScriptImpl

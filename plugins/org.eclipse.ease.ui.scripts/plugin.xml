@@ -98,6 +98,13 @@
             id="org.eclipse.ease.commands.script.refreshRepository"
             name="Refresh Repository">
       </command>
+      <command
+            categoryId="org.eclipse.ease.commands.category.script"
+            defaultHandler="org.eclipse.ease.ui.scripts.handler.CreateUserKeyword"
+            description="Create a new user keyword"
+            id="org.eclipse.ease.commands.script.addKeyword"
+            name="Add Keyword">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -137,6 +144,16 @@
                icon="icons/elcl16/start_script_recording.png"
                label="Toggle Script Recording"
                style="toggle">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ease.scripts.properties.allKeywords">
+         <command
+               commandId="org.eclipse.ease.commands.script.addKeyword"
+               icon="icons/elcl16/new_keyword.png"
+               label="Add Keyword..."
+               style="push">
          </command>
       </menuContribution>
    </extension>
@@ -284,5 +301,64 @@
             </objectClass>
          </enablement>
       </decorator>
+   </extension>
+     <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+      <propertyContributor
+            contributorId="org.eclipse.ease.ui.views.scriptExplorerView">
+         <propertyCategory
+               category="org.eclipse.ease.properties.scripts"></propertyCategory>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs
+            contributorId="org.eclipse.ease.ui.views.scriptExplorerView">
+         <propertyTab
+               category="org.eclipse.ease.properties.scripts"
+               id="org.eclipse.ease.ui.scripts.propertyTab.uiintegration"
+               image="icons/eobj16/script_ui_integration.png"
+               label="UI Integration">
+         </propertyTab>
+         <propertyTab
+               afterTab="org.eclipse.ease.ui.scripts.propertyTab.uiintegration"
+               category="org.eclipse.ease.properties.scripts"
+               id="org.eclipse.ease.ui.scripts.propertyTab.allkeywords"
+               image="icons/eobj16/script_keywords.png"
+               label="All Keywords">
+         </propertyTab>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections
+            contributorId="org.eclipse.ease.ui.views.scriptExplorerView">
+         <propertySection
+               class="org.eclipse.ease.ui.scripts.properties.ScriptUIIntegrationSection"
+               id="org.eclipse.ease.ui.scripts.propertySectionGlobal"
+               tab="org.eclipse.ease.ui.scripts.propertyTab.uiintegration">
+            <input
+                  type="org.eclipse.ease.ui.scripts.repository.IScript">
+            </input>
+         </propertySection>
+         <propertySection
+               class="org.eclipse.ease.ui.scripts.properties.AllKeywordsSection"
+               id="org.eclipse.ease.ui.scripts.propertySectionAllKeywords"
+               tab="org.eclipse.ease.ui.scripts.propertyTab.allkeywords">
+            <input
+                  type="org.eclipse.ease.ui.scripts.repository.IScript">
+            </input>
+         </propertySection>
+      </propertySections>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.ui"
+            class="org.eclipse.ease.ui.scripts.properties.TestView"
+            id="org.eclipse.ease.ui.scripts.view1"
+            name="TestView"
+            restorable="true">
+      </view>
    </extension>
 </plugin>

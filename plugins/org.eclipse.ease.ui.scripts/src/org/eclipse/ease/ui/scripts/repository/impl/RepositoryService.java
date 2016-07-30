@@ -12,6 +12,7 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -455,5 +456,25 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		}
 
 		PreferencesHelper.removeLocation(locationURI);
+	}
+
+	/**
+	 * Get a collection of all officially supported keywords. There might be handlers available that do not register themselves. These cannot be tracked here.
+	 *
+	 * @return collection of supported keywords
+	 */
+	public static Collection<String> getSupportedKeywords() {
+		final Collection<String> keywords = new HashSet<>();
+
+		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_KEYWORD_ID);
+		for (final IConfigurationElement e : config) {
+
+			if (EXTENSION_KEYWORD_HANDLER.equals(e.getName())) {
+				final String handlerKeywords = e.getAttribute(EXTENSION_KEYWORD_HANDLER_KEYWORDS);
+				keywords.addAll(Arrays.asList(handlerKeywords.split(",")));
+			}
+		}
+
+		return keywords;
 	}
 }

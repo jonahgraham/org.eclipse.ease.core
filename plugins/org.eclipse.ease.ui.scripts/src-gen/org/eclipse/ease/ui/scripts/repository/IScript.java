@@ -206,4 +206,5 @@ public interface IScript extends IRawLocation {
 	 */
 	Boolean getSignatureState();
 
+	void setUserKeyword(String keyword, String value);
 } // IScript

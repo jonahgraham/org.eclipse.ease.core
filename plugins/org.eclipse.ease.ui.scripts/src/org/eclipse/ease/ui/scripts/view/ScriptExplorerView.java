@@ -19,8 +19,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 
-public class ScriptExplorerView extends ViewPart {
+public class ScriptExplorerView extends ViewPart implements ITabbedPropertySheetPageContributor {
 	public ScriptExplorerView() {
 	}
 
@@ -45,10 +48,25 @@ public class ScriptExplorerView extends ViewPart {
 					((IScript) element).run();
 			}
 		});
+
+		getSite().setSelectionProvider(fScriptComposite.getSelectionProvider());
+
+	}
+
+	public Object getAdapter(Class adapter) {
+		if (adapter == IPropertySheetPage.class)
+			return new TabbedPropertySheetPage(this);
+		
+		return super.getAdapter(adapter);
 	}
 
 	@Override
 	public void setFocus() {
 		fScriptComposite.setFocus();
+	}
+
+	@Override
+	public String getContributorId() {
+		return VIEW_ID;
 	}
 }

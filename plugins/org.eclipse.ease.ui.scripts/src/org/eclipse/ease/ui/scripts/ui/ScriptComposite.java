@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelDecorator;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -80,7 +81,7 @@ public class ScriptComposite extends Composite implements EventHandler {
 
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
+		final ILabelDecorator decorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator();
 		treeViewer = new TreeViewer(this, SWT.BORDER);
 
 		treeViewer.setContentProvider(new ScriptContentProvider());
@@ -130,7 +131,7 @@ public class ScriptComposite extends Composite implements EventHandler {
 
 		// add dynamic context menu entries
 		final IMenuService menuService = PlatformUI.getWorkbench().getService(IMenuService.class);
-		ScriptContextMenuEntries popupContributionFactory = new ScriptContextMenuEntries("popup:" + site.getId());
+		final ScriptContextMenuEntries popupContributionFactory = new ScriptContextMenuEntries("popup:" + site.getId());
 		menuService.addContributionFactory(popupContributionFactory);
 		menuManager.setRemoveAllWhenShown(true);
 
@@ -140,7 +141,7 @@ public class ScriptComposite extends Composite implements EventHandler {
 		ScriptDragSource.addDragSupport(treeViewer);
 
 		// add listener for script additions/removals/renames
-		IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		final IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
 		fEventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPTS_NEW, this);
 		fEventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPTS_REMOVED, this);
 		fEventBroker.subscribe(IRepositoryService.BROKER_CHANNEL_SCRIPT_KEYWORDS + "name", this);
@@ -153,7 +154,7 @@ public class ScriptComposite extends Composite implements EventHandler {
 
 	@Override
 	public void dispose() {
-		IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		final IEventBroker fEventBroker = PlatformUI.getWorkbench().getService(IEventBroker.class);
 		fEventBroker.unsubscribe(this);
 
 		super.dispose();
@@ -180,5 +181,14 @@ public class ScriptComposite extends Composite implements EventHandler {
 				treeViewer.refresh();
 			}
 		});
+	}
+
+	/**
+	 * Get the selection provider of this composite.
+	 * 
+	 * @return selection provider instance (might be <code>null</code>)
+	 */
+	public ISelectionProvider getSelectionProvider() {
+		return treeViewer;
 	}
 }
