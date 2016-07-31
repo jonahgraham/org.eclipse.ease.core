@@ -170,6 +170,12 @@
             id="org.eclipse.ease.preferences.scriptLocations"
             name="Script Locations">
       </page>
+      <page
+            category="org.eclipse.ease.preferences.root"
+            class="org.eclipse.ease.ui.scripts.preferences.SignaturePreferencePage"
+            id="org.eclipse.ease.preferences.signature"
+            name="Signature Properties">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.services">
@@ -262,5 +268,21 @@
             touchpointVersion="1.0.0"
             version="1.0.0">
       </action>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipse.ease.ui.scripts.ui.Decorator"
+            id="org.eclipse.ease.ui.scripts.decorator.signatureState"
+            label="Signature State"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.ease.ui.scripts.repository.IScript">
+            </objectClass>
+         </enablement>
+      </decorator>
    </extension>
 </plugin>

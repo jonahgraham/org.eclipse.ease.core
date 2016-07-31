@@ -20,10 +20,10 @@ public interface ISignatureConstants {
 	public static final String END_STRING = "-----END SIGNATURE-----";
 
 	// parameters format for signature block
-	public static final String HASH_PARAM = "Hash";
-
-	// parameters format for signature block
-	public static final String PROVIDER_PARAM = "Provider";
+	public static final String HASH_PARAM_TAG = "hash:";
+	public static final String PROVIDER_PARAM_TAG = "provider:";
+	public static final String CERTIFICATE_TAG = "certificate/s:";
+	public static final String SIGNATURE_TAG = "signature:";
 
 	// set default message digest algorithm
 	public static final String DEFAULT_MESSAGE_DIGEST_ALGO = "SHA256";

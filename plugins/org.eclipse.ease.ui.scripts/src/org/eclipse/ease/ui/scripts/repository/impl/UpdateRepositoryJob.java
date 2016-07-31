@@ -24,6 +24,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ease.ui.scripts.repository.IScriptLocation;
+import org.eclipse.ease.ui.scripts.ui.Decorator;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 
 public class UpdateRepositoryJob extends Job {
 
@@ -64,7 +67,7 @@ public class UpdateRepositoryJob extends Job {
 					} else {
 						try {
 							new HttpParser().parse(((URI) content).toURL().toString(), location);
-						} catch (MalformedURLException e) {
+						} catch (final MalformedURLException e) {
 							// not a valid URL, ignore repository
 						}
 					}
@@ -85,6 +88,14 @@ public class UpdateRepositoryJob extends Job {
 
 		// save new state
 		fRepositoryService.save();
+
+		// update decorators
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				PlatformUI.getWorkbench().getDecoratorManager().update(Decorator.SIGN_DECORATOR_ID);
+			}
+		});
 
 		// re schedule job
 		// TODO make this editable by preferences

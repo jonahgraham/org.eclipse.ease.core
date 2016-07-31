@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.scripts;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -47,5 +49,9 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(final String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	public static IEclipsePreferences getPrefsNode() {
+		return InstanceScope.INSTANCE.getNode(PLUGIN_ID);
 	}
 }

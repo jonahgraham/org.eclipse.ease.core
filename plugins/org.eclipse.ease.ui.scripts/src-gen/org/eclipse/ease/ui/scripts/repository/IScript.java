@@ -64,8 +64,8 @@ public interface IScript extends IRawLocation {
 	void setTimestamp(long value);
 
 	/**
-	 * Returns the value of the '<em><b>Entry</b></em>' container reference. It is bidirectional and its opposite is
-	 * '{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#getScripts <em>Scripts</em>}'. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Entry</b></em>' container reference. It is bidirectional and its opposite is '
+	 * {@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#getScripts <em>Scripts</em>}'. <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Entry</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
@@ -193,5 +193,17 @@ public interface IScript extends IRawLocation {
 	 * @generated NOT
 	 */
 	void refreshScriptKeywords();
+
+	/**
+	 * Update signature state using the content of file.
+	 */
+	void updateSignatureState();
+
+	/**
+	 * Gets the signature state since last update.
+	 *
+	 * @return <code>true</code> is signature is valid or <code>false</code> if signature is invalid or <code>null</code> if signature is not present
+	 */
+	Boolean getSignatureState();
 
 } // IScript

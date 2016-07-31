@@ -30,6 +30,8 @@ import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
+import org.eclipse.ease.sign.ScriptSignatureException;
+import org.eclipse.ease.sign.VerifySignature;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryPackage;
@@ -99,6 +101,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 * @ordered
 	 */
 	protected EMap<String, String> userKeywords;
+
+	/**
+	 * The cached value of {@link #getSignatureState()}.
+	 */
+	protected Boolean signatureState = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -196,6 +203,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (scriptKeywords == null) {
 			scriptKeywords = new EcoreEMap<>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this, IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS);
 		}
+
 		return scriptKeywords;
 	}
 
@@ -570,4 +578,26 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			}
 		}
 	}
+
+	@Override
+	public void updateSignatureState() {
+		final ScriptType type = getType();
+		if (type != null) {
+			try {
+				final VerifySignature verifySignature = VerifySignature.getInstance(type, getInputStream());
+
+				// update signature state
+				signatureState = (verifySignature == null) ? null : verifySignature.verify();
+
+			} catch (final ScriptSignatureException e) {
+				Logger.error(org.eclipse.ease.ui.scripts.Activator.PLUGIN_ID, e.getMessage(), e);
+			}
+		}
+	}
+
+	@Override
+	public Boolean getSignatureState() {
+		return signatureState;
+	}
+
 } // ScriptImpl

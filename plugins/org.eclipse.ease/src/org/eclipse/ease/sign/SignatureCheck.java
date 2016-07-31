@@ -9,20 +9,19 @@
  *     Varun Raval - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.ui.launching;
+package org.eclipse.ease.sign;
 
 import java.io.InputStream;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.ease.service.ScriptType;
-import org.eclipse.ease.sign.ScriptSignatureException;
-import org.eclipse.ease.sign.VerifySignature;
-import org.eclipse.ease.ui.Activator;
-import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 
 public class SignatureCheck {
+
+	public static final String PLUGIN_EASE_UI_SCRIPTS_ID = "org.eclipse.ease.ui.scripts";
 
 	/**
 	 * Use result of this method directly to know whether to run remote/local scripts.
@@ -37,12 +36,12 @@ public class SignatureCheck {
 	 */
 	public static boolean canExecute(ScriptType scriptType, InputStream inputStream, boolean remote) {
 		try {
-			VerifySignature verifySignature = VerifySignature.getInstance(scriptType, inputStream);
+			final VerifySignature verifySignature = VerifySignature.getInstance(scriptType, inputStream);
 
-			final IPreferenceStore prefs = Activator.getDefault().getPreferenceStore();
+			final IPreferencesService prefs = Platform.getPreferencesService();
 
 			if (remote) {
-				boolean executeRemote = prefs.getBoolean(IPreferenceConstants.RUN_WITHOUT_SIGN_REMOTE);
+				final boolean executeRemote = prefs.getBoolean(PLUGIN_EASE_UI_SCRIPTS_ID, IPreferenceConstants.RUN_WITHOUT_SIGN_REMOTE, false, null);
 
 				if (executeRemote) {
 					// can execute remote scripts without signature
@@ -60,7 +59,7 @@ public class SignatureCheck {
 				}
 
 			} else {
-				boolean executeLocal = prefs.getBoolean(IPreferenceConstants.RUN_WITHOUT_SIGN_LOCAL);
+				final boolean executeLocal = prefs.getBoolean(PLUGIN_EASE_UI_SCRIPTS_ID, IPreferenceConstants.RUN_WITHOUT_SIGN_LOCAL, false, null);
 
 				if (executeLocal) {
 					// can execute local scripts without signature
@@ -78,7 +77,7 @@ public class SignatureCheck {
 				}
 			}
 
-		} catch (ScriptSignatureException e) {
+		} catch (final ScriptSignatureException e) {
 			return showErrorMessage(e.getMessage());
 		}
 	}
@@ -107,7 +106,7 @@ public class SignatureCheck {
 				return showErrorMessage("File modified after applying signature");
 			}
 
-		} catch (ScriptSignatureException e) {
+		} catch (final ScriptSignatureException e) {
 			return showErrorMessage("Signature can't be verified. " + e.getMessage());
 
 		}
@@ -122,8 +121,8 @@ public class SignatureCheck {
 	 *         disposes message dialog
 	 */
 	private static boolean showErrorMessage(String msg) {
-		MessageDialog messageDialog = new MessageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error checking signature", null, msg,
-				MessageDialog.QUESTION, new String[] { "Don't Execute", "Execute" }, 0);
+		final MessageDialog messageDialog = new MessageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Error checking signature", null,
+				msg, MessageDialog.QUESTION, new String[] { "Don't Execute", "Execute" }, 0);
 
 		switch (messageDialog.open()) {
 		case 0:

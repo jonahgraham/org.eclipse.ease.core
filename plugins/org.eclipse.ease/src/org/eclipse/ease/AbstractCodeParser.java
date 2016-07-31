@@ -155,13 +155,13 @@ public abstract class AbstractCodeParser implements ICodeParser {
 
 	@Override
 	public SignatureInfo getSignatureInfo(final InputStream stream) throws ScriptSignatureException {
-		BufferedReader bReader = new BufferedReader(new InputStreamReader(stream));
+		final BufferedReader bReader = new BufferedReader(new InputStreamReader(stream));
 		try {
 			String prev, cur;
 
 			// contentBuffer is used to get content excluding signature block. It is updated continuously because in rare cases, we may come to know that
 			// what we have read yet is not an actual signature block but part of original script.
-			StringBuffer contentBuffer = new StringBuffer();
+			final StringBuffer contentBuffer = new StringBuffer();
 
 			cur = bReader.readLine();
 			if (cur == null)
@@ -180,7 +180,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 						return null;
 				}
 
-				StringBuffer contentOnlyBuffer = new StringBuffer(contentBuffer);
+				final StringBuffer contentOnlyBuffer = new StringBuffer(contentBuffer);
 				// remove an extra \n character at end. Since this content is used for verification. Same script is required in contentOnly as it was before
 				// signing
 				if (contentOnlyBuffer.length() > 0)
@@ -198,30 +198,53 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				// else{ continue; } denote that signature in proper format is not yet found and can be found later. So, continue with finding BEGIN_STRING.
 				// else{ break; } denote that end of script is reached and so, return null.
 
-				String provider, messageDigestAlgo;
+				// hash param tag
 				cur = bReader.readLine();
 				if (cur != null) {
-					String params[] = cur.split(" ");
-					if (params.length == 2) {
-						String temp[] = params[0].split(":");
-						if (temp.length == 2 && temp[0].equalsIgnoreCase(ISignatureConstants.HASH_PARAM))
-							messageDigestAlgo = temp[1];
-						else {
-							prev = cur;
-							continue;
-						}
-						temp = params[1].split(":");
-						if (temp.length == 2 && temp[0].equalsIgnoreCase(ISignatureConstants.PROVIDER_PARAM))
-							provider = temp[1];
-						else {
-							prev = cur;
-							continue;
-						}
-
-					} else {
+					if (!cur.equals(ISignatureConstants.HASH_PARAM_TAG)) {
 						prev = cur;
 						continue;
 					}
+					contentBuffer.append(cur + "\n");
+				} else
+					break;
+
+				// hash value
+				String messageDigestAlgo;
+				cur = bReader.readLine();
+				if (cur != null) {
+					messageDigestAlgo = cur;
+					contentBuffer.append(cur + "\n");
+				} else
+					break;
+
+				// new line
+				cur = bReader.readLine();
+				if (cur != null) {
+					if (!cur.isEmpty()) {
+						prev = cur;
+						continue;
+					}
+					contentBuffer.append(cur + "\n");
+				} else
+					break;
+
+				// provider param tag
+				cur = bReader.readLine();
+				if (cur != null) {
+					if (!cur.equals(ISignatureConstants.PROVIDER_PARAM_TAG)) {
+						prev = cur;
+						continue;
+					}
+					contentBuffer.append(cur + "\n");
+				} else
+					break;
+
+				// provider value
+				String provider;
+				cur = bReader.readLine();
+				if (cur != null) {
+					provider = cur;
 					contentBuffer.append(cur + "\n");
 				} else
 					break;
@@ -237,19 +260,10 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				} else
 					break;
 
-				// following block fetches signature
-				String signature;
+				// signature tag
 				cur = bReader.readLine();
 				if (cur != null) {
-					signature = cur;
-					contentBuffer.append(cur + "\n");
-				} else
-					break;
-
-				// following block checks for empty line.
-				cur = bReader.readLine();
-				if (cur != null) {
-					if (!cur.isEmpty()) {
+					if (!cur.equals(ISignatureConstants.SIGNATURE_TAG)) {
 						prev = cur;
 						continue;
 					}
@@ -257,10 +271,10 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				} else
 					break;
 
-				// following block fetches certificates separated by colon(:)
-				StringBuffer certBuf = new StringBuffer();
-				while ((cur = bReader.readLine()) != null && !cur.isEmpty()) {
-					certBuf.append(cur);
+				// following block fetches signature
+				final StringBuffer signBuf = new StringBuffer();
+				while (((cur = bReader.readLine()) != null) && !cur.isEmpty()) {
+					signBuf.append(cur);
 					contentBuffer.append(cur + "\n");
 				}
 
@@ -271,6 +285,29 @@ public abstract class AbstractCodeParser implements ICodeParser {
 
 				cur = bReader.readLine();
 				if (cur != null) {
+					if (!cur.equals(ISignatureConstants.CERTIFICATE_TAG)) {
+						prev = cur;
+						continue;
+					}
+					contentBuffer.append(cur + "\n");
+				} else
+					break;
+
+				// following block fetches certificates separated by colon(:)
+				final StringBuffer certBuf = new StringBuffer();
+				while (((cur = bReader.readLine()) != null) && !cur.isEmpty()) {
+					certBuf.append(cur);
+					contentBuffer.append(cur + "\n");
+				}
+
+				if (cur == null)
+					break;
+
+				contentBuffer.append(cur + "\n");
+
+				// end string
+				cur = bReader.readLine();
+				if (cur != null) {
 					if (!cur.equals(ISignatureConstants.END_STRING)) {
 						prev = cur;
 						continue;
@@ -279,6 +316,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				} else
 					break;
 
+				// end comment token
 				cur = bReader.readLine();
 				if (cur != null) {
 					if (!cur.equals(getBlockCommentEndToken())) {
@@ -296,13 +334,14 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				if (cur != null)
 					throw new ScriptSignatureException("Text after signature is not allowed");
 				else {
-					String certificates[] = certBuf.toString().split(":");
+					final String signature = signBuf.toString();
+					final String certificates[] = certBuf.toString().split(":");
 					return new SignatureInfo(signature, provider, messageDigestAlgo, certificates, contentOnlyBuffer.toString());
 				}
 			}
 			return null;
 
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			Logger.error(Activator.PLUGIN_ID, "An IO error occurred while reading file.", e);
 			throw new ScriptSignatureException("An IO error occurred while reading file.", e);
 
@@ -310,7 +349,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 			try {
 				if (bReader != null)
 					bReader.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				Logger.error(Activator.PLUGIN_ID, "File already closed.", e);
 			}
 		}

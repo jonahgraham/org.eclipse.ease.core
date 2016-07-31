@@ -305,6 +305,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 		IScript script = getScriptByLocation(location);
 		final ScriptType scriptType = scriptService.getScriptType(location);
+
 		if (scriptType != null) {
 
 			if (script == null) {
@@ -328,6 +329,9 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			final Map<String, String> oldKeywords = script.getKeywords();
 			script.refreshScriptKeywords();
 			final Map<String, String> newKeywords = script.getKeywords();
+
+			// update decorator state
+			script.updateSignatureState();
 
 			if (!oldKeywords.equals(newKeywords)) {
 				// changed script keywords, push events
