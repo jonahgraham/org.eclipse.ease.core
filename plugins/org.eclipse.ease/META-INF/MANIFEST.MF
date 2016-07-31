@@ -16,6 +16,7 @@ Export-Package: org.eclipse.ease,
  org.eclipse.ease.engine,
  org.eclipse.ease.modules,
  org.eclipse.ease.service,
+ org.eclipse.ease.sign,
  org.eclipse.ease.tools,
  org.eclipse.ease.urlhandler
 Bundle-ActivationPolicy: lazy
