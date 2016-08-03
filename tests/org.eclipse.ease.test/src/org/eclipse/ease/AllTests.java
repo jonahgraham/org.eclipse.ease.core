@@ -9,7 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ResourceToolsTest.class, RunnableWithResultTest.class, AbstractCodeParserTest.class, ScriptResultTest.class, ScriptTest.class,
-	AbstractScriptEngineTest.class, ScriptableAdapterTest.class })
+		AbstractScriptEngineTest.class, ScriptableAdapterTest.class })
 public class AllTests {
 
 }

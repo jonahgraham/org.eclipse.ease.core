@@ -23,7 +23,7 @@ public class ObservingContextFactory extends ContextFactory {
 
 	@Override
 	protected synchronized void observeInstructionCount(final Context cx, final int instructionCount) {
-		if(mTerminationRequests.remove(cx))
+		if (mTerminationRequests.remove(cx))
 			throw new ExitException();
 
 		super.observeInstructionCount(cx, instructionCount);

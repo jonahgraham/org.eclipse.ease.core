@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.applications;
+ *******************************************************************************/
+package org.eclipse.ease.applications;
 
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;

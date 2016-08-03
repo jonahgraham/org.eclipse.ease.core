@@ -31,7 +31,7 @@ public abstract class ScriptDebugElement extends DebugElement implements ITermin
 
 	@Override
 	public ScriptDebugTarget getDebugTarget() {
-		return (ScriptDebugTarget)super.getDebugTarget();
+		return (ScriptDebugTarget) super.getDebugTarget();
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public abstract class ScriptDebugElement extends DebugElement implements ITermin
 	@Override
 	public boolean canStepInto() {
 		final ScriptDebugThread[] threads = getDebugTarget().getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			return threads[0].canStepInto();
 
 		return false;
@@ -113,7 +113,7 @@ public abstract class ScriptDebugElement extends DebugElement implements ITermin
 	@Override
 	public boolean canStepOver() {
 		final ScriptDebugThread[] threads = getDebugTarget().getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			return threads[0].canStepOver();
 
 		return false;
@@ -122,7 +122,7 @@ public abstract class ScriptDebugElement extends DebugElement implements ITermin
 	@Override
 	public boolean canStepReturn() {
 		final ScriptDebugThread[] threads = getDebugTarget().getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			return threads[0].canStepReturn();
 
 		return false;
@@ -131,21 +131,21 @@ public abstract class ScriptDebugElement extends DebugElement implements ITermin
 	@Override
 	public void stepInto() throws DebugException {
 		final ScriptDebugThread[] threads = getDebugTarget().getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			threads[0].stepInto();
 	}
 
 	@Override
 	public void stepOver() throws DebugException {
 		final ScriptDebugThread[] threads = getDebugTarget().getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			threads[0].stepOver();
 	}
 
 	@Override
 	public void stepReturn() throws DebugException {
 		final ScriptDebugThread[] threads = getDebugTarget().getThreads();
-		if(threads.length == 1)
+		if (threads.length == 1)
 			threads[0].stepReturn();
 	}
 }

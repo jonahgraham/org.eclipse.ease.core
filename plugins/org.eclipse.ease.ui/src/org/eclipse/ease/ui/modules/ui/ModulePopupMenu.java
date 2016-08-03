@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.modules.ui;
+ *******************************************************************************/
+package org.eclipse.ease.ui.modules.ui;
 
 import java.util.ArrayList;
 import java.util.Collections;

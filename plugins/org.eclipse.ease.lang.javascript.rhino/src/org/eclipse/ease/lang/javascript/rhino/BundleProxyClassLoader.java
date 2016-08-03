@@ -58,7 +58,7 @@ public class BundleProxyClassLoader extends ClassLoader {
 	@Override
 	protected Class loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
 		Class clazz = (mParent == null) ? findClass(name) : super.loadClass(name, false);
-		if(resolve)
+		if (resolve)
 			super.resolveClass(clazz);
 
 		return clazz;

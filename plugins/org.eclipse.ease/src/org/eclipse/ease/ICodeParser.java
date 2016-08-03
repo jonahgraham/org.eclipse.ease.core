@@ -30,13 +30,15 @@ public interface ICodeParser {
 	String getHeaderComment(final InputStream stream);
 
 	/**
-	 * Verify if a line of code is accepted before the header comment section. This allows special magic tokens to be placed before the header comment as some script languages depend on that.
+	 * Verify if a line of code is accepted before the header comment section. This allows special magic tokens to be placed before the header comment as some
+	 * script languages depend on that.
 	 * 
-	 * @param line line of code
+	 * @param line
+	 *            line of code
 	 * @return <code>true</code> when line is accepted before the comment header
 	 */
 	boolean isAcceptedBeforeHeader(final String line);
-	
+
 	/**
 	 * Parse the given piece of code into a language specific {@link ICompletionContext}.
 	 *

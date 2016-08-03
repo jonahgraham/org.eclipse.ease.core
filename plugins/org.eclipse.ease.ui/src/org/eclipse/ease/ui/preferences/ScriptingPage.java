@@ -66,8 +66,8 @@ public class ScriptingPage extends PreferencePage implements IWorkbenchPreferenc
 		boolean allowUIAccess = prefs.getBoolean(Activator.SCRIPTS_ALLOW_UI_ACCESS, Activator.DEFAULT_SCRIPTS_ALLOW_UI_ACCESS);
 		btnAllowUIAccess.setSelection(allowUIAccess);
 
-		boolean allowRemoteAccess = prefs
-				.getBoolean(IPreferenceConstants.SCRIPTS_ALLOW_REMOTE_ACCESS, IPreferenceConstants.DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS);
+		boolean allowRemoteAccess = prefs.getBoolean(IPreferenceConstants.SCRIPTS_ALLOW_REMOTE_ACCESS,
+				IPreferenceConstants.DEFAULT_SCRIPTS_ALLOW_REMOTE_ACCESS);
 		btnAllowRemoteAccess.setSelection(allowRemoteAccess);
 
 		super.performDefaults();

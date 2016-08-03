@@ -51,7 +51,7 @@ public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 
 	@Override
 	public synchronized ScriptDebugStackFrame getTopStackFrame() {
-		if(hasStackFrames())
+		if (hasStackFrames())
 			return fStackFrames.get(0);
 
 		return null;
@@ -104,18 +104,18 @@ public class ScriptDebugThread extends ScriptDebugElement implements IThread {
 	public synchronized void setStackFrames(final List<IScriptDebugFrame> debugFrames) {
 		// update stack frames
 		final List<ScriptDebugStackFrame> newStackFrames = new ArrayList<ScriptDebugStackFrame>(debugFrames.size());
-		for(final IScriptDebugFrame debugFrame : debugFrames) {
+		for (final IScriptDebugFrame debugFrame : debugFrames) {
 			// find existing StackFrame
 			ScriptDebugStackFrame stackFrame = null;
-			for(final ScriptDebugStackFrame oldStackFrame : fStackFrames) {
-				if(debugFrame.equals(oldStackFrame.getDebugFrame())) {
+			for (final ScriptDebugStackFrame oldStackFrame : fStackFrames) {
+				if (debugFrame.equals(oldStackFrame.getDebugFrame())) {
 					stackFrame = oldStackFrame;
 					stackFrame.setDirty();
 					break;
 				}
 			}
 
-			if(stackFrame == null)
+			if (stackFrame == null)
 				stackFrame = new ScriptDebugStackFrame(this, debugFrame);
 
 			newStackFrames.add(stackFrame);

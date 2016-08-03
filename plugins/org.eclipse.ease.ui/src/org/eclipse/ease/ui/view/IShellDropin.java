@@ -15,16 +15,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 /**
- * Interface for shell drop-ins. A shell drop-in is a composite adding
- * additional features to the script shell view. It resides in a sidebar of the
- * shell and is connected to the current script engine.
+ * Interface for shell drop-ins. A shell drop-in is a composite adding additional features to the script shell view. It resides in a sidebar of the shell and is
+ * connected to the current script engine.
  */
 public interface IShellDropin {
 
 	/**
-	 * Sets the script engine for this drop-in. If the engine is changed during
-	 * runtime, this method gets called another time. For all other scripting
-	 * events this drop-in should register a listener on the script engine.
+	 * Sets the script engine for this drop-in. If the engine is changed during runtime, this method gets called another time. For all other scripting events
+	 * this drop-in should register a listener on the script engine.
 	 * 
 	 * @param engine
 	 *            script engine used in shell view
@@ -38,8 +36,7 @@ public interface IShellDropin {
 	 *            workbench part site this drop-in is registered to
 	 * @param parent
 	 *            parent container to render in
-	 * @return composite created within parent container (may not be
-	 *         <code>null</code>)
+	 * @return composite created within parent container (may not be <code>null</code>)
 	 */
 	public Composite createPartControl(final IWorkbenchPartSite site, final Composite parent);
 

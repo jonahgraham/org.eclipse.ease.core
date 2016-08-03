@@ -95,9 +95,8 @@ public class VariablesDropin implements IShellDropin, IExecutionListener {
 					@Override
 					public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
 						final Object name = ((Entry<?, ?>) element).getKey();
-						if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name))
-								|| ("equals()".equals(name)) || ("getClass()".equals(name))
-								|| ("hashCode()".equals(name)) || ("toString()".equals(name)))
+						if (("wait()".equals(name)) || ("notify()".equals(name)) || ("notifyAll()".equals(name)) || ("equals()".equals(name))
+								|| ("getClass()".equals(name)) || ("hashCode()".equals(name)) || ("toString()".equals(name)))
 							return false;
 
 						return true;

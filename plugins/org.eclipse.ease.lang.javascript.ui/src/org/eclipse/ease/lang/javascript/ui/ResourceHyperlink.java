@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.lang.javascript.ui;
+ *******************************************************************************/
+package org.eclipse.ease.lang.javascript.ui;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.IRegion;

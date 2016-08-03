@@ -38,8 +38,8 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 
 		// copy existing text before keywords
 		if (existingHeader == null)
-			existingHeader="";
-		
+			existingHeader = "";
+
 		String[] existingLines = existingHeader.split("\\r?\\n");
 		int index = 0;
 		for (; index < existingLines.length; index++) {
@@ -263,7 +263,7 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 	 *
 	 * @return "/*"
 	 */
-	protected  String getMultiLineCommentStartToken() {
+	protected String getMultiLineCommentStartToken() {
 		return "/*";
 	}
 

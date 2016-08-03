@@ -63,8 +63,8 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static ImageDescriptor getImageDescriptor(final String bundleID, final String path) {
-		assert(bundleID != null) : "No bundle defined";
-		assert(path != null) : "No path defined";
+		assert (bundleID != null) : "No bundle defined";
+		assert (path != null) : "No path defined";
 
 		// if the bundle is not ready then there is no image
 		final Bundle bundle = Platform.getBundle(bundleID);
@@ -83,8 +83,8 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public static Image getImage(final String bundleID, final String path, final boolean storeToImageRegistry) {
-		assert(bundleID != null) : "No bundle defined";
-		assert(path != null) : "No path defined";
+		assert (bundleID != null) : "No bundle defined";
+		assert (path != null) : "No path defined";
 
 		Image image = getDefault().getImageRegistry().get(bundleID + path);
 		if (image == null) {

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease;
 
-
 public class BreakException extends ScriptExecutionException {
 
 	private static final long serialVersionUID = -4157933914171239048L;

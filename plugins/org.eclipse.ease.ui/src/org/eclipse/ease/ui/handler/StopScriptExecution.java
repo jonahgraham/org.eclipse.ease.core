@@ -20,12 +20,12 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class StopScriptExecution extends AbstractHandler implements IHandler {
 
-    @Override
-    public Object execute(final ExecutionEvent event) throws ExecutionException {
-        final IWorkbenchPart part = HandlerUtil.getActivePart(event);
-        if (part instanceof IScriptEngineProvider)
-            ((IScriptEngineProvider) part).getScriptEngine().terminateCurrent();
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		final IWorkbenchPart part = HandlerUtil.getActivePart(event);
+		if (part instanceof IScriptEngineProvider)
+			((IScriptEngineProvider) part).getScriptEngine().terminateCurrent();
 
-        return null;
-    }
+		return null;
+	}
 }

@@ -44,12 +44,12 @@ public class AbstractCodeParserTest {
 		protected String getLineCommentToken() {
 			return "//";
 		}
-		
+
 		@Override
 		protected String stripCommentLine(String commentLine) {
 			if (commentLine.startsWith("* "))
 				return commentLine.substring(2);
-			
+
 			return super.stripCommentLine(commentLine);
 		}
 	}

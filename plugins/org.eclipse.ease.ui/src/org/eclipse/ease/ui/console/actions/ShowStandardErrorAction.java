@@ -26,20 +26,20 @@ import org.eclipse.ui.console.IConsole;
  */
 public class ShowStandardErrorAction extends ShowWhenContentChangesAction {
 
-    /**
-     * Constructs an action to toggle console auto activation preferences
-     * 
-     * @param console
-     */
-    public ShowStandardErrorAction(final IConsole console) {
-        super(ConsoleMessages.ShowStandardErrorAction_0, console);
-        setId(Activator.PLUGIN_ID + ".ShowWhenStderrChangesAction"); //$NON-NLS-1$
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.SHOW_WHEN_STDERR_CHANGES_ACTION);
-        setImageDescriptor(DebugUITools.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_STANDARD_ERR));
-    }
+	/**
+	 * Constructs an action to toggle console auto activation preferences
+	 * 
+	 * @param console
+	 */
+	public ShowStandardErrorAction(final IConsole console) {
+		super(ConsoleMessages.ShowStandardErrorAction_0, console);
+		setId(Activator.PLUGIN_ID + ".ShowWhenStderrChangesAction"); //$NON-NLS-1$
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.SHOW_WHEN_STDERR_CHANGES_ACTION);
+		setImageDescriptor(DebugUITools.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_STANDARD_ERR));
+	}
 
-    @Override
-    protected String getKey() {
-        return IPreferenceConstants.CONSOLE_OPEN_ON_ERR;
-    }
+	@Override
+	protected String getKey() {
+		return IPreferenceConstants.CONSOLE_OPEN_ON_ERR;
+	}
 }

@@ -30,38 +30,38 @@ import org.eclipse.ui.console.IConsoleManager;
  */
 public class RemoveCurrentConsoleAction extends Action implements IExecutionListener {
 
-    private final ScriptConsole mConsole;
+	private final ScriptConsole mConsole;
 
-    public RemoveCurrentConsoleAction(final ScriptConsole console) {
-        super(ConsoleMessages.ConsoleRemoveTerminatedAction_0);
-        setToolTipText(ConsoleMessages.ConsoleRemoveTerminatedAction_1);
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_LAUNCH);
-        setImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE));
-        setDisabledImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_DLCL_REMOVE));
-        setHoverImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_REMOVE));
+	public RemoveCurrentConsoleAction(final ScriptConsole console) {
+		super(ConsoleMessages.ConsoleRemoveTerminatedAction_0);
+		setToolTipText(ConsoleMessages.ConsoleRemoveTerminatedAction_1);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_LAUNCH);
+		setImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE));
+		setDisabledImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_DLCL_REMOVE));
+		setHoverImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_REMOVE));
 
-        mConsole = console;
-        IScriptEngine engine = mConsole.getScriptEngine();
-        if (engine != null)
-            engine.addExecutionListener(this);
+		mConsole = console;
+		IScriptEngine engine = mConsole.getScriptEngine();
+		if (engine != null)
+			engine.addExecutionListener(this);
 
-        setEnabled(engine == null);
-    }
+		setEnabled(engine == null);
+	}
 
-    @Override
-    public synchronized void run() {
-        IConsoleManager manager = ConsolePlugin.getDefault().getConsoleManager();
-        manager.removeConsoles(new IConsole[] { mConsole });
-    }
+	@Override
+	public synchronized void run() {
+		IConsoleManager manager = ConsolePlugin.getDefault().getConsoleManager();
+		manager.removeConsoles(new IConsole[] { mConsole });
+	}
 
-    @Override
-    public void notify(final IScriptEngine engine, final Script script, final int status) {
-        switch (status) {
-            case ENGINE_END:
-                // remove engine once terminated
-                engine.removeExecutionListener(this);
-                setEnabled(true);
-                break;
-        }
-    }
+	@Override
+	public void notify(final IScriptEngine engine, final Script script, final int status) {
+		switch (status) {
+		case ENGINE_END:
+			// remove engine once terminated
+			engine.removeExecutionListener(this);
+			setEnabled(true);
+			break;
+		}
+	}
 }

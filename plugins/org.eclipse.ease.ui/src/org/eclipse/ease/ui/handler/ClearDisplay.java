@@ -23,12 +23,12 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class ClearDisplay extends AbstractHandler implements IHandler {
 
-    @Override
-    public final Object execute(final ExecutionEvent event) throws ExecutionException {
-        final IWorkbenchPart part = HandlerUtil.getActivePart(event);
-        if (part instanceof ScriptShell)
-            ((ScriptShell) part).clearOutput();
+	@Override
+	public final Object execute(final ExecutionEvent event) throws ExecutionException {
+		final IWorkbenchPart part = HandlerUtil.getActivePart(event);
+		if (part instanceof ScriptShell)
+			((ScriptShell) part).clearOutput();
 
-        return null;
-    }
+		return null;
+	}
 }

@@ -19,8 +19,8 @@ public class ScriptSourceLocator implements IPersistableSourceLocator {
 
 	@Override
 	public Object getSourceElement(final IStackFrame stackFrame) {
-		if(stackFrame instanceof ScriptDebugStackFrame)
-			return ((ScriptDebugStackFrame)stackFrame).getScript();
+		if (stackFrame instanceof ScriptDebugStackFrame)
+			return ((ScriptDebugStackFrame) stackFrame).getScript();
 
 		return null;
 	}

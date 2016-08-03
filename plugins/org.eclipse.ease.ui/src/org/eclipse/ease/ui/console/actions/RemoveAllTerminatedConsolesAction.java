@@ -28,29 +28,29 @@ import org.eclipse.ui.console.IConsole;
  */
 public class RemoveAllTerminatedConsolesAction extends Action {
 
-    @Override
-    public void run() {
-        IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager().getConsoles();
-        ArrayList<IConsole> candidates = new ArrayList<IConsole>();
-        for (IConsole console : consoles) {
-            if (console instanceof ScriptConsole) {
-                if (((ScriptConsole) console).getScriptEngine() == null)
-                    candidates.add(console);
-            }
-        }
+	@Override
+	public void run() {
+		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager().getConsoles();
+		ArrayList<IConsole> candidates = new ArrayList<IConsole>();
+		for (IConsole console : consoles) {
+			if (console instanceof ScriptConsole) {
+				if (((ScriptConsole) console).getScriptEngine() == null)
+					candidates.add(console);
+			}
+		}
 
-        ConsolePlugin.getDefault().getConsoleManager().removeConsoles(candidates.toArray(new IConsole[candidates.size()]));
-    }
+		ConsolePlugin.getDefault().getConsoleManager().removeConsoles(candidates.toArray(new IConsole[candidates.size()]));
+	}
 
-    public RemoveAllTerminatedConsolesAction() {
-        super(ConsoleMessages.ConsoleRemoveAllTerminatedAction_0);
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_ALL_TERMINATED);
-        setToolTipText(ConsoleMessages.ConsoleRemoveAllTerminatedAction_1);
-        setImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE_ALL));
-        setDisabledImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_DLCL_REMOVE_ALL));
-        setHoverImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE_ALL));
+	public RemoveAllTerminatedConsolesAction() {
+		super(ConsoleMessages.ConsoleRemoveAllTerminatedAction_0);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_ALL_TERMINATED);
+		setToolTipText(ConsoleMessages.ConsoleRemoveAllTerminatedAction_1);
+		setImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE_ALL));
+		setDisabledImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_DLCL_REMOVE_ALL));
+		setHoverImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE_ALL));
 
-        // TODO add disablement when no more terminated consoles are open, best using the new eventBroker
-        setEnabled(true);
-    }
+		// TODO add disablement when no more terminated consoles are open, best using the new eventBroker
+		setEnabled(true);
+	}
 }

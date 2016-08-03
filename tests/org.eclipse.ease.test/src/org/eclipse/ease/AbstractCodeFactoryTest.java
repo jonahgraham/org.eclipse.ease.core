@@ -61,9 +61,7 @@ public class AbstractCodeFactoryTest {
 		keywords.put("menu", "this is a menu entry");
 
 		String header = factory.createKeywordHeader(keywords, null);
-		
-		
-		
+
 		assertTrue(header.contains("first           : value"));
 		assertTrue(header.contains("menu            : this is a menu entry"));
 	}

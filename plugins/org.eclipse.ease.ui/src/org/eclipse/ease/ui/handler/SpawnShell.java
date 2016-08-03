@@ -23,36 +23,36 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 public class SpawnShell extends AbstractHandler implements IHandler {
 
-    @Override
-    public Object execute(final ExecutionEvent event) throws ExecutionException {
-        IWorkbenchPage page = HandlerUtil.getActivePart(event).getSite().getPage();
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		IWorkbenchPage page = HandlerUtil.getActivePart(event).getSite().getPage();
 
-        // create dynamic secondary ID
-        int maxID = 0;
-        for (IViewReference reference : page.getViewReferences()) {
-            if (ScriptShell.VIEW_ID.equals(reference.getId())) {
-                try {
-                    int secondaryID = Integer.parseInt(reference.getSecondaryId());
-                    maxID = Math.max(maxID, secondaryID);
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-            }
-        }
+		// create dynamic secondary ID
+		int maxID = 0;
+		for (IViewReference reference : page.getViewReferences()) {
+			if (ScriptShell.VIEW_ID.equals(reference.getId())) {
+				try {
+					int secondaryID = Integer.parseInt(reference.getSecondaryId());
+					maxID = Math.max(maxID, secondaryID);
+				} catch (NumberFormatException e) {
+					// ignore
+				}
+			}
+		}
 
-        // open view
-        try {
-            IViewPart view = page.showView(ScriptShell.VIEW_ID, Integer.toString(maxID + 1), IWorkbenchPage.VIEW_ACTIVATE);
-            if (view instanceof ScriptShell) {
-                // TODO set new engine
-            }
+		// open view
+		try {
+			IViewPart view = page.showView(ScriptShell.VIEW_ID, Integer.toString(maxID + 1), IWorkbenchPage.VIEW_ACTIVATE);
+			if (view instanceof ScriptShell) {
+				// TODO set new engine
+			}
 
-        } catch (PartInitException e) {
-            // TODO handle this exception (but for now, at least know it
-            // happened)
-            throw new RuntimeException(e);
-        }
+		} catch (PartInitException e) {
+			// TODO handle this exception (but for now, at least know it
+			// happened)
+			throw new RuntimeException(e);
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

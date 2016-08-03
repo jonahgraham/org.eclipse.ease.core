@@ -12,8 +12,8 @@ package org.eclipse.ease.modules;
 
 public interface IModuleListener {
 
-    int LOADED = 1;
-    int RELOADED = 2;
+	int LOADED = 1;
+	int RELOADED = 2;
 
-    void notifyModule(Object module, int type);
+	void notifyModule(Object module, int type);
 }

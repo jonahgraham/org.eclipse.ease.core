@@ -27,76 +27,76 @@ import org.eclipse.ui.console.IConsole;
  */
 public abstract class ShowWhenContentChangesAction extends Action implements IPropertyChangeListener {
 
-    private final String mConsoleName;
+	private final String mConsoleName;
 
-    /**
-     * Constructs an action to toggle console auto activation preferences
-     * 
-     * @param console
-     */
-    public ShowWhenContentChangesAction(final String name, final IConsole console) {
-        super(name, IAction.AS_CHECK_BOX);
-        mConsoleName = console.getName();
-        setToolTipText(name);
-        getPreferenceStore().addPropertyChangeListener(this);
-        update();
-    }
+	/**
+	 * Constructs an action to toggle console auto activation preferences
+	 * 
+	 * @param console
+	 */
+	public ShowWhenContentChangesAction(final String name, final IConsole console) {
+		super(name, IAction.AS_CHECK_BOX);
+		mConsoleName = console.getName();
+		setToolTipText(name);
+		getPreferenceStore().addPropertyChangeListener(this);
+		update();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
-     */
-    @Override
-    public void propertyChange(final PropertyChangeEvent event) {
-        String property = event.getProperty();
-        if (property.equals(getPreferenceKey())) {
-            update();
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	@Override
+	public void propertyChange(final PropertyChangeEvent event) {
+		String property = event.getProperty();
+		if (property.equals(getPreferenceKey())) {
+			update();
+		}
+	}
 
-    private String getPreferenceKey() {
-        return IPreferenceConstants.CONSOLE_BASE + "." + mConsoleName + "." + getKey();
-    }
+	private String getPreferenceKey() {
+		return IPreferenceConstants.CONSOLE_BASE + "." + mConsoleName + "." + getKey();
+	}
 
-    protected abstract String getKey();
+	protected abstract String getKey();
 
-    private void update() {
-        IPreferenceStore store = getPreferenceStore();
-        if (store.getBoolean(getPreferenceKey())) {
-            // on
-            setChecked(true);
-        } else {
-            // off
-            setChecked(false);
-        }
-    }
+	private void update() {
+		IPreferenceStore store = getPreferenceStore();
+		if (store.getBoolean(getPreferenceKey())) {
+			// on
+			setChecked(true);
+		} else {
+			// off
+			setChecked(false);
+		}
+	}
 
-    /**
-     * @return
-     */
-    private IPreferenceStore getPreferenceStore() {
-        return Activator.getDefault().getPreferenceStore();
-    }
+	/**
+	 * @return
+	 */
+	private IPreferenceStore getPreferenceStore() {
+		return Activator.getDefault().getPreferenceStore();
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.action.Action#run()
-     */
-    @Override
-    public void run() {
-        IPreferenceStore store = getPreferenceStore();
-        boolean show = isChecked();
-        store.removePropertyChangeListener(this);
-        store.setValue(getPreferenceKey(), show);
-        store.addPropertyChangeListener(this);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.action.Action#run()
+	 */
+	@Override
+	public void run() {
+		IPreferenceStore store = getPreferenceStore();
+		boolean show = isChecked();
+		store.removePropertyChangeListener(this);
+		store.setValue(getPreferenceKey(), show);
+		store.addPropertyChangeListener(this);
+	}
 
-    /**
-     * Must be called to dispose this action.
-     */
-    public void dispose() {
-        getPreferenceStore().removePropertyChangeListener(this);
-    }
+	/**
+	 * Must be called to dispose this action.
+	 */
+	public void dispose() {
+		getPreferenceStore().removePropertyChangeListener(this);
+	}
 }

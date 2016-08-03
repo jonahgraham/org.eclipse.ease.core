@@ -1629,8 +1629,8 @@ public class ContentProposalModifier extends ContentProposalAdapter {
 						// Either there are no modifiers for the trigger and we
 						// check the character field...
 						if (((triggerKeyStroke.getModifierKeys() == KeyStroke.NO_KEY) && (triggerKeyStroke.getNaturalKey() == e.character)) ||
-								// ...or there are modifiers, in which case the
-								// keycode and state must match
+						// ...or there are modifiers, in which case the
+						// keycode and state must match
 						((triggerKeyStroke.getNaturalKey() == e.keyCode)
 								&& ((triggerKeyStroke.getModifierKeys() & e.stateMask) == triggerKeyStroke.getModifierKeys()))) {
 							// We never propagate the keystroke for an explicit

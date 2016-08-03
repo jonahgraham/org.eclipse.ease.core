@@ -16,11 +16,10 @@ package org.eclipse.ease;
 public interface IScriptEngineLaunchExtension {
 
 	/**
-	 * Called upon a script engine creation. As there might be multiple launch extensions, this might not be the only contribution to the script
-	 * engine.
+	 * Called upon a script engine creation. As there might be multiple launch extensions, this might not be the only contribution to the script engine.
 	 * 
 	 * @param engine
-	 *        engine just created
+	 *            engine just created
 	 */
 	void createEngine(IScriptEngine engine);
 }

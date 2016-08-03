@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.modules;
+ *******************************************************************************/
+package org.eclipse.ease.modules;
 
 public class NativeEnvironment extends AbstractEnvironment implements IEnvironment {
 

@@ -31,7 +31,7 @@ public class DynamicContentEditorInput implements IStorageEditorInput {
 	 * Constructor. Takes text from a script.
 	 * 
 	 * @param script
-	 *        script to extract text from
+	 *            script to extract text from
 	 */
 	public DynamicContentEditorInput(final Script script) {
 		fScript = script;
@@ -47,17 +47,17 @@ public class DynamicContentEditorInput implements IStorageEditorInput {
 
 	@Override
 	public boolean equals(final Object obj) {
-		if(this == obj)
+		if (this == obj)
 			return true;
-		if(obj == null)
+		if (obj == null)
 			return false;
-		if(getClass() != obj.getClass())
+		if (getClass() != obj.getClass())
 			return false;
-		final DynamicContentEditorInput other = (DynamicContentEditorInput)obj;
-		if(fScript == null) {
-			if(other.fScript != null)
+		final DynamicContentEditorInput other = (DynamicContentEditorInput) obj;
+		if (fScript == null) {
+			if (other.fScript != null)
 				return false;
-		} else if(!fScript.equals(other.fScript))
+		} else if (!fScript.equals(other.fScript))
 			return false;
 		return true;
 	}

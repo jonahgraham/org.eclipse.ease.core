@@ -75,7 +75,7 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 
 	private EOFHandler fEOFHandler;
 
-	private final String fContextId = "org.eclipse.debug.ui.console"; //$NON-NLS-1$;
+	private final String fContextId = "org.eclipse.debug.ui.console"; //$NON-NLS-1$ ;
 
 	private IContextActivation fActivatedContext;
 
@@ -89,8 +89,8 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 		@Override
 		public Object execute(final ExecutionEvent event) throws org.eclipse.core.commands.ExecutionException {
 			final IStreamsProxy proxy = getProcess().getStreamsProxy();
-			if(proxy instanceof IStreamsProxy2) {
-				final IStreamsProxy2 proxy2 = (IStreamsProxy2)proxy;
+			if (proxy instanceof IStreamsProxy2) {
+				final IStreamsProxy2 proxy2 = (IStreamsProxy2) proxy;
 				try {
 					proxy2.closeInputStream();
 				} catch (final IOException e1) {
@@ -109,7 +109,7 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	@Override
 	public void init(final IPageBookViewPage page, final IConsole console) {
 		fPage = page;
-		fConsole = (ScriptConsole)console;
+		fConsole = (ScriptConsole) console;
 		fConsole.setPageParticipant(this);
 
 		fRemoveTerminated = new RemoveCurrentConsoleAction(fConsole);
@@ -118,7 +118,7 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 		fStdOut = new ShowStandardOutAction(console);
 		fStdErr = new ShowStandardErrorAction(console);
 
-		fView = (IConsoleView)fPage.getSite().getPage().findView(IConsoleConstants.ID_CONSOLE_VIEW);
+		fView = (IConsoleView) fPage.getSite().getPage().findView(IConsoleConstants.ID_CONSOLE_VIEW);
 
 		DebugUITools.getDebugContextManager().getContextService(fPage.getSite().getWorkbenchWindow()).addDebugContextListener(this);
 
@@ -143,15 +143,15 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 		fRemoveTerminated = null;
 		fRemoveAllTerminated = null;
 
-		if(fTerminate != null) {
+		if (fTerminate != null) {
 			fTerminate.dispose();
 			fTerminate = null;
 		}
-		if(fStdOut != null) {
+		if (fStdOut != null) {
 			fStdOut.dispose();
 			fStdOut = null;
 		}
-		if(fStdErr != null) {
+		if (fStdErr != null) {
 			fStdErr.dispose();
 			fStdErr = null;
 		}
@@ -176,16 +176,16 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	 */
 	@Override
 	public Object getAdapter(final Class required) {
-		if(IShowInSource.class.equals(required)) {
+		if (IShowInSource.class.equals(required)) {
 			return this;
 		}
-		if(IShowInTargetList.class.equals(required)) {
+		if (IShowInTargetList.class.equals(required)) {
 			return this;
 		}
 		// CONTEXTLAUNCHING
-		if(ILaunchConfiguration.class.equals(required)) {
+		if (ILaunchConfiguration.class.equals(required)) {
 			final ILaunch launch = getProcess().getLaunch();
-			if(launch != null) {
+			if (launch != null) {
 				return launch.getLaunchConfiguration();
 			}
 			return null;
@@ -201,15 +201,15 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	@Override
 	public ShowInContext getShowInContext() {
 		final IProcess process = getProcess();
-		if(process == null) {
+		if (process == null) {
 			return null;
 		}
-		final IDebugTarget target = (IDebugTarget)process.getAdapter(IDebugTarget.class);
+		final IDebugTarget target = (IDebugTarget) process.getAdapter(IDebugTarget.class);
 		ISelection selection = null;
-		if(target == null) {
-			selection = new TreeSelection(new TreePath(new Object[]{ DebugPlugin.getDefault().getLaunchManager(), process.getLaunch(), process }));
+		if (target == null) {
+			selection = new TreeSelection(new TreePath(new Object[] { DebugPlugin.getDefault().getLaunchManager(), process.getLaunch(), process }));
 		} else {
-			selection = new TreeSelection(new TreePath(new Object[]{ DebugPlugin.getDefault().getLaunchManager(), target.getLaunch(), target }));
+			selection = new TreeSelection(new TreePath(new Object[] { DebugPlugin.getDefault().getLaunchManager(), target.getLaunch(), target }));
 		}
 		return new ShowInContext(null, selection);
 	}
@@ -221,7 +221,7 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	 */
 	@Override
 	public String[] getShowInTargetIds() {
-		return new String[]{ IDebugUIConstants.ID_DEBUG_VIEW };
+		return new String[] { IDebugUIConstants.ID_DEBUG_VIEW };
 	}
 
 	protected IProcess getProcess() {
@@ -239,9 +239,9 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	public void activated() {
 		// add EOF submissions
 		final IPageSite site = fPage.getSite();
-		if((fActivatedContext == null) && (fActivatedHandler == null)) {
-			final IHandlerService handlerService = (IHandlerService)site.getService(IHandlerService.class);
-			final IContextService contextService = (IContextService)site.getService(IContextService.class);
+		if ((fActivatedContext == null) && (fActivatedHandler == null)) {
+			final IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
+			final IContextService contextService = (IContextService) site.getService(IContextService.class);
 			fActivatedContext = contextService.activateContext(fContextId);
 			fActivatedHandler = handlerService.activateHandler("org.eclipse.debug.ui.commands.eof", fEOFHandler); //$NON-NLS-1$
 		}
@@ -256,8 +256,8 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	public void deactivated() {
 		// remove EOF submissions
 		final IPageSite site = fPage.getSite();
-		final IHandlerService handlerService = (IHandlerService)site.getService(IHandlerService.class);
-		final IContextService contextService = (IContextService)site.getService(IContextService.class);
+		final IHandlerService handlerService = (IHandlerService) site.getService(IHandlerService.class);
+		final IContextService contextService = (IContextService) site.getService(IContextService.class);
 		handlerService.deactivateHandler(fActivatedHandler);
 		contextService.deactivateContext(fActivatedContext);
 		fActivatedContext = null;
@@ -267,15 +267,13 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.debug.internal.ui.contexts.provisional.IDebugContextListener#contextEvent(org.eclipse.debug.internal.ui.contexts.provisional.
-	 * DebugContextEvent
-	 * )
+	 * @see org.eclipse.debug.internal.ui.contexts.provisional.IDebugContextListener#contextEvent(org.eclipse.debug.internal.ui.contexts.provisional.
+	 * DebugContextEvent )
 	 */
 	@Override
 	public void debugContextChanged(final DebugContextEvent event) {
-		if((event.getFlags() & DebugContextEvent.ACTIVATED) > 0) {
-			if((fView != null) && (getProcess() != null) && getProcess().equals(DebugUITools.getCurrentProcess())) {
+		if ((event.getFlags() & DebugContextEvent.ACTIVATED) > 0) {
+			if ((fView != null) && (getProcess() != null) && getProcess().equals(DebugUITools.getCurrentProcess())) {
 				fView.display(fConsole);
 			}
 		}
@@ -283,7 +281,7 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 	}
 
 	public void engineChanged() {
-		if(fTerminate != null)
+		if (fTerminate != null)
 			fTerminate.update();
 	}
 }
