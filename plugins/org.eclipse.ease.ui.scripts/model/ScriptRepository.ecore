@@ -9,10 +9,10 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong" defaultValueLiteral="-1"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="entry" lowerBound="1" eType="#//ScriptLocation"
         eOpposite="#//ScriptLocation/scripts"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="scriptParameters" upperBound="-1"
-        eType="#//ParameterMap" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="userParameters" upperBound="-1"
-        eType="#//ParameterMap" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="scriptKeywords" upperBound="-1"
+        eType="#//KeywordMap" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="userKeywords" upperBound="-1"
+        eType="#//KeywordMap" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="RawLocation">
     <eOperations name="getResource" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
@@ -35,7 +35,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="scripts" upperBound="-1"
         eType="#//Script" containment="true" eOpposite="#//Script/entry"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ParameterMap" instanceClassName="java.util.Map$Entry">
+  <eClassifiers xsi:type="ecore:EClass" name="KeywordMap" instanceClassName="java.util.Map$Entry">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="key" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>

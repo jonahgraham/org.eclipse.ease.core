@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.preferences;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.preferences;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jface.dialogs.IInputValidator;

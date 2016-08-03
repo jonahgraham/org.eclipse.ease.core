@@ -91,8 +91,8 @@ public class SelectScriptStorageDialog extends Dialog {
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin
-						.getWorkspace().getRoot(), true, "Select script storage folder");
+				ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true,
+						"Select script storage folder");
 				if (dialog.open() == Window.OK) {
 					Object[] result = dialog.getResult();
 					if ((result.length > 0) && (result[0] instanceof IPath))

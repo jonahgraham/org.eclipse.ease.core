@@ -31,62 +31,66 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!--
- * end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
+ * 
  * @generated
  */
 public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPackage {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EClass scriptEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EClass rawLocationEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EClass storageEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EClass scriptLocationEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	private EClass parameterMapEClass = null;
+	private EClass keywordMapEClass = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EDataType pathEDataType = null;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private EDataType inputStreamEDataType = null;
 
 	/**
-	 * Creates an instance of the model <b>Package</b>, registered with
-	 * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the
-	 * package package URI value.
+	 * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package package
+	 * URI value.
 	 * <p>
-	 * Note: the correct way to create the package is via the static factory
-	 * method {@link #init init()}, which also performs initialization of the
-	 * package, or returns the registered package, if one already exists. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * Note: the correct way to create the package is via the static factory method {@link #init init()}, which also performs initialization of the package, or
+	 * returns the registered package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see org.eclipse.emf.ecore.EPackage.Registry
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#eNS_URI
@@ -99,19 +103,17 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private static boolean isInited = false;
 
 	/**
-	 * Creates, registers, and initializes the <b>Package</b> for this model,
-	 * and for any others upon which it depends.
+	 * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
 	 *
 	 * <p>
-	 * This method is used to initialize {@link IRepositoryPackage#eINSTANCE}
-	 * when that field is accessed. Clients should not invoke it directly.
-	 * Instead, they should simply access that field to obtain the package. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
+	 * This method is used to initialize {@link IRepositoryPackage#eINSTANCE} when that field is accessed. Clients should not invoke it directly. Instead, they
+	 * should simply access that field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @see #eNS_URI
 	 * @see #createPackageContents()
@@ -119,10 +121,12 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 	 * @generated
 	 */
 	public static IRepositoryPackage init() {
-		if (isInited) return (IRepositoryPackage)EPackage.Registry.INSTANCE.getEPackage(IRepositoryPackage.eNS_URI);
+		if (isInited)
+			return (IRepositoryPackage) EPackage.Registry.INSTANCE.getEPackage(IRepositoryPackage.eNS_URI);
 
 		// Obtain or create and register package
-		RepositoryPackageImpl theRepositoryPackage = (RepositoryPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof RepositoryPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new RepositoryPackageImpl());
+		RepositoryPackageImpl theRepositoryPackage = (RepositoryPackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof RepositoryPackageImpl
+				? EPackage.Registry.INSTANCE.get(eNS_URI) : new RepositoryPackageImpl());
 
 		isInited = true;
 
@@ -135,7 +139,6 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 		// Mark meta-data to indicate it can't be changed
 		theRepositoryPackage.freeze();
 
-  
 		// Update the registry and return the package
 		EPackage.Registry.INSTANCE.put(IRepositoryPackage.eNS_URI, theRepositoryPackage);
 		return theRepositoryPackage;
@@ -143,6 +146,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -152,42 +156,45 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getScript_Timestamp() {
-		return (EAttribute)scriptEClass.getEStructuralFeatures().get(0);
+		return (EAttribute) scriptEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getScript_Entry() {
-		return (EReference)scriptEClass.getEStructuralFeatures().get(1);
+		return (EReference) scriptEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EReference getScript_ScriptParameters() {
-		return (EReference)scriptEClass.getEStructuralFeatures().get(2);
+	public EReference getScript_ScriptKeywords() {
+		return (EReference) scriptEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EReference getScript_UserParameters() {
-		return (EReference)scriptEClass.getEStructuralFeatures().get(3);
+	public EReference getScript_UserKeywords() {
+		return (EReference) scriptEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -197,6 +204,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -206,6 +214,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -215,6 +224,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -224,24 +234,27 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getRawLocation_Location() {
-		return (EAttribute)rawLocationEClass.getEStructuralFeatures().get(0);
+		return (EAttribute) rawLocationEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getRawLocation_UpdatePending() {
-		return (EAttribute)rawLocationEClass.getEStructuralFeatures().get(1);
+		return (EAttribute) rawLocationEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -251,6 +264,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -260,6 +274,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -269,15 +284,17 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getStorage_Entries() {
-		return (EReference)storageEClass.getEStructuralFeatures().get(0);
+		return (EReference) storageEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -287,60 +304,64 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getScriptLocation_Recursive() {
-		return (EAttribute)scriptLocationEClass.getEStructuralFeatures().get(0);
+		return (EAttribute) scriptLocationEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EAttribute getScriptLocation_Default() {
-		return (EAttribute)scriptLocationEClass.getEStructuralFeatures().get(1);
+		return (EAttribute) scriptLocationEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EReference getScriptLocation_Scripts() {
-		return (EReference)scriptLocationEClass.getEStructuralFeatures().get(2);
+		return (EReference) scriptLocationEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EClass getParameterMap() {
-		return parameterMapEClass;
+	public EClass getKeywordMap() {
+		return keywordMapEClass;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EAttribute getParameterMap_Key() {
-		return (EAttribute)parameterMapEClass.getEStructuralFeatures().get(0);
+	public EAttribute getKeywordMap_Key() {
+		return (EAttribute) keywordMapEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EAttribute getParameterMap_Value() {
-		return (EAttribute)parameterMapEClass.getEStructuralFeatures().get(1);
+	public EAttribute getKeywordMap_Value() {
+		return (EAttribute) keywordMapEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -350,6 +371,7 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -359,36 +381,38 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public IRepositoryFactory getRepositoryFactory() {
-		return (IRepositoryFactory)getEFactoryInstance();
+		return (IRepositoryFactory) getEFactoryInstance();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private boolean isCreated = false;
 
 	/**
-	 * Creates the meta-model objects for the package.  This method is
-	 * guarded to have no affect on any invocation but its first.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+	 * Creates the meta-model objects for the package. This method is guarded to have no affect on any invocation but its first. <!-- begin-user-doc --> <!--
+	 * end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated) return;
+		if (isCreated)
+			return;
 		isCreated = true;
 
 		// Create classes and their features
 		scriptEClass = createEClass(SCRIPT);
 		createEAttribute(scriptEClass, SCRIPT__TIMESTAMP);
 		createEReference(scriptEClass, SCRIPT__ENTRY);
-		createEReference(scriptEClass, SCRIPT__SCRIPT_PARAMETERS);
-		createEReference(scriptEClass, SCRIPT__USER_PARAMETERS);
+		createEReference(scriptEClass, SCRIPT__SCRIPT_KEYWORDS);
+		createEReference(scriptEClass, SCRIPT__USER_KEYWORDS);
 		createEOperation(scriptEClass, SCRIPT___RUN);
 		createEOperation(scriptEClass, SCRIPT___GET_NAME);
 		createEOperation(scriptEClass, SCRIPT___GET_PATH);
@@ -407,9 +431,9 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 		createEAttribute(scriptLocationEClass, SCRIPT_LOCATION__DEFAULT);
 		createEReference(scriptLocationEClass, SCRIPT_LOCATION__SCRIPTS);
 
-		parameterMapEClass = createEClass(PARAMETER_MAP);
-		createEAttribute(parameterMapEClass, PARAMETER_MAP__KEY);
-		createEAttribute(parameterMapEClass, PARAMETER_MAP__VALUE);
+		keywordMapEClass = createEClass(KEYWORD_MAP);
+		createEAttribute(keywordMapEClass, KEYWORD_MAP__KEY);
+		createEAttribute(keywordMapEClass, KEYWORD_MAP__VALUE);
 
 		// Create data types
 		pathEDataType = createEDataType(PATH);
@@ -418,19 +442,20 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	private boolean isInitialized = false;
 
 	/**
-	 * Complete the initialization of the package and its meta-model. This
-	 * method is guarded to have no affect on any invocation but its first. <!--
+	 * Complete the initialization of the package and its meta-model. This method is guarded to have no affect on any invocation but its first. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized) return;
+		if (isInitialized)
+			return;
 		isInitialized = true;
 
 		// Initialize package
@@ -448,10 +473,14 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(scriptEClass, IScript.class, "Script", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getScript_Timestamp(), ecorePackage.getELong(), "timestamp", "-1", 1, 1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getScript_Entry(), this.getScriptLocation(), this.getScriptLocation_Scripts(), "entry", null, 1, 1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getScript_ScriptParameters(), this.getParameterMap(), null, "scriptParameters", null, 0, -1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getScript_UserParameters(), this.getParameterMap(), null, "userParameters", null, 0, -1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScript_Timestamp(), ecorePackage.getELong(), "timestamp", "-1", 1, 1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getScript_Entry(), this.getScriptLocation(), this.getScriptLocation_Scripts(), "entry", null, 1, 1, IScript.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getScript_ScriptKeywords(), this.getKeywordMap(), null, "scriptKeywords", null, 0, -1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getScript_UserKeywords(), this.getKeywordMap(), null, "userKeywords", null, 0, -1, IScript.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getScript__Run(), null, "run", 0, 1, IS_UNIQUE, IS_ORDERED);
 
@@ -460,24 +489,32 @@ public class RepositoryPackageImpl extends EPackageImpl implements IRepositoryPa
 		initEOperation(getScript__GetPath(), this.getPath(), "getPath", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(rawLocationEClass, IRawLocation.class, "RawLocation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getRawLocation_Location(), ecorePackage.getEString(), "location", null, 1, 1, IRawLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getRawLocation_UpdatePending(), ecorePackage.getEBoolean(), "updatePending", "false", 1, 1, IRawLocation.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRawLocation_Location(), ecorePackage.getEString(), "location", null, 1, 1, IRawLocation.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRawLocation_UpdatePending(), ecorePackage.getEBoolean(), "updatePending", "false", 1, 1, IRawLocation.class, IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getRawLocation__GetResource(), ecorePackage.getEJavaObject(), "getResource", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEOperation(getRawLocation__GetInputStream(), this.getInputStream(), "getInputStream", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEClass(storageEClass, IStorage.class, "Storage", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getStorage_Entries(), this.getScriptLocation(), null, "entries", null, 0, -1, IStorage.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getStorage_Entries(), this.getScriptLocation(), null, "entries", null, 0, -1, IStorage.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(scriptLocationEClass, IScriptLocation.class, "ScriptLocation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getScriptLocation_Recursive(), ecorePackage.getEBoolean(), "recursive", "false", 1, 1, IScriptLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getScriptLocation_Default(), ecorePackage.getEBoolean(), "default", "false", 1, 1, IScriptLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getScriptLocation_Scripts(), this.getScript(), this.getScript_Entry(), "scripts", null, 0, -1, IScriptLocation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScriptLocation_Recursive(), ecorePackage.getEBoolean(), "recursive", "false", 1, 1, IScriptLocation.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getScriptLocation_Default(), ecorePackage.getEBoolean(), "default", "false", 1, 1, IScriptLocation.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getScriptLocation_Scripts(), this.getScript(), this.getScript_Entry(), "scripts", null, 0, -1, IScriptLocation.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(parameterMapEClass, Map.Entry.class, "ParameterMap", !IS_ABSTRACT, !IS_INTERFACE, !IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getParameterMap_Key(), ecorePackage.getEString(), "key", null, 1, 1, Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getParameterMap_Value(), ecorePackage.getEString(), "value", null, 1, 1, Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(keywordMapEClass, Map.Entry.class, "KeywordMap", !IS_ABSTRACT, !IS_INTERFACE, !IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getKeywordMap_Key(), ecorePackage.getEString(), "key", null, 1, 1, Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getKeywordMap_Value(), ecorePackage.getEString(), "value", null, 1, 1, Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize data types
 		initEDataType(pathEDataType, IPath.class, "Path", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);

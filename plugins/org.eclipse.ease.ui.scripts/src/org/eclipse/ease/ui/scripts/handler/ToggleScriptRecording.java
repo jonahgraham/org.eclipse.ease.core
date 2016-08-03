@@ -116,7 +116,6 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 						keywords.put("author", System.getProperty("user.name"));
 						keywords.put("date-recorded", new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(new Date()));
 
-						
 						buffer.insert(0, "\n");
 						buffer.insert(0, scriptType.getCodeFactory().createKeywordHeader(keywords, null));
 

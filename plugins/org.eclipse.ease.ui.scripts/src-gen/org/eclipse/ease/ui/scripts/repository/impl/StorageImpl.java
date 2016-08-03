@@ -29,17 +29,17 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Storage</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.StorageImpl#getEntries <em>Entries</em>}</li>
- * </ul>
  * </p>
+ * <ul>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.StorageImpl#getEntries <em>Entries</em>}</li>
+ * </ul>
  *
  * @generated
  */
 public class StorageImpl extends MinimalEObjectImpl.Container implements IStorage {
 	/**
-	 * The cached value of the '{@link #getEntries() <em>Entries</em>}' containment reference list.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getEntries() <em>Entries</em>}' containment reference list. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getEntries()
 	 * @generated
 	 * @ordered
@@ -48,6 +48,7 @@ public class StorageImpl extends MinimalEObjectImpl.Container implements IStorag
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected StorageImpl() {
@@ -56,6 +57,7 @@ public class StorageImpl extends MinimalEObjectImpl.Container implements IStorag
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -65,6 +67,7 @@ public class StorageImpl extends MinimalEObjectImpl.Container implements IStorag
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -77,69 +80,74 @@ public class StorageImpl extends MinimalEObjectImpl.Container implements IStorag
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case IRepositoryPackage.STORAGE__ENTRIES:
-				return ((InternalEList<?>)getEntries()).basicRemove(otherEnd, msgs);
+		case IRepositoryPackage.STORAGE__ENTRIES:
+			return ((InternalEList<?>) getEntries()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case IRepositoryPackage.STORAGE__ENTRIES:
-				return getEntries();
+		case IRepositoryPackage.STORAGE__ENTRIES:
+			return getEntries();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case IRepositoryPackage.STORAGE__ENTRIES:
-				getEntries().clear();
-				getEntries().addAll((Collection<? extends IScriptLocation>)newValue);
-				return;
+		case IRepositoryPackage.STORAGE__ENTRIES:
+			getEntries().clear();
+			getEntries().addAll((Collection<? extends IScriptLocation>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.STORAGE__ENTRIES:
-				getEntries().clear();
-				return;
+		case IRepositoryPackage.STORAGE__ENTRIES:
+			getEntries().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.STORAGE__ENTRIES:
-				return entries != null && !entries.isEmpty();
+		case IRepositoryPackage.STORAGE__ENTRIES:
+			return entries != null && !entries.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

@@ -51,20 +51,20 @@ import org.osgi.service.prefs.Preferences;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Script</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getTimestamp <em>Timestamp</em>}</li>
  * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getEntry <em>Entry</em>}</li>
- * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getScriptParameters <em>Script Parameters</em>}</li>
- * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getUserParameters <em>User Parameters</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getScriptKeywords <em>Script Keywords</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptImpl#getUserKeywords <em>User Keywords</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
 public class ScriptImpl extends RawLocationImpl implements IScript {
 	/**
 	 * The default value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @see #getTimestamp()
 	 * @generated
 	 * @ordered
@@ -73,7 +73,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * The cached value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @see #getTimestamp()
 	 * @generated
 	 * @ordered
@@ -81,26 +81,26 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	protected long timestamp = TIMESTAMP_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getScriptParameters() <em>Script Parameters</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @see #getScriptParameters()
+	 * The cached value of the '{@link #getScriptKeywords() <em>Script Keywords</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getScriptKeywords()
 	 * @generated
 	 * @ordered
 	 */
-	protected EMap<String, String> scriptParameters;
+	protected EMap<String, String> scriptKeywords;
 
 	/**
-	 * The cached value of the '{@link #getUserParameters() <em>User Parameters</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @see #getUserParameters()
+	 * The cached value of the '{@link #getUserKeywords() <em>User Keywords</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @see #getUserKeywords()
 	 * @generated
 	 * @ordered
 	 */
-	protected EMap<String, String> userParameters;
+	protected EMap<String, String> userKeywords;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	protected ScriptImpl() {
@@ -109,7 +109,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -119,7 +119,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -129,11 +129,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public void setTimestamp(final long newTimestamp) {
+	public void setTimestamp(long newTimestamp) {
 		long oldTimestamp = timestamp;
 		timestamp = newTimestamp;
 		if (eNotificationRequired())
@@ -142,7 +142,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -154,22 +154,22 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
-	public NotificationChain basicSetEntry(final IScriptLocation newEntry, NotificationChain msgs) {
+	public NotificationChain basicSetEntry(IScriptLocation newEntry, NotificationChain msgs) {
 		msgs = eBasicSetContainer((InternalEObject) newEntry, IRepositoryPackage.SCRIPT__ENTRY, msgs);
 		return msgs;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public void setEntry(final IScriptLocation newEntry) {
-		if ((newEntry != eInternalContainer()) || ((eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY) && (newEntry != null))) {
+	public void setEntry(IScriptLocation newEntry) {
+		if (newEntry != eInternalContainer() || (eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY && newEntry != null)) {
 			if (EcoreUtil.isAncestor(this, newEntry))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
@@ -186,39 +186,37 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EMap<String, String> getScriptParameters() {
-		if (scriptParameters == null) {
-			scriptParameters = new EcoreEMap<String, String>(IRepositoryPackage.Literals.PARAMETER_MAP, ParameterMapImpl.class, this,
-					IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS);
+	public EMap<String, String> getScriptKeywords() {
+		if (scriptKeywords == null) {
+			scriptKeywords = new EcoreEMap<String, String>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this,
+					IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS);
 		}
-		return scriptParameters;
+		return scriptKeywords;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
-	@Override
-	public EMap<String, String> getUserParameters() {
-		if (userParameters == null) {
-			userParameters = new EcoreEMap<String, String>(IRepositoryPackage.Literals.PARAMETER_MAP, ParameterMapImpl.class, this,
-					IRepositoryPackage.SCRIPT__USER_PARAMETERS);
+	public EMap<String, String> getUserKeywords() {
+		if (userKeywords == null) {
+			userKeywords = new EcoreEMap<String, String>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this,
+					IRepositoryPackage.SCRIPT__USER_KEYWORDS);
 		}
-		return userParameters;
+		return userKeywords;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			if (eInternalContainer() != null)
@@ -230,29 +228,29 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			return basicSetEntry(null, msgs);
-		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-			return ((InternalEList<?>) getScriptParameters()).basicRemove(otherEnd, msgs);
-		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-			return ((InternalEList<?>) getUserParameters()).basicRemove(otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS:
+			return ((InternalEList<?>) getScriptKeywords()).basicRemove(otherEnd, msgs);
+		case IRepositoryPackage.SCRIPT__USER_KEYWORDS:
+			return ((InternalEList<?>) getUserKeywords()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eBasicRemoveFromContainerFeature(final NotificationChain msgs) {
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
 		switch (eContainerFeatureID()) {
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			return eInternalContainer().eInverseRemove(this, IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS, IScriptLocation.class, msgs);
@@ -262,37 +260,37 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT__TIMESTAMP:
 			return getTimestamp();
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			return getEntry();
-		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
+		case IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS:
 			if (coreType)
-				return getScriptParameters();
+				return getScriptKeywords();
 			else
-				return getScriptParameters().map();
-		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
+				return getScriptKeywords().map();
+		case IRepositoryPackage.SCRIPT__USER_KEYWORDS:
 			if (coreType)
-				return getUserParameters();
+				return getUserKeywords();
 			else
-				return getUserParameters().map();
+				return getUserKeywords().map();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public void eSet(final int featureID, final Object newValue) {
+	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT__TIMESTAMP:
 			setTimestamp((Long) newValue);
@@ -300,11 +298,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			setEntry((IScriptLocation) newValue);
 			return;
-		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-			((EStructuralFeature.Setting) getScriptParameters()).set(newValue);
+		case IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS:
+			((EStructuralFeature.Setting) getScriptKeywords()).set(newValue);
 			return;
-		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-			((EStructuralFeature.Setting) getUserParameters()).set(newValue);
+		case IRepositoryPackage.SCRIPT__USER_KEYWORDS:
+			((EStructuralFeature.Setting) getUserKeywords()).set(newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -312,11 +310,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public void eUnset(final int featureID) {
+	public void eUnset(int featureID) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT__TIMESTAMP:
 			setTimestamp(TIMESTAMP_EDEFAULT);
@@ -324,11 +322,11 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			setEntry((IScriptLocation) null);
 			return;
-		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-			getScriptParameters().clear();
+		case IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS:
+			getScriptKeywords().clear();
 			return;
-		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-			getUserParameters().clear();
+		case IRepositoryPackage.SCRIPT__USER_KEYWORDS:
+			getUserKeywords().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -336,31 +334,31 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(final int featureID) {
+	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT__TIMESTAMP:
 			return timestamp != TIMESTAMP_EDEFAULT;
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			return getEntry() != null;
-		case IRepositoryPackage.SCRIPT__SCRIPT_PARAMETERS:
-			return (scriptParameters != null) && !scriptParameters.isEmpty();
-		case IRepositoryPackage.SCRIPT__USER_PARAMETERS:
-			return (userParameters != null) && !userParameters.isEmpty();
+		case IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS:
+			return scriptKeywords != null && !scriptKeywords.isEmpty();
+		case IRepositoryPackage.SCRIPT__USER_KEYWORDS:
+			return userKeywords != null && !userKeywords.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
-	public Object eInvoke(final int operationID, final EList<?> arguments) throws InvocationTargetException {
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
 		case IRepositoryPackage.SCRIPT___RUN:
 			run();
@@ -375,7 +373,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -393,10 +391,10 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	@Override
 	public Map<String, String> getParameters() {
 		// first merge script parameters
-		Map<String, String> parameters = new HashMap<String, String>(getScriptParameters().map());
+		Map<String, String> parameters = new HashMap<String, String>(getScriptKeywords().map());
 
 		// now apply user parameters, as they have higher priority
-		parameters.putAll(getUserParameters().map());
+		parameters.putAll(getUserKeywords().map());
 
 		return parameters;
 	}

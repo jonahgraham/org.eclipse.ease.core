@@ -20,8 +20,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 	/**
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#
-	 *      initializeDefaultPreferences()
+	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer# initializeDefaultPreferences()
 	 */
 	@Override
 	public final void initializeDefaultPreferences() {

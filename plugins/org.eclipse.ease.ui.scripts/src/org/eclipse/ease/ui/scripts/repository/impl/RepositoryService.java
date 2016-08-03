@@ -331,8 +331,8 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			final Map<String, String> oldParameters = script.getParameters();
 
 			final Map<String, String> parameters = extractKeywords(scriptType, script.getInputStream());
-			script.getScriptParameters().clear();
-			script.getScriptParameters().putAll(parameters);
+			script.getScriptKeywords().clear();
+			script.getScriptKeywords().putAll(parameters);
 
 			final Map<String, String> newParameters = script.getParameters();
 

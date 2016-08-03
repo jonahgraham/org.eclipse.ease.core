@@ -26,18 +26,18 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Raw Location</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
- * <ul>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.RawLocationImpl#getLocation <em>Location</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.impl.RawLocationImpl#isUpdatePending <em>Update Pending</em>}</li>
- * </ul>
  * </p>
+ * <ul>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.RawLocationImpl#getLocation <em>Location</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.RawLocationImpl#isUpdatePending <em>Update Pending</em>}</li>
+ * </ul>
  *
  * @generated
  */
 public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRawLocation {
 	/**
-	 * The default value of the '{@link #getLocation() <em>Location</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The default value of the '{@link #getLocation() <em>Location</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getLocation()
 	 * @generated
 	 * @ordered
@@ -45,8 +45,8 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 	protected static final String LOCATION_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getLocation() <em>Location</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #getLocation() <em>Location</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #getLocation()
 	 * @generated
 	 * @ordered
@@ -54,8 +54,8 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 	protected String location = LOCATION_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #isUpdatePending() <em>Update Pending</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The default value of the '{@link #isUpdatePending() <em>Update Pending</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #isUpdatePending()
 	 * @generated
 	 * @ordered
@@ -63,8 +63,8 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 	protected static final boolean UPDATE_PENDING_EDEFAULT = false;
 
 	/**
-	 * The cached value of the '{@link #isUpdatePending() <em>Update Pending</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * The cached value of the '{@link #isUpdatePending() <em>Update Pending</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @see #isUpdatePending()
 	 * @generated
 	 * @ordered
@@ -73,6 +73,7 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	protected RawLocationImpl() {
@@ -81,6 +82,7 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -90,6 +92,7 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -99,6 +102,7 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -111,6 +115,7 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -120,6 +125,7 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -152,90 +158,97 @@ public class RawLocationImpl extends MinimalEObjectImpl.Container implements IRa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case IRepositoryPackage.RAW_LOCATION__LOCATION:
-				return getLocation();
-			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
-				return isUpdatePending();
+		case IRepositoryPackage.RAW_LOCATION__LOCATION:
+			return getLocation();
+		case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
+			return isUpdatePending();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case IRepositoryPackage.RAW_LOCATION__LOCATION:
-				setLocation((String)newValue);
-				return;
-			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
-				setUpdatePending((Boolean)newValue);
-				return;
+		case IRepositoryPackage.RAW_LOCATION__LOCATION:
+			setLocation((String) newValue);
+			return;
+		case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
+			setUpdatePending((Boolean) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.RAW_LOCATION__LOCATION:
-				setLocation(LOCATION_EDEFAULT);
-				return;
-			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
-				setUpdatePending(UPDATE_PENDING_EDEFAULT);
-				return;
+		case IRepositoryPackage.RAW_LOCATION__LOCATION:
+			setLocation(LOCATION_EDEFAULT);
+			return;
+		case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
+			setUpdatePending(UPDATE_PENDING_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case IRepositoryPackage.RAW_LOCATION__LOCATION:
-				return LOCATION_EDEFAULT == null ? location != null : !LOCATION_EDEFAULT.equals(location);
-			case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
-				return updatePending != UPDATE_PENDING_EDEFAULT;
+		case IRepositoryPackage.RAW_LOCATION__LOCATION:
+			return LOCATION_EDEFAULT == null ? location != null : !LOCATION_EDEFAULT.equals(location);
+		case IRepositoryPackage.RAW_LOCATION__UPDATE_PENDING:
+			return updatePending != UPDATE_PENDING_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-			case IRepositoryPackage.RAW_LOCATION___GET_RESOURCE:
-				return getResource();
-			case IRepositoryPackage.RAW_LOCATION___GET_INPUT_STREAM:
-				return getInputStream();
+		case IRepositoryPackage.RAW_LOCATION___GET_RESOURCE:
+			return getResource();
+		case IRepositoryPackage.RAW_LOCATION___GET_INPUT_STREAM:
+			return getInputStream();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy())
+			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (location: ");

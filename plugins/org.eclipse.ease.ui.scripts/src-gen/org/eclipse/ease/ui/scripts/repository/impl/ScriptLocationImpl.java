@@ -31,12 +31,12 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Script Location</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptLocationImpl#isRecursive <em>Recursive</em>}</li>
  * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptLocationImpl#isDefault <em>Default</em>}</li>
  * <li>{@link org.eclipse.ease.ui.scripts.repository.impl.ScriptLocationImpl#getScripts <em>Scripts</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */
@@ -121,7 +121,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 * @generated
 	 */
 	@Override
-	public void setRecursive(final boolean newRecursive) {
+	public void setRecursive(boolean newRecursive) {
 		boolean oldRecursive = recursive;
 		recursive = newRecursive;
 		if (eNotificationRequired())
@@ -144,7 +144,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 * @generated
 	 */
 	@Override
-	public void setDefault(final boolean newDefault) {
+	public void setDefault(boolean newDefault) {
 		boolean oldDefault = default_;
 		default_ = newDefault;
 		if (eNotificationRequired())
@@ -172,7 +172,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public NotificationChain eInverseAdd(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getScripts()).basicAdd(otherEnd, msgs);
@@ -186,7 +186,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 * @generated
 	 */
 	@Override
-	public NotificationChain eInverseRemove(final InternalEObject otherEnd, final int featureID, final NotificationChain msgs) {
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
 			return ((InternalEList<?>) getScripts()).basicRemove(otherEnd, msgs);
@@ -200,7 +200,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 * @generated
 	 */
 	@Override
-	public Object eGet(final int featureID, final boolean resolve, final boolean coreType) {
+	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
 			return isRecursive();
@@ -219,7 +219,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void eSet(final int featureID, final Object newValue) {
+	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
 			setRecursive((Boolean) newValue);
@@ -241,7 +241,7 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 * @generated
 	 */
 	@Override
-	public void eUnset(final int featureID) {
+	public void eUnset(int featureID) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
 			setRecursive(RECURSIVE_EDEFAULT);
@@ -262,14 +262,14 @@ public class ScriptLocationImpl extends RawLocationImpl implements IScriptLocati
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(final int featureID) {
+	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 		case IRepositoryPackage.SCRIPT_LOCATION__RECURSIVE:
 			return recursive != RECURSIVE_EDEFAULT;
 		case IRepositoryPackage.SCRIPT_LOCATION__DEFAULT:
 			return default_ != DEFAULT_EDEFAULT;
 		case IRepositoryPackage.SCRIPT_LOCATION__SCRIPTS:
-			return (scripts != null) && !scripts.isEmpty();
+			return scripts != null && !scripts.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

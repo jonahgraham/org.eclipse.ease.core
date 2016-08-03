@@ -15,6 +15,7 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 import java.io.InputStream;
 import java.util.Map;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.ease.ui.scripts.repository.*;
 import org.eclipse.ease.ui.scripts.repository.IRawLocation;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryFactory;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryPackage;
@@ -29,34 +30,31 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!--
- * end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model <b>Factory</b>. <!-- end-user-doc -->
+ * 
  * @generated
  */
 public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFactory {
 	/**
-	 * Creates the default factory implementation.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Creates the default factory implementation. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public static IRepositoryFactory init() {
 		try {
-			IRepositoryFactory theRepositoryFactory = (IRepositoryFactory)EPackage.Registry.INSTANCE.getEFactory(IRepositoryPackage.eNS_URI);
+			IRepositoryFactory theRepositoryFactory = (IRepositoryFactory) EPackage.Registry.INSTANCE.getEFactory(IRepositoryPackage.eNS_URI);
 			if (theRepositoryFactory != null) {
 				return theRepositoryFactory;
 			}
-		}
-		catch (Exception exception) {
+		} catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new RepositoryFactoryImpl();
 	}
 
 	/**
-	 * Creates an instance of the factory.
-	 * <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
+	 * Creates an instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public RepositoryFactoryImpl() {
@@ -65,55 +63,64 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case IRepositoryPackage.SCRIPT: return createScript();
-			case IRepositoryPackage.RAW_LOCATION: return createRawLocation();
-			case IRepositoryPackage.STORAGE: return createStorage();
-			case IRepositoryPackage.SCRIPT_LOCATION: return createScriptLocation();
-			case IRepositoryPackage.PARAMETER_MAP: return (EObject)createParameterMap();
-			default:
-				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+		case IRepositoryPackage.SCRIPT:
+			return createScript();
+		case IRepositoryPackage.RAW_LOCATION:
+			return createRawLocation();
+		case IRepositoryPackage.STORAGE:
+			return createStorage();
+		case IRepositoryPackage.SCRIPT_LOCATION:
+			return createScriptLocation();
+		case IRepositoryPackage.KEYWORD_MAP:
+			return (EObject) createKeywordMap();
+		default:
+			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
-			case IRepositoryPackage.PATH:
-				return createPathFromString(eDataType, initialValue);
-			case IRepositoryPackage.INPUT_STREAM:
-				return createInputStreamFromString(eDataType, initialValue);
-			default:
-				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+		case IRepositoryPackage.PATH:
+			return createPathFromString(eDataType, initialValue);
+		case IRepositoryPackage.INPUT_STREAM:
+			return createInputStreamFromString(eDataType, initialValue);
+		default:
+			throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
-			case IRepositoryPackage.PATH:
-				return convertPathToString(eDataType, instanceValue);
-			case IRepositoryPackage.INPUT_STREAM:
-				return convertInputStreamToString(eDataType, instanceValue);
-			default:
-				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+		case IRepositoryPackage.PATH:
+			return convertPathToString(eDataType, instanceValue);
+		case IRepositoryPackage.INPUT_STREAM:
+			return convertInputStreamToString(eDataType, instanceValue);
+		default:
+			throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -124,6 +131,7 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -134,6 +142,7 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -144,6 +153,7 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
@@ -154,23 +164,26 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
-	public Map.Entry<String, String> createParameterMap() {
-		ParameterMapImpl parameterMap = new ParameterMapImpl();
-		return parameterMap;
+	public Map.Entry<String, String> createKeywordMap() {
+		KeywordMapImpl keywordMap = new KeywordMapImpl();
+		return keywordMap;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public IPath createPathFromString(EDataType eDataType, String initialValue) {
-		return (IPath)super.createFromString(eDataType, initialValue);
+		return (IPath) super.createFromString(eDataType, initialValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public String convertPathToString(EDataType eDataType, Object instanceValue) {
@@ -179,14 +192,16 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public InputStream createInputStreamFromString(EDataType eDataType, String initialValue) {
-		return (InputStream)super.createFromString(eDataType, initialValue);
+		return (InputStream) super.createFromString(eDataType, initialValue);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	public String convertInputStreamToString(EDataType eDataType, Object instanceValue) {
@@ -195,15 +210,17 @@ public class RepositoryFactoryImpl extends EFactoryImpl implements IRepositoryFa
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @generated
 	 */
 	@Override
 	public IRepositoryPackage getRepositoryPackage() {
-		return (IRepositoryPackage)getEPackage();
+		return (IRepositoryPackage) getEPackage();
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
 	 * @deprecated
 	 * @generated
 	 */

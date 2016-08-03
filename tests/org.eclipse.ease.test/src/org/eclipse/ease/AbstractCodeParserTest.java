@@ -20,7 +20,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AbstractHeaderParserTest {
+public class AbstractCodeParserTest {
 
 	// classic implementation of a HeaderParser
 	private class HeaderParser extends AbstractCodeParser {

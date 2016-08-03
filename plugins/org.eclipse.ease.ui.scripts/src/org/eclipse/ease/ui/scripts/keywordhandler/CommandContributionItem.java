@@ -700,9 +700,11 @@ public class CommandContributionItem extends ContributionItem {
 			try {
 				elementRef = commandService.registerElementForCommand(command, callback);
 			} catch (NotDefinedException e) {
-				StatusManager.getManager().handle(StatusUtil.newStatus(IStatus.ERROR, "Unable to register menu item \"" + getId() //$NON-NLS-1$
-						+ "\", command \"" + command.getId() + "\" not defined", //$NON-NLS-1$ //$NON-NLS-2$
-						null));
+				StatusManager.getManager()
+						.handle(StatusUtil.newStatus(IStatus.ERROR,
+								"Unable to register menu item \"" + getId() //$NON-NLS-1$
+										+ "\", command \"" + command.getId() + "\" not defined", //$NON-NLS-1$ //$NON-NLS-2$
+								null));
 			}
 			command.getCommand().addCommandListener(getCommandListener());
 		}

@@ -33,7 +33,7 @@ import org.eclipse.ui.services.IServiceLocator;
  * Factory adding scripts to dynamically populated menu.
  */
 public final class ScriptContributionFactory extends CompoundContributionItem implements IWorkbenchContribution
-//, IScriptListener 
+// , IScriptListener
 {
 
 	private IServiceLocator fServiceLocator;
@@ -42,10 +42,10 @@ public final class ScriptContributionFactory extends CompoundContributionItem im
 	@Override
 	public void initialize(final IServiceLocator serviceLocator) {
 		fServiceLocator = serviceLocator;
-//		FIXME needs replacement
-//		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-//		if (repositoryService != null)
-//			repositoryService.addScriptListener(this);
+		// FIXME needs replacement
+		// final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+		// if (repositoryService != null)
+		// repositoryService.addScriptListener(this);
 	}
 
 	@Override
@@ -117,21 +117,21 @@ public final class ScriptContributionFactory extends CompoundContributionItem im
 	@Override
 	public void dispose() {
 
-//		FIXME needs replacement
-//		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-//		if (repositoryService != null)
-//			repositoryService.removeScriptListener(this);
+		// FIXME needs replacement
+		// final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+		// if (repositoryService != null)
+		// repositoryService.removeScriptListener(this);
 
 		fDirty = false;
 
 		super.dispose();
 	}
 
-//		FIXME needs replacement
-//	@Override
-//	public void notify(final ScriptEvent event) {
-//		fDirty = true;
-//	}
+	// FIXME needs replacement
+	// @Override
+	// public void notify(final ScriptEvent event) {
+	// fDirty = true;
+	// }
 
 	private static ScriptPopupMenu registerPath(final Map<IPath, ScriptPopupMenu> dynamicMenus, final IPath path) {
 		if (!dynamicMenus.containsKey(path)) {

@@ -10,57 +10,55 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.scripts;
 
- import org.eclipse.core.runtime.IPath;
- import org.eclipse.core.runtime.Path;
- import org.eclipse.ease.ui.scripts.preferences.PreferencesHelper;
- import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
- import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.ease.ui.scripts.preferences.PreferencesHelper;
+import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
+import org.eclipse.ui.PlatformUI;
 
- public abstract class ScriptStorage {
+public abstract class ScriptStorage {
 
-	 public static ScriptStorage createStorage() {
-		 String location = PreferencesHelper.getScriptStorageLocation();
+	public static ScriptStorage createStorage() {
+		String location = PreferencesHelper.getScriptStorageLocation();
 
-		 if (location.startsWith("workspace://"))
-			 return new WorkspaceScriptStorage(location);
+		if (location.startsWith("workspace://"))
+			return new WorkspaceScriptStorage(location);
 
-		 return new FileScriptStorage(location);
-	 }
+		return new FileScriptStorage(location);
+	}
 
-	 private final String fLocation;
+	private final String fLocation;
 
-	 protected ScriptStorage(final String location) {
-		 fLocation = location;
-	 }
+	protected ScriptStorage(final String location) {
+		fLocation = location;
+	}
 
-	 public boolean exists(final String name) {
-		 final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-				IRepositoryService.class);
-		 return repositoryService.getScript(name) != null;
-	 }
+	public boolean exists(final String name) {
+		final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+		return repositoryService.getScript(name) != null;
+	}
 
-	 public boolean store(final String name, final String content) {
-		 Path path = new Path(name);
-		 if (createPath(path.removeLastSegments(1))) {
-			 if (createFile(path, content)) {
-				 // trigger repository update
-				 // TODO trigger update on changed location only
-				 final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(
-						IRepositoryService.class);
-				 repositoryService.update(false);
+	public boolean store(final String name, final String content) {
+		Path path = new Path(name);
+		if (createPath(path.removeLastSegments(1))) {
+			if (createFile(path, content)) {
+				// trigger repository update
+				// TODO trigger update on changed location only
+				final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
+				repositoryService.update(false);
 
-				 return true;
-			 }
-		 }
+				return true;
+			}
+		}
 
-		 return false;
-	 }
+		return false;
+	}
 
-	 public String getLocation() {
-		 return fLocation;
-	 }
+	public String getLocation() {
+		return fLocation;
+	}
 
-	 protected abstract boolean createFile(Path path, String content);
+	protected abstract boolean createFile(Path path, String content);
 
-	 protected abstract boolean createPath(IPath path);
- }
+	protected abstract boolean createPath(IPath path);
+}

@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/package org.eclipse.ease.ui.scripts.ui;
+ *******************************************************************************/
+package org.eclipse.ease.ui.scripts.ui;
 
 import java.util.Collection;
 import java.util.HashSet;

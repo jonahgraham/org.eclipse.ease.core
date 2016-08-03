@@ -13,17 +13,16 @@ package org.eclipse.ease.ui.scripts.repository;
 import org.eclipse.emf.common.util.EList;
 
 /**
- * <!-- begin-user-doc --> A representation of the model object '
- * <em><b>Script Location</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object ' <em><b>Script Location</b></em>'. <!-- end-user-doc -->
  *
  * <p>
  * The following features are supported:
- * <ul>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isRecursive <em>Recursive</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isDefault <em>Default</em>}</li>
- *   <li>{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#getScripts <em>Scripts</em>}</li>
- * </ul>
  * </p>
+ * <ul>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isRecursive <em>Recursive</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isDefault <em>Default</em>}</li>
+ * <li>{@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#getScripts <em>Scripts</em>}</li>
+ * </ul>
  *
  * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScriptLocation()
  * @model
@@ -31,14 +30,12 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface IScriptLocation extends IRawLocation {
 	/**
-	 * Returns the value of the '<em><b>Recursive</b></em>' attribute.
-	 * The default value is <code>"false"</code>.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Recursive</b></em>' attribute. The default value is <code>"false"</code>. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Recursive</em>' attribute isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of the '<em>Recursive</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Recursive</em>' attribute.
 	 * @see #setRecursive(boolean)
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScriptLocation_Recursive()
@@ -48,10 +45,8 @@ public interface IScriptLocation extends IRawLocation {
 	boolean isRecursive();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isRecursive
-	 * <em>Recursive</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Sets the value of the ' {@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isRecursive <em>Recursive</em>}' attribute. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @param value
 	 *            the new value of the '<em>Recursive</em>' attribute.
@@ -61,14 +56,12 @@ public interface IScriptLocation extends IRawLocation {
 	void setRecursive(boolean value);
 
 	/**
-	 * Returns the value of the '<em><b>Default</b></em>' attribute.
-	 * The default value is <code>"false"</code>.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Default</b></em>' attribute. The default value is <code>"false"</code>. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Default</em>' attribute isn't clear, there
-	 * really should be more of a description here...
+	 * If the meaning of the '<em>Default</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Default</em>' attribute.
 	 * @see #setDefault(boolean)
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScriptLocation_Default()
@@ -78,10 +71,8 @@ public interface IScriptLocation extends IRawLocation {
 	boolean isDefault();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isDefault
-	 * <em>Default</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * Sets the value of the ' {@link org.eclipse.ease.ui.scripts.repository.IScriptLocation#isDefault <em>Default</em>}' attribute. <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @param value
 	 *            the new value of the '<em>Default</em>' attribute.
@@ -91,15 +82,14 @@ public interface IScriptLocation extends IRawLocation {
 	void setDefault(boolean value);
 
 	/**
-	 * Returns the value of the '<em><b>Scripts</b></em>' containment reference list.
-	 * The list contents are of type {@link org.eclipse.ease.ui.scripts.repository.IScript}.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}'.
-	 * <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Scripts</b></em>' containment reference list. The list contents are of type
+	 * {@link org.eclipse.ease.ui.scripts.repository.IScript}. It is bidirectional and its opposite is
+	 * '{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}'. <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Scripts</em>' containment reference list isn't
-	 * clear, there really should be more of a description here...
+	 * If the meaning of the '<em>Scripts</em>' containment reference list isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
+	 * 
 	 * @return the value of the '<em>Scripts</em>' containment reference list.
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScriptLocation_Scripts()
 	 * @see org.eclipse.ease.ui.scripts.repository.IScript#getEntry
