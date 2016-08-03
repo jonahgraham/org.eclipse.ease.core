@@ -36,7 +36,7 @@ public class ScriptContributionItem extends CommandContributionItem {
 	private static final Pattern ENABLE_PATTERN = Pattern.compile("enableFor\\((.*)\\)");
 
 	private static ImageDescriptor getImageDescriptor(final IScript script) {
-		String location = script.getParameters().get("image");
+		String location = script.getKeywords().get("image");
 		if (location != null) {
 			String imageLocation = ResourceTools.toAbsoluteLocation(location, script.getLocation());
 			if (imageLocation == null)
@@ -89,7 +89,7 @@ public class ScriptContributionItem extends CommandContributionItem {
 
 	@Override
 	public void update() {
-		setLabel(fScript.getParameters().get("name"));
+		setLabel(fScript.getKeywords().get("name"));
 		ParameterizedCommand command = getCommand();
 		command.getParameterMap().putAll(getParameters(fScript));
 

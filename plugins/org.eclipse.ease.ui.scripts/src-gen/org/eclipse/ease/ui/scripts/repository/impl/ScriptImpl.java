@@ -22,7 +22,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.AbstractCodeParser;
 import org.eclipse.ease.Activator;
+import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.EngineDescription;
@@ -64,7 +66,7 @@ import org.osgi.service.prefs.Preferences;
 public class ScriptImpl extends RawLocationImpl implements IScript {
 	/**
 	 * The default value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see #getTimestamp()
 	 * @generated
 	 * @ordered
@@ -73,7 +75,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * The cached value of the '{@link #getTimestamp() <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see #getTimestamp()
 	 * @generated
 	 * @ordered
@@ -82,7 +84,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * The cached value of the '{@link #getScriptKeywords() <em>Script Keywords</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see #getScriptKeywords()
 	 * @generated
 	 * @ordered
@@ -91,7 +93,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * The cached value of the '{@link #getUserKeywords() <em>User Keywords</em>}' map. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @see #getUserKeywords()
 	 * @generated
 	 * @ordered
@@ -100,7 +102,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	protected ScriptImpl() {
@@ -109,7 +111,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -119,7 +121,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -129,12 +131,12 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
 	public void setTimestamp(long newTimestamp) {
-		long oldTimestamp = timestamp;
+		final long oldTimestamp = timestamp;
 		timestamp = newTimestamp;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IRepositoryPackage.SCRIPT__TIMESTAMP, oldTimestamp, timestamp));
@@ -142,7 +144,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -154,7 +156,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	public NotificationChain basicSetEntry(IScriptLocation newEntry, NotificationChain msgs) {
@@ -164,12 +166,12 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
 	public void setEntry(IScriptLocation newEntry) {
-		if (newEntry != eInternalContainer() || (eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY && newEntry != null)) {
+		if ((newEntry != eInternalContainer()) || ((eContainerFeatureID() != IRepositoryPackage.SCRIPT__ENTRY) && (newEntry != null))) {
 			if (EcoreUtil.isAncestor(this, newEntry))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
@@ -186,33 +188,33 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
+	@Override
 	public EMap<String, String> getScriptKeywords() {
 		if (scriptKeywords == null) {
-			scriptKeywords = new EcoreEMap<String, String>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this,
-					IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS);
+			scriptKeywords = new EcoreEMap<>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this, IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS);
 		}
 		return scriptKeywords;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
+	@Override
 	public EMap<String, String> getUserKeywords() {
 		if (userKeywords == null) {
-			userKeywords = new EcoreEMap<String, String>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this,
-					IRepositoryPackage.SCRIPT__USER_KEYWORDS);
+			userKeywords = new EcoreEMap<>(IRepositoryPackage.Literals.KEYWORD_MAP, KeywordMapImpl.class, this, IRepositoryPackage.SCRIPT__USER_KEYWORDS);
 		}
 		return userKeywords;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -228,7 +230,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -246,7 +248,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -260,7 +262,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -286,7 +288,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -310,7 +312,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -334,7 +336,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -345,16 +347,16 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		case IRepositoryPackage.SCRIPT__ENTRY:
 			return getEntry() != null;
 		case IRepositoryPackage.SCRIPT__SCRIPT_KEYWORDS:
-			return scriptKeywords != null && !scriptKeywords.isEmpty();
+			return (scriptKeywords != null) && !scriptKeywords.isEmpty();
 		case IRepositoryPackage.SCRIPT__USER_KEYWORDS:
-			return userKeywords != null && !userKeywords.isEmpty();
+			return (userKeywords != null) && !userKeywords.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -373,7 +375,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @generated
 	 */
 	@Override
@@ -381,7 +383,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (eIsProxy())
 			return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
+		final StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (timestamp: ");
 		result.append(timestamp);
 		result.append(')');
@@ -389,9 +391,9 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	}
 
 	@Override
-	public Map<String, String> getParameters() {
+	public Map<String, String> getKeywords() {
 		// first merge script parameters
-		Map<String, String> parameters = new HashMap<String, String>(getScriptKeywords().map());
+		final Map<String, String> parameters = new HashMap<>(getScriptKeywords().map());
 
 		// now apply user parameters, as they have higher priority
 		parameters.putAll(getUserKeywords().map());
@@ -405,7 +407,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		ScriptType type = null;
 
 		// script type as provided in metadata
-		String identifier = getParameters().get("script-type");
+		final String identifier = getKeywords().get("script-type");
 		if (identifier != null)
 			type = scriptService.getAvailableScriptTypes().get(identifier);
 
@@ -435,7 +437,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 */
 	@Override
 	public IPath getPath() {
-		String name = getParameters().get("name");
+		final String name = getKeywords().get("name");
 		if (name != null)
 			return new Path(name).makeAbsolute();
 
@@ -443,7 +445,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (isRemote()) {
 			try {
 				relativePath = URLDecoder.decode(relativePath, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
+			} catch (final UnsupportedEncodingException e) {
 				// UTF-8 not available, no pretty print available
 			}
 		}
@@ -452,9 +454,9 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	@Override
 	public IScriptEngine prepareEngine() {
-		EngineDescription engineDescription = getEngineDescription();
+		final EngineDescription engineDescription = getEngineDescription();
 		if (engineDescription != null) {
-			IScriptEngine engine = engineDescription.createEngine();
+			final IScriptEngine engine = engineDescription.createEngine();
 
 			// create console
 			final ScriptConsole console = ScriptConsole.create(engine.getName() + ": " + getPath(), engine);
@@ -496,7 +498,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 	@Override
 	public IScriptEngine run(final String... parameters) {
-		IScriptEngine engine = prepareEngine();
+		final IScriptEngine engine = prepareEngine();
 
 		if (engine != null) {
 			engine.setVariable("argv", parameters);
@@ -514,14 +516,14 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	private EngineDescription getEngineDescription() {
 		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 
-		String engineIDs = getParameters().get("script-engine");
+		final String engineIDs = getKeywords().get("script-engine");
 		if (engineIDs == null)
 			return scriptService.getEngine(getType().getName());
 
 		// work through whitelist, prepare blacklist
-		HashSet<String> blacklist = new HashSet<String>();
-		for (String id : engineIDs.split(",")) {
-			EngineDescription engineDescription = scriptService.getEngineByID(id.trim());
+		final HashSet<String> blacklist = new HashSet<>();
+		for (final String id : engineIDs.split(",")) {
+			final EngineDescription engineDescription = scriptService.getEngineByID(id.trim());
 			if (engineDescription != null)
 				return engineDescription;
 
@@ -531,7 +533,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 
 		// no engine from whitelist found, find potential engine not part of
 		// blacklist
-		for (EngineDescription description : scriptService.getEngines(getType().getName())) {
+		for (final EngineDescription description : scriptService.getEngines(getType().getName())) {
 			if (!blacklist.contains(description.getID()))
 				return description;
 		}
@@ -547,8 +549,25 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 	 */
 	@Override
 	public boolean isRemote() {
-		Object resource = getResource();
+		final Object resource = getResource();
 		return (!(resource instanceof IFile)) && (!(resource instanceof File)) && (!getLocation().toString().startsWith("platform:/"));
 	}
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @generated NOT
+	 */
+	@Override
+	public void refreshScriptKeywords() {
+		final ScriptType type = getType();
+		if (type != null) {
+			final ICodeParser parser = type.getCodeParser();
+			if (parser != null) {
+				final String comment = parser.getHeaderComment(getInputStream());
+				getScriptKeywords().clear();
+				getScriptKeywords().addAll(AbstractCodeParser.extractKeywords(comment).entrySet());
+			}
+		}
+	}
 } // ScriptImpl

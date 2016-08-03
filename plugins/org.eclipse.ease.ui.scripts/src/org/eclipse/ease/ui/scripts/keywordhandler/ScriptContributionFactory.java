@@ -61,7 +61,7 @@ public class ScriptContributionFactory extends AbstractContributionFactory {
 
 		if (getLocation().endsWith(PopupHandler.POPUP_LOCATION)) {
 			for (IScript script : sortScripts(fScripts))
-				additions.addContributionItem(new ScriptContributionItem(script, script.getParameters().get("popup")), null);
+				additions.addContributionItem(new ScriptContributionItem(script, script.getKeywords().get("popup")), null);
 
 		} else {
 			for (IScript script : fScripts)

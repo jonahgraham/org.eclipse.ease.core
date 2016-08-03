@@ -43,7 +43,7 @@ public interface IScript extends IRawLocation {
 	 * If the meaning of the '<em>Timestamp</em>' attribute isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the value of the '<em>Timestamp</em>' attribute.
 	 * @see #setTimestamp(long)
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_Timestamp()
@@ -55,7 +55,7 @@ public interface IScript extends IRawLocation {
 	/**
 	 * Sets the value of the '{@link org.eclipse.ease.ui.scripts.repository.IScript#getTimestamp <em>Timestamp</em>}' attribute. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
+	 *
 	 * @param value
 	 *            the new value of the '<em>Timestamp</em>' attribute.
 	 * @see #getTimestamp()
@@ -70,7 +70,7 @@ public interface IScript extends IRawLocation {
 	 * If the meaning of the '<em>Entry</em>' reference isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the value of the '<em>Entry</em>' container reference.
 	 * @see #setEntry(IScriptLocation)
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_Entry()
@@ -83,7 +83,7 @@ public interface IScript extends IRawLocation {
 	/**
 	 * Sets the value of the '{@link org.eclipse.ease.ui.scripts.repository.IScript#getEntry <em>Entry</em>}' container reference. <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
-	 * 
+	 *
 	 * @param value
 	 *            the new value of the '<em>Entry</em>' container reference.
 	 * @see #getEntry()
@@ -98,7 +98,7 @@ public interface IScript extends IRawLocation {
 	 * If the meaning of the '<em>Script Keywords</em>' map isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the value of the '<em>Script Keywords</em>' map.
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_ScriptKeywords()
 	 * @model mapType="org.eclipse.ease.ui.scripts.repository.KeywordMap<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>"
@@ -113,7 +113,7 @@ public interface IScript extends IRawLocation {
 	 * If the meaning of the '<em>User Keywords</em>' map isn't clear, there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
+	 *
 	 * @return the value of the '<em>User Keywords</em>' map.
 	 * @see org.eclipse.ease.ui.scripts.repository.IRepositoryPackage#getScript_UserKeywords()
 	 * @model mapType="org.eclipse.ease.ui.scripts.repository.KeywordMap<org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString>"
@@ -123,7 +123,7 @@ public interface IScript extends IRawLocation {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @model
 	 * @generated
 	 */
@@ -131,7 +131,7 @@ public interface IScript extends IRawLocation {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @model kind="operation"
 	 * @generated
 	 */
@@ -139,7 +139,7 @@ public interface IScript extends IRawLocation {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 *
 	 * @model kind="operation" dataType="org.eclipse.ease.ui.scripts.repository.Path"
 	 * @generated
 	 */
@@ -150,7 +150,7 @@ public interface IScript extends IRawLocation {
 	 *
 	 * @generated NOT
 	 */
-	Map<String, String> getParameters();
+	Map<String, String> getKeywords();
 
 	/**
 	 * Get script type.
@@ -186,5 +186,12 @@ public interface IScript extends IRawLocation {
 	 * @generated NOT
 	 */
 	IScriptEngine prepareEngine();
+
+	/**
+	 * Parse the script source for keywords and replace cached keywords.
+	 *
+	 * @generated NOT
+	 */
+	void refreshScriptKeywords();
 
 } // IScript

@@ -12,7 +12,6 @@ package org.eclipse.ease.ui.scripts.repository.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,8 +34,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.ease.AbstractCodeParser;
-import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
@@ -135,8 +132,8 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				fRepository = (IStorage) resource.getContents().get(0);
 
 				// push all updates to the event bus
-				for (IScript script : fRepository.getScripts()) {
-					for (Entry<String, String> entry : script.getParameters().entrySet())
+				for (final IScript script : fRepository.getScripts()) {
+					for (final Entry<String, String> entry : script.getKeywords().entrySet())
 						fireKeywordEvent(script, entry.getKey(), entry.getValue(), null);
 				}
 
@@ -194,16 +191,16 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 			if (EXTENSION_KEYWORD_HANDLER.equals(e.getName())) {
 				try {
-					Object listener = e.createExecutableExtension(EXTENSION_KEYWORD_HANDLER_CLASS);
+					final Object listener = e.createExecutableExtension(EXTENSION_KEYWORD_HANDLER_CLASS);
 					if (listener instanceof EventHandler) {
-						String keywords = e.getAttribute(EXTENSION_KEYWORD_HANDLER_KEYWORDS);
-						for (String keyword : keywords.split(","))
+						final String keywords = e.getAttribute(EXTENSION_KEYWORD_HANDLER_KEYWORDS);
+						for (final String keyword : keywords.split(","))
 							fEventBroker.subscribe(BROKER_CHANNEL_SCRIPT_KEYWORDS + keyword, (EventHandler) listener);
 
 					} else
 						Logger.error(Activator.PLUGIN_ID, "Invalid keyword handler detected: " + e.getAttribute("id"));
 
-				} catch (Exception e1) {
+				} catch (final Exception e1) {
 					Logger.error(Activator.PLUGIN_ID, "Invalid keyword handler detected: " + e.getAttribute("id"), e1);
 				}
 			}
@@ -223,9 +220,9 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 	 *            previous value for that keyword
 	 */
 	private void fireKeywordEvent(final IScript script, final String key, final String value, final String oldValue) {
-		Object service = PlatformUI.getWorkbench().getService(IEventBroker.class);
+		final Object service = PlatformUI.getWorkbench().getService(IEventBroker.class);
 		if (service instanceof IEventBroker) {
-			HashMap<String, Object> eventData = new HashMap<String, Object>();
+			final HashMap<String, Object> eventData = new HashMap<>();
 			eventData.put("script", script);
 			eventData.put("keyword", key);
 			eventData.put("value", value);
@@ -247,9 +244,9 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		if (first.size() != second.size())
 			return false;
 
-		for (IScriptLocation firstEntry : first) {
+		for (final IScriptLocation firstEntry : first) {
 			boolean found = false;
-			for (IScriptLocation secondEntry : second) {
+			for (final IScriptLocation secondEntry : second) {
 				if (firstEntry.getLocation().equals(secondEntry.getLocation())) {
 					found = true;
 					break;
@@ -317,7 +314,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				script.setLocation(location);
 
 				entry.getScripts().add(script);
-				HashMap<String, Object> eventData = new HashMap<String, Object>();
+				final HashMap<String, Object> eventData = new HashMap<>();
 				eventData.put("script", script);
 				fEventBroker.post(BROKER_CHANNEL_SCRIPTS_NEW, eventData);
 
@@ -327,28 +324,24 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 				return;
 			}
 
-			// update script parameters
-			final Map<String, String> oldParameters = script.getParameters();
+			// update script keywords
+			final Map<String, String> oldKeywords = script.getKeywords();
+			script.refreshScriptKeywords();
+			final Map<String, String> newKeywords = script.getKeywords();
 
-			final Map<String, String> parameters = extractKeywords(scriptType, script.getInputStream());
-			script.getScriptKeywords().clear();
-			script.getScriptKeywords().putAll(parameters);
+			if (!oldKeywords.equals(newKeywords)) {
+				// changed script keywords, push events
 
-			final Map<String, String> newParameters = script.getParameters();
-
-			if (!oldParameters.equals(newParameters)) {
-				// changed script parameters, push events
-
-				// find deleted parameters
-				for (String oldParameter : oldParameters.keySet()) {
-					if (!newParameters.containsKey(oldParameter))
-						fireKeywordEvent(script, oldParameter, null, oldParameters.get(oldParameter));
+				// find deleted keywords
+				for (final String oldKeyword : oldKeywords.keySet()) {
+					if (!newKeywords.containsKey(oldKeyword))
+						fireKeywordEvent(script, oldKeyword, null, oldKeywords.get(oldKeyword));
 				}
 
-				// find changed/new parameters
-				for (Entry<String, String> newEntry : newParameters.entrySet()) {
-					if (!newEntry.getValue().equals(oldParameters.get(newEntry.getKey())))
-						fireKeywordEvent(script, newEntry.getKey(), newEntry.getValue(), oldParameters.get(newEntry.getKey()));
+				// find changed/new keywords
+				for (final Entry<String, String> newEntry : newKeywords.entrySet()) {
+					if (!newEntry.getValue().equals(oldKeywords.get(newEntry.getKey())))
+						fireKeywordEvent(script, newEntry.getKey(), newEntry.getValue(), oldKeywords.get(newEntry.getKey()));
 				}
 			}
 
@@ -370,26 +363,14 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		return null;
 	}
 
-	private static Map<String, String> extractKeywords(final ScriptType type, final InputStream stream) {
-		if (type != null) {
-			final ICodeParser parser = type.getCodeParser();
-			if (parser != null) {
-				String comment = parser.getHeaderComment(stream);
-				return AbstractCodeParser.extractKeywords(comment);
-			}
-		}
-
-		return Collections.emptyMap();
-	}
-
 	void removeScript(final IScript script) {
 		script.getEntry().getScripts().remove(script);
 
 		// unregister script keywords
-		for (Entry<String, String> entry : script.getParameters().entrySet())
+		for (final Entry<String, String> entry : script.getKeywords().entrySet())
 			fireKeywordEvent(script, entry.getKey(), null, entry.getValue());
 
-		HashMap<String, Object> eventData = new HashMap<String, Object>();
+		final HashMap<String, Object> eventData = new HashMap<>();
 		eventData.put("script", script);
 		fEventBroker.post(BROKER_CHANNEL_SCRIPTS_REMOVED, eventData);
 	}
@@ -430,7 +411,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		entry.setRecursive(recursive);
 		entry.setDefault(defaultLocation);
 
-		for (final IScriptLocation location : new HashSet<IScriptLocation>(getLocations())) {
+		for (final IScriptLocation location : new HashSet<>(getLocations())) {
 			if (location.getLocation().equals(locationURI)) {
 				// already registered, ev. we need to update defaultLocation/recursive?
 				if (!EcoreUtil.equals(location, entry))
@@ -454,11 +435,11 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 
 	@Override
 	public void removeLocation(final String locationURI) {
-		for (final IScriptLocation entry : new HashSet<IScriptLocation>(fRepository.getEntries())) {
+		for (final IScriptLocation entry : new HashSet<>(fRepository.getEntries())) {
 			if (entry.getLocation().equals(locationURI)) {
 				fRepository.getEntries().remove(entry);
 
-				for (final IScript script : new HashSet<IScript>(entry.getScripts()))
+				for (final IScript script : new HashSet<>(entry.getScripts()))
 					removeScript(script);
 
 				save();

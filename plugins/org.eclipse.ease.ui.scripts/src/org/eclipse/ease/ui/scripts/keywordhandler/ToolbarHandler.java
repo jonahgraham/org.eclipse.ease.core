@@ -150,8 +150,8 @@ public class ToolbarHandler implements EventHandler {
 			for (Event event : refreshEvents) {
 				IScript script = (IScript) event.getProperty("script");
 				if (!processedScripts.contains(script)) {
-					removeContribution(script, script.getParameters().get(getHandlerType()));
-					addContribution(script, script.getParameters().get(getHandlerType()));
+					removeContribution(script, script.getKeywords().get(getHandlerType()));
+					addContribution(script, script.getKeywords().get(getHandlerType()));
 				}
 			}
 
@@ -197,7 +197,7 @@ public class ToolbarHandler implements EventHandler {
 
 		synchronized (this) {
 			if (("image".equals(keyword)) || ("name".equals(keyword))) {
-				if (script.getParameters().get(getHandlerType()) != null) {
+				if (script.getKeywords().get(getHandlerType()) != null) {
 					fRefreshEvents.add(event);
 					fUpdateUIJob.schedule(300);
 				}
