@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.ease.AbstractCodeParser;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.service.IScriptService;
@@ -329,7 +330,7 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 			// update script parameters
 			final Map<String, String> oldParameters = script.getParameters();
 
-			final Map<String, String> parameters = extractParameters(scriptType, script.getInputStream());
+			final Map<String, String> parameters = extractKeywords(scriptType, script.getInputStream());
 			script.getScriptParameters().clear();
 			script.getScriptParameters().putAll(parameters);
 
@@ -369,11 +370,13 @@ public class RepositoryService implements IRepositoryService, IResourceChangeLis
 		return null;
 	}
 
-	private static Map<String, String> extractParameters(final ScriptType type, final InputStream stream) {
+	private static Map<String, String> extractKeywords(final ScriptType type, final InputStream stream) {
 		if (type != null) {
 			final ICodeParser parser = type.getCodeParser();
-			if (parser != null)
-				return parser.parse(stream);
+			if (parser != null) {
+				String comment = parser.getHeaderComment(stream);
+				return AbstractCodeParser.extractKeywords(comment);
+			}
 		}
 
 		return Collections.emptyMap();

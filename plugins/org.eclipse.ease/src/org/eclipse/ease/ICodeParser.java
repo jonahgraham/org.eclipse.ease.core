@@ -11,35 +11,32 @@
 package org.eclipse.ease;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import org.eclipse.ease.sign.ScriptSignatureException;
 import org.eclipse.ease.sign.SignatureInfo;
 
 /**
- * Parser interface for source code parsers to extract script keywords. The parser should fetch the very first comment in a source stream and extract key:value
- * pairs. Where keys are single words followed by a ':'. The rest of the line should be treated as value.
+ * Parser interface for source code parsers to extract relevant script data.
  */
 public interface ICodeParser {
 
 	/**
-	 * Parse stream for key:value pairs.
-	 *
+	 * Parses the file for a comment section at the beginning.
+	 * 
 	 * @param stream
-	 *            stream to parse
-	 * @return map containing keywords or empty map
+	 *            code content stream
+	 * @return comment data without decoration characters (eg: '*' at beginning of each line)
 	 */
-	Map<String, String> parse(InputStream stream);
+	String getHeaderComment(final InputStream stream);
 
 	/**
-	 * Create a script header for given keywords.
-	 *
-	 * @param headerContent
-	 *            key:value pairs to be stored
-	 * @return String representation of header
+	 * Verify if a line of code is accepted before the header comment section. This allows special magic tokens to be placed before the header comment as some script languages depend on that.
+	 * 
+	 * @param line line of code
+	 * @return <code>true</code> when line is accepted before the comment header
 	 */
-	String createHeader(Map<String, String> headerContent);
-
+	boolean isAcceptedBeforeHeader(final String line);
+	
 	/**
 	 * Parse the given piece of code into a language specific {@link ICompletionContext}.
 	 *

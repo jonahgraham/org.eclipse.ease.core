@@ -12,6 +12,7 @@ package org.eclipse.ease;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ease.modules.IEnvironment;
@@ -158,4 +159,15 @@ public interface ICodeFactory {
 	 * @return the comment with comment tokens.
 	 */
 	String createCommentedString(String comment, boolean addBlockComment);
+
+	/**
+	 * Create a comment header for given keywords. Arbitrary content will be delimited by an empty line
+	 *
+	 * @param keywords
+	 *            key:value pairs to be stored
+	 * @param existingHeader
+	 *            current header to copy plain text from
+	 * @return String representation of header
+	 */
+	String createKeywordHeader(Map<String, String> keywords, String existingHeader);
 }

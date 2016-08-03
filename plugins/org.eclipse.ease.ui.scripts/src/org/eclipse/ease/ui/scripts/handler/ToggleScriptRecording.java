@@ -109,15 +109,16 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 						String fileName = name + "." + scriptType.getDefaultExtension();
 
 						// write script header
-						Map<String, String> header = new HashMap<String, String>();
-						header.put("name", new Path(name).makeRelative().toString());
-						header.put("description", "Script recorded by user.");
-						header.put("script-type", scriptType.getName());
-						header.put("author", System.getProperty("user.name"));
-						header.put("date-recorded", new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(new Date()));
+						Map<String, String> keywords = new HashMap<String, String>();
+						keywords.put("name", new Path(name).makeRelative().toString());
+						keywords.put("description", "Script recorded by user.");
+						keywords.put("script-type", scriptType.getName());
+						keywords.put("author", System.getProperty("user.name"));
+						keywords.put("date-recorded", new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(new Date()));
 
+						
 						buffer.insert(0, "\n");
-						buffer.insert(0, scriptType.getCodeParser().createHeader(header));
+						buffer.insert(0, scriptType.getCodeFactory().createKeywordHeader(keywords, null));
 
 						if (storage != null) {
 							// store script

@@ -8,20 +8,77 @@
  * Contributors:
  *     Arthur Daussy - initial implementation
  *******************************************************************************/
-package org.eclipse.ease.modules;
+package org.eclipse.ease;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.ease.ICodeFactory;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.ease.modules.IEnvironment;
+import org.eclipse.ease.modules.IScriptFunctionModifier;
+import org.eclipse.ease.modules.ScriptParameter;
+import org.eclipse.ease.modules.WrapToScript;
 
 public abstract class AbstractCodeFactory implements ICodeFactory {
+
+	/** Default line break character. */
+	public static final String LINE_DELIMITER = System.getProperty(Platform.PREF_LINE_SEPARATOR);
+
+	public String createKeywordHeader(Map<String, String> keywords, String existingHeader) {
+		StringBuilder header = new StringBuilder();
+
+		// copy existing text before keywords
+		if (existingHeader == null)
+			existingHeader="";
+		
+		String[] existingLines = existingHeader.split("\\r?\\n");
+		int index = 0;
+		for (; index < existingLines.length; index++) {
+			final Matcher matcher = AbstractCodeParser.PARAMETER_PATTERN.matcher(existingLines[index]);
+			if (!matcher.matches())
+				header.append(existingLines[index]).append(LINE_DELIMITER);
+			else
+				break;
+		}
+
+		// add line delimiter before keywords
+		if ((header.length() > 0) && (!keywords.isEmpty()))
+			header.append(LINE_DELIMITER);
+
+		// add keywords
+		for (final Entry<String, String> entry : keywords.entrySet()) {
+			header.append(entry.getKey());
+			header.append(new String(new char[Math.max(16 - entry.getKey().length(), 1)]).replace('\0', ' '));
+
+			header.append(": ");
+			header.append(entry.getValue()).append(LINE_DELIMITER);
+		}
+
+		// copy existing text after keywords
+		boolean isFirstLineAfterKeywords = true;
+		for (; index < existingLines.length; index++) {
+			final Matcher matcher = AbstractCodeParser.PARAMETER_PATTERN.matcher(existingLines[index]);
+			if (!matcher.matches()) {
+				if (isFirstLineAfterKeywords) {
+					header.append(LINE_DELIMITER);
+					isFirstLineAfterKeywords = false;
+				}
+
+				header.append(existingLines[index]).append(LINE_DELIMITER);
+			}
+		}
+
+		return header.toString();
+	}
 
 	/**
 	 * Get the parameter name from a annotation. Use for engine which can have named variable
@@ -193,17 +250,31 @@ public abstract class AbstractCodeFactory implements ICodeFactory {
 	}
 
 	/**
-	 * As many languages use // happily, provide a default of // style comments.
+	 * As many languages use //, provide a default of // style comments.
 	 *
-	 * @return "// " comment token
+	 * @return "// "
 	 */
 	protected String getSingleLineCommentToken() {
 		return "// ";
 	}
 
-	protected abstract String getMultiLineCommentStartToken();
+	/**
+	 * As many languages use /*, provide a default of /* style comments.
+	 *
+	 * @return "/*"
+	 */
+	protected  String getMultiLineCommentStartToken() {
+		return "/*";
+	}
 
-	protected abstract String getMultiLineCommentEndToken();
+	/**
+	 * Default block comment end token.
+	 *
+	 * @return asterisk, dash
+	 */
+	protected String getMultiLineCommentEndToken() {
+		return "*/";
+	}
 
 	/**
 	 * Provide a default implementation that adds a single line comment token to the beginning of each line of the comment. Extenders can override

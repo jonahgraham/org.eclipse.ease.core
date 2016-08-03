@@ -15,9 +15,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.ease.AbstractCodeFactory;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.modules.AbstractCodeFactory;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
 import org.eclipse.ease.modules.ModuleHelper;
@@ -202,15 +203,4 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 
 		return data;
 	}
-
-	@Override
-	protected String getMultiLineCommentStartToken() {
-		return "/*";
-	}
-
-	@Override
-	protected String getMultiLineCommentEndToken() {
-		return "*/";
-	}
-
 }

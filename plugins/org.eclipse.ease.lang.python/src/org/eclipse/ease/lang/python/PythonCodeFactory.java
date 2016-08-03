@@ -16,8 +16,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ease.AbstractCodeFactory;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.modules.AbstractCodeFactory;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
 import org.eclipse.ease.modules.ModuleHelper;
@@ -176,6 +176,6 @@ public class PythonCodeFactory extends AbstractCodeFactory {
 
 	@Override
 	protected String getMultiLineCommentEndToken() {
-		return "\"\"\"";
+		return getMultiLineCommentStartToken();
 	}
 }
