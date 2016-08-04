@@ -10,6 +10,9 @@ Table of contents:
             3.1.1. PerformSignature
             3.1.2. VerifySignature
             3.1.3. SignatureHelper
+            3.1.4. SignatureInfo
+            3.1.5. ScriptSignatureException
+            3.1.6. SignatureCheck
 
 
 1. Introduction
@@ -25,7 +28,7 @@ Such scripts can be harmful for direct execution since using EASE, these scripts
 Hence, mechanism such as digital signature is required to check the credibility of such scripts similar to one being used on emails.
 
 Eclipse does have a mechanism to sign JAR files and it is getting used while giving a new update.
-These files are compressed in a JAR file and JAR is signed before release of new software. 
+These files are compressed in a JAR file and JAR is signed before release of new software.
 EASE currently does not have any mechanism to sign scripts.
 After addition of such a mechanism, using EASE, any user can sign script with his private key and can place that signed script on server for others to use so that his credibility is maintained.
 
@@ -110,9 +113,62 @@ Methods of interest:
 		Converts provided bytes to Base64 String.
 	- byte[] convertBase64ToBytes(String)
 		Converts provided Base64 string to bytes.
-	- boolean appendSignature(ScriptType, String, String, String, String, OutputStream) throws ScriptSignatureException
-		This method appends signature to outputstream with provided parameters.
+	- boolean getSignatureInFormat(ScriptType, String, String, String, String) throws ScriptSignatureException
+		This method returns signature block in proper format with provided parameters.
 	- boolean containSignature(ScriptType, InputStream) throws ScriptSignatureException
 		This method checks whether provided inputstream contain signature in proper format for which it uses org.eclipse.ease.service.ScriptType class to get code specific comments.
 	- boolean isSelfSignedCertificate(Certificate) throws ScriptSignatureException
 		This method tells whether provided certificate is self-signed or not.
+
+3.1.4. SignatureInfo
+''''''''''''''''''''
+Package:
+    org.eclipse.ease.sign
+Description:
+	This class is used to store and transfer information regarding signature.
+Constructor:
+	- SignatureInfo(String, String, String, String[], String)
+		Use this constructor when signature, provider, messageDigestAlgo, certificates and content of file are known.
+	- SignatureInfo(String, String, String, String[])
+		Use this constructor when signature, provider, messageDigestAlgo and certificates are known.
+	- SignatureInfo(String, String, String)
+		Use this constructor when signature, provider, messageDigestAlgo are known.
+Methods of interest:
+	- setContentOnly(String)
+		This method is used to set contents of file explicitly on which signature was applied.
+		Use of this method must be done when signature and original contents of file are stored at different locations and it is guaranteed that signature corresponds to the contents being set.
+	- String getSignature()
+		Use this method to get signature, set using constructor
+	- String getProvider()
+		Use this method to get provider of signature, set using constructor
+	- String getMessageDigestAlgo()
+		Use this method to get message digest algorithm of signature, set using constructor
+	- String[] getCertificateChain()
+		Use this method to get certificate chain of alias, set using constructor
+	- String getContentOnly()
+		Use this method to get contents of file on which signature was applied, set using constructor
+
+3.1.5. ScriptSignatureException
+'''''''''''''''''''''''''''''''
+Package:
+    org.eclipse.ease.sign
+Description:
+	This is a custom exception class used to throw exception caught while creation and verification of signature.
+	Custom exception is used so that it is easy to handle exception and interpret its cause.
+
+3.1.6. SignatureCheck
+'''''''''''''''''''''
+Package:
+	org.eclipse.ease.ui.launching
+Description:
+	This class contains methods that are used to verify signature in scripts before execution of scripts.
+	It handles various cases like no signatures, invalid signatures and invalid certificate chains.
+	It uses user preferences to check scripts with or without signatures can be executed or not.
+Methods of interest:
+	- boolean canExecute(ScriptType, InputStream, boolean)
+		Use this method to know signature can be executed or not.
+		It takes into account the user preferences also.
+	- boolean checkSignature(VerifySignature)
+		This method uses signature verification libraries to check for signature.
+	- boolean showErrorMessage(String)
+		This method takes string input to show error message to get response from user whether to execute script.
