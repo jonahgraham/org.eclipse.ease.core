@@ -29,13 +29,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.ease.sign.ISignatureConstants;
 import org.eclipse.ease.sign.ScriptSignatureException;
 import org.eclipse.ease.sign.SignatureInfo;
 
 public abstract class AbstractCodeParser implements ICodeParser {
-
-	/** Begin and End strings for signature block. */
-	private static final String BEGIN_STRING = "-----BEGIN SIGNATURE-----", END_STRING = "-----END SIGNATURE-----";
 
 	public static final Pattern PARAMETER_PATTERN = Pattern.compile("[^\\p{Alnum}-_]*?\\s*([\\p{Alnum}-_]*)\\s*:(.*)");
 
@@ -79,6 +77,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 	 *            code content stream
 	 * @return comment data without decoration characters (eg: '*' at beginning of each line)
 	 */
+	@Override
 	public String getHeaderComment(final InputStream stream) {
 		final StringBuilder comment = new StringBuilder();
 
@@ -134,7 +133,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 	/**
 	 * Allows to remove special delimiter characters from a comment line. Typically comments might start with a character like '*' or '#' depending on the
 	 * script language.
-	 * 
+	 *
 	 * @param commentLine
 	 *            single comment line
 	 * @return modified comment line
@@ -173,7 +172,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 			prev = cur;
 			while ((cur = bReader.readLine()) != null) {
 
-				while (!cur.equals(BEGIN_STRING)) {
+				while (!cur.equals(ISignatureConstants.BEGIN_STRING)) {
 					contentBuffer.append(prev + "\n");
 					prev = cur;
 					cur = bReader.readLine();
@@ -205,14 +204,14 @@ public abstract class AbstractCodeParser implements ICodeParser {
 					String params[] = cur.split(" ");
 					if (params.length == 2) {
 						String temp[] = params[0].split(":");
-						if (temp.length == 2)
+						if (temp.length == 2 && temp[0].equalsIgnoreCase(ISignatureConstants.HASH_PARAM))
 							messageDigestAlgo = temp[1];
 						else {
 							prev = cur;
 							continue;
 						}
 						temp = params[1].split(":");
-						if (temp.length == 2)
+						if (temp.length == 2 && temp[0].equalsIgnoreCase(ISignatureConstants.PROVIDER_PARAM))
 							provider = temp[1];
 						else {
 							prev = cur;
@@ -242,12 +241,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 				String signature;
 				cur = bReader.readLine();
 				if (cur != null) {
-					if (cur.length() == 64)
-						signature = cur;
-					else {
-						prev = cur;
-						continue;
-					}
+					signature = cur;
 					contentBuffer.append(cur + "\n");
 				} else
 					break;
@@ -277,7 +271,7 @@ public abstract class AbstractCodeParser implements ICodeParser {
 
 				cur = bReader.readLine();
 				if (cur != null) {
-					if (!cur.equals(END_STRING)) {
+					if (!cur.equals(ISignatureConstants.END_STRING)) {
 						prev = cur;
 						continue;
 					}
