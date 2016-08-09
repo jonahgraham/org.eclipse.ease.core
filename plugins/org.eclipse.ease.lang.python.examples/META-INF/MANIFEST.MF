@@ -3,4 +3,4 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Python examples
 Bundle-SymbolicName: org.eclipse.ease.lang.python.samples;singleton:=true
 Bundle-Version: 0.4.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

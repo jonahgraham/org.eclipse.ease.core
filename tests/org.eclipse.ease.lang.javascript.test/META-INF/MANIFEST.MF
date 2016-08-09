@@ -4,5 +4,5 @@ Bundle-Name: org.eclipse.ease.lang.javascript Unit Test
 Bundle-SymbolicName: org.eclipse.ease.lang.javascript.test
 Bundle-Version: 0.4.0.qualifier
 Fragment-Host: org.eclipse.ease.lang.javascript;bundle-version="0.3.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit;bundle-version="[4.11.0,5.0.0)"
