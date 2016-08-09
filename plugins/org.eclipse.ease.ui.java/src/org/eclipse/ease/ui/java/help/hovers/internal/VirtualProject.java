@@ -9,7 +9,7 @@
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.ui.help.hovers.internal;
+package org.eclipse.ease.ui.java.help.hovers.internal;
 
 import java.net.URI;
 import java.nio.charset.Charset;

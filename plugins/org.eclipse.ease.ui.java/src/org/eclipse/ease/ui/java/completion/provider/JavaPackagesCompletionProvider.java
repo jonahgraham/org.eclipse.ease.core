@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.completion.provider;
+package org.eclipse.ease.ui.java.completion.provider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,11 +23,11 @@ import java.util.Map;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.ui.Activator;
+import org.eclipse.ease.ui.java.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.IHelpResolver;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
-import org.eclipse.ease.ui.help.hovers.JavaPackageHelpResolver;
+import org.eclipse.ease.ui.java.help.handlers.JavaPackageHelpResolver;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
