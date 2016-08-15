@@ -37,6 +37,7 @@
 				<configuration>
 					<associateSites>
 						<site>https://bintray.com/artifact/download/pontesegger/ease-engines</site>
+						<site>https://dl.bintray.com/py4j/py4j-eclipse/0.10.2.1</site>
 					</associateSites>
 					<skipBuildInfo>true</skipBuildInfo>
 				</configuration>

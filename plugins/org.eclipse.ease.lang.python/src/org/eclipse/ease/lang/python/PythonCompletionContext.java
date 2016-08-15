@@ -25,6 +25,20 @@ public class PythonCompletionContext extends CompletionContext {
 	}
 
 	@Override
+	protected String simplifyCode() {
+		final String code = super.simplifyCode();
+
+		// XXX: API needs a review here, these simplifications are Py4J specific, not
+		// all Python code.
+		if (code.startsWith("jvm.gateway."))
+			return code.substring("jvm.gateway.".length());
+		if (code.startsWith("gateway."))
+			return code.substring("gateway.".length());
+
+		return code;
+	}
+
+	@Override
 	protected boolean isLiteral(final char candidate) {
 		return "'\"".indexOf(candidate) != -1;
 	}
