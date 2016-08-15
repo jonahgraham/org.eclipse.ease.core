@@ -70,7 +70,7 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 * @return list of all matching {@link ICompletionProvider}s.
 	 */
 	private static Collection<ICompletionProvider> getProviders(final String scriptType) {
-		final Collection<ICompletionProvider> providers = new ArrayList<ICompletionProvider>();
+		final Collection<ICompletionProvider> providers = new ArrayList<>();
 
 		final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor(COMPLETION_PROCESSOR);
 		for (final IConfigurationElement element : elements) {
@@ -149,17 +149,19 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 */
 	public List<ICompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset, final int selectionRange,
 			final IProgressMonitor monitor) {
-		final LinkedList<ICompletionProposal> proposals = new LinkedList<ICompletionProposal>();
+		final LinkedList<ICompletionProposal> proposals = new LinkedList<>();
 
 		final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
 
-		for (final ICompletionProvider provider : fCompletionProviders) {
-			try {
-				if (provider.isActive(context))
+		if (context != null) {
+			for (final ICompletionProvider provider : fCompletionProviders) {
+				try {
+					if (provider.isActive(context))
 
-					proposals.addAll(provider.getProposals(context));
-			} catch (Exception ex) {
-				Logger.error(Activator.PLUGIN_ID, "Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">", ex);
+						proposals.addAll(provider.getProposals(context));
+				} catch (final Exception ex) {
+					Logger.error(Activator.PLUGIN_ID, "Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">", ex);
+				}
 			}
 		}
 
