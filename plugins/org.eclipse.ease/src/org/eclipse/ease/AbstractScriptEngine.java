@@ -27,11 +27,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.ISecurityCheck.ActionType;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
+import org.eclipse.ease.security.ScriptUIAccess;
 import org.eclipse.ease.service.EngineDescription;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * Base implementation for a script engine. Handles Job implementation of script engine, adding script code for execution, module loading support and a basic
@@ -53,18 +53,21 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	private InputStream fInputStream = null;
 
-	private final List<IScriptDebugFrame> fStackTrace = new LinkedList<IScriptDebugFrame>();
+	private final List<IScriptDebugFrame> fStackTrace = new LinkedList<>();
 
 	private EngineDescription fDescription;
 
 	private boolean fSetupDone = false;
 
 	/** Variables tried to set before engine was started. */
-	private final Map<String, Object> fBufferedVariables = new HashMap<String, Object>();
+	private final Map<String, Object> fBufferedVariables = new HashMap<>();
 
 	private boolean fCloseStreamsOnTerminate;
 
 	private boolean fTerminated = false;
+
+	/** Registered security checks for engine actions. */
+	private final HashMap<ActionType, List<ISecurityCheck>> fSecurityChecks = new HashMap<>();;
 
 	/**
 	 * Constructor. Sets the name for the underlying job.
@@ -124,11 +127,6 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	public final Object injectUI(final Object content) {
-		final Preferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID).node(Activator.PREFERENCES_NODE_SCRIPTS);
-		final boolean allowUIAccess = prefs.getBoolean(Activator.SCRIPTS_ALLOW_UI_ACCESS, Activator.DEFAULT_SCRIPTS_ALLOW_UI_ACCESS);
-		if (!allowUIAccess)
-			throw new RuntimeException("Script UI access disabled by user preferences.");
-
 		return internalInject(content, true);
 	}
 
@@ -167,11 +165,19 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	private ScriptResult inject(final Script script, final boolean notifyListeners, final boolean uiThread) {
 
 		synchronized (script.getResult()) {
-
 			try {
 				Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Executing script (" + script.getTitle() + "):", script.getCode());
 
 				fStackTrace.add(0, new ScriptDebugFrame(script, 0, IScriptDebugFrame.TYPE_FILE));
+
+				// apply security checks
+				final List<ISecurityCheck> securityChecks = fSecurityChecks.get(ActionType.INJECT_CODE);
+				if (securityChecks != null) {
+					for (final ISecurityCheck check : securityChecks) {
+						if (!check.doIt(ActionType.INJECT_CODE, script, uiThread))
+							throw new ExitException();
+					}
+				}
 
 				// execution
 				if (notifyListeners)
@@ -212,6 +218,9 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	protected IStatus run(final IProgressMonitor monitor) {
 		Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine started: " + getName());
 		IStatus returnStatus = Status.OK_STATUS;
+
+		addSecurityCheck(ActionType.INJECT_CODE, ScriptUIAccess.getInstance());
+
 		try {
 			setupEngine();
 			fSetupDone = true;
@@ -252,7 +261,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 			returnStatus = (!isTerminated()) ? Status.OK_STATUS : Status.CANCEL_STATUS;
 
-		} catch (ScriptEngineException e) {
+		} catch (final ScriptEngineException e) {
 			returnStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Could not setup script engine", e);
 
 		} finally {
@@ -268,7 +277,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 			try {
 				teardownEngine();
-			} catch (ScriptEngineException e) {
+			} catch (final ScriptEngineException e) {
 				if (returnStatus.getSeverity() < IStatus.ERROR) {
 					// We were almost all OK (or just warnings/infos) but then we failed at shutdown
 					// Note we don't override a CANCEL
@@ -494,11 +503,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	 * @return trimmed list of arguments
 	 */
 	public static final String[] extractArguments(final String arguments) {
-		final ArrayList<String> args = new ArrayList<String>();
+		final ArrayList<String> args = new ArrayList<>();
 		if (arguments != null) {
 
-			String[] tokens = arguments.split(",");
-			for (String token : tokens) {
+			final String[] tokens = arguments.split(",");
+			for (final String token : tokens) {
 				if (!token.trim().isEmpty())
 					args.add(token.trim());
 			}
@@ -517,6 +526,22 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		synchronized (this) {
 			if (!isFinished())
 				wait(timeout);
+		}
+	}
+
+	@Override
+	public void addSecurityCheck(ActionType type, ISecurityCheck check) {
+		if (!fSecurityChecks.containsKey(type))
+			fSecurityChecks.put(type, new ArrayList<ISecurityCheck>());
+
+		if (!fSecurityChecks.get(type).contains(check))
+			fSecurityChecks.get(type).add(check);
+	}
+
+	@Override
+	public void removeSecurityCheck(ISecurityCheck check) {
+		for (final List<ISecurityCheck> entry : fSecurityChecks.values()) {
+			entry.remove(check);
 		}
 	}
 

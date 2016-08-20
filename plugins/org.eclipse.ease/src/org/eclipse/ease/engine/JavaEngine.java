@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.eclipse.ease.IExecutionListener;
 import org.eclipse.ease.IScriptEngine;
+import org.eclipse.ease.ISecurityCheck;
+import org.eclipse.ease.ISecurityCheck.ActionType;
 import org.eclipse.ease.ScriptResult;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.NativeEnvironment;
@@ -32,7 +34,7 @@ public class JavaEngine implements IScriptEngine {
 	private PrintStream fErrorStream;
 	private InputStream fInStream;
 
-	private final Map<String, Object> fVariables = new HashMap<String, Object>();
+	private final Map<String, Object> fVariables = new HashMap<>();
 	private final IEnvironment fEnvironment;
 
 	private EngineDescription fDescription;
@@ -210,5 +212,15 @@ public class JavaEngine implements IScriptEngine {
 	@Override
 	public boolean isFinished() {
 		return true;
+	}
+
+	@Override
+	public void addSecurityCheck(ActionType type, ISecurityCheck check) {
+		throw new RuntimeException("not supported");
+	}
+
+	@Override
+	public void removeSecurityCheck(ISecurityCheck check) {
+		throw new RuntimeException("not supported");
 	}
 }

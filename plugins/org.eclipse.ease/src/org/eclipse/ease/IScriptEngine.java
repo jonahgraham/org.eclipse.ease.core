@@ -264,4 +264,22 @@ public interface IScriptEngine {
 	 * @return <code>true</code> when engine ran and terminated
 	 */
 	boolean isFinished();
+
+	/**
+	 * Add a dedicated security check for a certain script action. If the check was already registered for this action, no further check will be added.
+	 *
+	 * @param type
+	 *            action type to add check for
+	 * @param check
+	 *            check to register
+	 */
+	void addSecurityCheck(ISecurityCheck.ActionType type, ISecurityCheck check);
+
+	/**
+	 * Remove registered security check for all actions. If the check was not registered at all nothing will happen.
+	 *
+	 * @param check
+	 *            check to be removed
+	 */
+	void removeSecurityCheck(ISecurityCheck check);
 }
