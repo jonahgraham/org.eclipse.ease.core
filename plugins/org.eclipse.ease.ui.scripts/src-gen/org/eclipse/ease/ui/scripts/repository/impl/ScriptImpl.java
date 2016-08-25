@@ -574,7 +574,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 			if (parser != null) {
 				final String comment = parser.getHeaderComment(getInputStream());
 				getScriptKeywords().clear();
-				getScriptKeywords().addAll(AbstractCodeParser.extractKeywords(comment).entrySet());
+				getScriptKeywords().putAll(AbstractCodeParser.extractKeywords(comment));
 			}
 		}
 	}
