@@ -19,7 +19,7 @@ location "http://download.eclipse.org/releases/neon/" eclipse-neon {
 
 location "https://bintray.com/artifact/download/pontesegger/ease-engines/" ease-engines {
 	// jython interpreter
-	org.eclipse.ease.engine.jython.feature.feature.group [2.7.0,3.0.0)
+	org.eclipse.ease.engine.jython.feature.feature.group lazy
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/" eclipse-orbit-neon {
