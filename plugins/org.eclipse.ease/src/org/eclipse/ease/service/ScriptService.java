@@ -36,8 +36,10 @@ import org.eclipse.ease.modules.ModuleCategoryDefinition;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 
-public class ScriptService implements IScriptService {
+public class ScriptService implements IScriptService, BundleListener {
 
 	private static final String ENGINE = "engine";
 
@@ -61,8 +63,8 @@ public class ScriptService implements IScriptService {
 
 	public static IScriptService getService() {
 		try {
-			return (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		} catch (IllegalStateException e) {
+			return PlatformUI.getWorkbench().getService(IScriptService.class);
+		} catch (final IllegalStateException e) {
 			// workbench has not been created yet, might be running in headless mode
 			return ScriptService.getInstance();
 		}
@@ -84,6 +86,7 @@ public class ScriptService implements IScriptService {
 	private Map<String, ModuleCategoryDefinition> fAvailableModuleCategories = null;
 
 	private ScriptService() {
+		Activator.getDefault().getContext().addBundleListener(this);
 	}
 
 	@Override
@@ -94,12 +97,12 @@ public class ScriptService implements IScriptService {
 	@Override
 	public synchronized Map<String, ModuleDefinition> getAvailableModules() {
 		if (fAvailableModules == null) {
-			fAvailableModules = new HashMap<String, ModuleDefinition>();
+			fAvailableModules = new HashMap<>();
 			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULES_ID);
 			for (final IConfigurationElement e : config) {
 				if (e.getName().equals(EXTENSION_MODULE)) {
 					// module extension detected
-					ModuleDefinition definition = new ModuleDefinition(e);
+					final ModuleDefinition definition = new ModuleDefinition(e);
 					if (definition.getModuleClass() != null)
 						fAvailableModules.put(definition.getPath().toString(), definition);
 					else
@@ -118,9 +121,9 @@ public class ScriptService implements IScriptService {
 
 	@Override
 	public List<EngineDescription> getEngines(final String scriptType) {
-		List<EngineDescription> result = new ArrayList<EngineDescription>();
+		final List<EngineDescription> result = new ArrayList<>();
 
-		for (EngineDescription description : getEngines()) {
+		for (final EngineDescription description : getEngines()) {
 			if (description.supports(scriptType))
 				result.add(description);
 		}
@@ -139,12 +142,12 @@ public class ScriptService implements IScriptService {
 
 	private Map<String, EngineDescription> getEngineDescriptions() {
 		if (fEngineDescriptions == null) {
-			fEngineDescriptions = new HashMap<String, EngineDescription>();
+			fEngineDescriptions = new HashMap<>();
 			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_LANGUAGE_ID);
 
 			for (final IConfigurationElement e : config) {
 				if (ENGINE.equals(e.getName())) {
-					EngineDescription engine = new EngineDescription(e);
+					final EngineDescription engine = new EngineDescription(e);
 					fEngineDescriptions.put(engine.getID(), engine);
 				}
 			}
@@ -154,7 +157,7 @@ public class ScriptService implements IScriptService {
 
 	@Override
 	public Collection<IScriptEngineLaunchExtension> getLaunchExtensions(final String engineID) {
-		final Collection<IScriptEngineLaunchExtension> extensions = new HashSet<IScriptEngineLaunchExtension>();
+		final Collection<IScriptEngineLaunchExtension> extensions = new HashSet<>();
 
 		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_LANGUAGE_ID);
 
@@ -178,7 +181,7 @@ public class ScriptService implements IScriptService {
 	@Override
 	public Map<String, ScriptType> getAvailableScriptTypes() {
 		if (fScriptTypes == null) {
-			fScriptTypes = new HashMap<String, ScriptType>();
+			fScriptTypes = new HashMap<>();
 			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_SCRIPTTYPE_ID);
 
 			for (final IConfigurationElement e : config) {
@@ -192,31 +195,31 @@ public class ScriptService implements IScriptService {
 
 	@Override
 	public ScriptType getScriptType(final String location) {
-		Object resource = ResourceTools.getResource(location);
+		final Object resource = ResourceTools.getResource(location);
 		try {
 			if (resource instanceof IFile) {
 				// try to resolve by content type
-				IContentDescription description = ((IFile) resource).getContentDescription();
+				final IContentDescription description = ((IFile) resource).getContentDescription();
 				if (description != null) {
-					IContentType contentType = description.getContentType();
+					final IContentType contentType = description.getContentType();
 
-					for (ScriptType scriptType : getAvailableScriptTypes().values()) {
+					for (final ScriptType scriptType : getAvailableScriptTypes().values()) {
 						if (scriptType.getContentTypes().contains(contentType.getId()))
 							return scriptType;
 					}
 				}
 			}
-		} catch (CoreException e) {
+		} catch (final CoreException e) {
 			// could not retrieve content type, continue using file extension
 		}
 
 		// try to resolve by extension
-		int pos = location.lastIndexOf('.');
+		final int pos = location.lastIndexOf('.');
 		if (pos != -1) {
-			String extension = location.substring(pos + 1);
+			final String extension = location.substring(pos + 1);
 
 			// FIXME search all extensions, not only default one
-			for (ScriptType scriptType : getAvailableScriptTypes().values()) {
+			for (final ScriptType scriptType : getAvailableScriptTypes().values()) {
 				if (scriptType.getDefaultExtension().equalsIgnoreCase(extension))
 					return scriptType;
 			}
@@ -227,7 +230,7 @@ public class ScriptService implements IScriptService {
 
 	@Override
 	public EngineDescription getEngine(final String scriptType) {
-		List<EngineDescription> engines = getEngines(scriptType);
+		final List<EngineDescription> engines = getEngines(scriptType);
 		if (!engines.isEmpty())
 			return engines.get(0);
 
@@ -237,12 +240,12 @@ public class ScriptService implements IScriptService {
 	@Override
 	public Map<String, ModuleCategoryDefinition> getAvailableModuleCategories() {
 		if (fAvailableModuleCategories == null) {
-			fAvailableModuleCategories = new HashMap<String, ModuleCategoryDefinition>();
+			fAvailableModuleCategories = new HashMap<>();
 			final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULES_ID);
 			for (final IConfigurationElement e : config) {
 				if (e.getName().equals(EXTENSION_CATEGORY)) {
 					// module category detected
-					ModuleCategoryDefinition definition = new ModuleCategoryDefinition(e);
+					final ModuleCategoryDefinition definition = new ModuleCategoryDefinition(e);
 					fAvailableModuleCategories.put(definition.getId(), definition);
 				}
 			}
@@ -252,7 +255,7 @@ public class ScriptService implements IScriptService {
 
 	@Override
 	public ModuleDefinition getModuleDefinition(final String moduleId) {
-		for (ModuleDefinition definition : getAvailableModules().values()) {
+		for (final ModuleDefinition definition : getAvailableModules().values()) {
 			if (definition.getId().equals(moduleId))
 				return definition;
 		}
@@ -268,9 +271,9 @@ public class ScriptService implements IScriptService {
 	 * @return code factory or <code>null</code>
 	 */
 	public static ICodeFactory getCodeFactory(final IScriptEngine engine) {
-		EngineDescription description = engine.getDescription();
+		final EngineDescription description = engine.getDescription();
 		if (description != null) {
-			List<ScriptType> scriptTypes = description.getSupportedScriptTypes();
+			final List<ScriptType> scriptTypes = description.getSupportedScriptTypes();
 			if (!scriptTypes.isEmpty())
 				return scriptTypes.get(0).getCodeFactory();
 		}
@@ -286,13 +289,25 @@ public class ScriptService implements IScriptService {
 	 * @return code factory or <code>null</code>
 	 */
 	public static ICodeParser getCodeParser(final IScriptEngine engine) {
-		EngineDescription description = engine.getDescription();
+		final EngineDescription description = engine.getDescription();
 		if (description != null) {
-			List<ScriptType> scriptTypes = description.getSupportedScriptTypes();
+			final List<ScriptType> scriptTypes = description.getSupportedScriptTypes();
 			if (!scriptTypes.isEmpty())
 				return scriptTypes.get(0).getCodeParser();
 		}
 
 		return null;
+	}
+
+	@Override
+	public void bundleChanged(BundleEvent event) {
+		final int type = event.getType();
+		if ((type == BundleEvent.RESOLVED) || (type == BundleEvent.STARTED) || (type == BundleEvent.STOPPED) || (type == BundleEvent.UPDATED)) {
+			// clear cached entries
+			fAvailableModules = null;
+			fEngineDescriptions = null;
+			fScriptTypes = null;
+			fAvailableModuleCategories = null;
+		}
 	}
 }

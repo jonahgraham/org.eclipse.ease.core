@@ -31,24 +31,32 @@ public class Activator extends AbstractUIPlugin {
 
 	public static final String ICON_METHOD = "/icons/eobj16/function.png";
 
-	private static Activator mInstance;
+	private static Activator fInstance;
+
+	private BundleContext fContext;
 
 	public static Activator getDefault() {
-		return mInstance;
+		return fInstance;
 	}
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
 
-		mInstance = this;
+		fContext = context;
+		fInstance = this;
 	}
 
 	@Override
 	public void stop(final BundleContext context) throws Exception {
-		mInstance = null;
+		fInstance = null;
+		fContext = null;
 
 		super.stop(context);
+	}
+
+	public BundleContext getContext() {
+		return fContext;
 	}
 
 	/**

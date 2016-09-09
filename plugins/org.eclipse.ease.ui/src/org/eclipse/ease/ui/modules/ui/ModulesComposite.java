@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.tools.DecoratedLabelProvider;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -25,9 +26,12 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Composite;;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;;
 
-public class ModulesComposite extends Composite {
+public class ModulesComposite extends Composite implements BundleListener {
 	private final TreeViewer treeViewer;
 
 	/**
@@ -71,10 +75,16 @@ public class ModulesComposite extends Composite {
 
 		treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { LocalSelectionTransfer.getTransfer(), TextTransfer.getInstance() },
 				new ModulesDragListener(treeViewer));
+
+		// input is handled by the content provider directly
+		treeViewer.setInput("dummy");
+
+		Activator.getDefault().getContext().addBundleListener(this);
 	}
 
 	@Override
 	public void dispose() {
+		Activator.getDefault().getContext().removeBundleListener(this);
 		super.dispose();
 	}
 
@@ -92,5 +102,16 @@ public class ModulesComposite extends Composite {
 
 	public TreeViewer getTreeViewer() {
 		return treeViewer;
+	}
+
+	@Override
+	public void bundleChanged(BundleEvent event) {
+		final int type = event.getType();
+		if ((type == BundleEvent.RESOLVED) || (type == BundleEvent.STARTED) || (type == BundleEvent.STOPPED) || (type == BundleEvent.UPDATED)) {
+			Display.getDefault().asyncExec(() -> {
+				if (!treeViewer.getTree().isDisposed())
+					treeViewer.refresh();
+			});
+		}
 	}
 }

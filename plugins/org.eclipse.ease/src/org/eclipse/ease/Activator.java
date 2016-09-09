@@ -36,6 +36,8 @@ public class Activator extends AbstractUIPlugin {
 		return fInstance;
 	}
 
+	private BundleContext fContext;
+
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
@@ -44,14 +46,20 @@ public class Activator extends AbstractUIPlugin {
 		// therefore load a class from that plugin
 		new FileTransferJob("dummy").setFileTransfer(null);
 
+		fContext = context;
 		fInstance = this;
 	}
 
 	@Override
 	public void stop(final BundleContext context) throws Exception {
 		fInstance = null;
+		fContext = null;
 
 		super.stop(context);
+	}
+
+	public BundleContext getContext() {
+		return fContext;
 	}
 
 	/**

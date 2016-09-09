@@ -11,9 +11,6 @@
 
 package org.eclipse.ease.ui.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,8 +18,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.ease.modules.ModuleDefinition;
-import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.modules.ui.ModulesComposite;
 import org.eclipse.ease.ui.modules.ui.ModulesFilter;
@@ -43,7 +38,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 
@@ -69,7 +63,7 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 
 		@Override
 		public IStatus runInUIThread(final IProgressMonitor monitor) {
-			for (ViewerFilter filter : fModulesComposite.getTreeViewer().getFilters()) {
+			for (final ViewerFilter filter : fModulesComposite.getTreeViewer().getFilters()) {
 				if (filter instanceof TextViewerFilter) {
 					((TextViewerFilter) filter).setFilter(fFilterText);
 
@@ -131,8 +125,8 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 		 * @return <code>true</code> when filtertext is detected
 		 */
 		private boolean isChildVisible(final Object element) {
-			ITreeContentProvider contentProvider = (ITreeContentProvider) fModulesComposite.getTreeViewer().getContentProvider();
-			for (Object child : contentProvider.getChildren(element)) {
+			final ITreeContentProvider contentProvider = (ITreeContentProvider) fModulesComposite.getTreeViewer().getContentProvider();
+			for (final Object child : contentProvider.getChildren(element)) {
 				if (isVisible(child) || isChildVisible(child))
 					return true;
 			}
@@ -148,8 +142,8 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 		 * @return <code>true</code> when filtertext is detected
 		 */
 		private boolean isVisible(final Object element) {
-			ILabelProvider labelProvider = (ILabelProvider) fModulesComposite.getTreeViewer().getLabelProvider();
-			String label = labelProvider.getText(element);
+			final ILabelProvider labelProvider = (ILabelProvider) fModulesComposite.getTreeViewer().getLabelProvider();
+			final String label = labelProvider.getText(element);
 			return (label.toLowerCase().contains(fFilterText));
 		}
 
@@ -170,7 +164,7 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 	 */
 	@Override
 	public void createPartControl(final Composite parent) {
-		GridLayout gl_parent = new GridLayout(1, false);
+		final GridLayout gl_parent = new GridLayout(1, false);
 		gl_parent.verticalSpacing = 3;
 		gl_parent.marginWidth = 0;
 		gl_parent.marginHeight = 0;
@@ -215,18 +209,14 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 
 		fModulesComposite.addFilter(ModulesFilter.visible(fModulesComposite));
 
-		MenuManager menuManager = new MenuManager();
-		Menu menu = menuManager.createContextMenu(fModulesComposite.getTreeViewer().getTree());
+		final MenuManager menuManager = new MenuManager();
+		final Menu menu = menuManager.createContextMenu(fModulesComposite.getTreeViewer().getTree());
 		getSite().registerContextMenu(menuManager, fModulesComposite.getTreeViewer());
 		fModulesComposite.getTreeViewer().getTree().setMenu(menu);
 
 		getSite().setSelectionProvider(fModulesComposite.getTreeViewer());
 
 		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(org.eclipse.ease.Activator.PLUGIN_ID).node("modules")).addPreferenceChangeListener(this);
-
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
-		fModulesComposite.setInput(modules);
 	}
 
 	@Override

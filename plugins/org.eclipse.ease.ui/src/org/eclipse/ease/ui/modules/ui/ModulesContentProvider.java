@@ -11,19 +11,20 @@
 package org.eclipse.ease.ui.modules.ui;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.modules.ModuleHelper;
+import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.ui.tools.AbstractVirtualTreeProvider;
+import org.eclipse.ui.PlatformUI;
 
 public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 
-	private final boolean mModulesOnly;
+	private final boolean fModulesOnly;
 
 	public ModulesContentProvider(final boolean modulesOnly) {
-		mModulesOnly = modulesOnly;
+		fModulesOnly = modulesOnly;
 	}
 
 	@Override
@@ -34,8 +35,8 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 	@Override
 	public Object[] getChildren(final Object parentElement) {
 
-		if ((parentElement instanceof ModuleDefinition) && !mModulesOnly) {
-			List<Object> children = new ArrayList<Object>();
+		if ((parentElement instanceof ModuleDefinition) && !fModulesOnly) {
+			final List<Object> children = new ArrayList<>();
 
 			// TODO wait for getModuleClass()
 			children.addAll(ModuleHelper.getFields(((ModuleDefinition) parentElement).getModuleClass()));
@@ -49,21 +50,20 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 
 	@Override
 	protected void populateElements(final Object inputElement) {
-		if (inputElement instanceof Collection<?>) {
-			for (Object module : (Collection<?>) inputElement) {
-				if (module instanceof ModuleDefinition)
-					registerElement(((ModuleDefinition) module).getPath().removeLastSegments(1), module);
-			}
-		}
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final List<ModuleDefinition> modules = new ArrayList<>(scriptService.getAvailableModules().values());
+
+		for (final ModuleDefinition module : modules)
+			registerElement(module.getPath().removeLastSegments(1), module);
 	}
 
 	@Override
 	public boolean hasChildren(final Object element) {
 
-		if ((element instanceof ModuleDefinition) && !mModulesOnly) {
+		if ((element instanceof ModuleDefinition) && !fModulesOnly) {
 			boolean hasChildren = false;
 
-			Class<?> clazz = ((ModuleDefinition) element).getModuleClass();
+			final Class<?> clazz = ((ModuleDefinition) element).getModuleClass();
 			if (clazz == null)
 				return false;
 
