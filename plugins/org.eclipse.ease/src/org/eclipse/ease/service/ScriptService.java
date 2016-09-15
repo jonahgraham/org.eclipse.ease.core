@@ -105,6 +105,7 @@ public class ScriptService implements IScriptService, BundleListener {
 					final ModuleDefinition definition = new ModuleDefinition(e);
 					if (definition.getModuleClass() != null)
 						fAvailableModules.put(definition.getPath().toString(), definition);
+
 					else
 						Logger.warning(Activator.PLUGIN_ID,
 								"Module <" + definition.getName() + "> in plugin <" + definition.getBundleID() + "> could not be located!");
@@ -303,11 +304,13 @@ public class ScriptService implements IScriptService, BundleListener {
 	public void bundleChanged(BundleEvent event) {
 		final int type = event.getType();
 		if ((type == BundleEvent.RESOLVED) || (type == BundleEvent.STARTED) || (type == BundleEvent.STOPPED) || (type == BundleEvent.UPDATED)) {
-			// clear cached entries
-			fAvailableModules = null;
-			fEngineDescriptions = null;
-			fScriptTypes = null;
-			fAvailableModuleCategories = null;
+			synchronized (this) {
+				// clear cached entries
+				fAvailableModules = null;
+				fEngineDescriptions = null;
+				fScriptTypes = null;
+				fAvailableModuleCategories = null;
+			}
 		}
 	}
 }
