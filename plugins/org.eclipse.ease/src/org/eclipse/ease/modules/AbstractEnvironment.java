@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +29,10 @@ import org.eclipse.ui.PlatformUI;
 public abstract class AbstractEnvironment extends AbstractScriptModule implements IEnvironment {
 
 	/** Stores ordering of wrapped elements. */
-	private final List<Object> fModules = new ArrayList<Object>();
+	private final List<Object> fModules = new ArrayList<>();
 
 	/** Stores beautified names of loaded modules. */
-	private final Map<String, Object> fModuleNames = new HashMap<String, Object>();
+	private final Map<String, Object> fModuleNames = new HashMap<>();
 
 	private final ListenerList fModuleListeners = new ListenerList();
 
@@ -91,7 +90,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 
 				// scripts changing functions force reloading of the whole module stack
 				if (module instanceof IScriptFunctionModifier) {
-					final List<Object> reverseList = new ArrayList<Object>(fModules);
+					final List<Object> reverseList = new ArrayList<>(fModules);
 					Collections.reverse(reverseList);
 
 					for (final Object loadedModule : reverseList)
@@ -128,8 +127,12 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	@WrapToScript
 	public final String listModules() {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		final Collection<ModuleDefinition> modules = scriptService.getAvailableModules().values();
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final List<ModuleDefinition> modules = new ArrayList<>(scriptService.getAvailableModules().values());
+
+		modules.sort((m1, m2) -> {
+			return m1.getPath().toString().compareTo(m2.getPath().toString());
+		});
 
 		final StringBuilder output = new StringBuilder();
 
@@ -242,12 +245,12 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 	 */
 	@WrapToScript
 	public String readInput(@ScriptParameter(defaultValue = "true") final boolean blocking) throws IOException {
-		InputStream inputStream = getScriptEngine().getInputStream();
+		final InputStream inputStream = getScriptEngine().getInputStream();
 		boolean doRead = blocking;
 		if (!doRead) {
 			try {
 				doRead = (inputStream.available() > 0);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// no data to read available
 			}
 		}
