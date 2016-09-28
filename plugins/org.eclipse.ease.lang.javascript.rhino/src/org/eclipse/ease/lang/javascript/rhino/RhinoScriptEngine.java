@@ -123,7 +123,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		try {
 			Context.class.getDeclaredField("VERSION_1_8");
 			fContext.setLanguageVersion(Context.VERSION_1_8);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			fContext.setLanguageVersion(Context.VERSION_1_7);
 		}
 	}
@@ -210,6 +210,13 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 					getExceptionStackTrace(script, e.lineNumber()), null);
 
 		} catch (final JavaScriptException e) {
+			final Object value = e.getValue();
+			if (value instanceof NativeJavaObject) {
+				final Object unwrapped = ((NativeJavaObject) value).unwrap();
+				if (unwrapped instanceof Throwable)
+					throw new ScriptExecutionException(((Throwable) unwrapped).getMessage(), e.lineNumber(), e.lineSource(), "JavaError",
+							getExceptionStackTrace(script, e.lineNumber()), (Throwable) unwrapped);
+			}
 			final String message = (e.getValue() != null) ? e.getValue().toString() : null;
 			throw new ScriptExecutionException(message, e.lineNumber(), e.lineSource(), "ScriptException", getExceptionStackTrace(script, e.lineNumber()),
 					null);
@@ -246,7 +253,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	 * @return updated stack trace
 	 */
 	protected List<IScriptDebugFrame> getExceptionStackTrace(final Script script, final int lineNumber) {
-		final List<IScriptDebugFrame> stackTrace = new ArrayList<IScriptDebugFrame>(getStackTrace());
+		final List<IScriptDebugFrame> stackTrace = new ArrayList<>(getStackTrace());
 		if ((script != null) && (!script.equals(stackTrace.get(0).getScript()))) {
 			// topmost script is not what we expected, seems it was not put on the stack
 			stackTrace.add(0, new ScriptDebugFrame(script, lineNumber, IScriptDebugFrame.TYPE_FILE));
@@ -296,7 +303,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	}
 
 	public static Map<String, Object> getVariables(final Scriptable scope) {
-		final Map<String, Object> result = new TreeMap<String, Object>();
+		final Map<String, Object> result = new TreeMap<>();
 
 		for (final Object key : scope.getIds()) {
 			final Object value = getVariable(scope, key.toString());
