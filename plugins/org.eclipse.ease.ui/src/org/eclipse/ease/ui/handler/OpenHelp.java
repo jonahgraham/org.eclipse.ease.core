@@ -19,7 +19,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.ease.modules.ModuleDefinition;
-import org.eclipse.ease.ui.modules.ui.ModulesTools;
+import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PlatformUI;
@@ -32,23 +32,28 @@ public class OpenHelp extends AbstractHandler implements IHandler {
 	@Override
 	public final Object execute(final ExecutionEvent event) throws ExecutionException {
 
-		ISelection selection = HandlerUtil.getCurrentSelection(event);
+		final ISelection selection = HandlerUtil.getCurrentSelection(event);
 		if (selection instanceof IStructuredSelection) {
 
-			Object element = ((IStructuredSelection) selection).getFirstElement();
+			final Object element = ((IStructuredSelection) selection).getFirstElement();
+
 			if (element instanceof ModuleDefinition) {
-				ModuleDefinition module = (ModuleDefinition) element;
+				final ModuleDefinition module = (ModuleDefinition) element;
 				PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(module.getHelpLocation(null));
 
-			} else if (element instanceof Method) {
-				ModuleDefinition module = ModulesTools.getDeclaringModule((Method) element);
-				if (module != null)
-					PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(module.getHelpLocation(((Method) element).getName()));
+			} else if (element instanceof ModuleEntry) {
+				if (((ModuleEntry) element).getEntry() instanceof Method) {
+					final ModuleDefinition module = ((ModuleEntry) element).getModuleDefinition();
+					if (module != null)
+						PlatformUI.getWorkbench().getHelpSystem()
+								.displayHelpResource(module.getHelpLocation(((Method) ((ModuleEntry) element).getEntry()).getName()));
 
-			} else if (element instanceof Field) {
-				ModuleDefinition module = ModulesTools.getDeclaringModule((Field) element);
-				if (module != null)
-					PlatformUI.getWorkbench().getHelpSystem().displayHelpResource(module.getHelpLocation(((Field) element).getName()));
+				} else if (((ModuleEntry) element).getEntry() instanceof Field) {
+					final ModuleDefinition module = ((ModuleEntry) element).getModuleDefinition();
+					if (module != null)
+						PlatformUI.getWorkbench().getHelpSystem()
+								.displayHelpResource(module.getHelpLocation(((Field) ((ModuleEntry) element).getEntry()).getName()));
+				}
 			}
 		}
 

@@ -23,6 +23,7 @@ import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.help.hovers.ModuleHelp;
+import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
@@ -44,8 +45,12 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 	};
 
 	@Override
-	public StyledString getStyledText(final Object element) {
+	public StyledString getStyledText(Object element) {
 		final StyledString text = new StyledString();
+
+		// unpack field/method
+		if (element instanceof ModuleEntry)
+			element = ((ModuleEntry) element).getEntry();
 
 		if (element instanceof ModuleDefinition) {
 			text.append(((ModuleDefinition) element).getName());
@@ -68,7 +73,7 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 	}
 
 	@Override
-	public Image getImage(final Object element) {
+	public Image getImage(Object element) {
 
 		if (element instanceof IPath)
 			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/folder.png", true);
@@ -80,6 +85,10 @@ public class ModulesLabelProvider extends BaseLabelProvider implements IStyledLa
 
 			return icon.createImage();
 		}
+
+		// unpack field/method
+		if (element instanceof ModuleEntry)
+			element = ((ModuleEntry) element).getEntry();
 
 		if (element instanceof Method)
 			return Activator.getImage(Activator.PLUGIN_ID, "/icons/eobj16/function.png", true);

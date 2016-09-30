@@ -10,12 +10,15 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.modules.ui;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.modules.ModuleHelper;
 import org.eclipse.ease.service.IScriptService;
+import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.ease.ui.tools.AbstractVirtualTreeProvider;
 import org.eclipse.ui.PlatformUI;
 
@@ -38,9 +41,11 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 		if ((parentElement instanceof ModuleDefinition) && !fModulesOnly) {
 			final List<Object> children = new ArrayList<>();
 
-			// TODO wait for getModuleClass()
-			children.addAll(ModuleHelper.getFields(((ModuleDefinition) parentElement).getModuleClass()));
-			children.addAll(ModuleHelper.getMethods(((ModuleDefinition) parentElement).getModuleClass()));
+			for (final Field field : ModuleHelper.getFields(((ModuleDefinition) parentElement).getModuleClass()))
+				children.add(new ModuleEntry<>((ModuleDefinition) parentElement, field));
+
+			for (final Method method : ModuleHelper.getMethods(((ModuleDefinition) parentElement).getModuleClass()))
+				children.add(new ModuleEntry<>((ModuleDefinition) parentElement, method));
 
 			return children.toArray();
 		}
@@ -61,15 +66,11 @@ public class ModulesContentProvider extends AbstractVirtualTreeProvider {
 	public boolean hasChildren(final Object element) {
 
 		if ((element instanceof ModuleDefinition) && !fModulesOnly) {
-			boolean hasChildren = false;
-
 			final Class<?> clazz = ((ModuleDefinition) element).getModuleClass();
 			if (clazz == null)
 				return false;
 
-			hasChildren |= !ModuleHelper.getMethods(clazz).isEmpty();
-			hasChildren |= !ModuleHelper.getFields(clazz).isEmpty();
-			return hasChildren;
+			return !ModuleHelper.getMethods(clazz).isEmpty() || !ModuleHelper.getFields(clazz).isEmpty();
 		}
 
 		return super.hasChildren(element);

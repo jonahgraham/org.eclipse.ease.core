@@ -31,6 +31,38 @@ import org.eclipse.ui.PlatformUI;
 
 public class ModulesTools {
 
+	public static class ModuleEntry<T> {
+
+		private final ModuleDefinition fModuleDefinition;
+		private final T fEntry;
+
+		public ModuleEntry(ModuleDefinition module, T entry) {
+			fModuleDefinition = module;
+			fEntry = entry;
+		}
+
+		public ModuleDefinition getModuleDefinition() {
+			return fModuleDefinition;
+		}
+
+		public T getEntry() {
+			return fEntry;
+		}
+
+		@Override
+		public int hashCode() {
+			return fModuleDefinition.hashCode() ^ fEntry.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof ModuleEntry)
+				return fModuleDefinition.equals(((ModuleEntry) o).fModuleDefinition) && fEntry.equals(((ModuleEntry) o).fEntry);
+
+			return false;
+		}
+	}
+
 	private static Styler ITALIC_STYLE = new Styler() {
 		private final Font italic = JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT);
 
@@ -82,11 +114,13 @@ public class ModulesTools {
 	 * @param method
 	 *            inspected method
 	 * @return module containing the method or null.
+	 * @deprecated Do not use as this method might yield wrong results!!!
 	 */
+	@Deprecated
 	public static ModuleDefinition getDeclaringModule(final Method method) {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final List<ModuleDefinition> modules = new ArrayList<>(scriptService.getAvailableModules().values());
 
 		// try for exact match
 		for (final ModuleDefinition module : modules) {
@@ -112,8 +146,8 @@ public class ModulesTools {
 	 */
 	public static ModuleDefinition getDeclaringModule(final Field field) {
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-		final List<ModuleDefinition> modules = new ArrayList<ModuleDefinition>(scriptService.getAvailableModules().values());
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
+		final List<ModuleDefinition> modules = new ArrayList<>(scriptService.getAvailableModules().values());
 
 		// try for exact match
 		for (final ModuleDefinition module : modules) {

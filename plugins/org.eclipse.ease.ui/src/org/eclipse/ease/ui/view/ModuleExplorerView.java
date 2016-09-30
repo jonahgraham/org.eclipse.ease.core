@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChange
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.modules.ui.ModulesComposite;
+import org.eclipse.ease.ui.modules.ui.ModulesContentProvider;
 import org.eclipse.ease.ui.modules.ui.ModulesFilter;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IContentProvider;
@@ -207,7 +208,7 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 		fModulesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		fModulesComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		fModulesComposite.addFilter(ModulesFilter.visible(fModulesComposite));
+		fModulesComposite.addFilter(ModulesFilter.visible((ModulesContentProvider) fModulesComposite.getTreeViewer().getContentProvider()));
 
 		final MenuManager menuManager = new MenuManager();
 		final Menu menu = menuManager.createContextMenu(fModulesComposite.getTreeViewer().getTree());

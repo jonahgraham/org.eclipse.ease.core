@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.Activator;
+import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.ease.ui.tools.DecoratedLabelProvider;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -59,17 +60,25 @@ public class ModulesComposite extends Composite implements BundleListener {
 
 		treeViewer.setComparator(new ViewerComparator() {
 			@Override
-			public int category(final Object element) {
+			public int category(Object element) {
+
+				// unpack field/method
+				if (element instanceof ModuleEntry)
+					element = ((ModuleEntry) element).getEntry();
+
 				if ((element instanceof IPath))
 					return 1;
+
 				if ((element instanceof ModuleDefinition))
 					return 2;
-				if ((element instanceof Field))
-					return 2;
-				if ((element instanceof Method))
-					return 3;
-				return 4;
 
+				if ((element instanceof Field))
+					return 3;
+
+				if ((element instanceof Method))
+					return 4;
+
+				return super.category(element);
 			}
 		});
 

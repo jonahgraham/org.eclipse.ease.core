@@ -35,12 +35,12 @@ public class ModuleHelp {
 	private static IMemento getHelpContent(final ModuleDefinition definition) {
 
 		if (definition != null) {
-			String helpLocation = definition.getHelpLocation(null);
-			URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
+			final String helpLocation = definition.getHelpLocation(null);
+			final URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 			try {
-				IMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
+				final IMemento rootNode = XMLMemento.createReadRoot(new InputStreamReader(url.openStream(), "UTF-8"));
 				return rootNode.getChild("body");
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				Logger.error(Activator.PLUGIN_ID, "Cannot find the module help content ", e);
 			}
 		}
@@ -56,8 +56,8 @@ public class ModuleHelp {
 	 * @return css location
 	 */
 	private static String getCSSUrl(final ModuleDefinition definition) {
-		String helpLocation = definition.getHelpLocation(null);
-		URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
+		final String helpLocation = definition.getHelpLocation(null);
+		final URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
 		return url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
 	}
 
@@ -70,15 +70,15 @@ public class ModuleHelp {
 	 */
 	public static String getModuleHelpTip(final ModuleDefinition definition) {
 
-		StringBuilder helpContent = new StringBuilder();
+		final StringBuilder helpContent = new StringBuilder();
 
-		IMemento bodyNode = getHelpContent(definition);
+		final IMemento bodyNode = getHelpContent(definition);
 		if (bodyNode != null) {
 			helpContent.append("<head><link rel=\"stylesheet\" type=\"text/css\" href=\"");
 			helpContent.append(getCSSUrl(definition));
 			helpContent.append("\" /></head><body>");
 
-			for (IMemento node : bodyNode.getChildren()) {
+			for (final IMemento node : bodyNode.getChildren()) {
 				if (node.getTextData().equalsIgnoreCase("Method Overview") || node.getTextData().equalsIgnoreCase("Constants"))
 					break;
 
@@ -100,11 +100,12 @@ public class ModuleHelp {
 	 */
 	public static String getMethodHelpTip(final Method method) {
 
-		StringBuilder helpContent = new StringBuilder();
+		final StringBuilder helpContent = new StringBuilder();
 
-		IMemento bodyNode = getHelpContent(ModulesTools.getDeclaringModule(method));
+		// FIXME do not use getDeclaringMethod, see bug 502854
+		final IMemento bodyNode = getHelpContent(ModulesTools.getDeclaringModule(method));
 		if (bodyNode != null) {
-			for (IMemento node : bodyNode.getChildren("div")) {
+			for (final IMemento node : bodyNode.getChildren("div")) {
 				if ((method.getName().equals(node.getString("title"))) && ("command".equals(node.getString("class")))) {
 					// method found
 					helpContent.append("<head><link rel=\"stylesheet\" type=\"text/css\" href=\"");
@@ -130,15 +131,15 @@ public class ModuleHelp {
 	 */
 	public static String getConstantHelpTip(final Field field) {
 
-		StringBuilder helpContent = new StringBuilder();
+		final StringBuilder helpContent = new StringBuilder();
 
-		IMemento bodyNode = getHelpContent(ModulesTools.getDeclaringModule(field));
+		final IMemento bodyNode = getHelpContent(ModulesTools.getDeclaringModule(field));
 		if (bodyNode != null) {
-			for (IMemento node : bodyNode.getChildren("table")) {
+			for (final IMemento node : bodyNode.getChildren("table")) {
 				if ("constants".equals(node.getString("class"))) {
-					for (IMemento tableRow : node.getChildren("tr")) {
+					for (final IMemento tableRow : node.getChildren("tr")) {
 						boolean found = false;
-						for (IMemento tableCell : tableRow.getChildren("td")) {
+						for (final IMemento tableCell : tableRow.getChildren("td")) {
 							if (found) {
 								// constant found
 								helpContent.append("<head><link rel=\"stylesheet\" type=\"text/css\" href=\"");
@@ -150,7 +151,7 @@ public class ModuleHelp {
 								return helpContent.toString();
 							}
 
-							IMemento anchorNode = tableCell.getChild("a");
+							final IMemento anchorNode = tableCell.getChild("a");
 							found = (anchorNode != null) && (field.getName().equals(anchorNode.getString("id")));
 						}
 					}

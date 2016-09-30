@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.modules.ui;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.jface.viewers.Viewer;
@@ -22,36 +19,27 @@ public class ModulesFilter {
 
 	@Deprecated
 	private ModulesFilter() {
-
 	}
 
-	public static ViewerFilter visible(final ModulesComposite composite) {
+	public static ViewerFilter visible(final ModulesContentProvider contentProvider) {
 
 		return new ViewerFilter() {
 			@Override
-			public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-
-				if (element instanceof Field)
-					return ((ModuleDefinition) parentElement).isVisible();
-
-				if (element instanceof Method)
-					return ((ModuleDefinition) parentElement).isVisible();
+			public boolean select(final Viewer viewer, final Object parentElement, Object element) {
 
 				if (element instanceof ModuleDefinition)
 					return ((ModuleDefinition) element).isVisible();
 
 				if (element instanceof IPath) {
-					boolean visible = false;
-					Object[] children = ((ModulesContentProvider) (composite.getTreeViewer().getContentProvider())).getChildren(element);
+					for (final Object node : contentProvider.getChildren(element)) {
+						if (select(viewer, parentElement, node))
+							return true;
+					}
 
-					for (Object node : children)
-						visible |= select(viewer, parentElement, node);
-
-					return visible;
-
+					return false;
 				}
 
-				return true;
+				return ((ModuleDefinition) parentElement).isVisible();
 			}
 		};
 	}

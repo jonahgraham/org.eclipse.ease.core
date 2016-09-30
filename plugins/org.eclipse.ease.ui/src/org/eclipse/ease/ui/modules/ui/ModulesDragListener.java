@@ -15,6 +15,8 @@ import java.lang.reflect.Method;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.tools.StringTools;
+import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -38,22 +40,27 @@ public class ModulesDragListener implements DragSourceListener {
 	@Override
 	public void dragSetData(final DragSourceEvent event) {
 		final IStructuredSelection selection = (IStructuredSelection) fTreeViewer.getSelection();
-		final Object firstElement = selection.getFirstElement();
+		Object firstElement = selection.getFirstElement();
 
 		if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
 			LocalSelectionTransfer.getTransfer().setSelection(selection);
 
 		} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
 
+			// unpack field/method
+			if (firstElement instanceof ModuleEntry)
+				firstElement = ((ModuleEntry) firstElement).getEntry();
+
 			final StringBuilder data = new StringBuilder();
+
 			if (firstElement instanceof ModuleDefinition)
-				data.append("loadModule('").append(((ModuleDefinition) firstElement).getPath().toString()).append("');\n");
+				data.append("loadModule('").append(((ModuleDefinition) firstElement).getPath().toString()).append("');" + StringTools.LINE_DELIMITER);
 
 			else if (firstElement instanceof Field)
 				data.append(((Field) firstElement).getName());
 
 			else if (firstElement instanceof Method)
-				data.append(ModulesTools.getSignature((Method) firstElement, false)).append(";\n");
+				data.append(ModulesTools.getSignature((Method) firstElement, false)).append(";" + StringTools.LINE_DELIMITER);
 
 			event.data = data.toString();
 		}
