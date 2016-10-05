@@ -13,6 +13,7 @@ package org.eclipse.ease.ui.completion.provider;
 import java.util.Map.Entry;
 
 import org.eclipse.ease.ICompletionContext;
+import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
@@ -26,7 +27,7 @@ public class VariablesCompletionProvider extends AbstractCompletionProvider {
 
 	@Override
 	public boolean isActive(final ICompletionContext context) {
-		return super.isActive(context) && (context.getScriptEngine() != null);
+		return super.isActive(context) && (context.getScriptEngine() != null) && (context.getType() == Type.NONE);
 	}
 
 	@Override
