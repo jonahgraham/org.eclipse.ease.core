@@ -22,6 +22,8 @@ location "https://bintray.com/artifact/download/pontesegger/ease-engines/" ease-
 	org.eclipse.ease.engine.jython.feature.feature.group [2.7.0,3.0.0)
 	// groovy interpreter
 	org.eclipse.ease.engine.groovy.feature.feature.group lazy
+	// ruby interpreter
+	org.eclipse.ease.engine.jruby.feature.feature.group lazy
 }
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/" eclipse-orbit-mars {

@@ -145,6 +145,11 @@
 		<module>../../plugins/org.eclipse.ease.lang.groovy.interpreter</module>
 		<module>../../features/org.eclipse.ease.lang.groovy.feature</module>
 
+		<!-- JRuby -->
+		<module>../../plugins/org.eclipse.ease.lang.ruby</module>
+		<module>../../plugins/org.eclipse.ease.lang.ruby.jruby</module>
+		<module>../../features/org.eclipse.ease.lang.ruby.feature</module>
+
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>

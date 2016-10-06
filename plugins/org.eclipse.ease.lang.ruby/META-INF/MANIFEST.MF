@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ruby Language
+Bundle-SymbolicName: org.eclipse.ease.lang.ruby;singleton:=true
+Bundle-Version: 0.4.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.eclipse.ease
+Bundle-Vendor: Eclipse.org
+Export-Package: org.eclipse.ease.lang.ruby

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ease.language">
+      <engine
+            class="org.eclipse.ease.lang.ruby.jruby.JRubyScriptEngine"
+            debugger="false"
+            id="org.eclipse.ease.engine.jruby"
+            name="JRuby"
+            priority="10">
+         <binding
+               scriptType="Ruby">
+         </binding>
+      </engine>
+      <launchExtension
+            class="org.eclipse.ease.lang.ruby.jruby.JRubyEnvironementBootStrapper"
+            engineID="org.eclipse.ease.engine.jruby">
+      </launchExtension>
+   </extension>
+
+</plugin>

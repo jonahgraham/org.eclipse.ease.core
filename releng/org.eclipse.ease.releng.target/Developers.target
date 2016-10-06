@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Neon for Developers" sequenceNumber="1475755357">
+<target name="Neon for Developers" sequenceNumber="1475756518">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.ease.engine.jython.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.ease.engine.groovy.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.engine.jruby.feature.feature.group" version="0.0.0"/>
       <repository id="ease-engines" location="https://bintray.com/artifact/download/pontesegger/ease-engines/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">

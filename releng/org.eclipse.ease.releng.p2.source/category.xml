@@ -21,6 +21,9 @@
    <feature id="org.eclipse.ease.groovy.feature.source" version="0.4.0.qualifier">
       <category name="Developer"/>
    </feature>
+   <feature id="org.eclipse.ease.ruby.feature.source" version="0.4.0.qualifier">
+      <category name="Developer"/>
+   </feature>
    <category-def name="Developer" label="EASE Developer Resources">
       <description>
          Source code bundles of the EASE project.

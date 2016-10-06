@@ -21,6 +21,9 @@
    <feature url="features/org.eclipse.ease.lang.groovy.feature_0.4.0.qualifier.jar" id="org.eclipse.ease.lang.groovy.feature" version="0.4.0.qualifier">
       <category name="Lang"/>
    </feature>
+   <feature url="features/org.eclipse.ease.lang.ruby.feature_0.4.0.qualifier.jar" id="org.eclipse.ease.lang.ruby.feature" version="0.4.0.qualifier">
+      <category name="Lang"/>
+   </feature>
    <category-def name="Core" label="EASE Core">
       <description>
          Core scripting framework components.
