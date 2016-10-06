@@ -63,7 +63,7 @@ public class ModulesDropHandler implements IShellDropHandler {
 						scriptEngine.executeAsync(call);
 					}
 
-					scriptEngine.executeAsync(((Field) element).getName());
+					scriptEngine.executeAsync(((Field) ((ModuleEntry) element).getEntry()).getName());
 				}
 
 			} else
