@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ease.language">
+      <engine
+            class="org.eclipse.ease.lang.groovy.interpreter.GroovyScriptEngine"
+            debugger="false"
+            id="org.eclipse.ease.engine.groovy"
+            name="Groovy"
+            priority="10">
+         <binding
+               scriptType="Groovy">
+         </binding>
+      </engine>
+      <launchExtension
+            class="org.eclipse.ease.lang.groovy.interpreter.GroovyEnvironementBootStrapper"
+            engineID="org.eclipse.ease.engine.groovy">
+      </launchExtension>
+   </extension>
+
+</plugin>

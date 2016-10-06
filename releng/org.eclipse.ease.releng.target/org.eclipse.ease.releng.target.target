@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Neon" sequenceNumber="1473421665">
+<target name="Neon" sequenceNumber="1475755362">
   <locations>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.eclipse.platform.feature.group" version="4.6.0.v20160606-1342"/>
-      <unit id="org.eclipse.rcp.feature.group" version="4.6.0.v20160606-1342"/>
-      <unit id="org.eclipse.jdt.feature.group" version="3.12.0.v20160606-1100"/>
-      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.0.400.v20160504-1450"/>
-      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.0.0.v201605311817"/>
+      <unit id="org.eclipse.platform.feature.group" version="4.6.1.v20160907-1200"/>
+      <unit id="org.eclipse.rcp.feature.group" version="4.6.1.v20160907-1200"/>
+      <unit id="org.eclipse.jdt.feature.group" version="3.12.1.v20160907-1200"/>
+      <unit id="org.eclipse.equinox.p2.discovery.feature.feature.group" version="1.0.401.v20160901-1335"/>
+      <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.0.0.v201608301904"/>
       <unit id="org.eclipse.emf.feature.group" version="2.12.0.v20160526-0356"/>
-      <unit id="org.eclipse.pde.feature.group" version="3.12.0.v20160606-1100"/>
-      <unit id="org.eclipse.jdt" version="3.12.0.v20160606-1100"/>
+      <unit id="org.eclipse.pde.feature.group" version="3.12.1.v20160907-1200"/>
+      <unit id="org.eclipse.jdt" version="3.12.1.v20160907-1200"/>
       <repository id="eclipse-neon" location="http://download.eclipse.org/releases/neon/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="org.eclipse.ease.engine.jython.feature.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.ease.engine.groovy.feature.feature.group" version="0.0.0"/>
       <repository id="ease-engines" location="https://bintray.com/artifact/download/pontesegger/ease-engines/"/>
     </location>
     <location includeMode="planner" includeAllPlatforms="false" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">

@@ -140,6 +140,11 @@
 		<module>../../plugins/org.eclipse.ease.lang.jvm.compiled</module>
 		<module>../../features/org.eclipse.ease.lang.jvm.feature</module>
 
+		<!-- Groovy -->
+		<module>../../plugins/org.eclipse.ease.lang.groovy</module>
+		<module>../../plugins/org.eclipse.ease.lang.groovy.interpreter</module>
+		<module>../../features/org.eclipse.ease.lang.groovy.feature</module>
+
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
