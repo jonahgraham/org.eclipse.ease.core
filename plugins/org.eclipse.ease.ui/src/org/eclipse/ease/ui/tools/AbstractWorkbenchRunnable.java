@@ -26,15 +26,15 @@ public abstract class AbstractWorkbenchRunnable implements Runnable, IWindowList
 	 * registers the execution task and returns immediately.
 	 */
 	public void launch() {
-		if (PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null)
+		if ((PlatformUI.isWorkbenchRunning()) && (PlatformUI.getWorkbench().getActiveWorkbenchWindow() != null))
 			Display.getDefault().asyncExec(this);
 
-		else if (Display.getCurrent() != null) {
+		else if ((PlatformUI.isWorkbenchRunning()) && (Display.getCurrent() != null)) {
 			// this is the display thread, but the workbench is not loaded yet
 			PlatformUI.getWorkbench().addWindowListener(this);
 
 		} else {
-			// we were not running in display thread, delegate to display thread
+			// we were not running in display thread or workbench is not ready yet, delegate to display thread and try again
 			Display.getDefault().asyncExec(() -> {
 				launch();
 			});
