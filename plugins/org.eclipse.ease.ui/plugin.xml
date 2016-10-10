@@ -429,6 +429,10 @@
             class="org.eclipse.ease.ui.dnd.ModulesDropHandler"></dropHandler>
       <dropHandler
             class="org.eclipse.ease.ui.dnd.JarDropHandler"></dropHandler>
+      <dropin
+            class="org.eclipse.ease.ui.view.ModuleStackDropin"
+            priority="-1">
+      </dropin>
    </extension>
    <extension
          point="org.eclipse.ease.ui.codeCompletionProvider">
