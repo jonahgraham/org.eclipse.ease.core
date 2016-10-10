@@ -48,9 +48,9 @@ public class ScriptType {
 	}
 
 	public Collection<String> getContentTypes() {
-		Collection<String> result = new HashSet<String>();
+		final Collection<String> result = new HashSet<>();
 
-		for (IConfigurationElement binding : fConfigurationElement.getChildren(BINDING))
+		for (final IConfigurationElement binding : fConfigurationElement.getChildren(BINDING))
 			result.add(binding.getAttribute(CONTENT_TYPE));
 
 		return result;
@@ -58,11 +58,11 @@ public class ScriptType {
 
 	public ICodeParser getCodeParser() {
 		try {
-			Object parser = fConfigurationElement.createExecutableExtension(CODE_PARSER);
+			final Object parser = fConfigurationElement.createExecutableExtension(CODE_PARSER);
 			if (parser instanceof ICodeParser)
 				return (ICodeParser) parser;
 
-		} catch (CoreException e) {
+		} catch (final CoreException e) {
 			// could not instantiate class
 			Logger.error(Activator.PLUGIN_ID, "Could not instantiate code parser", e);
 		}
@@ -72,11 +72,11 @@ public class ScriptType {
 
 	public ICodeFactory getCodeFactory() {
 		try {
-			Object factory = fConfigurationElement.createExecutableExtension(CODE_FACTORY);
+			final Object factory = fConfigurationElement.createExecutableExtension(CODE_FACTORY);
 			if (factory instanceof ICodeFactory)
 				return (ICodeFactory) factory;
 
-		} catch (CoreException e) {
+		} catch (final CoreException e) {
 			// could not instantiate class
 			Logger.error(Activator.PLUGIN_ID, "Could not instantiate code factory", e);
 		}
@@ -90,10 +90,10 @@ public class ScriptType {
 	 * @return available engines
 	 */
 	public List<EngineDescription> getEngines() {
-		List<EngineDescription> engines = new ArrayList<EngineDescription>();
+		final List<EngineDescription> engines = new ArrayList<>();
 
 		final IScriptService scriptService = ScriptService.getService();
-		for (EngineDescription description : scriptService.getEngines()) {
+		for (final EngineDescription description : scriptService.getEngines()) {
 			if (description.getSupportedScriptTypes().contains(this))
 				engines.add(description);
 		}
@@ -108,5 +108,22 @@ public class ScriptType {
 		});
 
 		return engines;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ScriptType)
+			return getName().equals(((ScriptType) obj).getName());
+
+		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = (prime * result) + ((getName() == null) ? 0 : getName().hashCode());
+		result = (prime * result) + ((getDefaultExtension() == null) ? 0 : getDefaultExtension().hashCode());
+		return result;
 	}
 }
