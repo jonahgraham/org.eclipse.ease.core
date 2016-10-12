@@ -57,7 +57,7 @@ public abstract class CompletionContext implements ICompletionContext {
 	private ScriptType fScriptType;
 	private String fOriginalCode = "";
 
-	private final Map<Object, String> fIncludes = new HashMap<Object, String>();
+	private final Map<Object, String> fIncludes = new HashMap<>();
 	private Collection<ModuleDefinition> fLoadedModules = null;
 	private Class<? extends Object> fReferredClazz;
 	private String fFilter = "";
@@ -366,7 +366,7 @@ public abstract class CompletionContext implements ICompletionContext {
 	 */
 	protected Class<? extends Object> parseVariableType(final String name) {
 
-		final List<String> sources = new ArrayList<String>();
+		final List<String> sources = new ArrayList<>();
 		sources.add(getOriginalCode());
 		sources.addAll(getIncludedResources().values());
 
@@ -559,7 +559,7 @@ public abstract class CompletionContext implements ICompletionContext {
 
 		// recursively load dependencies
 		final IScriptService scriptService = ScriptService.getInstance();
-		for (final String dependency : definition.getDependencies()) {
+		for (final String dependency : definition.getDependencies().keySet()) {
 			final ModuleDefinition dependencyDefinition = scriptService.getAvailableModules().get(dependency);
 			if (dependencyDefinition != null)
 				addLoadedModule(dependencyDefinition);
@@ -631,7 +631,7 @@ public abstract class CompletionContext implements ICompletionContext {
 	public Collection<ModuleDefinition> getLoadedModules() {
 		if (fLoadedModules == null) {
 			// lazy loading of modules
-			fLoadedModules = new HashSet<ModuleDefinition>();
+			fLoadedModules = new HashSet<>();
 
 			// add default environment module
 			// use static service instance to enable unit tests in headless mode
@@ -649,7 +649,7 @@ public abstract class CompletionContext implements ICompletionContext {
 
 			// add loaded modules from script engine
 			if (getScriptEngine() != null) {
-				for (ModuleDefinition definition : ModuleHelper.getLoadedModules(getScriptEngine()))
+				for (final ModuleDefinition definition : ModuleHelper.getLoadedModules(getScriptEngine()))
 					addLoadedModule(definition);
 			}
 		}
@@ -693,7 +693,7 @@ public abstract class CompletionContext implements ICompletionContext {
 	}
 
 	private static Collection<Bracket> matchBrackets(final String code, final char openChar, final char closeChar) {
-		final List<Bracket> brackets = new ArrayList<Bracket>();
+		final List<Bracket> brackets = new ArrayList<>();
 
 		for (int pos = 0; pos < code.length(); pos++) {
 			final char c = code.charAt(pos);

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.ease.IScriptEngine;
@@ -62,16 +63,19 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 				// module exists
 
 				// load dependencies; always load to bring dependencies on top of modules stack
-				for (final String dependencyId : definition.getDependencies()) {
-					final ModuleDefinition requiredModule = scriptService.getModuleDefinition(dependencyId);
+				for (final Entry<String, Boolean> entry : definition.getDependencies().entrySet()) {
+					final ModuleDefinition requiredModule = scriptService.getModuleDefinition(entry.getKey());
 
 					if (requiredModule == null)
-						throw new RuntimeException("Could not resolve module dependency \"" + dependencyId + "\"");
+						throw new RuntimeException("Could not resolve module dependency \"" + entry + "\"");
 
-					try {
-						loadModule(requiredModule.getPath().toString());
-					} catch (final RuntimeException e) {
-						throw new RuntimeException("Could not load module dependency \"" + requiredModule.getPath().toString() + "\"", e);
+					if ((!fModuleNames.containsKey(moduleName)) || (entry.getValue())) {
+						// only load if module was never loaded or reload is set to true
+						try {
+							loadModule(requiredModule.getPath().toString());
+						} catch (final RuntimeException e) {
+							throw new RuntimeException("Could not load module dependency \"" + requiredModule.getPath().toString() + "\"", e);
+						}
 					}
 				}
 

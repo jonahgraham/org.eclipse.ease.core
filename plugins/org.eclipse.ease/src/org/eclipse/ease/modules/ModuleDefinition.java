@@ -12,10 +12,9 @@ package org.eclipse.ease.modules;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -55,6 +54,9 @@ public class ModuleDefinition {
 	/** Module dependency parameter name. */
 	private static final String CONFIG_DEPENDENCY_ID = "module";
 
+	/** Module dependency reload parameter name. */
+	private static final String CONFIG_DEPENDENCY_RELOAD = "reload";
+
 	/** Module id parameter name. */
 	private static final String ID = "id";
 
@@ -69,7 +71,7 @@ public class ModuleDefinition {
 	 * @return module definition or <code>null</code>
 	 */
 	public static ModuleDefinition getDefinition(final Object module) {
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		for (final ModuleDefinition definition : scriptService.getAvailableModules().values()) {
 			if (definition.getModuleClass().equals(module.getClass()))
 				return definition;
@@ -92,15 +94,16 @@ public class ModuleDefinition {
 	}
 
 	/**
-	 * Get a collection of module dependencies. Collection contains ids of required modules.
+	 * Get a map of module dependencies. Map contains ids of required modules and their 'reload' status.
 	 *
-	 * @return collection of required module ids
+	 * @return map of required module ids
 	 */
-	public Collection<String> getDependencies() {
-		final Set<String> dependencies = new HashSet<String>();
+	public Map<String, Boolean> getDependencies() {
+		final Map<String, Boolean> dependencies = new HashMap<>();
 
-		for (final IConfigurationElement element : fConfig.getChildren(DEPENDENCY))
-			dependencies.add(element.getAttribute(CONFIG_DEPENDENCY_ID));
+		for (final IConfigurationElement element : fConfig.getChildren(DEPENDENCY)) {
+			dependencies.put(element.getAttribute(CONFIG_DEPENDENCY_ID), Boolean.parseBoolean(element.getAttribute(CONFIG_DEPENDENCY_RELOAD)));
+		}
 
 		return dependencies;
 	}
