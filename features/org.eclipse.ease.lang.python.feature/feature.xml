@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.ease.python.feature"
+      id="org.eclipse.ease.lang.python.feature"
       label="EASE Python"
       version="0.4.0.qualifier"
       plugin="org.eclipse.ease">

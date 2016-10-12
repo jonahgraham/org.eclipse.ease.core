@@ -11,7 +11,7 @@
  -->
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.eclipse.ease.python.feature</artifactId>
+	<artifactId>org.eclipse.ease.lang.python.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
 
 	<parent>

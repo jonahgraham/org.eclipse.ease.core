@@ -127,11 +127,11 @@
 		<module>../../plugins/org.eclipse.ease.lang.javascript.rhino</module>
 		<module>../../plugins/org.eclipse.ease.lang.javascript.rhino.debugger</module>
 		<module>../../plugins/org.eclipse.ease.lang.javascript.nashorn</module>
-		<module>../../features/org.eclipse.ease.javascript.feature</module>
+		<module>../../features/org.eclipse.ease.lang.javascript.feature</module>
 
 		<!-- Python -->
 		<module>../../plugins/org.eclipse.ease.lang.python</module>
-		<module>../../features/org.eclipse.ease.python.feature</module>
+		<module>../../features/org.eclipse.ease.lang.python.feature</module>
 		<module>../../plugins/org.eclipse.ease.lang.python.jython</module>
 		<module>../../plugins/org.eclipse.ease.lang.python.jython.debugger</module>
 		<module>../../features/org.eclipse.ease.lang.python.jython.feature</module>

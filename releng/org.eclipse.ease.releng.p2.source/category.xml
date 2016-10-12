@@ -6,10 +6,10 @@
    <feature id="org.eclipse.ease.ui.feature.source" version="0.4.0.qualifier">
       <category name="Developer"/>
    </feature>
-   <feature id="org.eclipse.ease.javascript.feature.source" version="0.4.0.qualifier">
+   <feature id="org.eclipse.ease.lang.javascript.feature.source" version="0.4.0.qualifier">
       <category name="Developer"/>
    </feature>
-   <feature id="org.eclipse.ease.python.feature.source" version="0.4.0.qualifier">
+   <feature id="org.eclipse.ease.lang.python.feature.source" version="0.4.0.qualifier">
       <category name="Developer"/>
    </feature>
    <feature id="org.eclipse.ease.lang.jvm.feature.source" version="0.4.0.qualifier">
