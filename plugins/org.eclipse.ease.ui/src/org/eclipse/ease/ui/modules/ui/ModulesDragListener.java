@@ -19,6 +19,8 @@ import org.eclipse.ease.tools.StringTools;
 import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
@@ -27,9 +29,16 @@ import org.eclipse.swt.dnd.TextTransfer;
 public class ModulesDragListener implements DragSourceListener {
 
 	private final TreeViewer fTreeViewer;
+	private final TableViewer fTableViewer;
 
 	public ModulesDragListener(final TreeViewer viewer) {
 		fTreeViewer = viewer;
+		fTableViewer = null;
+	}
+
+	public ModulesDragListener(final TableViewer viewer) {
+		fTableViewer = viewer;
+		fTreeViewer = null;
 	}
 
 	@Override
@@ -39,13 +48,13 @@ public class ModulesDragListener implements DragSourceListener {
 
 	@Override
 	public void dragSetData(final DragSourceEvent event) {
-		final IStructuredSelection selection = (IStructuredSelection) fTreeViewer.getSelection();
-		Object firstElement = selection.getFirstElement();
 
 		if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType)) {
-			LocalSelectionTransfer.getTransfer().setSelection(selection);
+			LocalSelectionTransfer.getTransfer().setSelection(getSelection());
 
 		} else if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+
+			Object firstElement = getSelection().getFirstElement();
 
 			// unpack field/method
 			if (firstElement instanceof ModuleEntry)
@@ -64,6 +73,16 @@ public class ModulesDragListener implements DragSourceListener {
 
 			event.data = data.toString();
 		}
+	}
+
+	private IStructuredSelection getSelection() {
+		if (fTreeViewer != null)
+			return fTreeViewer.getStructuredSelection();
+
+		if (fTableViewer != null)
+			return fTableViewer.getStructuredSelection();
+
+		return StructuredSelection.EMPTY;
 	}
 
 	@Override

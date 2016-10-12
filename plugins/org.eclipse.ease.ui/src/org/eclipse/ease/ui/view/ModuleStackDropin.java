@@ -21,14 +21,19 @@ import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.ui.Activator;
+import org.eclipse.ease.ui.modules.ui.ModulesDragListener;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -82,8 +87,16 @@ public class ModuleStackDropin implements IShellDropin, IExecutionListener {
 			public Object[] getElements(Object inputElement) {
 				if (inputElement instanceof IScriptEngine) {
 					final IEnvironment environment = AbstractEnvironment.getEnvironment((IScriptEngine) inputElement);
-					if (environment != null)
-						return environment.getModules().toArray();
+					if (environment != null) {
+						final List<ModuleDefinition> loadedModules = new ArrayList<>();
+						for (final Object element : environment.getModules()) {
+							final ModuleDefinition module = getDefinition(element);
+							if (module != null)
+								loadedModules.add(module);
+						}
+
+						return loadedModules.toArray(new ModuleDefinition[loadedModules.size()]);
+					}
 				}
 
 				return new Object[0];
@@ -97,18 +110,16 @@ public class ModuleStackDropin implements IShellDropin, IExecutionListener {
 		tableViewerColumn.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(final Object element) {
-				final ModuleDefinition definition = getDefinition(element);
-				if (definition != null)
-					return definition.getName();
+				if (element instanceof ModuleDefinition)
+					return ((ModuleDefinition) element).getName();
 
 				return super.getText(element);
 			}
 
 			@Override
 			public Image getImage(final Object element) {
-				final ModuleDefinition definition = getDefinition(element);
-				if (definition != null) {
-					final ImageDescriptor icon = definition.getImageDescriptor();
+				if (element instanceof ModuleDefinition) {
+					final ImageDescriptor icon = ((ModuleDefinition) element).getImageDescriptor();
 					if (icon != null)
 						return icon.createImage();
 
@@ -120,6 +131,9 @@ public class ModuleStackDropin implements IShellDropin, IExecutionListener {
 		});
 
 		fModulesTable.setInput(fEngine);
+
+		fModulesTable.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { LocalSelectionTransfer.getTransfer(), TextTransfer.getInstance() },
+				new ModulesDragListener(fModulesTable));
 
 		return composite;
 	}
