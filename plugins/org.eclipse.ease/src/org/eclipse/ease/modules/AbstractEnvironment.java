@@ -69,7 +69,7 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 					if (requiredModule == null)
 						throw new RuntimeException("Could not resolve module dependency \"" + entry + "\"");
 
-					if ((!fModuleNames.containsKey(moduleName)) || (entry.getValue())) {
+					if ((!fModuleNames.containsKey(requiredModule.getPath().toString())) || (entry.getValue())) {
 						// only load if module was never loaded or reload is set to true
 						try {
 							loadModule(requiredModule.getPath().toString());
