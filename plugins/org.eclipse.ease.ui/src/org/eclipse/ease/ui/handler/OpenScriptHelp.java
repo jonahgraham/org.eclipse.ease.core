@@ -18,7 +18,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class OpenScriptHelp extends AbstractHandler implements IHandler {
 
-	public static final String SCRIPT_GUIDE_URI = "/org.eclipse.ease.help/help/html/scripting_guide.html";
+	public static final String SCRIPT_GUIDE_URI = "/org.eclipse.ease.help/help/html/concepts/scripting_integration.html";
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
