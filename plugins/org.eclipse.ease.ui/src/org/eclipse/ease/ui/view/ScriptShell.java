@@ -297,9 +297,9 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			if (!initCommands.isEmpty())
 				fScriptEngine.executeAsync(initCommands);
 			else {
-				ICodeFactory codeFactory = ScriptService.getCodeFactory(fScriptEngine);
+				final ICodeFactory codeFactory = ScriptService.getCodeFactory(fScriptEngine);
 				if (codeFactory != null) {
-					String helpComment = codeFactory.createCommentedString("use help(\"<topic>\") to get more information");
+					final String helpComment = codeFactory.createCommentedString("use help(\"<topic>\") to get more information");
 					fScriptEngine.executeAsync(helpComment);
 				}
 			}
@@ -406,7 +406,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	@Override
 	public void notify(final IScriptEngine engine, final Script script, final int status) {
 
-		if (status == SCRIPT_END) {
+		if (status == SCRIPT_START) {
 			try {
 				// store code in history
 				addToHistory(script.getCode());
@@ -445,7 +445,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			fScriptEngine.setTerminateOnIdle(false);
 
 			// set view title
-			String partName = fScriptEngine.getName() + " Script Shell";
+			final String partName = fScriptEngine.getName() + " Script Shell";
 			setPartName(partName);
 
 			// prepare console
@@ -483,7 +483,7 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 	private static final String PROPERTY_DROPIN_CLASS = "class";
 
 	private static Collection<IShellDropin> getAvailableDropins() {
-		final List<IShellDropin> dropins = new ArrayList<IShellDropin>();
+		final List<IShellDropin> dropins = new ArrayList<>();
 
 		final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_SHELL_ID);
 		for (final IConfigurationElement e : config) {
