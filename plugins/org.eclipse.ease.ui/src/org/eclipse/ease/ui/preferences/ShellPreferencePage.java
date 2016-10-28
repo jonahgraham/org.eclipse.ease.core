@@ -121,7 +121,7 @@ public class ShellPreferencePage extends PreferencePage implements IWorkbenchPre
 		fTabFolder = new TabFolder(container, SWT.NONE);
 		fTabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Map<String, ScriptType> scriptTypes = scriptService.getAvailableScriptTypes();
 		for (final String type : scriptTypes.keySet()) {
 			final TabItem tbtmNewItem = new TabItem(fTabFolder, SWT.NONE);
@@ -157,10 +157,12 @@ public class ShellPreferencePage extends PreferencePage implements IWorkbenchPre
 		final boolean keepCommand = prefs.getBoolean(IPreferenceConstants.SHELL_KEEP_COMMAND, IPreferenceConstants.DEFAULT_SHELL_KEEP_COMMAND);
 		fChkKeepLastCommand.setSelection(keepCommand);
 
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		comboViewer.setInput(scriptService.getEngines());
 		final String engineID = prefs.get(IPreferenceConstants.SHELL_DEFAULT_ENGINE, IPreferenceConstants.DEFAULT_SHELL_DEFAULT_ENGINE);
-		comboViewer.setSelection(new StructuredSelection(scriptService.getEngineByID(engineID)), true);
+		final EngineDescription defaultEngine = scriptService.getEngineByID(engineID);
+		if (defaultEngine != null)
+			comboViewer.setSelection(new StructuredSelection(scriptService.getEngineByID(engineID)), true);
 
 		for (final TabItem item : fTabFolder.getItems()) {
 			final String title = item.getText();
