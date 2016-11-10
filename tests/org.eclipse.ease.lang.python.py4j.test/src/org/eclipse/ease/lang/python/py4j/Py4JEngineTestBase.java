@@ -62,11 +62,9 @@ public abstract class Py4JEngineTestBase extends EaseTestBase {
 	 * Evaluate the given expression by printing the str and return the standard output.
 	 */
 	protected String printExpression(String expression) throws Exception {
-		Script scriptFromShell = new Script("test code", "import sys; sys.stdout.write(str(" + expression + ")); sys.stdout.flush()", false);
+		Script scriptFromShell = new Script("test code", "print_(str(" + expression + "), False)", false);
 		ScriptResult result = fEngine.executeSync(scriptFromShell);
 		assertResultIsNone(result);
-		/* TODO: Until Bug 493677 is resolved we need a delay here to ensure data has been received by the stream gobbler */
-		Thread.sleep(1000);
 		return fOutputStream.getAndClearOutput();
 	}
 

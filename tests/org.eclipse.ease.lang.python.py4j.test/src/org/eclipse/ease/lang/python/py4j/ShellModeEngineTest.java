@@ -136,28 +136,24 @@ public class ShellModeEngineTest extends Py4JEngineTestBase {
 	}
 
 	@Test
-	@Ignore("Disabled until Bug 493677 is resolved")
 	public void print_() throws Exception {
 		assertResultIsNone(executeCode("print_()"));
 		assertEquals(String.format("%n"), fOutputStream.getAndClearOutput());
 	}
 
 	@Test
-	@Ignore("Disabled until Bug 493677 is resolved")
 	public void print_NoNewline() throws Exception {
 		assertResultIsNone(executeCode("print_('', False)"));
 		assertEquals("", fOutputStream.getAndClearOutput());
 	}
 
 	@Test
-	@Ignore("Disabled until Bug 493677 is resolved")
 	public void print_Text() throws Exception {
 		assertResultIsNone(executeCode("print_('text')"));
 		assertEquals(String.format("text%n"), fOutputStream.getAndClearOutput());
 	}
 
 	@Test
-	@Ignore("Disabled until Bug 493677 is resolved")
 	public void print_TextNoNewline() throws Exception {
 		assertResultIsNone(executeCode("print_('text', False)"));
 		assertEquals("text", fOutputStream.getAndClearOutput());
