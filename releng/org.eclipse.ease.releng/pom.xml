@@ -116,6 +116,7 @@
 		<!-- core -->
 		<module>../../plugins/org.eclipse.ease</module>
 		<module>../../plugins/org.eclipse.ease.ui</module>
+		<module>../../plugins/org.eclipse.ease.ui.completions.java</module>
 		<module>../../plugins/org.eclipse.ease.ui.scripts</module>
 		<module>../../plugins/org.eclipse.ease.help</module>
 		<module>../../features/org.eclipse.ease.feature</module>

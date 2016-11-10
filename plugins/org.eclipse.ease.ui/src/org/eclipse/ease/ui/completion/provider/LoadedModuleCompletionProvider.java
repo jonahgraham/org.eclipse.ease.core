@@ -16,10 +16,10 @@ import java.lang.reflect.Method;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.modules.ModuleDefinition;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
 import org.eclipse.ease.ui.modules.ui.ModulesTools;
-import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jface.viewers.StyledString;
 
 public class LoadedModuleCompletionProvider extends AbstractCompletionProvider {
@@ -39,7 +39,7 @@ public class LoadedModuleCompletionProvider extends AbstractCompletionProvider {
 					styledString.append(" : " + field.getType().getSimpleName(), StyledString.DECORATIONS_STYLER);
 					styledString.append(" - " + definition.getName(), StyledString.QUALIFIER_STYLER);
 
-					addProposal(styledString, field.getName(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+					addProposal(styledString, field.getName(), Activator.getLocalImageDescriptor("/icons/eobj16/field_public_obj.png"),
 							ScriptCompletionProposal.ORDER_FIELD, null);
 				}
 			}
@@ -50,13 +50,13 @@ public class LoadedModuleCompletionProvider extends AbstractCompletionProvider {
 					final StyledString styledString = ModulesTools.getSignature(method, true);
 					styledString.append(" - " + definition.getName(), StyledString.QUALIFIER_STYLER);
 
-					if ((method.getParameterTypes().length - ModulesTools.getOptionalParameterCount(method)) > 0)
-						addProposal(styledString, method.getName() + "(", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+					if ((method.getParameterTypes().length - ModulesTools.getOptionalParameterCount(method)) > 0) {
+						addProposal(styledString, method.getName() + "(", Activator.getLocalImageDescriptor("/icons/eobj16/field_public_obj.png"),
 								ScriptCompletionProposal.ORDER_METHOD, null);
-
-					else
-						addProposal(styledString, method.getName() + "()", JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+					} else {
+						addProposal(styledString, method.getName() + "()", Activator.getLocalImageDescriptor("/icons/eobj16/field_public_obj.png"),
 								ScriptCompletionProposal.ORDER_METHOD, null);
+					}
 				}
 			}
 		}

@@ -443,15 +443,6 @@
             class="org.eclipse.ease.ui.completion.provider.VariablesCompletionProvider">
       </codeCompletionProvider>
       <codeCompletionProvider
-            class="org.eclipse.ease.ui.completion.provider.JavaMethodCompletionProvider">
-      </codeCompletionProvider>
-      <codeCompletionProvider
-            class="org.eclipse.ease.ui.completion.provider.JavaPackagesCompletionProvider">
-      </codeCompletionProvider>
-      <codeCompletionProvider
-            class="org.eclipse.ease.ui.completion.provider.JavaClassCompletionProvider">
-      </codeCompletionProvider>
-      <codeCompletionProvider
             class="org.eclipse.ease.ui.completion.provider.EnvironmentLocationCompletionProvider">
       </codeCompletionProvider>
       <codeCompletionProvider

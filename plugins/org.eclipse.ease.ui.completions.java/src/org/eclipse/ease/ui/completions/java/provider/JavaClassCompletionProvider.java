@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Christian Pontesegger and others.
+ * Copyright (c) 2015, 2016 Christian Pontesegger and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.completion.provider;
+package org.eclipse.ease.ui.completions.java.provider;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,11 +30,11 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.Logger;
-import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.IHelpResolver;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
-import org.eclipse.ease.ui.help.hovers.JavaClassHelpResolver;
+import org.eclipse.ease.ui.completions.java.EaseUICompletionsJavaFragment;
+import org.eclipse.ease.ui.completions.java.help.handlers.JavaClassHelpResolver;
 import org.eclipse.ease.ui.tools.Timer;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -68,7 +68,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 					final IHelpResolver helpResolver = new JavaClassHelpResolver(context.getPackage(), className);
 
 					// retrieve image
-					ImageDescriptor descriptor = getImage(context.getPackage(), className);
+					final ImageDescriptor descriptor = getImage(context.getPackage(), className);
 
 					addProposal(className, className, descriptor, ScriptCompletionProposal.ORDER_CLASS, helpResolver);
 				}
@@ -76,18 +76,18 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 		} else {
 			// no package provided, look in all packages for matching class
-			String filter = context.getFilter();
-			Pattern classPattern = Pattern.compile(filter + ".*");
+			final String filter = context.getFilter();
+			final Pattern classPattern = Pattern.compile(filter + ".*");
 
-			for (Entry<String, Collection<String>> packageEntry : getClasses().entrySet()) {
-				for (String candidate : packageEntry.getValue()) {
+			for (final Entry<String, Collection<String>> packageEntry : getClasses().entrySet()) {
+				for (final String candidate : packageEntry.getValue()) {
 					if (classPattern.matcher(candidate).matches()) {
 						// add class proposal
 						// add class name
 						final IHelpResolver helpResolver = new JavaClassHelpResolver(packageEntry.getKey(), candidate);
 
 						// retrieve image
-						ImageDescriptor descriptor = getImage(packageEntry.getKey(), candidate);
+						final ImageDescriptor descriptor = getImage(packageEntry.getKey(), candidate);
 
 						final StyledString styledString = new StyledString(candidate);
 						styledString.append(" - " + packageEntry.getKey(), StyledString.QUALIFIER_STYLER);
@@ -120,7 +120,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 	private static Map<String, Collection<String>> getClasses() {
 		if (CLASSES == null) {
-			CLASSES = new HashMap<String, Collection<String>>();
+			CLASSES = new HashMap<>();
 
 			Timer timer = new Timer();
 
@@ -138,9 +138,9 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 				reader.close();
 
 			} catch (final IOException e) {
-				Logger.error(Activator.PLUGIN_ID, "Cannot read class list for code completion", e);
+				Logger.error(EaseUICompletionsJavaFragment.FRAGMENT_ID, "Cannot read class list for code completion", e);
 			}
-			Logger.trace(Activator.PLUGIN_ID, TRACE_CODE_COMPLETION, "Load java classes took: " + timer.getMilliSeconds() + " ms");
+			Logger.trace(EaseUICompletionsJavaFragment.FRAGMENT_ID, TRACE_CODE_COMPLETION, "Load java classes took: " + timer.getMilliSeconds() + " ms");
 
 			// read eclipse classes
 			timer = new Timer();
@@ -168,7 +168,7 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 						}
 					}
 				} catch (final IOException e) {
-					Logger.error(Activator.PLUGIN_ID, "Could not parse manifest of bundle \"" + bundle.getBundleId() + "\"", e);
+					Logger.error(EaseUICompletionsJavaFragment.FRAGMENT_ID, "Could not parse manifest of bundle \"" + bundle.getBundleId() + "\"", e);
 				}
 
 				if (!signedContent) {
@@ -209,11 +209,11 @@ public class JavaClassCompletionProvider extends AbstractCompletionProvider {
 
 						}
 					} catch (final IOException e) {
-						Logger.error(Activator.PLUGIN_ID, "Cannot resolve location for bundle \"" + bundle.getBundleId() + "\"", e);
+						Logger.error(EaseUICompletionsJavaFragment.FRAGMENT_ID, "Cannot resolve location for bundle \"" + bundle.getBundleId() + "\"", e);
 					}
 				}
 			}
-			Logger.trace(Activator.PLUGIN_ID, TRACE_CODE_COMPLETION, "Load eclipse classes took: " + timer.getMilliSeconds() + " ms");
+			Logger.trace(EaseUICompletionsJavaFragment.FRAGMENT_ID, TRACE_CODE_COMPLETION, "Load eclipse classes took: " + timer.getMilliSeconds() + " ms");
 		}
 
 		return CLASSES;
