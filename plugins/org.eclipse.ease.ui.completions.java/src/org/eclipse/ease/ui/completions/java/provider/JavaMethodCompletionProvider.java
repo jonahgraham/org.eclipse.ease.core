@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Christian Pontesegger and others.
+ * Copyright (c) 2015, 2016 Christian Pontesegger and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.ui.completion.provider;
+package org.eclipse.ease.ui.completions.java.provider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,8 +21,8 @@ import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.IHelpResolver;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
-import org.eclipse.ease.ui.help.hovers.JavaFieldHelpResolver;
-import org.eclipse.ease.ui.help.hovers.JavaMethodHelpResolver;
+import org.eclipse.ease.ui.completions.java.help.handlers.JavaFieldHelpResolver;
+import org.eclipse.ease.ui.completions.java.help.handlers.JavaMethodHelpResolver;
 import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.resource.ImageDescriptor;

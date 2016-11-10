@@ -15,9 +15,9 @@ import java.util.Map.Entry;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
 import org.eclipse.ease.modules.EnvironmentModule;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.completion.AbstractCompletionProvider;
 import org.eclipse.ease.ui.completion.ScriptCompletionProposal;
-import org.eclipse.jdt.ui.ISharedImages;
 import org.eclipse.jface.viewers.StyledString;
 
 /**
@@ -41,7 +41,7 @@ public class VariablesCompletionProvider extends AbstractCompletionProvider {
 					styledString.append(" : " + type, StyledString.DECORATIONS_STYLER);
 					styledString.append(" - " + "Variable", StyledString.QUALIFIER_STYLER);
 
-					addProposal(styledString, variable.getKey(), JavaMethodCompletionProvider.getSharedImage(ISharedImages.IMG_FIELD_PUBLIC),
+					addProposal(styledString, variable.getKey(), Activator.getLocalImageDescriptor("/icons/eobj16/field_public_obj.png"),
 							ScriptCompletionProposal.ORDER_FIELD, null);
 				}
 			}

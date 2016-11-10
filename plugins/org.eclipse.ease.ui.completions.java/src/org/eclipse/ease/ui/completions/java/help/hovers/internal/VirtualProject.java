@@ -9,38 +9,130 @@
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.ui.help.hovers.internal;
+package org.eclipse.ease.ui.completions.java.help.hovers.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Reader;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Map;
 
+import org.eclipse.core.resources.FileInfoMatcherDescription;
+import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFileState;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourceAttributes;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.content.IContentTypeMatcher;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
  * @author christian
  *
  */
-public class VirtualClasspathFile implements IFile {
+public class VirtualProject implements IProject {
+
+	@Override
+	public boolean exists(final IPath path) {
+		throw new RuntimeException("exists not implemented");
+	}
+
+	@Override
+	public IResource findMember(final String path) {
+		throw new RuntimeException("findMember not implemented");
+	}
+
+	@Override
+	public IResource findMember(final String path, final boolean includePhantoms) {
+		throw new RuntimeException("findMember not implemented");
+	}
+
+	@Override
+	public IResource findMember(final IPath path) {
+		throw new RuntimeException("findMember not implemented");
+	}
+
+	@Override
+	public IResource findMember(final IPath path, final boolean includePhantoms) {
+		throw new RuntimeException("findMember not implemented");
+	}
+
+	@Override
+	public String getDefaultCharset() throws CoreException {
+		// FIXME needs preferences lookup for default settings
+		return Charset.defaultCharset().name();
+	}
+
+	@Override
+	public String getDefaultCharset(final boolean checkImplicit) throws CoreException {
+		throw new RuntimeException("getDefaultCharset not implemented");
+	}
+
+	@Override
+	public IFile getFile(final IPath path) {
+		throw new RuntimeException("getFile not implemented");
+	}
+
+	@Override
+	public IFolder getFolder(final IPath path) {
+		throw new RuntimeException("getFolder not implemented");
+	}
+
+	@Override
+	public IResource[] members() throws CoreException {
+		throw new RuntimeException("members not implemented");
+	}
+
+	@Override
+	public IResource[] members(final boolean includePhantoms) throws CoreException {
+		throw new RuntimeException("members not implemented");
+	}
+
+	@Override
+	public IResource[] members(final int memberFlags) throws CoreException {
+		throw new RuntimeException("members not implemented");
+	}
+
+	@Override
+	public IFile[] findDeletedMembersWithHistory(final int depth, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("findDeletedMembersWithHistory not implemented");
+	}
+
+	@Override
+	public void setDefaultCharset(final String charset) throws CoreException {
+		throw new RuntimeException("setDefaultCharset not implemented");
+	}
+
+	@Override
+	public void setDefaultCharset(final String charset, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("setDefaultCharset not implemented");
+	}
+
+	@Override
+	public IResourceFilterDescription createFilter(final int type, final FileInfoMatcherDescription matcherDescription, final int updateFlags,
+			final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("createFilter not implemented");
+	}
+
+	@Override
+	public IResourceFilterDescription[] getFilters() throws CoreException {
+		throw new RuntimeException("getFilters not implemented");
+	}
 
 	@Override
 	public void accept(final IResourceProxyVisitor visitor, final int memberFlags) throws CoreException {
@@ -119,7 +211,7 @@ public class VirtualClasspathFile implements IFile {
 
 	@Override
 	public boolean exists() {
-		return true;
+		throw new RuntimeException("exists not implemented");
 	}
 
 	@Override
@@ -129,7 +221,7 @@ public class VirtualClasspathFile implements IFile {
 
 	@Override
 	public IMarker[] findMarkers(final String type, final boolean includeSubtypes, final int depth) throws CoreException {
-		throw new RuntimeException("findMarkers not implemented");
+		return new IMarker[0];
 	}
 
 	@Override
@@ -143,13 +235,18 @@ public class VirtualClasspathFile implements IFile {
 	}
 
 	@Override
+	public IPath getFullPath() {
+		return ResourcesPlugin.getWorkspace().getRoot().getFullPath();
+	}
+
+	@Override
 	public long getLocalTimeStamp() {
 		throw new RuntimeException("getLocalTimeStamp not implemented");
 	}
 
 	@Override
 	public IPath getLocation() {
-		throw new RuntimeException("getLocation not implemented");
+		return null;
 	}
 
 	@Override
@@ -165,6 +262,11 @@ public class VirtualClasspathFile implements IFile {
 	@Override
 	public long getModificationStamp() {
 		throw new RuntimeException("getModificationStamp not implemented");
+	}
+
+	@Override
+	public String getName() {
+		return "EASE Java Help Project (virtual)";
 	}
 
 	@Override
@@ -224,7 +326,7 @@ public class VirtualClasspathFile implements IFile {
 
 	@Override
 	public int getType() {
-		throw new RuntimeException("getType not implemented");
+		return PROJECT;
 	}
 
 	@Override
@@ -234,7 +336,7 @@ public class VirtualClasspathFile implements IFile {
 
 	@Override
 	public boolean isAccessible() {
-		throw new RuntimeException("isAccessible not implemented");
+		return true;
 	}
 
 	@Override
@@ -280,6 +382,11 @@ public class VirtualClasspathFile implements IFile {
 	@Override
 	public boolean isPhantom() {
 		throw new RuntimeException("isPhantom not implemented");
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		throw new RuntimeException("isReadOnly not implemented");
 	}
 
 	@Override
@@ -380,7 +487,6 @@ public class VirtualClasspathFile implements IFile {
 
 	@Override
 	public void touch(final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("touch not implemented");
 	}
 
 	@Override
@@ -399,132 +505,171 @@ public class VirtualClasspathFile implements IFile {
 	}
 
 	@Override
-	public void appendContents(final InputStream source, final boolean force, final boolean keepHistory, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("appendContents not implemented");
+	public void build(final int kind, final String builderName, final Map<String, String> args, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("build not implemented");
 	}
 
 	@Override
-	public void appendContents(final InputStream source, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("appendContents not implemented");
+	public void build(final int kind, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("build not implemented");
 	}
 
 	@Override
-	public void create(final InputStream source, final boolean force, final IProgressMonitor monitor) throws CoreException {
+	public void build(final IBuildConfiguration config, final int kind, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("build not implemented");
+	}
+
+	@Override
+	public void close(final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("close not implemented");
+	}
+
+	@Override
+	public void create(final IProjectDescription description, final IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("create not implemented");
 	}
 
 	@Override
-	public void create(final InputStream source, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
+	public void create(final IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("create not implemented");
 	}
 
 	@Override
-	public void createLink(final IPath localLocation, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("createLink not implemented");
+	public void create(final IProjectDescription description, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("create not implemented");
 	}
 
 	@Override
-	public void createLink(final URI location, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("createLink not implemented");
-	}
-
-	@Override
-	public void delete(final boolean force, final boolean keepHistory, final IProgressMonitor monitor) throws CoreException {
+	public void delete(final boolean deleteContent, final boolean force, final IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("delete not implemented");
 	}
 
 	@Override
-	public String getCharset() throws CoreException {
-		throw new RuntimeException("getCharset not implemented");
+	public IBuildConfiguration getActiveBuildConfig() throws CoreException {
+		throw new RuntimeException("getActiveBuildConfig not implemented");
 	}
 
 	@Override
-	public String getCharset(final boolean checkImplicit) throws CoreException {
-		throw new RuntimeException("getCharset not implemented");
+	public IBuildConfiguration getBuildConfig(final String configName) throws CoreException {
+		throw new RuntimeException("getBuildConfig not implemented");
 	}
 
 	@Override
-	public String getCharsetFor(final Reader reader) throws CoreException {
-		throw new RuntimeException("getCharsetFor not implemented");
+	public IBuildConfiguration[] getBuildConfigs() throws CoreException {
+		throw new RuntimeException("getBuildConfigs not implemented");
 	}
 
 	@Override
-	public IContentDescription getContentDescription() throws CoreException {
-		throw new RuntimeException("getContentDescription not implemented");
+	public IContentTypeMatcher getContentTypeMatcher() throws CoreException {
+		throw new RuntimeException("getContentTypeMatcher not implemented");
 	}
 
 	@Override
-	public InputStream getContents() throws CoreException {
-		throw new RuntimeException("getContents not implemented");
+	public IProjectDescription getDescription() throws CoreException {
+		return new VirtualProjectDescription(this);
 	}
 
 	@Override
-	public InputStream getContents(final boolean force) throws CoreException {
-		return new ByteArrayInputStream(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<classpath>\n"
-				+ "	<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8\"/>\n"
-				+ "	<classpathentry kind=\"lib\" path=\"/usr/local/bin/eclipse/plugins/org.eclipse.core.resources_3.10.0.v20150423-0755.jar\">\n"
-				+ "		<attributes>\n"
-				+ "			<attribute name=\"javadoc_location\" value=\"http://help.eclipse.org/juno/topic/org.eclipse.platform.doc.isv/reference/api\"/>\n"
-				+ "		</attributes>\n" + "	</classpathentry>\n" + "</classpath>\n" + "").getBytes());
+	public IFile getFile(final String name) {
+		if (".classpath".equals(name))
+			return new VirtualClasspathFile();
+
+		throw new RuntimeException("getFile not implemented");
 	}
 
 	@Override
-	public int getEncoding() throws CoreException {
-		throw new RuntimeException("getEncoding not implemented");
+	public IFolder getFolder(final String name) {
+		throw new RuntimeException("getFolder not implemented");
 	}
 
 	@Override
-	public IPath getFullPath() {
-		throw new RuntimeException("getFullPath not implemented");
+	public IProjectNature getNature(final String natureId) throws CoreException {
+		throw new RuntimeException("getNature not implemented");
 	}
 
 	@Override
-	public IFileState[] getHistory(final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("getHistory not implemented");
+	public IPath getPluginWorkingLocation(final IPluginDescriptor plugin) {
+		throw new RuntimeException("getPluginWorkingLocation not implemented");
 	}
 
 	@Override
-	public String getName() {
-		throw new RuntimeException("getName not implemented");
+	public IPath getWorkingLocation(final String id) {
+		return null;
 	}
 
 	@Override
-	public boolean isReadOnly() {
-		throw new RuntimeException("isReadOnly not implemented");
+	public IProject[] getReferencedProjects() throws CoreException {
+		throw new RuntimeException("getReferencedProjects not implemented");
 	}
 
 	@Override
-	public void move(final IPath destination, final boolean force, final boolean keepHistory, final IProgressMonitor monitor) throws CoreException {
+	public IProject[] getReferencingProjects() {
+		throw new RuntimeException("getReferencingProjects not implemented");
+	}
+
+	@Override
+	public IBuildConfiguration[] getReferencedBuildConfigs(final String configName, final boolean includeMissing) throws CoreException {
+		throw new RuntimeException("getReferencedBuildConfigs not implemented");
+	}
+
+	@Override
+	public boolean hasBuildConfig(final String configName) throws CoreException {
+		throw new RuntimeException("hasBuildConfig not implemented");
+	}
+
+	@Override
+	public boolean hasNature(final String natureId) throws CoreException {
+		return ("org.eclipse.jdt.core.javanature".equals(natureId));
+	}
+
+	@Override
+	public boolean isNatureEnabled(final String natureId) throws CoreException {
+		throw new RuntimeException("isNatureEnabled not implemented");
+	}
+
+	@Override
+	public boolean isOpen() {
+		throw new RuntimeException("isOpen not implemented");
+	}
+
+	@Override
+	public void loadSnapshot(final int options, final URI snapshotLocation, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("loadSnapshot not implemented");
+	}
+
+	@Override
+	public void move(final IProjectDescription description, final boolean force, final IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("move not implemented");
 	}
 
 	@Override
-	public void setCharset(final String newCharset) throws CoreException {
-		throw new RuntimeException("setCharset not implemented");
+	public void open(final int updateFlags, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("open not implemented");
 	}
 
 	@Override
-	public void setCharset(final String newCharset, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("setCharset not implemented");
+	public void open(final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("open not implemented");
 	}
 
 	@Override
-	public void setContents(final InputStream source, final boolean force, final boolean keepHistory, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("setContents not implemented");
+	public void saveSnapshot(final int options, final URI snapshotLocation, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("saveSnapshot not implemented");
 	}
 
 	@Override
-	public void setContents(final IFileState source, final boolean force, final boolean keepHistory, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("setContents not implemented");
+	public void setDescription(final IProjectDescription description, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("setDescription not implemented");
 	}
 
 	@Override
-	public void setContents(final InputStream source, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("setContents not implemented");
+	public void setDescription(final IProjectDescription description, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("setDescription not implemented");
 	}
 
-	@Override
-	public void setContents(final IFileState source, final int updateFlags, final IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("setContents not implemented");
+	// Bug 517300: No @Override because this is a new method on IProject in Eclipse 4.7
+	// Note that Auto-cleanup will re-add the @Override
+	public void clearCachedDynamicReferences() {
+		throw new RuntimeException("clearCachedDynamicReferences not implemented");
 	}
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<fragment>
+   <extension
+         point="org.eclipse.ease.ui.codeCompletionProvider">
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completions.java.provider.JavaMethodCompletionProvider">
+      </codeCompletionProvider>
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completions.java.provider.JavaPackagesCompletionProvider">
+      </codeCompletionProvider>
+      <codeCompletionProvider
+            class="org.eclipse.ease.ui.completions.java.provider.JavaClassCompletionProvider">
+      </codeCompletionProvider>
+   </extension>
+
+</fragment>

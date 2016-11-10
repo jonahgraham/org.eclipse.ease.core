@@ -9,7 +9,7 @@
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.ease.ui.help.hovers;
+package org.eclipse.ease.ui.completions.java.help.handlers;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
