@@ -351,14 +351,4 @@
          </propertySection>
       </propertySections>
    </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            category="org.eclipse.ui"
-            class="org.eclipse.ease.ui.scripts.properties.TestView"
-            id="org.eclipse.ease.ui.scripts.view1"
-            name="TestView"
-            restorable="true">
-      </view>
-   </extension>
 </plugin>
