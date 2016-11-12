@@ -64,9 +64,13 @@ public class LinkProvider {
 	}
 
 	private static String findClass(final String name, final ClassDoc baseClass) {
-		for (final ClassDoc doc : baseClass.importedClasses()) {
-			if (doc.toString().endsWith(name))
-				return doc.toString();
+		try {
+			for (final ClassDoc doc : baseClass.importedClasses()) {
+				if (doc.toString().endsWith(name))
+					return doc.toString();
+			}
+		} catch (NullPointerException e) {
+			// sometimes thrown by ClassDoc.importedClasses(). Nothing we can do here but ignore
 		}
 
 		final ClassDoc target = baseClass.findClass(name);
