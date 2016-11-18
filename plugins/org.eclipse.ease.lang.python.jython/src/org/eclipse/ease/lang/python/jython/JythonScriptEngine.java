@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.ScriptEngineException;
@@ -72,12 +76,23 @@ public class JythonScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	public void terminateCurrent() {
-		try {
-			getEngine().getSystemState().callExitFunc();
-		} catch (final PyIgnoreMethodTag e) {
-			// TODO handle this exception (but for now, at least know it happened)
-			throw new RuntimeException(e);
-		}
+		final Job terminationJob = new Job("Termination Jython script") {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					getEngine().getSystemState().callExitFunc();
+				} catch (final PyIgnoreMethodTag e) {
+					// TODO handle this exception (but for now, at least know it happened)
+					throw new RuntimeException(e);
+				}
+
+				return Status.OK_STATUS;
+			}
+		};
+
+		terminationJob.setSystem(true);
+		terminationJob.schedule();
 	}
 
 	@Override
@@ -224,7 +239,7 @@ public class JythonScriptEngine extends AbstractScriptEngine {
 	}
 
 	protected Collection<String> getPythonLibraries() {
-		final List<String> result = new ArrayList<String>();
+		final List<String> result = new ArrayList<>();
 		final IPreferenceStore preferences = Activator.getDefault().getPreferenceStore();
 		final String libraries = preferences.getString(IPreferenceConstants.PYTHON_LIBRARIES);
 		final String[] libs = libraries.split(";");
@@ -261,7 +276,7 @@ public class JythonScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected Map<String, Object> internalGetVariables() {
-		final HashMap<String, Object> variables = new HashMap<String, Object>();
+		final HashMap<String, Object> variables = new HashMap<>();
 
 		final PyObject locals = getEngine().getLocals();
 		final PyList keys = ((PyStringMap) locals).keys();
