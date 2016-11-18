@@ -471,7 +471,7 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (engineDescription != null) {
 			final IScriptEngine engine = engineDescription.createEngine();
 
-			final String ioTarget = getKeywords().get("IO");
+			final String ioTarget = getKeywords().get("io");
 			if ("system".equalsIgnoreCase(ioTarget)) {
 				// nothing to do, scripts default to System.out ...
 
