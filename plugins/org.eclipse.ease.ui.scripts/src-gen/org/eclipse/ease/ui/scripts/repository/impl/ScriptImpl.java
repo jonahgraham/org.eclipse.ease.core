@@ -10,6 +10,7 @@
  */
 package org.eclipse.ease.ui.scripts.repository.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +22,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.AbstractCodeParser;
@@ -33,6 +35,7 @@ import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
 import org.eclipse.ease.sign.ScriptSignatureException;
 import org.eclipse.ease.sign.VerifySignature;
+import org.eclipse.ease.tools.NullOutputStream;
 import org.eclipse.ease.ui.console.ScriptConsole;
 import org.eclipse.ease.ui.preferences.IPreferenceConstants;
 import org.eclipse.ease.ui.scripts.repository.IRepositoryPackage;
@@ -468,11 +471,35 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		if (engineDescription != null) {
 			final IScriptEngine engine = engineDescription.createEngine();
 
-			// create console
-			final ScriptConsole console = ScriptConsole.create(engine.getName() + ": " + getPath(), engine);
-			engine.setOutputStream(console.getOutputStream());
-			engine.setErrorStream(console.getErrorStream());
-			engine.setInputStream(console.getInputStream());
+			final String ioTarget = getKeywords().get("IO");
+			if ("system".equalsIgnoreCase(ioTarget)) {
+				// nothing to do, scripts default to System.out ...
+
+				// reveal job to the user
+				if (engine instanceof Job) {
+					((Job) engine).setSystem(false);
+					((Job) engine).setName("EASE script: " + getName());
+				}
+
+			} else if ("none".equalsIgnoreCase(ioTarget)) {
+				// no output at all
+				engine.setOutputStream(new NullOutputStream());
+				engine.setErrorStream(new NullOutputStream());
+				engine.setInputStream(new ByteArrayInputStream(new byte[0]));
+
+				// reveal job to the user
+				if (engine instanceof Job) {
+					((Job) engine).setSystem(false);
+					((Job) engine).setName("EASE script: " + getName());
+				}
+
+			} else {
+				// any other case, create console
+				final ScriptConsole console = ScriptConsole.create(engine.getName() + ": " + getPath(), engine);
+				engine.setOutputStream(console.getOutputStream());
+				engine.setErrorStream(console.getErrorStream());
+				engine.setInputStream(console.getInputStream());
+			}
 
 			// check for remote scripts
 			if (isRemote()) {

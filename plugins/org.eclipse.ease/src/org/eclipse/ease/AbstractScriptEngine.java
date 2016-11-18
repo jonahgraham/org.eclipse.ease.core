@@ -39,6 +39,37 @@ import org.eclipse.ease.service.EngineDescription;
  */
 public abstract class AbstractScriptEngine extends Job implements IScriptEngine {
 
+	/**
+	 * Watches over the script execution job and forwards termination requests from the Progress UI.
+	 */
+	private class ScriptTerminator extends Job {
+
+		private final IProgressMonitor fMonitor;
+
+		/**
+		 * @param monitor
+		 *            monitor from the script engine job
+		 */
+		public ScriptTerminator(IProgressMonitor monitor) {
+			super("ScriptEngine termination guard");
+			fMonitor = monitor;
+
+			setSystem(true);
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			if (fMonitor.isCanceled())
+				terminate();
+
+			else
+				// check again in a second
+				schedule(1000);
+
+			return Status.OK_STATUS;
+		}
+	}
+
 	/** List of code junks to be executed. */
 	private final List<Script> fCodePieces = Collections.synchronizedList(new ArrayList<Script>());
 
@@ -225,6 +256,9 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 			setupEngine();
 			fSetupDone = true;
 
+			if (!isSystem())
+				new ScriptTerminator(monitor).schedule();
+
 			// engine is initialized, set buffered variables
 			for (final Entry<String, Object> entry : fBufferedVariables.entrySet()) {
 				setVariable(entry.getKey(), entry.getValue());
@@ -298,10 +332,12 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				}
 
 				closeStreams();
+
 				Logger.trace(Activator.PLUGIN_ID, TRACE_SCRIPT_ENGINE, "Engine terminated: " + getName());
 			}
 		}
 
+		monitor.done();
 		return returnStatus;
 	}
 
