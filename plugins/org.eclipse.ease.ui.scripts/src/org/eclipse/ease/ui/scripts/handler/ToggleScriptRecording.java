@@ -60,7 +60,7 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 
 	private boolean fChecked = false;
 
-	private static final Map<IScriptEngine, StringBuffer> fRecordings = new HashMap<IScriptEngine, StringBuffer>();
+	private static final Map<IScriptEngine, StringBuffer> fRecordings = new HashMap<>();
 
 	@Override
 	protected final void executeToggle(final ExecutionEvent event, final boolean checked) {
@@ -103,21 +103,22 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 								name = dialog.getValue();
 						}
 
-						EngineDescription description = engine.getDescription();
-						ScriptType scriptType = description.getSupportedScriptTypes().iterator().next();
+						final EngineDescription description = engine.getDescription();
+						final ScriptType scriptType = description.getSupportedScriptTypes().iterator().next();
 
-						String fileName = name + "." + scriptType.getDefaultExtension();
+						final String fileName = name + "." + scriptType.getDefaultExtension();
 
 						// write script header
-						Map<String, String> keywords = new HashMap<String, String>();
+						final Map<String, String> keywords = new HashMap<>();
 						keywords.put("name", new Path(name).makeRelative().toString());
 						keywords.put("description", "Script recorded by user.");
 						keywords.put("script-type", scriptType.getName());
 						keywords.put("author", System.getProperty("user.name"));
 						keywords.put("date-recorded", new SimpleDateFormat("yyyy-MM-dd, HH:mm").format(new Date()));
 
-						buffer.insert(0, "\n");
-						buffer.insert(0, scriptType.getCodeFactory().createKeywordHeader(keywords, null));
+						buffer.insert(0, StringTools.LINE_DELIMITER);
+						final String keywordBlock = scriptType.getCodeFactory().createKeywordHeader(keywords, null);
+						buffer.insert(0, scriptType.getCodeFactory().createCommentedString(keywordBlock, true));
 
 						if (storage != null) {
 							// store script
@@ -130,16 +131,16 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 						} else {
 							// we do not have a storage, open script in editor
 							// and let user decide, what to do
-							IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+							final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 							try {
-								IEditorDescriptor editor = IDE.getDefaultEditor(
+								final IEditorDescriptor editor = IDE.getDefaultEditor(
 										ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("/sample/foo." + scriptType.getDefaultExtension())));
-								IEditorPart openEditor = IDE.openEditor(page, new ScriptEditorInput(name, buffer.toString()), editor.getId());
+								final IEditorPart openEditor = IDE.openEditor(page, new ScriptEditorInput(name, buffer.toString()), editor.getId());
 								// the editor starts indicating it is not dirty,
 								// so ask the user to perform a save as action
 								openEditor.doSaveAs();
 
-							} catch (PartInitException e) {
+							} catch (final PartInitException e) {
 								Logger.error(Activator.PLUGIN_ID, "Could not open editor for recorded script.", e);
 							}
 						}
@@ -157,7 +158,7 @@ public class ToggleScriptRecording extends ToggleHandler implements IHandler, IE
 		if (PreferencesHelper.getUserScriptStorageLocation() == null) {
 
 			// user did not select a storage yet, ask for location
-			SelectScriptStorageDialog dialog = new SelectScriptStorageDialog(Display.getDefault().getActiveShell());
+			final SelectScriptStorageDialog dialog = new SelectScriptStorageDialog(Display.getDefault().getActiveShell());
 			if (dialog.open() == Window.OK) {
 				final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
 				repositoryService.addLocation(dialog.getLocation(), true, true);

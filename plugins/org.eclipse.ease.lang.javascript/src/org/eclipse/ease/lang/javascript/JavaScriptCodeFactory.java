@@ -15,17 +15,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.ease.AbstractCodeFactory;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.modules.IEnvironment;
 import org.eclipse.ease.modules.IScriptFunctionModifier;
 import org.eclipse.ease.modules.ModuleHelper;
+import org.eclipse.ease.tools.StringTools;
 
 public class JavaScriptCodeFactory extends AbstractCodeFactory {
 
-	public static List<String> RESERVED_KEYWORDS = new ArrayList<String>();
+	public static List<String> RESERVED_KEYWORDS = new ArrayList<>();
 
 	static {
 		RESERVED_KEYWORDS.add("abstract");
@@ -202,5 +202,21 @@ public class JavaScriptCodeFactory extends AbstractCodeFactory {
 		}
 
 		return data;
+	}
+
+	@Override
+	public String createCommentedString(String comment, boolean addBlockComment) {
+		if (addBlockComment) {
+			final StringBuilder builder = new StringBuilder();
+			builder.append("/**").append(StringTools.LINE_DELIMITER);
+			for (final String line : comment.split("\\r?\\n"))
+				builder.append(" * ").append(line).append(StringTools.LINE_DELIMITER);
+
+			builder.append(" */").append(StringTools.LINE_DELIMITER);
+
+			return builder.toString();
+
+		} else
+			return super.createCommentedString(comment, addBlockComment);
 	}
 }
