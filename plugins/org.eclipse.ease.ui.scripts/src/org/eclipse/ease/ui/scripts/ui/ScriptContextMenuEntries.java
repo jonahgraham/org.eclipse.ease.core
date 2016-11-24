@@ -13,7 +13,6 @@ package org.eclipse.ease.ui.scripts.ui;
 import java.util.HashMap;
 
 import org.eclipse.ease.ui.scripts.handler.EditScript;
-import org.eclipse.ease.ui.scripts.handler.RenameScript;
 import org.eclipse.ease.ui.scripts.handler.RunScript;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.jface.action.Separator;
@@ -56,7 +55,7 @@ public class ScriptContextMenuEntries extends AbstractContributionFactory implem
 
 			if (names.length() > 0) {
 				names.deleteCharAt(names.length() - 1);
-				final HashMap<String, String> parameters = new HashMap<String, String>();
+				final HashMap<String, String> parameters = new HashMap<>();
 
 				// add "run" entry
 				parameters.put(RunScript.PARAMETER_NAME, names.toString());
@@ -73,27 +72,11 @@ public class ScriptContextMenuEntries extends AbstractContributionFactory implem
 
 				// add "edit" entry
 				parameters.clear();
+				parameters.put(EditScript.PARAMETER_NAME, names.toString());
 				contributionParameter.commandId = EditScript.COMMAND_ID;
 				contributionParameter.label = "Edit";
 				contribution = new CommandContributionItem(contributionParameter);
 				additions.addContributionItem(contribution, null);
-
-				// add "rename" entry
-				parameters.clear();
-				parameters.put(RenameScript.PARAMETER_NAME, names.toString());
-				contributionParameter.commandId = RenameScript.COMMAND_ID;
-				contributionParameter.label = "Rename";
-				contribution = new CommandContributionItem(contributionParameter);
-				additions.addContributionItem(contribution, null);
-
-				// TODO re-implement
-				// add "delete" entry
-				// parameters.clear();
-				// parameters.put(Delete.PARAMETER_NAME, names.toString());
-				// contributionParameter.commandId = Delete.COMMAND_ID;
-				// contributionParameter.label = "Delete";
-				// contribution = new CommandContributionItem(contributionParameter);
-				// additions.addContributionItem(contribution, null);
 			}
 		}
 	}

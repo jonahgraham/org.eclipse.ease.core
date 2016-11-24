@@ -30,27 +30,10 @@ public class RunScript extends AbstractHandler implements IHandler {
 
 	@Override
 	public final Object execute(final ExecutionEvent event) throws ExecutionException {
-		IScript script = null;
-
-		final String scriptName = event.getParameter(PARAMETER_NAME);
-		if (scriptName != null) {
-			// script name provided as parameter
-			final IRepositoryService repositoryService = (IRepositoryService) PlatformUI.getWorkbench().getService(IRepositoryService.class);
-			script = repositoryService.getScript(scriptName);
-
-		} else {
-			// look for active script selection
-			ISelection selection = HandlerUtil.getCurrentSelection(event);
-			if (selection instanceof IStructuredSelection) {
-				Object element = ((IStructuredSelection) selection).getFirstElement();
-				if (element instanceof IScript)
-					script = (IScript) element;
-			}
-		}
-
+		final IScript script = getScript(event, PARAMETER_NAME);
 		if (script != null) {
 			// see if we may execute this in the current view or as stand-alone
-			IWorkbenchPart part = HandlerUtil.getActivePart(event);
+			final IWorkbenchPart part = HandlerUtil.getActivePart(event);
 
 			if (part instanceof IScriptEngineProvider)
 				// execute in current view
@@ -63,5 +46,27 @@ public class RunScript extends AbstractHandler implements IHandler {
 		}
 
 		return null;
+	}
+
+	public static IScript getScript(final ExecutionEvent event, String parameterName) {
+		IScript script = null;
+
+		final String scriptName = event.getParameter(parameterName);
+		if (scriptName != null) {
+			// script name provided as parameter
+			final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+			script = repositoryService.getScript(scriptName);
+
+		} else {
+			// look for active script selection
+			final ISelection selection = HandlerUtil.getCurrentSelection(event);
+			if (selection instanceof IStructuredSelection) {
+				final Object element = ((IStructuredSelection) selection).getFirstElement();
+				if (element instanceof IScript)
+					script = (IScript) element;
+			}
+		}
+
+		return script;
 	}
 }

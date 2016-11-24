@@ -72,17 +72,6 @@
       </command>
       <command
             categoryId="org.eclipse.ease.commands.category.script"
-            defaultHandler="org.eclipse.ease.ui.scripts.handler.RenameScript"
-            id="org.eclipse.ease.commands.script.rename"
-            name="Rename Script">
-         <commandParameter
-               id="org.eclipse.ease.commands.script.rename.name"
-               name="Script Name"
-               optional="false">
-         </commandParameter>
-      </command>
-      <command
-            categoryId="org.eclipse.ease.commands.category.script"
             defaultHandler="org.eclipse.ease.ui.scripts.handler.EditScript"
             id="org.eclipse.ease.commands.script.edit"
             name="Edit Script">
@@ -148,7 +137,7 @@
       </menuContribution>
       <menuContribution
             allPopups="false"
-            locationURI="popup:org.eclipse.ease.scripts.properties.allKeywords">
+            locationURI="popup:org.eclipse.ease.scripts.properties.allKeywords?after=additions">
          <command
                commandId="org.eclipse.ease.commands.script.addKeyword"
                icon="icons/elcl16/new_keyword.png"
