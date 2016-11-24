@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ease.lang.python.py4j.feature"
-      label="EASE Python (using Py4j) Support (Incubation)"
-      version="0.4.0.qualifier">
+      label="EASE Py4J Support (Incubation)"
+      version="0.4.0.qualifier"
+      provider-name="Eclipse.org">
 
    <description url="https://www.eclipse.org/ease">
-      Python (using Py4J) integration into EASE as Python Engine
+      Python (using Py4J) integration into EASE as Python Engine. Needs an external python interpreter for script execution.
    </description>
 
    <copyright url="http://www.example.com/copyright">

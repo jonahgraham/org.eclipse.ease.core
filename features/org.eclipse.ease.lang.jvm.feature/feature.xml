@@ -3,10 +3,11 @@
       id="org.eclipse.ease.lang.jvm.feature"
       label="EASE JVM Engine (Incubation)"
       version="0.4.0.qualifier"
-      provider-name="Eclipse.org">
+      provider-name="Eclipse.org"
+      plugin="org.eclipse.ease">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="https://www.eclipse.org/ease/">
+      Java engine implementation for EASE. Allows to execute java files as scripts.
    </description>
 
    <copyright url="http://www.example.com/copyright">

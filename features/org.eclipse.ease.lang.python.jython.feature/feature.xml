@@ -3,6 +3,7 @@
       id="org.eclipse.ease.python.jython.feature"
       label="EASE Jython Support (Incubation)"
       version="0.4.0.qualifier"
+      provider-name="Eclipse.org"
       plugin="org.jython">
 
    <description url="https://www.eclipse.org/ease">

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ease.lang.javascript.feature"
-      label="EASE Javascript feature"
+      label="EASE Javascript Support (Incubation)"
       version="0.4.0.qualifier"
+      provider-name="Eclipse.org"
       plugin="org.eclipse.ease">
 
-   <description url="http://www.example.com/description">
-      All EASE component mandatory to devellop Javascript scripts.
+   <description url="https://www.eclipse.org/ease/">
+      EASE JavaScript support. Allows to develop, debug and run javascript files.
    </description>
 
    <copyright url="http://www.example.com/copyright">

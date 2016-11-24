@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ease.feature"
-      label="EASE Core feature"
+      label="EASE Core Framework (Incubation)"
       version="0.4.0.qualifier"
+      provider-name="Eclipse.org"
       plugin="org.eclipse.ease">
 
-   <description url="http://www.example.com/description">
+   <description url="https://www.eclipse.org/ease/">
       All the core component mandatory for EASE
    </description>
 

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.ease.lang.python.feature"
-      label="EASE Python"
+      label="EASE Python Support (Incubation)"
       version="0.4.0.qualifier"
+      provider-name="Eclipse.org"
       plugin="org.eclipse.ease">
 
    <description>
-      EASE component use to handle python language.
-WARNING: This feature do not contain any Python Engine you will need to install it independently.
+      EASE component used to handle python language.
+WARNING: This feature do not contain any Python Engine you will
+need to install it independently.
    </description>
 
    <copyright url="http://www.example.com/copyright">
