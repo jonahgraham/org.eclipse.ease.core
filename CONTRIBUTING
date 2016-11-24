@@ -1,65 +1,72 @@
-Contributing to e4 Project
-==========================
+Contributing to Eclipse Advanced Scripting Environment (EASE)
+=============================================================
 
 Thanks for your interest in this project.
+
 
 Project description:
 --------------------
 
-e4 is the incubator for the Eclipse project. Building on current Eclipse and OSGi technology as a solid foundation, its major goals include
-Making it easier to write plugins
-Allowing better control over the look of Eclipse based products
-Providing a uniform, pervasive platform across computing environments (Web / RIA, Desktop, Server, Cloud, Embedded)
-Increasing diversity of contributors to the platform
-Maintaining backward compatibility for API-clean clients
- In order to reach these goals, Eclipse APIs are refactored into services that make up a uniform application model, which supports dependency injection to run in multiple different contexts such as desktop or web; the Workbench is uniformly modeled to provide introspection, flexible shaping, CSS styling and declarative UI markup; SWT target platforms are added to run in the Browser; and many more initiatives in areas such as flexible resources, command recording, scripting, and plugins in other languages. We also look at pervasive themes such as reducing bloat, and many other themes are brought up by the broad community participating in this effort.   The mission of the e4 project is to build a next generation platform for pervasive, component-based applications and tools. See the original project proposal for more details.
+EASE allows the execution of script code (using scripting languages such as JS, Python, ...) within the context of the Eclipse Platform/RCP. As they are running in the same JRE as Eclipse itself, these scripts have direct access to any class of your application and may interact with your workbench.
 
-- https://projects.eclipse.org/projects/eclipse.e4
+Through keywords within header data, scripts might be integrated seamlessly into the UI as toolbar and/or menu contributions. Thus the functionality could be extended by providing scripts only. No need to build, export and install a new feature, just provide a script and add it to your application at runtime.
+
+Scripting allows to easily extend an existing application, helps in automating everyday tasks and aids in rapid prototyping during application development. 
+
 
 Developer resources:
 --------------------
 
-Project wiki
-
-- http://wiki.eclipse.org/E4/Scripting
-
 Information regarding source code management, builds, coding standards, and more.
 
-- https://projects.eclipse.org/projects/eclipse.e4/developer
-
-Gerrit:
-
-- https://git.eclipse.org/r/#/admin/projects/e4/org.eclipse.e4.scripting
-
-Git repository:
-
-- http://git.eclipse.org/c/e4/org.eclipse.e4.scripting.git/
+- http://projects.eclipse.org/projects/technology.ease/developer
 
 
-Contributor License Agreement:
-------------------------------
+Source Code Repositories:
+-------------------------
 
-Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
+The project maintains the following source code repositories:
 
-- http://www.eclipse.org/legal/CLA.php
+- git://git.eclipse.org/gitroot/ease/org.eclipse.ease.core.git
+
+  Contains the core framework for scripting, keywords and ui
+
+- git://git.eclipse.org/gitroot/ease/org.eclipse.ease.modules.git
+
+  Additional script modules providing dedicated scripting functionality (eg. EGit support)
+
+- git://git.eclipse.org/gitroot/ease/org.eclipse.ease.scripts.git
+
+  Sample scripts and demos that users can consume
+  
+
+Contributor Agreement:
+----------------------
+
+Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Contributor Agreement (ECA).
+
+- http://www.eclipse.org/legal/ECA.php
+
 
 Contact:
 --------
 
 Contact the project developers via the project's "dev" list.
 
-- https://dev.eclipse.org/mailman/listinfo/eclipse-scripting-dev
+- https://dev.eclipse.org/mailman/listinfo/ease-dev
+
 
 Search for bugs:
 ----------------
 
 This project uses Bugzilla to track ongoing development and issues.
 
-- https://bugs.eclipse.org/bugs/buglist.cgi?classification=Eclipse&component=Scripting&product=e4
+- https://bugs.eclipse.org/bugs/buglist.cgi?product=EASE
+
 
 Create a new bug:
 -----------------
 
 Be sure to search for existing bugs before you create another one. Remember that contributions are always welcome!
 
-- https://bugs.eclipse.org/bugs/enter_bug.cgi?product=E4
+- https://bugs.eclipse.org/bugs/enter_bug.cgi?product=EASE
