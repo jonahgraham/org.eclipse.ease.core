@@ -206,6 +206,8 @@
               url="https://bintray.com/artifact/download/pontesegger/ease-engines/"/>
           <repository
               url="http://download.eclipse.org/releases/neon"/>
+          <repository
+              url="https://dl.bintray.com/py4j/py4j-eclipse/0.10.4"/>
         </repositoryList>
       </targlet>
     </setupTask>
