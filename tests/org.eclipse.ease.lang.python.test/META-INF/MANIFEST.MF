@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.ease.lang.python Unit Test
 Bundle-SymbolicName: org.eclipse.ease.lang.python.test
-Bundle-Version: 0.4.0.qualifier
-Fragment-Host: org.eclipse.ease.lang.python;bundle-version="0.4.0"
+Bundle-Version: 0.5.0.qualifier
+Fragment-Host: org.eclipse.ease.lang.python;bundle-version="0.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit

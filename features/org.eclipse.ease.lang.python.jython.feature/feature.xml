@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.ease.python.jython.feature"
       label="EASE Jython Support (Incubation)"
-      version="0.4.0.qualifier"
+      version="0.5.0.qualifier"
       provider-name="Eclipse.org"
       plugin="org.jython">
 
@@ -27,7 +27,7 @@
    </license>
 
    <requires>
-      <import feature="org.eclipse.ease.lang.python.feature" version="0.4.0.qualifier"/>
+      <import feature="org.eclipse.ease.lang.python.feature" version="0.5.0.qualifier"/>
    </requires>
 
    <plugin
