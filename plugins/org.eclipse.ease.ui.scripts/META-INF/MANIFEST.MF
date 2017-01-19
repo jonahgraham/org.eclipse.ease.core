@@ -36,6 +36,10 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.ease.ui.scripts.Activator
 Export-Package: org.eclipse.ease.ui.scripts,
+ org.eclipse.ease.ui.scripts.expressions,
+ org.eclipse.ease.ui.scripts.expressions.definitions,
+ org.eclipse.ease.ui.scripts.expressions.handler,
+ org.eclipse.ease.ui.scripts.expressions.ui,
  org.eclipse.ease.ui.scripts.preferences,
  org.eclipse.ease.ui.scripts.repository,
  org.eclipse.ease.ui.scripts.ui

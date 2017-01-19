@@ -30,6 +30,8 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ease.tools.ResourceTools;
 import org.eclipse.ease.ui.scripts.Activator;
+import org.eclipse.ease.ui.scripts.expressions.IExpressionDefinition;
+import org.eclipse.ease.ui.scripts.expressions.ui.ExpressionDialog;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ease.ui.tools.LocationImageDescriptor;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
@@ -102,6 +104,9 @@ public class ScriptUIIntegrationSection extends AbstractPropertySection {
 	private Section fSctnLookFeel;
 	private Section fSctnMenusToolbars;
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	@Override
 	public void createControls(final Composite parent, TabbedPropertySheetPage aTabbedPropertySheetPage) {
 		super.createControls(parent, aTabbedPropertySheetPage);
@@ -261,9 +266,7 @@ public class ScriptUIIntegrationSection extends AbstractPropertySection {
 		fTxtToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		addBrowseButton(composite_1, fTxtToolbar);
-
-		final Button button_3 = getWidgetFactory().createButton(composite_1, "New Button", SWT.NONE);
-		button_3.setVisible(false);
+		addBuildExpressionButton(composite_1, fTxtToolbar);
 
 		final Label lblMenu = getWidgetFactory().createLabel(composite_1, "Menu:", SWT.NONE);
 		lblMenu.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -273,8 +276,7 @@ public class ScriptUIIntegrationSection extends AbstractPropertySection {
 		fTxtMenu.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		addBrowseButton(composite_1, fTxtMenu);
-
-		new Label(composite_1, SWT.NONE);
+		addBuildExpressionButton(composite_1, fTxtMenu);
 
 		final Label lblPopup = getWidgetFactory().createLabel(composite_1, "Popup:", SWT.NONE);
 		lblPopup.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -284,8 +286,7 @@ public class ScriptUIIntegrationSection extends AbstractPropertySection {
 		fTxtPopup.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		addBrowseButton(composite_1, fTxtPopup);
-
-		new Label(composite_1, SWT.NONE);
+		addBuildExpressionButton(composite_1, fTxtPopup);
 	}
 
 	private void updateImagePreview() {
@@ -341,12 +342,32 @@ public class ScriptUIIntegrationSection extends AbstractPropertySection {
 		fSctnMenusToolbars.layout();
 	}
 
-	private void addBrowseButton(final Composite parent, final Text text) {
-		final ImageDescriptor selectViewDescriptor = Activator.getImageDescriptor("/icons/eobj16/select_view.png");
-		final Image selectViewImage = selectViewDescriptor.createImage();
+	private void addBuildExpressionButton(final Composite parent, final Text text) {
 
+		final Button btnBuildExpression = getWidgetFactory().createButton(parent, "", SWT.NONE);
+		final ImageDescriptor imageDescriptor = Activator.getImageDescriptor("/icons/eobj16/expression.png");
+		btnBuildExpression.setImage(imageDescriptor.createImage());
+
+		btnBuildExpression.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final ExpressionDialog dialog = new ExpressionDialog(null, "Provide an expression to control the enablement of the entry.", "enabledWhen");
+				if (Window.OK == dialog.open()) {
+					final IExpressionDefinition expression = dialog.getExpression();
+					text.setText(text.getText() + " enabledWhen(" + expression.serialize() + ")");
+				}
+			}
+		});
+	}
+
+	private void addBrowseButton(final Composite parent, final Text text) {
 		final Button btnBrowse = getWidgetFactory().createButton(parent, "", SWT.NONE);
+
+		final ImageDescriptor imageDescriptor = Activator.getImageDescriptor("/icons/eobj16/select_view.png");
+		btnBrowse.setImage(imageDescriptor.createImage());
+
 		btnBrowse.addSelectionListener(new SelectionAdapter() {
+			@SuppressWarnings("restriction")
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
@@ -372,7 +393,6 @@ public class ScriptUIIntegrationSection extends AbstractPropertySection {
 				}
 			}
 		});
-		btnBrowse.setImage(selectViewImage);
 	}
 
 	protected IScript getScript() {

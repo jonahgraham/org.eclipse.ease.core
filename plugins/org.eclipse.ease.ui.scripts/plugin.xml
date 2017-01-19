@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="keyword" name="Keyword" schema="schema/keyword.exsd"/>
+   <extension-point id="expressions" name="Expressions" schema="schema/expressions.exsd"/>
 
    <extension point="org.eclipse.emf.ecore.generated_package">
       <!-- @generated ScriptRepository -->
@@ -339,5 +340,209 @@
             </input>
          </propertySection>
       </propertySections>
+   </extension>
+   <extension
+         point="org.eclipse.ease.ui.scripts.expressions">
+      <definition
+            childElements="-1"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.AndExpressionDefinition"
+            description="Logical &apos;and&apos; operator for child expressions."
+            icon="icons/eobj16/expression_and.png"
+            name="and">
+      </definition>
+      <definition
+            childElements="-1"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.OrExpressionDefinition"
+            description="Logical &apos;or&apos; operator for child expressions."
+            icon="icons/eobj16/expression_or.png"
+            name="or">
+      </definition>
+      <definition
+            childElements="1"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.AdaptExpressionDefinition"
+            description="Tries to adapt the current selection to a certain class."
+            icon="icons/eobj16/expression_adapt.png"
+            name="adaptTo">
+         <parameter
+               description="Target class name to adapt to."
+               name="class"
+               type="class"
+               uiName="target class">
+         </parameter>
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.CountExpressionDefinition"
+            description="Counts the elements in the current selection."
+            icon="icons/eobj16/expression_count.png"
+            name="count">
+         <parameter
+               defaultValue="1"
+               description="Expected amount of elements."
+               name="amount"
+               type="int">
+         </parameter>
+      </definition>
+      <definition
+            childElements="1"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.NotExpressionDefinition"
+            description="Logical &apos;not&apos; operator for child expression."
+            icon="icons/eobj16/expression_not.png"
+            name="not">
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.EqualsExpressionDefinition"
+            description="Tries to match the current element with a given string."
+            icon="icons/eobj16/expression_equals.png"
+            name="equals">
+         <parameter
+               description="Target string to match with."
+               name="value"
+               type="string">
+         </parameter>
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.InstanceOfExpressionDefinition"
+            description="Verifies that the current element is an instance of the given class."
+            icon="icons/eobj16/expression_instanceof.png"
+            name="instanceOf">
+         <parameter
+               description="Target class name to adapt to."
+               name="class"
+               type="class"
+               uiName="target class">
+         </parameter>
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.TestExpressionDefinition"
+            icon="icons/eobj16/expression_test.png"
+            name="test">
+         <parameter
+               description="Which system property to look for."
+               name="property"
+               type="string">
+         </parameter>
+         <parameter
+               description="Which value to compare with."
+               name="value"
+               type="string">
+         </parameter>
+         <parameter
+               description="Which system property to look for."
+               name="arguments"
+               type="string">
+         </parameter>
+         <parameter
+               defaultValue="false"
+               description="Whether the according plugin containing the test should be activated before expression evaluation."
+               name="pluginActivation"
+               type="boolean"
+               uiName="force plugin activation">
+         </parameter>
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.SystemTestExpressionDefinition"
+            icon="icons/eobj16/expression_systemtest.png"
+            name="systemTest">
+         <parameter
+               description="Which system property to look for."
+               name="property"
+               type="string">
+         </parameter>
+         <parameter
+               description="Which value to compare with."
+               name="value"
+               type="string">
+         </parameter>
+      </definition>
+      <definition
+            childElements="-1"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.IterateExpressionDefinition"
+            description="Applies the given child expression to all children of the current element, which needs to be iterable."
+            icon="icons/eobj16/expression_iterate.png"
+            name="iterate">
+         <parameter
+               defaultValue="and"
+               description="How to merge results for each child. Valid values are &apos;or&apos;, &apos;and&apos;"
+               name="operator"
+               type="string">
+         </parameter>
+         <parameter
+               defaultValue="true"
+               description="Result to be returned when the iterable element is empty."
+               name="ifEmpty"
+               type="boolean"
+               uiName="if empty">
+         </parameter>
+      </definition>
+      <definition
+            childElements="1"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.WithExpressionDefinition"
+            description="Changes the element used to resolve expressions."
+            icon="icons/eobj16/expression_with.png"
+            name="with">
+         <parameter
+               description="Element identifier to be used."
+               name="variable"
+               type="string">
+         </parameter>
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.ReferenceExpressionDefinition"
+            description="References to a defined expression with a given id."
+            icon="icons/eobj16/expression_reference.png"
+            name="reference">
+         <parameter
+               description="ID of the expression to be referenced."
+               name="expressionId"
+               type="string"
+               uiName="Expression ID">
+         </parameter>
+      </definition>
+      <definition
+            childElements="0"
+            class="org.eclipse.ease.ui.scripts.expressions.definitions.ResolveExpressionDefinition"
+            icon="icons/eobj16/expression_resolve.png"
+            name="resolve">
+         <parameter
+               description="Which variable to use."
+               name="variable"
+               type="string">
+         </parameter>
+         <parameter
+               description="Arguments"
+               name="arguments"
+               type="string">
+         </parameter>
+      </definition>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="org.eclipse.ease.commands.category.expressions"
+            name="Expressions Context">
+      </category>
+      <command
+            categoryId="org.eclipse.ease.commands.category.expressions"
+            defaultHandler="org.eclipse.ease.ui.scripts.expressions.handler.CreateExpressionHandler"
+            id="org.eclipse.ease.commands.expressions.createExpression"
+            name="Create expression">
+         <commandParameter
+               id="org.eclipse.ease.commands.expressions.createExpression.type"
+               name="type"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            categoryId="org.eclipse.ease.commands.category.expressions"
+            defaultHandler="org.eclipse.ease.ui.scripts.expressions.handler.DeleteExpressionHandler"
+            id="org.eclipse.ease.commands.expressions.deleteExpression"
+            name="Delete expression">
+      </command>
    </extension>
 </plugin>
