@@ -84,6 +84,11 @@ public abstract class AbstractEnvironment extends AbstractScriptModule implement
 					printError("Module \"" + moduleName + "\" is deprecated. Consider updating your code.");
 
 				module = definition.createModuleInstance();
+
+				// check that module class got initialized correctly
+				if (module == null)
+					throw new RuntimeException("Could not create module instance, see workspace log for more details");
+
 				if (module instanceof IScriptModule)
 					((IScriptModule) module).initialize(getScriptEngine(), this);
 

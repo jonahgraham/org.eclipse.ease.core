@@ -144,6 +144,7 @@ public class ModuleDefinition {
 			return fConfig.createExecutableExtension(CLASS);
 		} catch (final CoreException e) {
 			// could not create class, ignore
+			Logger.error(Activator.PLUGIN_ID, "Could not create module instance", e);
 		}
 
 		return null;
