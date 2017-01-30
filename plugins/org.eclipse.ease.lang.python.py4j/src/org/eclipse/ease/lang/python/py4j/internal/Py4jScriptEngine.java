@@ -60,8 +60,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	private static final String PYSRC_EASE_PY4J_MAIN_PY = "/pysrc/ease_py4j_main.py";
 
 	/**
-	 * The ID of the py4j sources plug-in, needs to match the name of the
-	 * dependent plug-in.
+	 * The ID of the py4j sources plug-in, needs to match the name of the dependent plug-in.
 	 */
 	private static final String PY4J_PYTHON_BUNDLE_ID = "py4j-python";
 
@@ -78,7 +77,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	private static class StreamGobbler implements Runnable {
 		private final InputStream fReader;
 		private final OutputStream fWriter;
-		private String fStreamName;
+		private final String fStreamName;
 
 		public StreamGobbler(InputStream stream, OutputStream output, String streamName) {
 			fReader = stream;
@@ -86,19 +85,19 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 			fStreamName = streamName;
 		}
 
+		@Override
 		public void run() {
 			try {
-				byte[] bytes = new byte[512];
+				final byte[] bytes = new byte[512];
 				int readCount;
 				while ((readCount = fReader.read(bytes)) >= 0) {
 					try {
 						fWriter.write(bytes, 0, readCount);
-					} catch (IOException e) {
-						Logger.error(Activator.PLUGIN_ID,
-								"Failed to write data read from Python's " + fStreamName + " stream.", e);
+					} catch (final IOException e) {
+						Logger.error(Activator.PLUGIN_ID, "Failed to write data read from Python's " + fStreamName + " stream.", e);
 					}
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				Logger.error(Activator.PLUGIN_ID, "Failed to read data from Python's " + fStreamName + " stream.", e);
 			}
 		}
@@ -114,42 +113,47 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 			fPythonStartupComplete = new CountDownLatch(1);
 			fGatewayServer = new ClientServerBuilder(this).javaPort(0).pythonPort(0).build();
 			fGatewayServer.startServer(true);
-			int javaListeningPort = ((JavaServer) fGatewayServer.getJavaServer()).getListeningPort();
+			final int javaListeningPort = ((JavaServer) fGatewayServer.getJavaServer()).getListeningPort();
 
 			fPythonProcess = startPythonProcess(javaListeningPort);
 			fInputGobbler = new Thread(new StreamGobbler(fPythonProcess.getInputStream(), getOutputStream(), "stdout"),
 					"EASE py4j engine output stream gobbler");
 			fInputGobbler.start();
-			fErrorGobbler = new Thread(new StreamGobbler(fPythonProcess.getErrorStream(), getErrorStream(), "stderr"),
-					"EASE py4j engine error stream gobbler");
+			fErrorGobbler = new Thread(new StreamGobbler(fPythonProcess.getErrorStream(), getErrorStream(), "stderr"), "EASE py4j engine error stream gobbler");
 			fErrorGobbler.start();
 
 			// TODO Handle python's stdin (fPythonProcess.getOutputStream())
 
 			if (!fPythonStartupComplete.await(PYTHON_STARTUP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-				throw new ScriptEngineException(
-						"Python process did not start within " + PYTHON_STARTUP_TIMEOUT_SECONDS + " seconds");
+				throw new ScriptEngineException("Python process did not start within " + PYTHON_STARTUP_TIMEOUT_SECONDS + " seconds");
 			}
-		} catch (ScriptEngineException e) {
+		} catch (final ScriptEngineException e) {
 			teardownEngine();
 			throw e;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			teardownEngine();
-			throw new ScriptEngineException(
-					"Failed to start Python process. Please check the setting for the Python interpreter"
-							+ " in Preferences -> Scripting -> Python Scripting:\n" + e.getMessage(),
-					e);
+			throw new ScriptEngineException("Failed to start Python process. Please check the setting for the Python interpreter"
+					+ " in Preferences -> Scripting -> Python Scripting:\n" + e.getMessage(), e);
 		}
 	}
 
-	private Process startPythonProcess(int javaListeningPort)
-			throws IOException, MalformedURLException, URISyntaxException, CoreException {
-		ProcessBuilder pb = new ProcessBuilder();
+	private Process startPythonProcess(int javaListeningPort) throws IOException, MalformedURLException, URISyntaxException, CoreException {
+		final ProcessBuilder pb = new ProcessBuilder();
 
-		pb.environment().put("PYTHONPATH", getPy4jPythonSrc().toString());
-		String interpreter = Activator.getDefault().getPreferenceStore()
-				.getString(Py4JScriptEnginePrefConstants.INTERPRETER);
-		IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
+		// Patch Python path to also be aware of Py4J
+		String pythonPath = System.getenv("PYTHONPATH");
+		final String pathSeparator = System.getProperty("path.separator");
+
+		if (pythonPath != null) {
+			pythonPath = getPy4jPythonSrc().toString() + pathSeparator + pythonPath;
+		} else {
+			pythonPath = getPy4jPythonSrc().toString();
+		}
+
+		pb.environment().put("PYTHONPATH", pythonPath);
+
+		String interpreter = Activator.getDefault().getPreferenceStore().getString(Py4JScriptEnginePrefConstants.INTERPRETER);
+		final IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
 		interpreter = variableManager.performStringSubstitution(interpreter);
 
 		pb.command().add(interpreter);
@@ -157,14 +161,14 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 		pb.command().add(getPy4jEaseMainPy().toString());
 		pb.command().add(Integer.toString(javaListeningPort));
 
-		Process start = pb.start();
+		final Process start = pb.start();
 		return start;
 	}
 
 	private File getPy4jPythonSrc() throws IOException {
-		File py4jPythonBundleFile = FileLocator.getBundleFile(Platform.getBundle(PY4J_PYTHON_BUNDLE_ID));
-		File py4jPythonSrc = new File(py4jPythonBundleFile, "/src");
-		File py4j = new File(py4jPythonSrc, "py4j");
+		final File py4jPythonBundleFile = FileLocator.getBundleFile(Platform.getBundle(PY4J_PYTHON_BUNDLE_ID));
+		final File py4jPythonSrc = new File(py4jPythonBundleFile, "/src");
+		final File py4j = new File(py4jPythonSrc, "py4j");
 		if (!py4j.exists() || !py4j.isDirectory()) {
 			throw new IOException("Failed to find py4j python directory, expected it here: " + py4j);
 		}
@@ -172,9 +176,9 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	}
 
 	private File getPy4jEaseMainPy() throws MalformedURLException, IOException, URISyntaxException {
-		URL url = new URL("platform:/plugin/" + Activator.PLUGIN_ID + PYSRC_EASE_PY4J_MAIN_PY);
-		URL fileURL = FileLocator.toFileURL(url);
-		File py4jEaseMain = new File(URIUtil.toURI(fileURL));
+		final URL url = new URL("platform:/plugin/" + Activator.PLUGIN_ID + PYSRC_EASE_PY4J_MAIN_PY);
+		final URL fileURL = FileLocator.toFileURL(url);
+		final File py4jEaseMain = new File(URIUtil.toURI(fileURL));
 		if (!py4jEaseMain.exists()) {
 			throw new IOException("Failed to find " + PYSRC_EASE_PY4J_MAIN_PY + ", expected it here: " + py4jEaseMain);
 		}
@@ -182,7 +186,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 	}
 
 	public void pythonStartupComplete(int pythonPort, IPythonSideEngine pythonSideEngine) {
-		JavaServer javaServer = (JavaServer) fGatewayServer.getJavaServer();
+		final JavaServer javaServer = (JavaServer) fGatewayServer.getJavaServer();
 		javaServer.resetCallbackClient(javaServer.getCallbackClient().getAddress(), pythonPort);
 		this.fPythonSideEngine = pythonSideEngine;
 		fPythonStartupComplete.countDown();
@@ -213,10 +217,10 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 		if (script.isShellMode()) {
 			interactiveReturn = fPythonSideEngine.executeInteractive(script.getCode());
 		} else {
-			String code = script.getCode();
+			final String code = script.getCode();
 			interactiveReturn = fPythonSideEngine.executeScript(code, fileName);
 		}
-		Object exception = interactiveReturn.getException();
+		final Object exception = interactiveReturn.getException();
 		if (exception instanceof Throwable) {
 			throw (Throwable) exception;
 		} else if (exception != null) {
@@ -260,7 +264,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 
 			try {
 				fPythonProcess.waitFor(PYTHON_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				// finish the teardown, but don't wait around
 				Thread.currentThread().interrupt();
 			}
@@ -283,7 +287,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 			if (fErrorGobbler != null) {
 				fErrorGobbler.join();
 			}
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
 	}
