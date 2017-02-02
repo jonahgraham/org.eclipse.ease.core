@@ -83,9 +83,6 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 	private static final String LAUNCH_CONFIGURATION_ID = "org.eclipse.ease.launchConfigurationType";
 
-	/** Executed launch. */
-	private EASELaunch fLaunch = null;
-
 	@Override
 	public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch, final IProgressMonitor monitor) throws CoreException {
 
@@ -215,8 +212,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 	@Override
 	public ILaunch getLaunch(ILaunchConfiguration configuration, String mode) throws CoreException {
-		fLaunch = new EASELaunch(configuration, mode, null);
-		return fLaunch;
+		return new EASELaunch(configuration, mode, null);
 	}
 
 	private void setupDebugger(final IScriptEngine engine, final ILaunchConfiguration configuration, final ILaunch launch) {
