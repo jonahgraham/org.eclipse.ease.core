@@ -23,8 +23,12 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.Launch;
+import org.eclipse.debug.core.model.ISourceLocator;
 import org.eclipse.ease.IDebugEngine;
+import org.eclipse.ease.IExecutionListener;
 import org.eclipse.ease.IScriptEngine;
+import org.eclipse.ease.Script;
 import org.eclipse.ease.service.EngineDescription;
 import org.eclipse.ease.service.IScriptService;
 import org.eclipse.ease.service.ScriptType;
@@ -41,7 +45,46 @@ import org.eclipse.ui.PlatformUI;
  */
 public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
+	private class EASELaunch extends Launch implements IExecutionListener {
+
+		private boolean fIsTerminated = false;
+
+		/**
+		 * Constructs a launch with the specified attributes.
+		 *
+		 * @param launchConfiguration
+		 *            the configuration that was launched
+		 * @param mode
+		 *            the mode of this launch - run or debug (constants defined by <code>ILaunchManager</code>)
+		 * @param locator
+		 *            the source locator to use for this debug session, or <code>null</code> if not supported
+		 */
+		public EASELaunch(ILaunchConfiguration launchConfiguration, String mode, ISourceLocator locator) {
+			super(launchConfiguration, mode, locator);
+		}
+
+		@Override
+		public boolean isTerminated() {
+			return fIsTerminated || super.isTerminated();
+		}
+
+		@Override
+		public void notify(IScriptEngine engine, Script script, int status) {
+			if (IExecutionListener.ENGINE_END == status) {
+				fIsTerminated = true;
+				fireTerminate();
+
+				// remove launch when it was triggered in RUN node
+				if (ILaunchManager.RUN_MODE.equals(getLaunchMode()))
+					getLaunchManager().removeLaunch(this);
+			}
+		}
+	}
+
 	private static final String LAUNCH_CONFIGURATION_ID = "org.eclipse.ease.launchConfigurationType";
+
+	/** Executed launch. */
+	private EASELaunch fLaunch = null;
 
 	@Override
 	public void launch(final ILaunchConfiguration configuration, final String mode, final ILaunch launch, final IProgressMonitor monitor) throws CoreException {
@@ -50,7 +93,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 		// create engine
 		final String engineID = configuration.getAttribute(LaunchConstants.SCRIPT_ENGINE, "");
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		EngineDescription engineDescription = scriptService.getEngineByID(engineID);
 		if ((ILaunchManager.DEBUG_MODE.equals(mode)) && (!engineDescription.supportsDebugging())) {
 			// we are trying to debug using an engine that does not support debugging
@@ -108,10 +151,8 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 		engine.setInputStream(console.getInputStream());
 
 		// setup debugger
-		if (ILaunchManager.DEBUG_MODE.equals(mode)) {
-
+		if (ILaunchManager.DEBUG_MODE.equals(mode))
 			setupDebugger(engine, configuration, launch);
-		}
 
 		// set startup parameters
 		final String parameterString = configuration.getAttribute(LaunchConstants.STARTUP_PARAMETERS, "").trim();
@@ -129,6 +170,10 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 		// start engine
 		engine.schedule();
+
+		// let launch know when engine terminates
+		if (launch instanceof IExecutionListener)
+			engine.addExecutionListener((IExecutionListener) launch);
 	}
 
 	@Override
@@ -140,7 +185,7 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 		configuration.setAttribute(LaunchConstants.FILE_LOCATION, ResourceTools.toAbsoluteLocation(file, null));
 
 		// find a valid engine
-		final IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 		final Collection<EngineDescription> engines = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(file, null)).getEngines();
 		if (engines.isEmpty())
 			// TODO use a better way to bail out and use the direct file launch
@@ -166,6 +211,12 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 	@Override
 	protected String getLaunchConfigurationId() {
 		return LAUNCH_CONFIGURATION_ID;
+	}
+
+	@Override
+	public ILaunch getLaunch(ILaunchConfiguration configuration, String mode) throws CoreException {
+		fLaunch = new EASELaunch(configuration, mode, null);
+		return fLaunch;
 	}
 
 	private void setupDebugger(final IScriptEngine engine, final ILaunchConfiguration configuration, final ILaunch launch) {

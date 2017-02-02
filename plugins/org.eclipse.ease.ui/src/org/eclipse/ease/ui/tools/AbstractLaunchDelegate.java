@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
@@ -23,6 +24,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.debug.ui.ILaunchShortcut2;
 import org.eclipse.ease.Logger;
@@ -40,7 +42,7 @@ import org.eclipse.ui.part.FileEditorInput;
 /**
  * Quick launcher for EASE script files.
  */
-public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, ILaunchConfigurationDelegate {
+public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunchShortcut2, ILaunchConfigurationDelegate, ILaunchConfigurationDelegate2 {
 
 	// **********************************************************************
 	// ILaunchShortcut
@@ -76,7 +78,7 @@ public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunch
 				if (element instanceof IFile)
 					return (IResource) element;
 
-				Object adaptedFile = Platform.getAdapterManager().getAdapter(element, IResource.class);
+				final Object adaptedFile = Platform.getAdapterManager().getAdapter(element, IResource.class);
 				if (adaptedFile instanceof IFile)
 					return (IResource) adaptedFile;
 			}
@@ -96,6 +98,25 @@ public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunch
 	}
 
 	// **********************************************************************
+	// ILaunchConfigurationDelegate2
+	// **********************************************************************
+
+	@Override
+	public boolean buildForLaunch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
+		return false;
+	}
+
+	@Override
+	public boolean finalLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
+		return true;
+	}
+
+	@Override
+	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
+		return true;
+	}
+
+	// **********************************************************************
 	// internal stuff
 	// **********************************************************************
 
@@ -108,7 +129,7 @@ public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunch
 	 * @return {@link ILaunchConfiguration}s using resource
 	 */
 	protected ILaunchConfiguration[] getLaunchConfigurations(final IResource resource, final String mode) {
-		final List<ILaunchConfiguration> configurations = new ArrayList<ILaunchConfiguration>();
+		final List<ILaunchConfiguration> configurations = new ArrayList<>();
 
 		final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		final ILaunchConfigurationType type = manager.getLaunchConfigurationType(getLaunchConfigurationId());
