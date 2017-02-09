@@ -72,7 +72,7 @@ public class ScriptEditorInput implements IStorageEditorInput {
 
 			@Override
 			public boolean isReadOnly() {
-				return fScript.isRemote();
+				return (fScript != null) ? fScript.isRemote() : false;
 			}
 
 			@Override
@@ -83,7 +83,7 @@ public class ScriptEditorInput implements IStorageEditorInput {
 			@Override
 			public IPath getFullPath() {
 				if (fScript != null) {
-					Object content = fScript.getResource();
+					final Object content = fScript.getResource();
 					if (content instanceof File)
 						return new Path(((File) content).getPath());
 				}

@@ -50,6 +50,13 @@ public class SelectScriptStorageDialog extends Dialog {
 		super(parentShell);
 	}
 
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+
+		newShell.setText("Script Storage Location");
+	}
+
 	/**
 	 * Create contents of the dialog.
 	 *
@@ -57,12 +64,12 @@ public class SelectScriptStorageDialog extends Dialog {
 	 */
 	@Override
 	protected Control createDialogArea(final Composite parent) {
-		Composite container = (Composite) super.createDialogArea(parent);
+		final Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(new GridLayout(2, false));
 
-		Label lblWhereDoYou = new Label(container, SWT.NONE);
+		final Label lblWhereDoYou = new Label(container, SWT.NONE);
 		lblWhereDoYou.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-		lblWhereDoYou.setText("where do you want to store your recorded scripts to?");
+		lblWhereDoYou.setText("Where do you want to store your recorded scripts to?");
 
 		btnStoreInSettings = new Button(container, SWT.RADIO);
 		btnStoreInSettings.setSelection(true);
@@ -71,7 +78,7 @@ public class SelectScriptStorageDialog extends Dialog {
 			public void widgetSelected(final SelectionEvent e) {
 			}
 		});
-		GridData gd_btnStoreInSettings = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		final GridData gd_btnStoreInSettings = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnStoreInSettings.verticalIndent = 20;
 		btnStoreInSettings.setLayoutData(gd_btnStoreInSettings);
 		btnStoreInSettings.setText("Store in my workspace settings");
@@ -82,19 +89,19 @@ public class SelectScriptStorageDialog extends Dialog {
 		new Label(container, SWT.NONE);
 
 		txtWorkspace = new Text(container, SWT.BORDER);
-		GridData gd_txtWorkspace = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		final GridData gd_txtWorkspace = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_txtWorkspace.horizontalIndent = 17;
 		txtWorkspace.setLayoutData(gd_txtWorkspace);
 
-		Button btnNewButton = new Button(container, SWT.NONE);
+		final Button btnNewButton = new Button(container, SWT.NONE);
 		btnNewButton.setText("Browse...");
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true,
+				final ContainerSelectionDialog dialog = new ContainerSelectionDialog(getShell(), ResourcesPlugin.getWorkspace().getRoot(), true,
 						"Select script storage folder");
 				if (dialog.open() == Window.OK) {
-					Object[] result = dialog.getResult();
+					final Object[] result = dialog.getResult();
 					if ((result.length > 0) && (result[0] instanceof IPath))
 						txtWorkspace.setText(result[0].toString());
 				}
@@ -106,17 +113,17 @@ public class SelectScriptStorageDialog extends Dialog {
 		new Label(container, SWT.NONE);
 
 		txtFileSystem = new Text(container, SWT.BORDER);
-		GridData gd_txtFileSystem = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+		final GridData gd_txtFileSystem = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
 		gd_txtFileSystem.horizontalIndent = 17;
 		txtFileSystem.setLayoutData(gd_txtFileSystem);
 
-		Button btnNewButton_1 = new Button(container, SWT.NONE);
+		final Button btnNewButton_1 = new Button(container, SWT.NONE);
 		btnNewButton_1.setText("Browse...");
 		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				DirectoryDialog dialog = new DirectoryDialog(getShell());
-				String path = dialog.open();
+				final DirectoryDialog dialog = new DirectoryDialog(getShell());
+				final String path = dialog.open();
 				if (path != null)
 					txtFileSystem.setText(new File(path).toURI().toString());
 			}
