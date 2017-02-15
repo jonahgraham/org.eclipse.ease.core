@@ -29,6 +29,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.Logger;
 import org.eclipse.ease.urlhandler.WorkspaceURLConnection;
@@ -140,8 +141,8 @@ public final class ResourceTools {
 		if (location instanceof String) {
 			// try to convert to an URI
 			try {
-				location = URI.create((String) location);
-			} catch (final IllegalArgumentException e) {
+				location = URIUtil.fromString((String) location);
+			} catch (final URISyntaxException e) {
 				// throw on invalid URIs, ignore and continue with location as-is
 			}
 		}
@@ -224,7 +225,7 @@ public final class ResourceTools {
 
 		if (parent instanceof IResource) {
 			// resolve a relative path in the workspace
-			IPath targetPath = ((IResource) parent).getFullPath().append(new Path(location.toString()));
+			final IPath targetPath = ((IResource) parent).getFullPath().append(new Path(location.toString()));
 			IContainer relativeFolder = ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(targetPath);
 			if ((relativeFolder == null) && (targetPath.segmentCount() == 1))
 				relativeFolder = ResourcesPlugin.getWorkspace().getRoot().getProject(targetPath.segment(0));
@@ -386,9 +387,9 @@ public final class ResourceTools {
 	 */
 	public static String resourceToString(final Object location) {
 		try {
-			InputStream inputStream = new BufferedInputStream(getInputStream(location));
+			final InputStream inputStream = new BufferedInputStream(getInputStream(location));
 			return StringTools.toString(inputStream);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			Logger.error(Activator.PLUGIN_ID, "Cannot read from resource \"" + location + "\"", e);
 		}
 
@@ -534,13 +535,13 @@ public final class ResourceTools {
 	 */
 	public static IFile getActiveFile() {
 		IFile file = null;
-		IWorkbench workbench = PlatformUI.getWorkbench();
+		final IWorkbench workbench = PlatformUI.getWorkbench();
 		if (workbench != null) {
-			IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
+			final IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
 			if (workbenchWindow != null) {
-				IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
+				final IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
 				if (workbenchPage != null) {
-					IEditorPart editor = workbenchPage.getActiveEditor();
+					final IEditorPart editor = workbenchPage.getActiveEditor();
 					if (editor != null) {
 						file = editor.getEditorInput().getAdapter(IFile.class);
 					}
