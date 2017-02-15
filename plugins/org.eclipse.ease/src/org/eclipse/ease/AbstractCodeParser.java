@@ -35,10 +35,10 @@ import org.eclipse.ease.sign.SignatureInfo;
 
 public abstract class AbstractCodeParser implements ICodeParser {
 
-	public static final Pattern PARAMETER_PATTERN = Pattern.compile("[^\\p{Alnum}-_]*?\\s*([\\p{Alnum}-_]*)\\s*:(.*)");
+	public static final Pattern PARAMETER_PATTERN = Pattern.compile("[^\\p{Alnum}-_]*?\\s*([\\p{Alnum}-_]+)\\s*:(.*)");
 
 	public static Map<String, String> extractKeywords(String comment) {
-		final Map<String, String> keywords = new HashMap<String, String>();
+		final Map<String, String> keywords = new HashMap<>();
 
 		String key = null;
 		for (String line : comment.split("\\r?\\n")) {
