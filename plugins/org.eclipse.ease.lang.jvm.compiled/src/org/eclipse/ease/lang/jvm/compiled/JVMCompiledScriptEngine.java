@@ -225,7 +225,12 @@ public class JVMCompiledScriptEngine extends AbstractScriptEngine implements ISc
 			urls.add(url);
 
 			final IPath wsPath = sourceFile.getProjectRelativePath();
-			final IPath wsSource = wsPath.removeFirstSegments(1);
+			IPath wsSource = wsPath.removeFirstSegments(1);
+
+			if (wsSource.getFileExtension().equals("xtend")) {
+				wsSource = wsSource.removeFileExtension();
+				wsSource = wsSource.addFileExtension("java");
+			}
 
 			final IRequiredBundleDescription[] requiredBundles = scriptBundleProject.getRequiredBundles();
 			final List<Bundle> bundles = new ArrayList<Bundle>();

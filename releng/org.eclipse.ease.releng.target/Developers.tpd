@@ -52,3 +52,7 @@ location "http://download.eclipse.org/nebula/releases/1.0.0" {
 	// charting module
 	org.eclipse.nebula.visualization.feature.feature.group lazy
 }
+
+location "http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/" xtend-editor {
+	org.eclipse.xtext.xtend2.sdk.feature.group
+}

@@ -38,6 +38,14 @@
                contentType="scala.tools.eclipse.scalaSource">
          </binding>
       </scriptType>
+      <scriptType
+            codeParser="org.eclipse.ease.lang.jvm.compiled.JVMCompiledHeaderParser"
+            defaultExtension="xtend"
+            name="Xtend">
+         <binding
+               contentType="javaSource">
+         </binding>
+      </scriptType>
    </extension>
    <extension
          point="org.eclipse.ease.language">
@@ -52,6 +60,9 @@
          </binding>
          <binding
                scriptType="Scala">
+         </binding>
+         <binding
+               scriptType="Xtend">
          </binding>
       </engine>
    </extension>
