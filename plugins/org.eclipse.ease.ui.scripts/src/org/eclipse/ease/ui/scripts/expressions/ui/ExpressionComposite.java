@@ -150,7 +150,7 @@ public class ExpressionComposite extends Composite {
 				if (e.character == SWT.DEL) {
 					for (final Object element : fTreeViewer.getStructuredSelection().toList()) {
 						if (element instanceof AbstractExpressionDefinition) {
-							final ICompositeExpressionDefinition parent = ((ICompositeExpressionDefinition) element).getParent();
+							final ICompositeExpressionDefinition parent = ((AbstractExpressionDefinition) element).getParent();
 							if (parent != null)
 								parent.removeChild((AbstractExpressionDefinition) element);
 						}
