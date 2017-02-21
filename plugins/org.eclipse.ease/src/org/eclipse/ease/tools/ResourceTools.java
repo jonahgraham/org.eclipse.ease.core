@@ -155,6 +155,9 @@ public final class ResourceTools {
 				// URI scheme is not "file" or contains an authority
 				if (location.toString().startsWith("file:"))
 					location = new File(location.toString().substring(5));
+
+				else
+					location = URIUtil.toUnencodedString((URI) location);
 			}
 		}
 
