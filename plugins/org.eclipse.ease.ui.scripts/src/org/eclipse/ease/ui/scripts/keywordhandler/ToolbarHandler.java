@@ -178,7 +178,7 @@ public class ToolbarHandler implements EventHandler {
 	/** Event queue to be processed. Main events for location additions/removals. */
 	private List<Event> fKeywordEvents = new ArrayList<Event>();
 
-	/** Event queue to be processed. Reresh events due to name/image changes. */
+	/** Event queue to be processed. Refresh events due to name/image changes. */
 	private List<Event> fRefreshEvents = new ArrayList<Event>();
 
 	/** UI contribution factories. */

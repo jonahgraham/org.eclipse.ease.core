@@ -260,7 +260,7 @@ public class CommandContributionItem extends ContributionItem {
 	 * @param tooltip
 	 *            A tooltip for this item. May be <code>null</code>. Tooltips are currently only valid for toolbar contributions.
 	 * @param style
-	 *            The style of this menu contribution. See the STYLE_* contants.
+	 *            The style of this menu contribution. See the STYLE_* constants.
 	 * @deprecated create the {@link CommandContributionItemParameter}
 	 */
 	@Deprecated
