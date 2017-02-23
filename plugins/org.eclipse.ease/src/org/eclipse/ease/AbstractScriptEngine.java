@@ -464,8 +464,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 		// ask thread to terminate
 		cancel();
-		if (getThread() != null)
-			getThread().interrupt();
+
+		// see bug 512607
+		final Thread thread = getThread();
+		if (thread != null)
+			thread.interrupt();
 	}
 
 	public List<IScriptDebugFrame> getStackTrace() {
