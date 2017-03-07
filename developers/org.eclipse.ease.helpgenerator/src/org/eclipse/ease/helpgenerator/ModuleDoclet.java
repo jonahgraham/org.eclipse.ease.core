@@ -88,24 +88,23 @@ public class ModuleDoclet extends Doclet {
 				"org.eclipse.ease.modules", "org.eclipse.ease" };
 
 		final String[] javadocargs4 = {
-				"test",
-
 				// folder containing source code
-				"-sourcepath", "/home/christian/workspaces/ease_neon/testDocs/src",
+				"-sourcepath",
+				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
 				// project root folder
-				"-root", "/home/christian/workspaces/ease_neon/testDocs",
+				"-root",
+				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/",
 				// doclet class name
 				"-doclet", ModuleDoclet.class.getName(),
 				// doclet bin folder
 				"-docletpath",
-				"/home/christian/workspaces/ease_neon/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin"
+				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 
 				// "-link", "http://docs.oracle.com/javase/8/docs/api",
 				// "-linkOffline", "http://localhost",
 				// "http://docs.oracle.com/javase/8/docs/api",
 
-				}
-		;
+				"org.eclipse.ease.modules.platform", "org.eclipse.ease" };
 
 		com.sun.tools.javadoc.Main.execute(javadocargs4);
 	}

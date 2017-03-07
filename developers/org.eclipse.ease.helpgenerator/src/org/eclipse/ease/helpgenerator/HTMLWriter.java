@@ -18,6 +18,8 @@ import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.ProgramElementDoc;
 import com.sun.javadoc.Tag;
+import com.sun.javadoc.ThrowsTag;
+import com.sun.javadoc.Type;
 
 public class HTMLWriter {
 
@@ -77,7 +79,7 @@ public class HTMLWriter {
 		addLine(buffer, " Module</h1>");
 
 		// class description
-		addText(buffer, "		<p>");
+		addText(buffer, "		<p class=\"description\">");
 		final String classComment = fClazz.commentText();
 		if (classComment != null)
 			addText(buffer, fLinkProvider.insertLinks(fClazz, fClazz.commentText()));
@@ -136,7 +138,7 @@ public class HTMLWriter {
 			addText(buffer, "\t<div class=\"command");
 			if (isDeprecated(method))
 				addText(buffer, " deprecated");
-			addText(buffer, "\" title=\"");
+			addText(buffer, "\" data-method=\"");
 			addText(buffer, method.name());
 			addLine(buffer, "\">");
 
@@ -163,10 +165,13 @@ public class HTMLWriter {
 			addLine(buffer, createAliases(method));
 
 			// parameters
-			addLine(buffer, createParametersTable(method));
+			addLine(buffer, createParametersArea(method));
 
 			// return value
 			addLine(buffer, createReturnValueArea(method));
+
+			// declared exceptions
+			addLine(buffer, createExceptionArea(method));
 
 			// examples
 			addLine(buffer, createExampleArea(method));
@@ -181,30 +186,38 @@ public class HTMLWriter {
 		final StringBuffer buffer = new StringBuffer();
 
 		final Tag[] tags = method.tags("scriptExample");
-		for (final Tag tag : tags) {
-			final String fullText = tag.text();
+		if (tags.length > 0) {
+			addLine(buffer, "		<dl class=\"examples\">");
 
-			// extract end position of example code
-			int pos = fullText.indexOf('(');
-			if (pos > 0) {
-				int open = 1;
-				for (int index = pos + 1; index < fullText.length(); index++) {
-					if (fullText.charAt(index) == ')')
-						open--;
-					else if (fullText.charAt(index) == '(')
-						open++;
+			for (final Tag tag : tags) {
+				final String fullText = tag.text();
 
-					if (open == 0) {
-						pos = index + 1;
-						break;
+				// extract end position of example code
+				int pos = fullText.indexOf('(');
+				if (pos > 0) {
+					int open = 1;
+					for (int index = pos + 1; index < fullText.length(); index++) {
+						if (fullText.charAt(index) == ')')
+							open--;
+						else if (fullText.charAt(index) == '(')
+							open++;
+
+						if (open == 0) {
+							pos = index + 1;
+							break;
+						}
 					}
 				}
-			}
-			final String codeText = (pos > 0) ? fullText.substring(0, pos) : fullText;
-			final String description = "<br />... " + ((pos > 0) ? fullText.substring(pos) : "");
+				final String codeText = (pos > 0) ? fullText.substring(0, pos) : fullText;
+				final String description = ((pos > 0) ? fullText.substring(pos).trim() : "");
 
-			addLine(buffer, "		<p class=\"example\"><em>Example:</em><code>" + codeText + "</code>" + description
-					+ "</p>");
+				addLine(buffer, "			<dt>" + codeText + "</dt>");
+				addText(buffer,
+						"			<dd class=\"description\">" + fLinkProvider.insertLinks(fClazz, description));
+				addLine(buffer, "</dd>");
+			}
+
+			addLine(buffer, "		</dl>");
 		}
 
 		return buffer;
@@ -214,15 +227,11 @@ public class HTMLWriter {
 		final StringBuffer buffer = new StringBuffer();
 
 		if (!"void".equals(method.returnType().qualifiedTypeName())) {
-			addText(buffer, "		<p class=\"return\"><em>Returns:</em>");
-			addText(buffer, fLinkProvider
-					.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz)));
+			addText(buffer, "		<p class=\"return\">");
 
 			final Tag[] tags = method.tags("return");
-			if (tags.length > 0) {
-				addText(buffer, " ... ");
+			if (tags.length > 0)
 				addText(buffer, fLinkProvider.insertLinks(fClazz, tags[0].text()));
-			}
 
 			addLine(buffer, "</p>");
 		}
@@ -230,32 +239,21 @@ public class HTMLWriter {
 		return buffer;
 	}
 
-	private StringBuffer createParametersTable(final MethodDoc method) {
+	private StringBuffer createParametersArea(final MethodDoc method) {
 		final StringBuffer buffer = new StringBuffer();
 
 		if (method.parameters().length > 0) {
 
-			addLine(buffer, "		<table class=\"parameters\">");
-			addLine(buffer, "			<tr>");
-			addLine(buffer, "				<th>Parameter</th>");
-			addLine(buffer, "				<th>Type</th>");
-			addLine(buffer, "				<th>Description</th>");
-			addLine(buffer, "			</tr>");
+			addLine(buffer, "		<dl class=\"parameters\">");
 
 			for (final Parameter parameter : method.parameters()) {
-				addLine(buffer, "			<tr>");
-				addLine(buffer, "				<td>" + parameter.name() + "</td>");
-				addLine(buffer,
-						"				<td>"
-								+ fLinkProvider.createClassText(
-										LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz))
-								+ "</td>");
-				addText(buffer, "				<td>"
+				addLine(buffer, "			<dt>" + parameter.name() + "</dt>");
+				addText(buffer, "			<dd class=\"description\" data-parameter=\"" + parameter.name() + "\">"
 						+ fLinkProvider.insertLinks(fClazz, findComment(method, parameter.name())));
 
 				final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
 				if (parameterAnnotation != null) {
-					addText(buffer, "<br /><b>Optional:</b> defaults to &lt;<i>");
+					addText(buffer, "<span class=\"optional\"><b>Optional:</b> defaults to &lt;<i>");
 					for (final ElementValuePair pair : parameterAnnotation.elementValues()) {
 						if ("org.eclipse.ease.modules.ScriptParameter.defaultValue()"
 								.equals(pair.element().toString())) {
@@ -274,15 +272,47 @@ public class HTMLWriter {
 								addText(buffer, defaultValue);
 						}
 					}
-					addText(buffer, "</i>&gt;.");
+					addText(buffer, "</i>&gt;.</span>");
 				}
-				addLine(buffer, "</td>");
-				addLine(buffer, "			</tr>");
+				addLine(buffer, "</dd>");
 			}
-			addLine(buffer, "		</table>");
+			addLine(buffer, "		</dl>");
 		}
 
 		return buffer;
+	}
+
+	private StringBuffer createExceptionArea(final MethodDoc method) {
+		final StringBuffer buffer = new StringBuffer();
+
+		if (method.thrownExceptionTypes().length > 0) {
+
+			addLine(buffer, "		<dl class=\"exceptions\">");
+
+			for (final Type exceptionType : method.thrownExceptionTypes()) {
+				addLine(buffer, "			<dt>" + exceptionType.simpleTypeName() + "</dt>");
+				addText(buffer,
+						"			<dd class=\"description\" data-exception=\"" + exceptionType.simpleTypeName()
+								+ "\">"
+								+ fLinkProvider.insertLinks(fClazz, findExceptionComment(method, exceptionType)));
+
+				addLine(buffer, "</dd>");
+			}
+
+			addLine(buffer, "		</dl>");
+		}
+
+		return buffer;
+	}
+
+	private static String findExceptionComment(MethodDoc method, Type exceptionType) {
+		for (ThrowsTag tag : method.throwsTags()) {
+			if ((exceptionType.simpleTypeName().equals(tag.exceptionName()))
+					|| (exceptionType.typeName().equals(tag.exceptionName())))
+				return tag.exceptionComment();
+		}
+
+		return "";
 	}
 
 	private StringBuffer createAliases(final MethodDoc method) {
@@ -423,8 +453,8 @@ public class HTMLWriter {
 
 				if (!isDeprecated(field)) {
 					addLine(buffer, "			<td><a id=\"" + field.name() + "\">" + field.name() + "</a></td>");
-					addLine(buffer,
-							"			<td>" + fLinkProvider.insertLinks(fClazz, field.commentText()) + "</td>");
+					addLine(buffer, "			<td class=\"description\" data-field=\"" + field.name() + "\">"
+							+ fLinkProvider.insertLinks(fClazz, field.commentText()) + "</td>");
 
 				} else {
 					addLine(buffer, "			<td><a id=\"" + field.name() + "\" class=\"deprecatedText\">"
