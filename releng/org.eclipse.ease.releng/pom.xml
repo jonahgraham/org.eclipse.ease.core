@@ -14,7 +14,7 @@
 		<maven.compiler.version>3.6.1</maven.compiler.version>
 		<maven.javadoc.version>2.9.1</maven.javadoc.version>
 		<jacoco.version>0.7.9</jacoco.version>
-		<eclipse.jarsigner.version>1.0.5</eclipse.jarsigner.version>
+		<eclipse.jarsigner.version>1.1.3</eclipse.jarsigner.version>
 		<maven.buildhelper.version>1.9.1</maven.buildhelper.version>
 		
 		<!-- build parameters -->
@@ -33,25 +33,8 @@
 		<pluginRepository>
 			<id>cbi</id>
 			<url>https://repo.eclipse.org/content/repositories/cbi-releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>maven</id>
-			<url>https://repo.maven.apache.org/maven2/org/apache/maven/plugins/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-
 
 	<build>
 		<plugins>
