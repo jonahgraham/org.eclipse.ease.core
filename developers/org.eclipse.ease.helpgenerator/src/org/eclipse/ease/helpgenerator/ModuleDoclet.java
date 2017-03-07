@@ -106,7 +106,25 @@ public class ModuleDoclet extends Doclet {
 
 				"org.eclipse.ease.modules.platform", "org.eclipse.ease" };
 
-		com.sun.tools.javadoc.Main.execute(javadocargs4);
+		final String[] javadocargs5 = {
+				// folder containing source code
+				"-sourcepath",
+				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/tests/org.eclipse.ease.ui.test/src",
+				// project root folder
+				"-root", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/tests/org.eclipse.ease.ui.test/",
+				// doclet class name
+				"-doclet", ModuleDoclet.class.getName(),
+				// doclet bin folder
+				"-docletpath",
+				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
+
+				// "-link", "http://docs.oracle.com/javase/8/docs/api",
+				// "-linkOffline", "http://localhost",
+				// "http://docs.oracle.com/javase/8/docs/api",
+
+				"org.eclipse.ease.ui.help.hovers", "org.eclipse.ease" };
+
+		com.sun.tools.javadoc.Main.execute(javadocargs5);
 	}
 
 	private static final String OPTION_PROJECT_ROOT = "-root";
@@ -347,7 +365,10 @@ public class ModuleDoclet extends Doclet {
 	private void updatePluginXML(final File rootFolder, final Collection<String> tocs) throws Exception {
 		final HashSet<String> toDo = new HashSet<String>(tocs);
 
-		final File pluginFile = getChild(rootFolder, "plugin.xml");
+		File pluginFile = getChild(rootFolder, "plugin.xml");
+		if (!pluginFile.exists())
+			pluginFile = getChild(rootFolder, "fragment.xml");
+
 		final XMLMemento memento = XMLMemento.createReadRoot(new InputStreamReader(new FileInputStream(pluginFile)));
 		for (final IMemento extensionNode : memento.getChildren("extension")) {
 			final String extensionPoint = extensionNode.getString("point");
@@ -481,7 +502,9 @@ public class ModuleDoclet extends Doclet {
 		fModuleNodes = new HashMap<String, IMemento>();
 
 		// read plugin.xml
-		final File pluginXML = getChild(fRootFolder, "plugin.xml");
+		File pluginXML = getChild(fRootFolder, "plugin.xml");
+		if (!pluginXML.exists())
+			pluginXML = getChild(fRootFolder, "fragment.xml");
 
 		try {
 			final IMemento root = XMLMemento.createReadRoot(new InputStreamReader(new FileInputStream(pluginXML)));
