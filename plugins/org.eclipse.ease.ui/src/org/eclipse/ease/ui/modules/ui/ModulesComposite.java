@@ -51,8 +51,6 @@ public class ModulesComposite extends Composite implements BundleListener {
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 		treeViewer.getTree().setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		// ModuleToolTipDecorator.enableFor(treeViewer);
-
 		final DecoratedLabelProvider labelProvider = new DecoratedLabelProvider(new ModulesLabelProvider());
 		treeViewer.setLabelProvider(labelProvider);
 
@@ -116,7 +114,7 @@ public class ModulesComposite extends Composite implements BundleListener {
 	@Override
 	public void bundleChanged(BundleEvent event) {
 		final int type = event.getType();
-		if ((type == BundleEvent.RESOLVED) || (type == BundleEvent.STARTED) || (type == BundleEvent.STOPPED) || (type == BundleEvent.UPDATED)) {
+		if ((type == BundleEvent.RESOLVED) || (type == BundleEvent.STOPPED) || (type == BundleEvent.UPDATED)) {
 			Display.getDefault().asyncExec(() -> {
 				if (!treeViewer.getTree().isDisposed())
 					treeViewer.refresh();

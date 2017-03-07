@@ -11,6 +11,9 @@
 
 package org.eclipse.ease.ui.view;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -18,11 +21,18 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.ui.Activator;
+import org.eclipse.ease.ui.help.hovers.HoverManager;
+import org.eclipse.ease.ui.help.hovers.IHoverContentProvider;
+import org.eclipse.ease.ui.help.hovers.ModuleHelp;
 import org.eclipse.ease.ui.modules.ui.ModulesComposite;
 import org.eclipse.ease.ui.modules.ui.ModulesContentProvider;
 import org.eclipse.ease.ui.modules.ui.ModulesFilter;
+import org.eclipse.ease.ui.modules.ui.ModulesTools.ModuleEntry;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -215,8 +225,35 @@ public class ModuleExplorerView extends ViewPart implements IPreferenceChangeLis
 		getSite().registerContextMenu(menuManager, fModulesComposite.getTreeViewer());
 		fModulesComposite.getTreeViewer().getTree().setMenu(menu);
 
+		final HoverManager hoverManager = new HoverManager(parent);
+		hoverManager.addHover(fModulesComposite.getTreeViewer(), new IHoverContentProvider() {
+
+			@Override
+			public void populateToolbar(BrowserInformationControl control, ToolBarManager toolBarManager) {
+				// nothing to do
+			}
+
+			@Override
+			public String getContent(Object origin, Object detail) {
+				if (detail instanceof ModuleEntry<?>)
+					detail = ((ModuleEntry) detail).getEntry();
+
+				if (detail instanceof ModuleDefinition)
+					return ModuleHelp.getModuleHelpTip((ModuleDefinition) detail);
+
+				if (detail instanceof Method)
+					return ModuleHelp.getMethodHelpTip((Method) detail);
+
+				if (detail instanceof Field)
+					return ModuleHelp.getConstantHelpTip((Field) detail);
+
+				return null;
+			}
+		});
+
 		getSite().setSelectionProvider(fModulesComposite.getTreeViewer());
 
+		// listen for preference changes on visible modules
 		((IEclipsePreferences) InstanceScope.INSTANCE.getNode(org.eclipse.ease.Activator.PLUGIN_ID).node("modules")).addPreferenceChangeListener(this);
 	}
 

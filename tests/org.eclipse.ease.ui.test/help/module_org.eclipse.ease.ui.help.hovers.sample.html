@@ -6,7 +6,7 @@
 <body>
 	<div class="module" title="SampleModule Module">
 		<h1>SampleModule Module</h1>
-		<p></p>
+		<p class="description"></p>
 
 	</div>
 
@@ -18,7 +18,7 @@
 		</tr>
 		<tr>
 			<td><a id="PI">PI</a></td>
-			<td>PI constant.</td>
+			<td class="description" data-field="PI">PI constant.</td>
 		</tr>
 	</table>
 
@@ -49,115 +49,75 @@
 
 
 	<h2>Methods</h2>
-	<div class="command" title="div">
+	<div class="command" data-method="div">
 		<h3><a id="div">div</a></h3>
 		<p class="synopsis">double div(double a, double b)</p>
 
 		<p class="description">Divide a by b.</p>
 
-		<table class="parameters">
-			<tr>
-				<th>Parameter</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-			<tr>
-				<td>a</td>
-				<td>double</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>b</td>
-				<td>double</td>
-				<td></td>
-			</tr>
-		</table>
+		<dl class="parameters">
+			<dt>a</dt>
+			<dd class="description" data-parameter="a"></dd>
+			<dt>b</dt>
+			<dd class="description" data-parameter="b"></dd>
+		</dl>
 
-		<p class="return"><em>Returns:</em>double</p>
+		<p class="return"></p>
+
 
 
 	</div>
-	<div class="command" title="mul">
+	<div class="command" data-method="mul">
 		<h3><a id="mul">mul</a></h3>
 		<p class="synopsis">double mul(double a, double b)</p>
 
 		<p class="description">Multiply 2 values.</p>
 
-		<table class="parameters">
-			<tr>
-				<th>Parameter</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-			<tr>
-				<td>a</td>
-				<td>double</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>b</td>
-				<td>double</td>
-				<td></td>
-			</tr>
-		</table>
+		<dl class="parameters">
+			<dt>a</dt>
+			<dd class="description" data-parameter="a"></dd>
+			<dt>b</dt>
+			<dd class="description" data-parameter="b"></dd>
+		</dl>
 
-		<p class="return"><em>Returns:</em>double</p>
+		<p class="return"></p>
+
 
 
 	</div>
-	<div class="command" title="sub">
+	<div class="command" data-method="sub">
 		<h3><a id="sub">sub</a></h3>
 		<p class="synopsis">double sub(double a, double b)</p>
 
 		<p class="description">Subtract b from a.</p>
 
-		<table class="parameters">
-			<tr>
-				<th>Parameter</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-			<tr>
-				<td>a</td>
-				<td>double</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>b</td>
-				<td>double</td>
-				<td></td>
-			</tr>
-		</table>
+		<dl class="parameters">
+			<dt>a</dt>
+			<dd class="description" data-parameter="a"></dd>
+			<dt>b</dt>
+			<dd class="description" data-parameter="b"></dd>
+		</dl>
 
-		<p class="return"><em>Returns:</em>double</p>
+		<p class="return"></p>
+
 
 
 	</div>
-	<div class="command" title="sum">
+	<div class="command" data-method="sum">
 		<h3><a id="sum">sum</a></h3>
 		<p class="synopsis">double sum(double a, double b)</p>
 
 		<p class="description">Provide sum of 2 variables.</p>
 
-		<table class="parameters">
-			<tr>
-				<th>Parameter</th>
-				<th>Type</th>
-				<th>Description</th>
-			</tr>
-			<tr>
-				<td>a</td>
-				<td>double</td>
-				<td>summand 1</td>
-			</tr>
-			<tr>
-				<td>b</td>
-				<td>double</td>
-				<td>summand 2</td>
-			</tr>
-		</table>
+		<dl class="parameters">
+			<dt>a</dt>
+			<dd class="description" data-parameter="a">summand 1</dd>
+			<dt>b</dt>
+			<dd class="description" data-parameter="b">summand 2</dd>
+		</dl>
 
-		<p class="return"><em>Returns:</em>double ... sum</p>
+		<p class="return">sum</p>
+
 
 
 	</div>
