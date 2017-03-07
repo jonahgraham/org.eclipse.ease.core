@@ -47,9 +47,35 @@ ul.dependency		{ list-style-image:url(/help/topic/org.eclipse.ease.help/help/ima
 .synonyms  			{  }
 .synonyms em		{ font-weight: bold; font-style: normal; margin-right: 20px; }
 
-table.parameters  	{ margin-left: 30px; }
-.return  			{ margin-left: 30px;  }
-.return em  		{ font-weight: bold; font-style: normal; margin-right: 20px; }
+dl.parameters::before	{ content: "Parameters:"; font-weight: bold; display: block;}
+dl.parameters dt	{  margin-left: 30px; }
+dl.parameters dd::before	{   content: "... ";}
+dl.parameters dd	{   margin: 0px 0px 5px 60px;}
+.return::before  			{ content: "Returns:"; font-weight: bold; display: block; margin-left: -30px; }
+.return  			{ margin-left: 30px; }
+
+.optional {
+	display: block;
+	margin-left: 1.4em;
+}
+
+dl.exceptions::before	{ content: "Exceptions:"; font-weight: bold; display: block;}
+dl.exceptions dt	{  margin-left: 30px; }
+dl.exceptions dd::before	{   content: "... ";}
+dl.exceptions dd	{   margin-left: 60px;}
+
+dl.examples::before	{ content: "Examples:"; font-weight: bold; display: block;}
+dl.examples dt	{  margin-left: 30px; 
+    unicode-bidi: embed;
+    font-family: monospace;
+    white-space: pre;
+	  border: 1px solid #dddddd;
+	  border-radius: 3px;
+	  background: #f5f5f5;
+	  padding: 3px 5px 3px 5px;
+}
+dl.examples dd::before	{   content: "... ";}
+dl.examples dd	{   margin: 3px 0px 10px 60px; }
 
 
 .warning			{ background-image:url("../images/warning.png"); background-repeat: no-repeat;
