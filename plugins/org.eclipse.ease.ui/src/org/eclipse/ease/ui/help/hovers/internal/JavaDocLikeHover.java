@@ -15,6 +15,15 @@
 
 package org.eclipse.ease.ui.help.hovers.internal;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import org.eclipse.ease.Logger;
+import org.eclipse.ease.tools.StringTools;
+import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.help.hovers.IHoverContentProvider;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.action.Action;
@@ -364,37 +373,17 @@ public class JavaDocLikeHover {
 	 */
 	private static String getStyleSheet() {
 		if (fgStyleSheet == null) {
-			// FIXME
-			// fgStyleSheet = loadStyleSheet("/JavadocHoverStyleSheet.css"); //$NON-NLS-1$
 
-			fgStyleSheet = "/* Font definitions */\r\n"
-					+ "html         { font-family: sans-serif; font-size: 9pt; font-style: normal; font-weight: normal; }\r\n"
-					+ "body, h1, h2, h3, h4, h5, h6, p, table, td, caption, th, ul, ol, dl, li, dd, dt { font-size: 1em; }\r\n"
-					+ "pre          { font-family: monospace; }\r\n" + "\r\n" + "/* Margins */\r\n"
-					+ "body	     { overflow: auto; margin-top: 0px; margin-bottom: 0.5em; margin-left: 0.3em; margin-right: 0px; }\r\n"
-					+ "h1           { margin-top: 0.3em; margin-bottom: 0.04em; }	\r\n" + "h2           { margin-top: 2em; margin-bottom: 0.25em; }\r\n"
-					+ "h3           { margin-top: 1.7em; margin-bottom: 0.25em; }\r\n" + "h4           { margin-top: 2em; margin-bottom: 0.3em; }\r\n"
-					+ "h5           { margin-top: 0px; margin-bottom: 0px; }\r\n" + "p            { margin-top: 1em; margin-bottom: 1em; }\r\n"
-					+ "pre          { margin-left: 0.6em; }\r\n"
-					+ "ul	         { margin-top: 0px; margin-bottom: 1em; margin-left: 1em; padding-left: 1em;}\r\n"
-					+ "li	         { margin-top: 0px; margin-bottom: 0px; } \r\n" + "li p	     { margin-top: 0px; margin-bottom: 0px; } \r\n"
-					+ "ol	         { margin-top: 0px; margin-bottom: 1em; margin-left: 1em; padding-left: 1em; }\r\n"
-					+ "dl	         { margin-top: 0px; margin-bottom: 1em; }\r\n"
-					+ "dt	         { margin-top: 0px; margin-bottom: 0px; font-weight: bold; }\r\n"
-					+ "dd	         { margin-top: 0px; margin-bottom: 0px; }\r\n" + "\r\n" + "/* Styles and colors */\r\n"
-					+ "a:link	     { color: #0000FF; }\r\n" + "a:hover	     { color: #000080; }\r\n" + "a:visited    { text-decoration: underline; }\r\n"
-					+ "a.header:link    { text-decoration: none; color: InfoText }\r\n" + "a.header:visited { text-decoration: none; color: InfoText }\r\n"
-					+ "a.header:hover   { text-decoration: underline; color: #000080; }\r\n" + "h4           { font-style: italic; }\r\n"
-					+ "strong	     { font-weight: bold; }\r\n" + "em	         { font-style: italic; }\r\n" + "var	         { font-style: italic; }\r\n"
-					+ "th	         { font-weight: bold; }\r\n" + "\r\n" + "/* Workarounds for new Javadoc stylesheet (1.7) */ \r\n"
-					+ "ul.blockList li.blockList, ul.blockListLast li.blockList {\r\n" + "    list-style:none;\r\n" + "}\r\n"
-					+ "ul.blockList ul.blockList ul.blockList ul.blockList li.blockListLast {\r\n" + "    list-style:none;\r\n" + "}\r\n" + "";
+			try {
+				final URL url = new URL("platform:/plugin/org.eclipse.ease.ui/resources/EASEHoverStylesheet.css");
+				final InputStream inputStream = url.openConnection().getInputStream();
+				final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+				fgStyleSheet = StringTools.toString(reader);
+				reader.close();
 
-			// additional content we need for EASE
-			fgStyleSheet += ".optional { display:block; margin-left: 2em; }\r\n";
-			fgStyleSheet += ".optional b { font-weight: normal; }\r\n";
-			fgStyleSheet += ".description { margin-left: 2em; }\r\n";
-			fgStyleSheet += ".description::before { content: \"... \" }\r\n";
+			} catch (final IOException e) {
+				Logger.error(Activator.PLUGIN_ID, "Cannot read style sheet for hover presentation", e);
+			}
 		}
 		String css = fgStyleSheet;
 		if (css != null) {

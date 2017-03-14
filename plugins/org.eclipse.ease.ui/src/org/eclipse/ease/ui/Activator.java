@@ -11,11 +11,14 @@
 package org.eclipse.ease.ui;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ease.Logger;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -135,5 +138,17 @@ public class Activator extends AbstractUIPlugin {
 
 	public static ImageDescriptor getLocalImageDescriptor(final String iconPath) {
 		return getImageDescriptor(PLUGIN_ID, iconPath);
+	}
+
+	public static InputStream getResource(String path) {
+		try {
+			final URL url = new URL("platform:/plugin/org.eclipse.ease.ui/" + path);
+			return url.openConnection().getInputStream();
+
+		} catch (final IOException e) {
+			Logger.error(Activator.PLUGIN_ID, "Cannot read style sheet for hover presentation", e);
+		}
+
+		return null;
 	}
 }

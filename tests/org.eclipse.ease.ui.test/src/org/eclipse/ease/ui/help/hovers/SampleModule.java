@@ -12,6 +12,9 @@ package org.eclipse.ease.ui.help.hovers;
 
 import org.eclipse.ease.modules.WrapToScript;
 
+/**
+ * Module only used for unit testing.
+ */
 public class SampleModule {
 
 	/** PI constant. */
@@ -20,7 +23,7 @@ public class SampleModule {
 
 	/**
 	 * Provide sum of 2 variables.
-	 * 
+	 *
 	 * @param a
 	 *            summand 1
 	 * @param b

@@ -11,7 +11,15 @@
  *******************************************************************************/
 package org.eclipse.ease.ui.help.hovers;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -34,6 +42,52 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.XMLMemento;
 
 public class ModuleHelp {
+
+	private static final Map<String, String> CACHED_IMAGES = new HashMap<>();
+
+	/**
+	 * When we need to add images to HTML sites we need to copy them over to the file system.
+	 *
+	 * @param bundlePath
+	 *            path within org.eclipse.ease.ui plugin
+	 * @return file system path
+	 */
+	private static String getImageLocation(String bundlePath) {
+
+		if (!CACHED_IMAGES.containsKey(bundlePath)) {
+			final InputStream input = Activator.getResource(bundlePath);
+			if (input != null) {
+				try {
+					final File tempFile = File.createTempFile("EASE_image", "png");
+					tempFile.deleteOnExit();
+					final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
+
+					final InputStream inputStream = new BufferedInputStream(input);
+					final byte[] buffer = new byte[1024];
+
+					int bytes = inputStream.read(buffer);
+					while (bytes != -1) {
+						outputStream.write(buffer, 0, bytes);
+						bytes = inputStream.read(buffer);
+					}
+
+					inputStream.close();
+					outputStream.close();
+
+					CACHED_IMAGES.put(bundlePath, tempFile.toURI().toString());
+				} catch (final FileNotFoundException e) {
+					Logger.error(Activator.PLUGIN_ID, "Cannot find image file for help hover", e);
+					return null;
+
+				} catch (final IOException e) {
+					Logger.error(Activator.PLUGIN_ID, "Cannot create image file for help hover", e);
+					return null;
+				}
+			}
+		}
+
+		return CACHED_IMAGES.get(bundlePath);
+	}
 
 	/**
 	 * Retrieve help page for a given module definition.
@@ -59,19 +113,6 @@ public class ModuleHelp {
 	}
 
 	/**
-	 * Retrieve the css location for tooltips.
-	 *
-	 * @param definition
-	 *            module definition to fetch css location for
-	 * @return css location
-	 */
-	private static String getCSSUrl(final ModuleDefinition definition) {
-		final String helpLocation = definition.getHelpLocation(null);
-		final URL url = PlatformUI.getWorkbench().getHelpSystem().resolve(helpLocation, true);
-		return url.toString().replace(helpLocation, "/org.eclipse.ease.help/help/css/tooltip.css");
-	}
-
-	/**
 	 * Retrieve help content for module definition.
 	 *
 	 * @param definition
@@ -84,22 +125,26 @@ public class ModuleHelp {
 		if (bodyNode != null) {
 
 			final StringBuffer helpContent = new StringBuffer();
-
-			HTMLPrinter.addSmallHeader(helpContent,
-					getImageAndLabel("file:///usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/plugins/org.eclipse.ease.ui/icons/eobj16/module.png",
-							definition.getName()));
-			helpContent.append("<br>"); //$NON-NLS-1$
-
 			for (final IMemento node : bodyNode.getChildren()) {
 				if ("module".equals(node.getString("class"))) {
 					for (final IMemento contentNode : node.getChildren()) {
-						if ("description".equals(contentNode.getString("class")))
-							helpContent.append(getNodeContent(contentNode));
+						if ("description".equals(contentNode.getString("class"))) {
+							final String content = getNodeContent(contentNode);
+							if ((content != null) && (!content.isEmpty()))
+								helpContent.append(content);
+						}
 					}
 				}
 			}
 
-			return helpContent.toString();
+			if (helpContent.length() > 0) {
+				final StringBuffer help = new StringBuffer();
+				HTMLPrinter.addSmallHeader(help, getImageAndLabel(getImageLocation("icons/eobj16/module.png"), definition.getName()));
+				help.append("<br>"); //$NON-NLS-1$
+				help.append(helpContent);
+
+				return help.toString();
+			}
 		}
 
 		return null;
@@ -180,10 +225,7 @@ public class ModuleHelp {
 
 					final StringBuffer helpContent = new StringBuffer();
 
-					HTMLPrinter.addSmallHeader(helpContent,
-							getImageAndLabel(
-									"file:///usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/plugins/org.eclipse.ease.ui/icons/eobj16/function.png",
-									createSynopsis(method)));
+					HTMLPrinter.addSmallHeader(helpContent, getImageAndLabel(getImageLocation("icons/eobj16/function.png"), createSynopsis(method)));
 					helpContent.append("<br>"); //$NON-NLS-1$
 
 					// method description
@@ -301,7 +343,7 @@ public class ModuleHelp {
 				final List<IMemento> candidates = new ArrayList<>();
 				candidates.addAll(Arrays.asList(node.getChildren()));
 
-				int argumentCounter = 1;
+				int argumentCounter = 0;
 				while (!candidates.isEmpty()) {
 					final IMemento candidate = candidates.remove(0);
 					if ("description".equals(candidate.getString("class"))) {
@@ -355,7 +397,7 @@ public class ModuleHelp {
 		if ((startPos != -1) && (endPos != -1) && (startPos < endPos))
 			return candidate.substring(startPos + 1, endPos);
 
-		return node.getTextData();
+		return (node.getTextData() != null) ? node.getTextData() : "";
 	}
 
 	/**
@@ -419,10 +461,7 @@ public class ModuleHelp {
 
 							final StringBuffer helpContent = new StringBuffer();
 
-							HTMLPrinter.addSmallHeader(helpContent,
-									getImageAndLabel(
-											"file:///usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/plugins/org.eclipse.ease.ui/icons/eobj16/field.png",
-											field.getName()));
+							HTMLPrinter.addSmallHeader(helpContent, getImageAndLabel(getImageLocation("icons/eobj16/field.png"), field.getName()));
 							helpContent.append("<br>"); //$NON-NLS-1$
 							helpContent.append(getNodeContent(candidate));
 
