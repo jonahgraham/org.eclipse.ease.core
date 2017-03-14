@@ -40,6 +40,10 @@
 			<id>cbi</id>
 			<url>https://repo.eclipse.org/content/repositories/cbi-releases/</url>
 		</pluginRepository>
+		<pluginRepository>
+			<id>nexus</id>
+			<url>https://repo.eclipse.org/content/repositories/releases/</url>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<build>
