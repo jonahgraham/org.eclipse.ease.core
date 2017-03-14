@@ -42,7 +42,7 @@
 		</pluginRepository>
 		<pluginRepository>
 			<id>nexus</id>
-			<url>https://repo.eclipse.org/content/repositories/releases/</url>
+			<url>https://repo.eclipse.org/content/repositories/maven_central/</url>
 		</pluginRepository>
 	</pluginRepositories>
 
