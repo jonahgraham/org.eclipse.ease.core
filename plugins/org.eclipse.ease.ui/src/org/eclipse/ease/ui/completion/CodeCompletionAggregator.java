@@ -21,7 +21,10 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.ICodeParser;
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.IScriptEngine;
@@ -60,6 +63,9 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	 * String constant for class attribute of codeCompletionProvider extension.
 	 */
 	public static final String ATTRIBUTE_CLASS = "class";
+
+	/** Timeout for completion processor. */
+	private static final long COMPLETION_TIMEOUT = 500;
 
 	/**
 	 * Retrieve all {@link ICompletionProvider}s matching a given script type.
@@ -140,32 +146,69 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	}
 
 	/**
+	 * Calculate relevant completion proposals.
+	 *
 	 * @param resource
+	 *            resource that contains relevantText. May be <code>null</code>
 	 * @param relevantText
+	 *            text that is relevant for completion calculation
+	 * @param insertOffset
+	 *            cursor position within relevatText
 	 * @param selectionRange
 	 * @param monitor
-	 * @param i
+	 *            job monitor for calculation termination
 	 * @return
 	 */
 	public List<ICompletionProposal> getCompletionProposals(final Object resource, final String relevantText, final int insertOffset, final int selectionRange,
 			final IProgressMonitor monitor) {
+
 		final LinkedList<ICompletionProposal> proposals = new LinkedList<>();
+		final Job completionProcessorJob = new Job("Calculate EASE code completions") {
 
-		final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
-
-		if (context != null) {
-			for (final ICompletionProvider provider : fCompletionProviders) {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					if (provider.isActive(context))
+					if (monitor.isCanceled())
+						return Status.CANCEL_STATUS;
 
-						proposals.addAll(provider.getProposals(context));
-				} catch (final Exception ex) {
-					Logger.error(Activator.PLUGIN_ID, "Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">", ex);
+					final ICompletionContext context = createContext(resource, relevantText, insertOffset, selectionRange);
+
+					if (context != null) {
+						for (final ICompletionProvider provider : fCompletionProviders) {
+							try {
+								if (monitor.isCanceled())
+									return Status.CANCEL_STATUS;
+
+								if (provider.isActive(context))
+									proposals.addAll(provider.getProposals(context));
+
+							} catch (final Exception ex) {
+								Logger.error(Activator.PLUGIN_ID, "Could not get proposals from ICompletionProvider <" + provider.getClass().getName() + ">",
+										ex);
+							}
+						}
+					}
+
+				} finally {
+					synchronized (this) {
+						notifyAll();
+					}
 				}
-			}
-		}
 
-		return proposals;
+				return Status.OK_STATUS;
+			}
+		};
+
+		completionProcessorJob.schedule();
+
+		synchronized (completionProcessorJob) {
+			try {
+				completionProcessorJob.wait(COMPLETION_TIMEOUT);
+			} catch (final InterruptedException e) {
+			}
+
+			return new ArrayList<>(proposals);
+		}
 	}
 
 	/**
