@@ -70,6 +70,18 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		}
 	}
 
+	/**
+	 * Get the current script engine. Works only if executed from the script engine thread.
+	 *
+	 * @return script engine or <code>null</code>
+	 */
+	public static IScriptEngine getCurrentScriptEngine() {
+		if (Job.getJobManager().currentJob() instanceof IScriptEngine)
+			return (IScriptEngine) Job.getJobManager().currentJob();
+
+		return null;
+	}
+
 	/** List of code junks to be executed. */
 	private final List<Script> fCodePieces = Collections.synchronizedList(new ArrayList<Script>());
 
