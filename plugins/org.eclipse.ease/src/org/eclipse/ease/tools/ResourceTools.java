@@ -20,14 +20,19 @@ import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.ease.Activator;
@@ -40,6 +45,58 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public final class ResourceTools {
+
+	/**
+	 * InputStream delegating all tasks to a base stream. The only method not forwarded is close().
+	 */
+	public static class NonClosingInputStream extends InputStream {
+
+		private final InputStream fBaseStream;
+
+		public NonClosingInputStream(InputStream baseStream) {
+			fBaseStream = baseStream;
+		}
+
+		@Override
+		public int read() throws IOException {
+			return fBaseStream.read();
+		}
+
+		@Override
+		public int available() throws IOException {
+			return fBaseStream.available();
+		}
+
+		@Override
+		public long skip(long n) throws IOException {
+			return fBaseStream.skip(n);
+		}
+
+		@Override
+		public boolean markSupported() {
+			return fBaseStream.markSupported();
+		}
+
+		@Override
+		public synchronized void mark(int readlimit) {
+			fBaseStream.mark(readlimit);
+		}
+
+		@Override
+		public synchronized void reset() throws IOException {
+			fBaseStream.reset();
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			return fBaseStream.read(b, off, len);
+		}
+
+		@Override
+		public int read(byte[] b) throws IOException {
+			return fBaseStream.read(b);
+		}
+	}
 
 	private static final String PROJECT_SCHEME = "project";
 
@@ -357,6 +414,9 @@ public final class ResourceTools {
 	}
 
 	public static InputStream getInputStream(final Object location) {
+		if (location instanceof InputStream)
+			return (InputStream) location;
+
 		try {
 			final Object resource = getResource(location);
 			if (resource instanceof IFile)
@@ -552,5 +612,68 @@ public final class ResourceTools {
 			}
 		}
 		return file;
+	}
+
+	/**
+	 * Creates a folder if it does not exists already. Also creates any parent folder needed.
+	 *
+	 * @param folder
+	 *            folder to be created
+	 * @throws CoreException
+	 *             when folder could not be created
+	 */
+	public static void createFolder(IContainer folder) throws CoreException {
+		if (!folder.exists()) {
+			if (!folder.getParent().exists())
+				createFolder(folder.getParent());
+
+			if (folder instanceof IFolder)
+				((IFolder) folder).create(true, true, new NullProgressMonitor());
+		}
+	}
+
+	/**
+	 * Unpack an archive into a workspace project.
+	 *
+	 * @param archive
+	 *            archive to be unpacked
+	 * @param project
+	 *            project to unpack to
+	 * @throws CoreException
+	 *             when project resources cannot be created
+	 */
+	public static void unpackArchive(Object archive, IProject project) throws CoreException {
+		final InputStream inputStream = getInputStream(archive);
+		if (inputStream != null) {
+			final ZipInputStream stream = new ZipInputStream(new BufferedInputStream(inputStream));
+			try {
+
+				ZipEntry entry = stream.getNextEntry();
+
+				while (entry != null) {
+					IPath path = new Path(entry.getName());
+					path = path.removeFirstSegments(1).makeAbsolute();
+
+					// do not recreate .project file
+					if (!new Path("/.project").equals(path)) {
+						final IFile file = project.getFile(path);
+						ResourceTools.createFolder(file.getParent());
+						file.create(new NonClosingInputStream(stream), true, new NullProgressMonitor());
+					}
+
+					entry = stream.getNextEntry();
+				}
+
+			} catch (final IOException e) {
+				Logger.error(Activator.PLUGIN_ID, "Invalid archive detected", e);
+
+				if (stream != null) {
+					try {
+						stream.close();
+					} catch (final IOException e1) {
+					}
+				}
+			}
+		}
 	}
 }

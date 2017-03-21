@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            file-extensions="sip,jar,zip"
+            id="org.eclipse.ease.lang.scriptarchive.content-type.sar"
+            name="Script Archive"
+            priority="low">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ease.scriptType">
+      <scriptType
+            codeParser="org.eclipse.ease.lang.scriptarchive.ManifestParser"
+            defaultExtension="sar"
+            name="Script Archive">
+         <binding
+               contentType="org.eclipse.ease.lang.scriptarchive.content-type.sar">
+         </binding>
+      </scriptType>
+   </extension>
+   <extension
+         point="org.eclipse.ease.language">
+      <engine
+            class="org.eclipse.ease.lang.scriptarchive.ArchiveEngine"
+            id="org.eclipse.ease.lang.scriptarchive.engine"
+            name="Script Archive"
+            priority="20">
+         <binding
+               scriptType="Script Archive">
+         </binding>
+      </engine>
+   </extension>
+
+</plugin>

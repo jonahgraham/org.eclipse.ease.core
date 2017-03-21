@@ -155,6 +155,10 @@
 		<module>../../plugins/org.eclipse.ease.lang.ruby.jruby</module>
 		<module>../../features/org.eclipse.ease.lang.ruby.feature</module>
 
+		<!-- Archive Engine -->
+		<module>../../plugins/org.eclipse.ease.lang.scriptarchive</module>
+		<module>../../features/org.eclipse.ease.lang.scriptarchive.feature</module>
+
 		<!-- releng -->
 		<module>../org.eclipse.ease.releng.target</module>
 		<module>../org.eclipse.ease.releng.p2</module>
@@ -358,6 +362,7 @@
 				<module>../../tests/org.eclipse.ease.lang.javascript.test</module>
 				<module>../../tests/org.eclipse.ease.lang.python.test</module>
 				<module>../../tests/org.eclipse.ease.lang.python.py4j.test</module>
+				<module>../../tests/org.eclipse.ease.lang.scriptarchive.test</module>
 				<module>../../tests/org.eclipse.ease.ui.test</module>
 			</modules>
 			<build>

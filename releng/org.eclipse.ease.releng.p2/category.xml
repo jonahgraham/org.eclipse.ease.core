@@ -27,6 +27,9 @@
    <feature id="org.eclipse.ease.lang.python.py4j.feature" version="0.5.0.qualifier">
       <category name="Lang"/>
    </feature>
+   <feature id="org.eclipse.ease.lang.scriptarchive.feature" version="0.5.0.qualifier">
+      <category name="Lang"/>
+   </feature>
    <category-def name="Core" label="EASE Core">
       <description>
          Core scripting framework components.
