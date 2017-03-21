@@ -83,7 +83,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	}
 
 	/** List of code junks to be executed. */
-	private final List<Script> fCodePieces = Collections.synchronizedList(new ArrayList<Script>());
+	private final List<Script> fScheduledScripts = Collections.synchronizedList(new ArrayList<Script>());
 
 	private final ListenerList fExecutionListeners = new ListenerList();
 
@@ -132,28 +132,25 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 	@Override
 	public final ScriptResult executeAsync(final Object content) {
-		final Script piece;
-		if (content instanceof Script)
-			piece = (Script) content;
-		else
-			piece = new Script(content);
+		final Script script = (content instanceof Script) ? (Script) content : new Script(content);
+		fScheduledScripts.add(script);
 
-		fCodePieces.add(piece);
 		synchronized (this) {
 			notifyAll();
 		}
 
-		return piece.getResult();
+		return script.getResult();
 	}
 
 	@Override
 	public final ScriptResult executeSync(final Object content) throws InterruptedException {
 
+		// we need to schedule the script first or the engine might finish before we can schedule the script
+		final ScriptResult result = executeAsync(content);
+
 		if (getState() == NONE)
 			// automatically schedule engine as it is not started yet
 			schedule();
-
-		final ScriptResult result = executeAsync(content);
 
 		synchronized (result) {
 			while (!result.isReady())
@@ -285,10 +282,10 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 			// main loop
 			while ((!monitor.isCanceled()) && (!isTerminated())) {
-
+				
 				// execute code
-				if (!fCodePieces.isEmpty()) {
-					final Script piece = fCodePieces.remove(0);
+				if (!fScheduledScripts.isEmpty()) {
+					final Script piece = fScheduledScripts.remove(0);
 					inject(piece, true, false);
 
 				} else {
@@ -312,12 +309,12 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
 		} finally {
 			// discard pending code pieces
-			synchronized (fCodePieces) {
-				for (final Script script : fCodePieces)
+			synchronized (fScheduledScripts) {
+				for (final Script script : fScheduledScripts)
 					script.setException(new ExitException());
 			}
 
-			fCodePieces.clear();
+			fScheduledScripts.clear();
 
 			notifyExecutionListeners(null, IExecutionListener.ENGINE_END);
 
@@ -336,11 +333,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 				}
 
 				// discard pending code pieces
-				synchronized (fCodePieces) {
-					for (final Script script : fCodePieces)
+				synchronized (fScheduledScripts) {
+					for (final Script script : fScheduledScripts)
 						script.setException(new ExitException());
 
-					fCodePieces.clear();
+					fScheduledScripts.clear();
 				}
 
 				closeStreams();
@@ -440,7 +437,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	 * @return true if interpreter is terminated.
 	 */
 	private boolean isTerminated() {
-		return fTerminateOnIdle && fCodePieces.isEmpty();
+		return fTerminateOnIdle && fScheduledScripts.isEmpty();
 	}
 
 	/**
@@ -450,7 +447,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	 */
 	@Override
 	public boolean isIdle() {
-		return fCodePieces.isEmpty();
+		return fScheduledScripts.isEmpty();
 	}
 
 	@Override
@@ -471,7 +468,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 	@Override
 	public void terminate() {
 		setTerminateOnIdle(true);
-		fCodePieces.clear();
+		fScheduledScripts.clear();
 		terminateCurrent();
 
 		// ask thread to terminate
@@ -594,6 +591,10 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 		for (final List<ISecurityCheck> entry : fSecurityChecks.values()) {
 			entry.remove(check);
 		}
+	}
+
+	protected List<Script> getScheduledScripts() {
+		return fScheduledScripts;
 	}
 
 	/**
