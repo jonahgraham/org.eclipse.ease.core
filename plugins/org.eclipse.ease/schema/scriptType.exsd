@@ -97,7 +97,7 @@
                   Parser to extract data from a script source. Extracts comments, loaded modules, includes, variables and more.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.ease.IHeaderParser"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.ease.ICodeParser"/>
                </appinfo>
             </annotation>
          </attribute>
