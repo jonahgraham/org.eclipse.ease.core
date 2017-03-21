@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.ease.Activator;
 import org.eclipse.ease.ICodeFactory;
 import org.eclipse.ease.ICodeParser;
@@ -219,10 +220,25 @@ public class ScriptService implements IScriptService, BundleListener {
 		if (pos != -1) {
 			final String extension = location.substring(pos + 1);
 
-			// FIXME search all extensions, not only default one
 			for (final ScriptType scriptType : getAvailableScriptTypes().values()) {
 				if (scriptType.getDefaultExtension().equalsIgnoreCase(extension))
 					return scriptType;
+			}
+
+			// not found, verify content types
+			final IContentTypeManager contentTypeManager = Platform.getContentTypeManager();
+			final IContentType[] contentTypes = contentTypeManager.findContentTypesFor("foo." + extension);
+			if (contentTypes != null) {
+				for (final ScriptType scriptType : getAvailableScriptTypes().values()) {
+
+					// now lets see if one of the content types matches
+					for (final String contentTypeIdentifier : scriptType.getContentTypes()) {
+						for (final IContentType candidate : contentTypes) {
+							if (candidate.getId().equals(contentTypeIdentifier))
+								return scriptType;
+						}
+					}
+				}
 			}
 		}
 
