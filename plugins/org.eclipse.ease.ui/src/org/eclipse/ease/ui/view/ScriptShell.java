@@ -50,7 +50,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -203,23 +202,13 @@ public class ScriptShell extends ViewPart implements IPropertyChangeListener, IS
 			}
 		});
 
-		fInputCombo.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseDoubleClick(final MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDown(final MouseEvent e) {
-				// EditorToolTipDecorator decorator = new EditorToolTipDecorator((Control) e.widget);
-				// decorator.setInputCombo(fInputCombo);
-				// decorator.createToolTipContentArea((Event) e.getSource(), parent);
-			}
-
+		fInputCombo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(final MouseEvent e) {
+				if (e.count == 3)
+					// select whole line
+					fInputCombo.setSelection(new Point(0, fInputCombo.getText().length()));
 			}
-
 		});
 
 		fInputCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
