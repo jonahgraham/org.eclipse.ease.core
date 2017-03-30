@@ -157,6 +157,7 @@
 
 		<!-- Archive Engine -->
 		<module>../../plugins/org.eclipse.ease.lang.scriptarchive</module>
+		<module>../../plugins/org.eclipse.ease.lang.scriptarchive.ui</module>
 		<module>../../features/org.eclipse.ease.lang.scriptarchive.feature</module>
 
 		<!-- releng -->

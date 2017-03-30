@@ -498,4 +498,11 @@
          </adapt>
       </definition>
    </extension>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <category
+            id="org.eclipse.ease.export"
+            name="Scripting">
+      </category>
+   </extension>
 </plugin>

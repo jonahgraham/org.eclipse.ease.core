@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            category="org.eclipse.ease.export"
+            class="org.eclipse.ease.lang.scriptarchive.ui.export.ScriptArchiveExportWizard"
+            icon="icons/etool16/export_script_archive.png"
+            id="org.eclipse.ease.export.scriptarchive"
+            name="Runnable Script Archive">
+      </wizard>
+   </extension>
+
+</plugin>
