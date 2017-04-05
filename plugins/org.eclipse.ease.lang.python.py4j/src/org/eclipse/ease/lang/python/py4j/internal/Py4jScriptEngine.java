@@ -212,7 +212,7 @@ public class Py4jScriptEngine extends AbstractScriptEngine {
 		}
 	}
 
-	private Object internalExecute(Script script, String fileName) throws Throwable, Exception {
+	protected Object internalExecute(Script script, String fileName) throws Throwable, Exception {
 		IInteractiveReturn interactiveReturn;
 		if (script.isShellMode()) {
 			interactiveReturn = fPythonSideEngine.executeInteractive(script.getCode());

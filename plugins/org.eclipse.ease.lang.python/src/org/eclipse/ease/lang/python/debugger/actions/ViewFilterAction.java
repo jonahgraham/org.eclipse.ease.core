@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.lang.python.jython.debugger.actions;
+package org.eclipse.ease.lang.python.debugger.actions;
 
 import org.eclipse.debug.ui.IDebugView;
 import org.eclipse.ease.Activator;

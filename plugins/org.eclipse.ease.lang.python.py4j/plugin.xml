@@ -16,6 +16,19 @@
             class="org.eclipse.ease.lang.python.py4j.internal.Py4JBootstrap"
             engineID="org.eclipse.ease.lang.python.py4j.engine">
       </launchExtension>
+      <engine
+            class="org.eclipse.ease.lang.python.py4j.internal.Py4jDebuggerEngine"
+            id="org.eclipse.ease.lang.python.py4j.debugger.engine"
+            name="Python (Py4J Debugger)"
+            priority="1">
+         <binding
+               scriptType="Python">
+         </binding>
+      </engine>
+      <launchExtension
+            class="org.eclipse.ease.lang.python.py4j.internal.Py4JBootstrap"
+            engineID="org.eclipse.ease.lang.python.py4j.debugger.engine">
+      </launchExtension>
    </extension>
 
    <extension

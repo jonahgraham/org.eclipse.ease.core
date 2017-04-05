@@ -8,7 +8,7 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.lang.python.jython.debugger.model;
+package org.eclipse.ease.lang.python.debugger.model;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.debug.core.model.IValue;
@@ -26,8 +26,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-public class JythonDebugModelPresentation implements IDebugModelPresentation {
-	public static String ID = "org.python.pydev.debug";// "org.eclipse.ease.lang.python.jython.debugger.model.JythonDebugModelPresentation";
+public class PythonDebugModelPresentation implements IDebugModelPresentation {
+	public static String ID = "org.python.pydev.debug";
 
 	@Override
 	public void setAttribute(final String attribute, final Object value) {
@@ -46,7 +46,7 @@ public class JythonDebugModelPresentation implements IDebugModelPresentation {
 
 	@Override
 	public void computeDetail(final IValue value, final IValueDetailListener listener) {
-		Object adapter = value.getAdapter(String.class);
+		final Object adapter = value.getAdapter(String.class);
 		if (adapter instanceof String)
 			listener.detailComputed(value, (String) adapter);
 	}
@@ -60,7 +60,7 @@ public class JythonDebugModelPresentation implements IDebugModelPresentation {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		System.out.println("Dispose of JythonDebugModelPresentation.");
+		System.out.println("Dispose of PythonDebugModelPresentation.");
 	}
 
 	@Override

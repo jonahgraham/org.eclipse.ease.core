@@ -6,9 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Martin Kloesch - initial implementation of Debugger extensions
+ *     Martin Kloesch - initial API and implementation
  *******************************************************************************/
-package org.eclipse.ease.lang.python.jython.debugger;
+package org.eclipse.ease.lang.python.py4j.internal;
 
 import java.io.InputStream;
 
@@ -20,15 +20,14 @@ import org.eclipse.ease.lang.python.debugger.IPythonDebugEngine;
 import org.eclipse.ease.lang.python.debugger.PythonDebugger;
 import org.eclipse.ease.lang.python.debugger.ResourceHelper;
 import org.eclipse.ease.lang.python.debugger.model.PythonDebugTarget;
-import org.eclipse.ease.lang.python.jython.JythonScriptEngine;
-import org.python.core.Py;
 
-/**
- * A script engine to execute/debug Python code on a Jython interpreter.
+/***
+ * A script engine to debug Python code on a PY4J engine.
  *
- * Uses most of JythonScriptEngine's functionality and only extends it when file is to be debugged.
+ * Uses most of {@link Py4jDebuggerEngine}'s functionality and only extends it when file is to be debugged.
  */
-public class JythonDebuggerEngine extends JythonScriptEngine implements IPythonDebugEngine {
+
+public class Py4jDebuggerEngine extends Py4jScriptEngine implements IPythonDebugEngine {
 	private PythonDebugger fDebugger = null;
 
 	@Override
@@ -46,8 +45,8 @@ public class JythonDebuggerEngine extends JythonScriptEngine implements IPythonD
 			final InputStream stream = ResourceHelper.getResourceStream("org.eclipse.ease.lang.python", "pysrc/edb.py");
 
 			try {
-				internalSetVariable(PythonDebugger.PYTHON_DEBUGGER_VARIABLE, Py.java2py(fDebugger));
-				super.internalExecute(new Script("Load Python debugger", stream), null, "Load Python Debugger");
+				internalSetVariable(PythonDebugger.PYTHON_DEBUGGER_VARIABLE, fDebugger);
+				super.internalExecute(new Script("Load Python debugger", stream), null);
 
 			} catch (final Throwable e) {
 				throw new ScriptEngineException("Failed to load Python Debugger", e);
@@ -56,11 +55,11 @@ public class JythonDebuggerEngine extends JythonScriptEngine implements IPythonD
 	}
 
 	@Override
-	protected Object internalExecute(final Script script, final Object reference, final String fileName) throws Exception {
+	protected Object internalExecute(final Script script, final String fileName) throws Throwable {
 		if (fDebugger != null) {
 			return fDebugger.execute(script);
 		}
-		return super.internalExecute(script, reference, fileName);
+		return super.internalExecute(script, fileName);
 	}
 
 	@Override
@@ -68,7 +67,7 @@ public class JythonDebuggerEngine extends JythonScriptEngine implements IPythonD
 		final PythonDebugTarget target = new PythonDebugTarget(launch, suspendOnStartup, suspendOnScriptLoad, showDynamicCode);
 		launch.addDebugTarget(target);
 
-		final PythonDebugger debugger = new JythonDebugger(this, showDynamicCode);
+		final PythonDebugger debugger = new PythonDebugger(this, showDynamicCode);
 
 		setDebugger(debugger);
 

@@ -28,5 +28,34 @@
          </binding>
       </scriptType>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="org.eclipse.ease.lang.python.debugger.model.PythonDebugModelPresentation"
+            id="org.eclipse.ease.debugModelPresentation.python">
+      </debugModelPresentation>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="variableViewActions"
+            targetID="org.eclipse.debug.ui.VariableView">
+         <menu
+               id="org.eclipse.ease.debug.ui.variableview.menu"
+               label="EASE">
+            <groupMarker
+                  name="ease">
+            </groupMarker>
+         </menu>
+         <action
+               class="org.eclipse.ease.lang.python.debugger.actions.FrameworkFilterAction"
+               id="org.eclipse.ease.ui.variableview.show.framework"
+               label="Hide Python Framework Variables"
+               menubarPath="org.eclipse.ease.debug.ui.variableview.menu/ease"
+               state="true"
+               style="toggle">
+         </action>
+      </viewContribution>
+   </extension>
 
 </plugin>

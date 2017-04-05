@@ -9,7 +9,7 @@
  *     Christian Pontesegger - initial API
  *     Martin Kloesch - implementation
  *******************************************************************************/
-package org.eclipse.ease.lang.python.jython.debugger.model;
+package org.eclipse.ease.lang.python.debugger.model;
 
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -19,12 +19,10 @@ import org.eclipse.ease.Script;
 import org.eclipse.ease.debugging.ScriptDebugTarget;
 
 /**
- * ScriptDebugTarget for communication between Eclipse framework and Jython debugger.
- *
- * @author kloeschmartin
+ * ScriptDebugTarget for communication between Eclipse framework and Python debugger.
  */
-public class JythonDebugTarget extends ScriptDebugTarget {
-	private static final String pyBreakpointType = JythonDebugModelPresentation.ID;
+public class PythonDebugTarget extends ScriptDebugTarget {
+	private static final String pyBreakpointType = PythonDebugModelPresentation.ID;
 
 	/**
 	 * Constructor for now only calls super constructor.
@@ -34,13 +32,13 @@ public class JythonDebugTarget extends ScriptDebugTarget {
 	 * @param suspendOnScriptLoad
 	 * @param showDynamicCode
 	 */
-	public JythonDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, boolean showDynamicCode) {
+	public PythonDebugTarget(final ILaunch launch, final boolean suspendOnStartup, final boolean suspendOnScriptLoad, boolean showDynamicCode) {
 		super(launch, suspendOnStartup, suspendOnScriptLoad, showDynamicCode);
 	}
 
 	@Override
 	public String getName() throws DebugException {
-		return "EASE Jython Debugger";
+		return "EASE Python Debugger";
 	}
 
 	// ************************************************************
@@ -50,7 +48,7 @@ public class JythonDebugTarget extends ScriptDebugTarget {
 	/**
 	 * Getter methods for all matching breakpoints in given script.
 	 *
-	 * Currently EASE Jython Debugger uses PyDev breakpoints, this could change though.
+	 * Currently EASE Python Debugger uses PyDev breakpoints, this could change though.
 	 */
 	@Override
 	protected IBreakpoint[] getBreakpoints(final Script script) {
@@ -60,5 +58,10 @@ public class JythonDebugTarget extends ScriptDebugTarget {
 	@Override
 	public boolean supportsBreakpoint(final IBreakpoint breakpoint) {
 		return true;
+	}
+
+	@Override
+	public String getModelIdentifier() {
+		return "org.eclipse.ease.debugModelPresentation.python";
 	}
 }
