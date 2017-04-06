@@ -25,10 +25,6 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
-/**
- * @author ponteseg
- *
- */
 public class ScriptHistoryText extends StyledText implements IExecutionListener {
 
 	public static final int STYLE_ERROR = 1;
@@ -38,6 +34,10 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 	public static final int STYLE_COMMAND = 4;
 
 	private final LocalResourceManager fResourceManager = new LocalResourceManager(JFaceResources.getResources(), getParent());
+
+	private final ColorDescriptor fColorDescriptorResult = ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
+	private final ColorDescriptor fColorDescriptorCommand = ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE));
+	private final ColorDescriptor fColorDescriptorError = ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_RED));
 
 	public ScriptHistoryText(final Composite parent, final int style) {
 		super(parent, style);
@@ -169,16 +169,16 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 
 		switch (style) {
 		case STYLE_RESULT:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY)));
+			styleRange.foreground = fResourceManager.createColor(fColorDescriptorResult);
 			break;
 
 		case STYLE_COMMAND:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE)));
+			styleRange.foreground = fResourceManager.createColor(fColorDescriptorCommand);
 			styleRange.fontStyle = SWT.BOLD;
 			break;
 
 		case STYLE_ERROR:
-			styleRange.foreground = fResourceManager.createColor(ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_RED)));
+			styleRange.foreground = fResourceManager.createColor(fColorDescriptorError);
 			styleRange.fontStyle = SWT.ITALIC;
 			break;
 
@@ -188,4 +188,5 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 
 		return styleRange;
 	}
+
 }
