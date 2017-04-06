@@ -11,7 +11,10 @@
 
 package org.eclipse.ease.ui.view;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ease.IExecutionListener;
 import org.eclipse.ease.IScriptEngine;
 import org.eclipse.ease.Script;
@@ -22,8 +25,10 @@ import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.progress.UIJob;
 
 public class ScriptHistoryText extends StyledText implements IExecutionListener {
 
@@ -33,11 +38,45 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 
 	public static final int STYLE_COMMAND = 4;
 
+	private class BlendBackgroundJob extends UIJob {
+
+		private boolean fRun;
+		private volatile boolean fStarted;
+
+		public BlendBackgroundJob() {
+			super("Darken Script Shell background");
+			setSystem(true);
+		}
+
+		public void arm() {
+			fRun = true;
+			fStarted = false;
+			schedule(300);
+		}
+
+		public void disarm() {
+			fRun = false;
+		}
+
+		@Override
+		public IStatus runInUIThread(IProgressMonitor monitor) {
+			fStarted = true;
+			if (fRun)
+				setBackground(fResourceManager.createColor(fColorDarkenedBackground));
+
+			return Status.OK_STATUS;
+		}
+	}
+
+	private BlendBackgroundJob fBlendBackgroundJob = null;
+
 	private final LocalResourceManager fResourceManager = new LocalResourceManager(JFaceResources.getResources(), getParent());
 
 	private final ColorDescriptor fColorDescriptorResult = ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY));
 	private final ColorDescriptor fColorDescriptorCommand = ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_BLUE));
 	private final ColorDescriptor fColorDescriptorError = ColorDescriptor.createFrom(getShell().getDisplay().getSystemColor(SWT.COLOR_RED));
+	private ColorDescriptor fColorDefaultBackground = null;
+	private ColorDescriptor fColorDarkenedBackground = null;
 
 	public ScriptHistoryText(final Composite parent, final int style) {
 		super(parent, style);
@@ -64,7 +103,15 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 		else if ("linux".equals(os))
 			setFont(fResourceManager.createFont(FontDescriptor.createFrom("Monospace", 10, SWT.NONE)));
 
+		fColorDefaultBackground = ColorDescriptor.createFrom(getBackground());
+
+		final RGB defaultBackground = getBackground().getRGB();
+		final RGB darkenedBackground = new RGB(defaultBackground.red - 0x10, defaultBackground.green - 0x10, defaultBackground.blue - 0x10);
+		fColorDarkenedBackground = ColorDescriptor.createFrom(darkenedBackground);
+
 		setEditable(false);
+
+		fBlendBackgroundJob = new BlendBackgroundJob();
 	}
 
 	@Override
@@ -85,10 +132,17 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 		try {
 			switch (status) {
 			case SCRIPT_START:
+				fBlendBackgroundJob.arm();
 				localPrint(script.getCode(), STYLE_COMMAND);
 				break;
 
 			case SCRIPT_END:
+				fBlendBackgroundJob.disarm();
+				if (fBlendBackgroundJob.fStarted) {
+					// we need to reset the background color
+					Display.getDefault().asyncExec(() -> setBackground(fResourceManager.createColor(fColorDefaultBackground)));
+				}
+
 				if (script.getResult().hasException())
 					localPrint(script.getResult().getException().getLocalizedMessage(), STYLE_ERROR);
 
@@ -188,5 +242,4 @@ public class ScriptHistoryText extends StyledText implements IExecutionListener 
 
 		return styleRange;
 	}
-
 }
