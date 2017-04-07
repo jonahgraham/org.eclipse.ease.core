@@ -97,7 +97,7 @@ public class ScriptArchiveExportWizard extends Wizard implements IExportWizard {
 
 		// prepare manifest
 		final String startupLocation = startupScript.getFullPath().removeFirstSegments(1).toPortableString();
-		final IFile manifest = project.getFile(new Path("/META-INF/MANFEST.MF"));
+		final IFile manifest = project.getFile(new Path("/META-INF/MANIFEST.MF"));
 
 		final Properties properties = new Properties();
 		if (manifest.exists()) {
@@ -120,7 +120,7 @@ public class ScriptArchiveExportWizard extends Wizard implements IExportWizard {
 		// see if we need to modify the manifest
 		try {
 			if (!startupLocation.equals(properties.get("Main-Script"))) {
-				properties.put("Main-Script	", startupLocation);
+				properties.put("Main-Script", startupLocation);
 
 				// manifest.set
 				final ByteArrayOutputStream manifestContent = new ByteArrayOutputStream();
