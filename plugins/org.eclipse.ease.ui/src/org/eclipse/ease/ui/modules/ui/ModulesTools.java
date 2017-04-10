@@ -63,7 +63,7 @@ public class ModulesTools {
 		}
 	}
 
-	private static Styler ITALIC_STYLE = new Styler() {
+	private static Styler OPTIONAL_PARAMETER_STYLE = new Styler() {
 		private final Font italic = JFaceResources.getFontRegistry().getItalic(JFaceResources.DEFAULT_FONT);
 
 		@Override
@@ -93,9 +93,11 @@ public class ModulesTools {
 		final List<Parameter> parameters = ModuleHelper.getParameters(method);
 		for (final Parameter parameter : parameters) {
 			if (parameter.isOptional()) {
-				signature.append(parameter.getClazz().getSimpleName(), ITALIC_STYLE);
+				signature.append(parameter.getClazz().getSimpleName(), OPTIONAL_PARAMETER_STYLE);
+				signature.append(" " + parameter.getName(), OPTIONAL_PARAMETER_STYLE);
 			} else {
 				signature.append(parameter.getClazz().getSimpleName());
+				signature.append(" " + parameter.getName());
 			}
 
 			if (!parameter.equals(parameters.get(parameters.size() - 1)))

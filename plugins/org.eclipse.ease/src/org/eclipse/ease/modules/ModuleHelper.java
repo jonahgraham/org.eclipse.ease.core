@@ -49,7 +49,7 @@ public final class ModuleHelper {
 		if ((clazz == null) || (clazz.getMethods().length == 0))
 			return Collections.emptyList();
 
-		final List<Method> methods = new ArrayList<Method>();
+		final List<Method> methods = new ArrayList<>();
 		final boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
 		for (final Method method : clazz.getMethods()) {
 			if ((Modifier.isPublic(method.getModifiers()) && (!wrapping || method.isAnnotationPresent(WrapToScript.class)))) {
@@ -78,7 +78,7 @@ public final class ModuleHelper {
 		if ((clazz == null) || (clazz.getDeclaredFields().length == 0))
 			return Collections.emptyList();
 
-		final List<Field> fields = new ArrayList<Field>();
+		final List<Field> fields = new ArrayList<>();
 		final boolean wrapping = ModuleHelper.hasWrapToScript(clazz);
 		for (final Field field : clazz.getFields()) {
 			if ((Modifier.isFinal(field.getModifiers()))
@@ -160,7 +160,7 @@ public final class ModuleHelper {
 	 * @return module definitions for all loaded modules
 	 */
 	public static Collection<ModuleDefinition> getLoadedModules(final IScriptEngine engine) {
-		final Collection<ModuleDefinition> modules = new HashSet<ModuleDefinition>();
+		final Collection<ModuleDefinition> modules = new HashSet<>();
 
 		// statically access service as workbench is not available in headless mode
 		final IScriptService scriptService = ScriptService.getService();
@@ -182,15 +182,16 @@ public final class ModuleHelper {
 	}
 
 	public static List<Parameter> getParameters(final Method method) {
-		final ArrayList<Parameter> parameters = new ArrayList<Parameter>();
+		final ArrayList<Parameter> parameters = new ArrayList<>();
 
-		for (int index = 0; index < method.getParameterTypes().length; index++) {
+		for (int index = 0; index < method.getParameters().length; index++) {
 			final Parameter parameter = new Parameter();
-			parameter.setClass(method.getParameterTypes()[index]);
+			parameter.setClass(method.getParameters()[index].getType());
 
-			final ScriptParameter annotation = getParameterAnnotation(method.getParameterAnnotations()[index]);
+			parameter.setName(method.getParameters()[index].getName());
+
+			final ScriptParameter annotation = getParameterAnnotation(method.getParameters()[index].getAnnotations());
 			if (annotation != null) {
-				parameter.setName(annotation.name());
 				parameter.setOptional(ScriptParameter.Helper.isOptional(annotation));
 				parameter.setDefault(annotation.defaultValue());
 			}

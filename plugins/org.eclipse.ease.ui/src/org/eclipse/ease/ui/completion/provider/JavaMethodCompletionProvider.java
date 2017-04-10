@@ -13,6 +13,7 @@ package org.eclipse.ease.ui.completion.provider;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.ICompletionContext.Type;
@@ -96,11 +97,12 @@ public class JavaMethodCompletionProvider extends AbstractCompletionProvider {
 	public static String getMethodSignature(final Method method) {
 		final StringBuilder result = new StringBuilder();
 
-		for (final Class<?> type : method.getParameterTypes()) {
+		for (final Parameter parameter : method.getParameters()) {
 			if (result.length() > 0)
 				result.append(", ");
 
-			result.append(type.getSimpleName());
+			result.append(parameter.getType().getSimpleName());
+			result.append(' ').append(parameter.getName());
 		}
 
 		return result.toString();
