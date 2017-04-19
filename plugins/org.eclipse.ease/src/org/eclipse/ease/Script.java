@@ -137,13 +137,15 @@ public class Script {
 		return null;
 	}
 
-	private String bufferReader(final Reader command) throws IOException {
-		fCodeBuffer = ResourceTools.toString(command);
+	private String bufferReader(final Reader reader) throws IOException {
+		fCodeBuffer = ResourceTools.toString(reader);
+		reader.close();
 		return fCodeBuffer;
 	}
 
-	private String bufferStream(final InputStream command) throws IOException {
-		fCodeBuffer = ResourceTools.toString(command);
+	private String bufferStream(final InputStream stream) throws IOException {
+		fCodeBuffer = ResourceTools.toString(stream);
+		stream.close();
 		return fCodeBuffer;
 	}
 
