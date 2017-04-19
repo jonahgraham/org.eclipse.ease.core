@@ -18,10 +18,10 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ease.ui.scripts.Activator;
 import org.eclipse.ease.ui.scripts.expressions.definitions.AbstractCompositeExpressionDefinition;
 import org.eclipse.ease.ui.scripts.expressions.definitions.AbstractExpressionDefinition;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class ExpressionTools {
 
@@ -63,7 +63,7 @@ public class ExpressionTools {
 			final String iconLocation = fConfigurationElement.getAttribute("icon");
 
 			if ((iconLocation != null) && (!iconLocation.isEmpty()))
-				return Activator.getImageDescriptor(iconLocation);
+				return AbstractUIPlugin.imageDescriptorFromPlugin(fConfigurationElement.getContributor().getName(), iconLocation);
 
 			return null;
 		}
