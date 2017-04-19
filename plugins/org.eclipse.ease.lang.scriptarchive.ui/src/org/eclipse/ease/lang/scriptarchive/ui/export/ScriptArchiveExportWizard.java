@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -128,8 +129,12 @@ public class ScriptArchiveExportWizard extends Wizard implements IExportWizard {
 
 				if (manifest.exists())
 					manifest.setContents(new ByteArrayInputStream(manifestContent.toByteArray()), false, false, new NullProgressMonitor());
-				else
+				else {
+					if (!manifest.getParent().exists())
+						((IFolder) manifest.getParent()).create(true, true, new NullProgressMonitor());
+
 					manifest.create(new ByteArrayInputStream(manifestContent.toByteArray()), false, new NullProgressMonitor());
+				}
 			}
 		} catch (final IOException e) {
 			// error while dealing with ByteArrayStreams, not expected to throw
