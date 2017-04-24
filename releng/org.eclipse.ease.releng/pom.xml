@@ -118,6 +118,7 @@
 
 		<!-- core -->
 		<module>../../plugins/org.eclipse.ease</module>
+		<module>../../plugins/org.eclipse.ease.classloader</module>
 		<module>../../plugins/org.eclipse.ease.ui</module>
 		<module>../../plugins/org.eclipse.ease.ui.scripts</module>
 		<module>../../plugins/org.eclipse.ease.help</module>

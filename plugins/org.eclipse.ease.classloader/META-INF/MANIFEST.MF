@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EASE Project Classloader
+Bundle-SymbolicName: org.eclipse.ease.classloader
+Bundle-Version: 0.5.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-BuddyPolicy: global
+Require-Bundle: org.eclipse.osgi,
+ org.eclipse.ease
+Export-Package: org.eclipse.ease.classloader
+Bundle-Vendor: Eclipse.org

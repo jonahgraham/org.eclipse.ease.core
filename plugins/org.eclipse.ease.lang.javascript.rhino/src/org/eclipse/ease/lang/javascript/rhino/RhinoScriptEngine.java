@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
 import org.eclipse.ease.ScriptExecutionException;
+import org.eclipse.ease.classloader.EaseClassLoader;
 import org.eclipse.ease.debugging.IScriptDebugFrame;
 import org.eclipse.ease.debugging.ScriptDebugFrame;
 import org.eclipse.ease.lang.javascript.JavaScriptHelper;
@@ -50,18 +51,17 @@ import org.mozilla.javascript.debug.Debugger;
  */
 public class RhinoScriptEngine extends AbstractScriptEngine {
 
+	private static final EaseClassLoader CLASSLOADER;
+
 	static {
+		CLASSLOADER = new EaseClassLoader(RhinoScriptEngine.class.getClassLoader());
 		// set context factory that is able to terminate script execution
 		ContextFactory.initGlobal(new ObservingContextFactory());
 
 		// set a custom class loader to find everything in the eclipse universe
-		AccessController.doPrivileged(new PrivilegedAction<Object>() {
-
-			@Override
-			public Object run() {
-				ContextFactory.getGlobal().initApplicationClassLoader(RhinoClassLoader.getInstance());
-				return null;
-			}
+		AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+			ContextFactory.getGlobal().initApplicationClassLoader(CLASSLOADER);
+			return null;
 		});
 	}
 
@@ -139,7 +139,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 		fScope = null;
 
 		// unregister from classloader
-		RhinoClassLoader.unregisterEngine(this);
+		CLASSLOADER.unregisterEngine(this);
 	}
 
 	@Override
@@ -289,7 +289,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	public synchronized void registerJar(final URL url) {
-		RhinoClassLoader.registerURL(this, url);
+		CLASSLOADER.registerURL(this, url);
 	}
 
 	@Override
