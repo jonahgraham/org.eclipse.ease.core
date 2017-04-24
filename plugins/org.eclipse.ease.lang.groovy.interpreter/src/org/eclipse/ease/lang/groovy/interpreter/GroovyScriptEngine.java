@@ -8,12 +8,17 @@ import java.util.Map;
 
 import org.eclipse.ease.AbstractScriptEngine;
 import org.eclipse.ease.Script;
+import org.eclipse.ease.classloader.EaseClassLoader;
 import org.eclipse.ease.lang.groovy.GroovyHelper;
 
 import groovy.lang.GroovyShell;
 
 public class GroovyScriptEngine extends AbstractScriptEngine {
 
+	/** Classloader used by the groovy shell. */
+	private EaseClassLoader fClassloader;
+
+	/** Groovy shell instance. */
 	private GroovyShell fEngine;
 
 	public GroovyScriptEngine() {
@@ -27,7 +32,8 @@ public class GroovyScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected void setupEngine() {
-		fEngine = new GroovyShell();
+		fClassloader = new EaseClassLoader(GroovyScriptEngine.class.getClassLoader());
+		fEngine = new GroovyShell(fClassloader);
 
 		setOutputStream(getOutputStream());
 		setErrorStream(getErrorStream());
@@ -65,14 +71,14 @@ public class GroovyScriptEngine extends AbstractScriptEngine {
 			else
 				result = fEngine.evaluate(reader, fileName);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw e;
 		} finally {
 			// gracefully close reader
 			try {
 				if (reader != null)
 					reader.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 			}
 		}
 
@@ -111,6 +117,6 @@ public class GroovyScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	public void registerJar(final URL url) {
-		throw new RuntimeException("not implemented");
+		fClassloader.registerURL(this, url);
 	}
 }
