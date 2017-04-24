@@ -42,7 +42,7 @@ public class EaseClassLoader extends ClassLoader {
 	}
 
 	/**
-	 * Constructor using a given parent classloader.
+	 * Constructor using a given parent classloader. When using this classloader the Eclipse-BuddyPolicy from the parent classloader bundle will be used.
 	 *
 	 * @param parent
 	 *            parent classloader

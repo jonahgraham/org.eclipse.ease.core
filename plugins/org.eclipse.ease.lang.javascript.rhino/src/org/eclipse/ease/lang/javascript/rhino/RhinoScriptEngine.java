@@ -54,7 +54,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine {
 	private static final EaseClassLoader CLASSLOADER;
 
 	static {
-		CLASSLOADER = new EaseClassLoader(RhinoScriptEngine.class.getClassLoader());
+		CLASSLOADER = new EaseClassLoader();
 		// set context factory that is able to terminate script execution
 		ContextFactory.initGlobal(new ObservingContextFactory());
 
