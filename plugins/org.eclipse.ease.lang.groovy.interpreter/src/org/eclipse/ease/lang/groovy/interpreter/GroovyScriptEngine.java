@@ -32,8 +32,9 @@ public class GroovyScriptEngine extends AbstractScriptEngine {
 
 	@Override
 	protected void setupEngine() {
-		fClassloader = new EaseClassLoader(GroovyScriptEngine.class.getClassLoader());
-		fEngine = new GroovyShell(fClassloader);
+		fClassloader = new EaseClassLoader();
+		// we need both classloaders: the one from the current plugin and the global EASE loader
+		fEngine = new GroovyShell(new MultiClassLoader(GroovyScriptEngine.class.getClassLoader(), fClassloader));
 
 		setOutputStream(getOutputStream());
 		setErrorStream(getErrorStream());
