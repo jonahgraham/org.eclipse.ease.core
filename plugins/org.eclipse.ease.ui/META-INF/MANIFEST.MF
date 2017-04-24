@@ -26,7 +26,8 @@ Require-Bundle: org.eclipse.ui.console;bundle-version="[3.5.100,4.0.0)",
  org.objectweb.asm;bundle-version="[3.3.1,6.0.0)",
  org.eclipse.ui;bundle-version="[3.105.0,4.0.0)",
  org.eclipse.equinox.security;bundle-version="[1.2.0,2.0.0)",
- org.eclipse.ease
+ org.eclipse.ease,
+ org.eclipse.ease.classloader
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.eclipse.ease.ui.Activator
 Export-Package: org.eclipse.ease.ui,

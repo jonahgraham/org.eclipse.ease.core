@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.ease.ICompletionContext;
 import org.eclipse.ease.IScriptEngine;
+import org.eclipse.ease.classloader.EaseClassLoader;
 import org.eclipse.ease.modules.EnvironmentModule;
 import org.eclipse.ease.modules.ModuleDefinition;
 import org.eclipse.ease.modules.ModuleHelper;
@@ -68,6 +69,9 @@ public abstract class CompletionContext implements ICompletionContext {
 
 	private int fOffset;
 	private int fSelectionRange;
+
+	/** Global classloader to resolve unknown java classes (lazily loaded). */
+	private EaseClassLoader fGlobalClassLoader = null;
 
 	/**
 	 * Context constructor. A context is bound to a given script engine or script type.
@@ -370,13 +374,13 @@ public abstract class CompletionContext implements ICompletionContext {
 		sources.add(getOriginalCode());
 		sources.addAll(getIncludedResources().values());
 
-		final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z\\.]+)\\s*$\\s*.*?" + Pattern.quote(name) + "\\s*=", Pattern.MULTILINE);
+		final Pattern pattern = Pattern.compile("@type\\s([a-zA-Z0-9_\\.]+)\\s*$\\s*.*?" + Pattern.quote(name) + "\\s*=", Pattern.MULTILINE);
 
 		for (final String source : sources) {
 			final Matcher matcher = pattern.matcher(source);
 			if (matcher.find()) {
 				try {
-					return CompletionContext.class.getClassLoader().loadClass(matcher.group(1));
+					return getGlobalClassLoader().loadClass(matcher.group(1));
 				} catch (final ClassNotFoundException e) {
 					// did not work, invalid definition, giving up
 					return null;
@@ -385,6 +389,18 @@ public abstract class CompletionContext implements ICompletionContext {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Return a classloader that can access all files avaliable in the RCP application.
+	 *
+	 * @return global classloader
+	 */
+	private EaseClassLoader getGlobalClassLoader() {
+		if (fGlobalClassLoader == null)
+			fGlobalClassLoader = new EaseClassLoader();
+
+		return fGlobalClassLoader;
 	}
 
 	/**
