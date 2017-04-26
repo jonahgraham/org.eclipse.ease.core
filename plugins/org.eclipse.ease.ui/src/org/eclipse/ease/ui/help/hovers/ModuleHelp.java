@@ -140,7 +140,7 @@ public class ModuleHelp {
 			if (helpContent.length() > 0) {
 				final StringBuffer help = new StringBuffer();
 				HTMLPrinter.addSmallHeader(help, getImageAndLabel(getImageLocation("icons/eobj16/module.png"), definition.getName()));
-				help.append("<br>"); //$NON-NLS-1$
+				help.append("<br />"); //$NON-NLS-1$
 				help.append(helpContent);
 
 				return help.toString();
@@ -226,7 +226,7 @@ public class ModuleHelp {
 					final StringBuffer helpContent = new StringBuffer();
 
 					HTMLPrinter.addSmallHeader(helpContent, getImageAndLabel(getImageLocation("icons/eobj16/function.png"), createSynopsis(method)));
-					helpContent.append("<br>"); //$NON-NLS-1$
+					helpContent.append("<br />"); //$NON-NLS-1$
 
 					// method description
 					for (final IMemento contentNode : node.getChildren()) {
@@ -462,7 +462,7 @@ public class ModuleHelp {
 							final StringBuffer helpContent = new StringBuffer();
 
 							HTMLPrinter.addSmallHeader(helpContent, getImageAndLabel(getImageLocation("icons/eobj16/field.png"), field.getName()));
-							helpContent.append("<br>"); //$NON-NLS-1$
+							helpContent.append("<br />"); //$NON-NLS-1$
 							helpContent.append(getNodeContent(candidate));
 
 							return helpContent.toString();
