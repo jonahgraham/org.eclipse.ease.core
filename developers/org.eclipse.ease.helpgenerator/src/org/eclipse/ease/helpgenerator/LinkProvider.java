@@ -10,8 +10,7 @@ import java.util.regex.Pattern;
 import com.sun.javadoc.ClassDoc;
 
 /**
- * Collects registered packages and converts classes & API links to http
- * anchors.
+ * Collects registered packages and converts classes & API links to http anchors.
  */
 public class LinkProvider {
 
@@ -19,42 +18,40 @@ public class LinkProvider {
 	private static final Pattern PATTERN_LINK = Pattern.compile("\\{@(link|module)\\s+(.*?)\\}", Pattern.DOTALL);
 
 	/** Pattern to parse a link. */
-	private static final Pattern PATTERN_INNER_LINK = Pattern
-			.compile("(\\w+(?:\\.\\w+)*)?(?:#(\\w+)(?:\\((.*?)\\))?)?");
+	private static final Pattern PATTERN_INNER_LINK = Pattern.compile("(\\w+(?:\\.\\w+)*)?(?:#(\\w+)(?:\\((.*?)\\))?)?");
 
 	/** Maps (URL to use) -> Collection of package names. */
-	private final Map<String, Collection<String>> fExternalDocs = new HashMap<String, Collection<String>>();
+	private final Map<String, Collection<String>> fExternalDocs = new HashMap<>();
 
 	public void registerAddress(final String location, final Collection<String> packages) {
 		fExternalDocs.put(location, packages);
 	}
 
 	public static String resolveClassName(final String candidate, final ClassDoc clazz) {
-		String foundCandidate = findClass(candidate, clazz);
+		final String foundCandidate = findClass(candidate, clazz);
 		return (foundCandidate != null) ? foundCandidate : candidate;
 	}
 
-	public Object createClassText(final String qualifiedName) {
+	public String createClassText(final String qualifiedName) {
 		if (qualifiedName.contains(".")) {
 
-			String urlLocation = findClassURL(qualifiedName);
+			final String urlLocation = findClassURL(qualifiedName);
 			if (urlLocation != null) {
-				String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+				final String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
 
 				// first run, look for exact package match
 				for (final Entry<String, Collection<String>> entry : fExternalDocs.entrySet()) {
 					if (entry.getValue().contains(packageName))
-						return "<a href=\"" + urlLocation + "\" title=\"" + qualifiedName + "\">"
-						+ qualifiedName.substring(packageName.length() + 1) + "</a>";
+						return "<a href=\"" + urlLocation + "\" title=\"" + qualifiedName + "\">" + qualifiedName.substring(packageName.length() + 1) + "</a>";
 				}
 
 				// not found; try to locate matching parent package and hope for
 				// the best
 				for (final Entry<String, Collection<String>> entry : fExternalDocs.entrySet()) {
-					for (String entryPackage : entry.getValue()) {
+					for (final String entryPackage : entry.getValue()) {
 						if (packageName.startsWith(entryPackage))
-							return "<a href=\"" + urlLocation + "\" title=\"" + qualifiedName + "\">"
-							+ qualifiedName.substring(packageName.length() + 1) + "</a>";
+							return "<a href=\"" + urlLocation + "\" title=\"" + qualifiedName + "\">" + qualifiedName.substring(packageName.length() + 1)
+									+ "</a>";
 					}
 				}
 			}
@@ -69,7 +66,7 @@ public class LinkProvider {
 				if (doc.toString().endsWith(name))
 					return doc.toString();
 			}
-		} catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			// sometimes thrown by ClassDoc.importedClasses(). Nothing we can do here but ignore
 		}
 
@@ -79,7 +76,7 @@ public class LinkProvider {
 
 	private String findClassURL(final String qualifiedName) {
 		if (qualifiedName.contains(".")) {
-			String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+			final String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
 
 			// first run, look for exact package match
 			for (final Entry<String, Collection<String>> entry : fExternalDocs.entrySet()) {
@@ -90,7 +87,7 @@ public class LinkProvider {
 			// not found; try to locate matching parent package and hope for the
 			// best
 			for (final Entry<String, Collection<String>> entry : fExternalDocs.entrySet()) {
-				for (String entryPackage : entry.getValue()) {
+				for (final String entryPackage : entry.getValue()) {
 					if (packageName.startsWith(entryPackage))
 						return entry.getKey() + "/" + qualifiedName.replace('.', '/') + ".html";
 				}
@@ -110,8 +107,7 @@ public class LinkProvider {
 			output.append(text.substring(startPos, matcher.start()));
 			startPos = matcher.end();
 
-			final Matcher linkMatcher = PATTERN_INNER_LINK.matcher(matcher.group(2).replace('\r', ' ')
-					.replace('\n', ' '));
+			final Matcher linkMatcher = PATTERN_INNER_LINK.matcher(matcher.group(2).replace('\r', ' ').replace('\n', ' '));
 			if (linkMatcher.matches()) {
 				// group 1 = class
 				// group 2 = method (optional)
@@ -120,7 +116,7 @@ public class LinkProvider {
 				if ("link".equals(matcher.group(1))) {
 					// link to java API
 
-					StringBuilder link = new StringBuilder();
+					final StringBuilder link = new StringBuilder();
 					if (linkMatcher.group(2) != null) {
 						link.append("#");
 
@@ -154,7 +150,7 @@ public class LinkProvider {
 					} else {
 						// external document
 
-						String classURL = findClassURL(resolveClassName(linkMatcher.group(1), clazz));
+						final String classURL = findClassURL(resolveClassName(linkMatcher.group(1), clazz));
 						if (classURL != null)
 							output.append("<a href=\"" + classURL + link + "\">");
 
@@ -177,24 +173,17 @@ public class LinkProvider {
 					// link to a scripting module
 					if (linkMatcher.group(1) == null) {
 						// link to same document
-						output.append("<a href=\"#" + linkMatcher.group(2) + "\">" + linkMatcher.group(2)
-								+ ((linkMatcher.group(3) != null) ? "()" : "") + "</a>");
+						output.append(
+								"<a href=\"#" + linkMatcher.group(2) + "\">" + linkMatcher.group(2) + ((linkMatcher.group(3) != null) ? "()" : "") + "</a>");
 					} else {
 						// external document
 						final String plugin = linkMatcher.group(1).substring(0, linkMatcher.group(1).lastIndexOf('.'));
 						if (linkMatcher.group(2) != null)
-							output.append("<a href=\"../../" + plugin + "/help/"
-									+ ModuleDoclet.createHTMLFileName(linkMatcher.group(1)) + "#"
-									+ linkMatcher.group(2) + "\">" + linkMatcher.group(2)
-									+ ((linkMatcher.group(3) != null) ? "()" : "") + "</a>");
+							output.append("<a href=\"../../" + plugin + "/help/" + ModuleDoclet.createHTMLFileName(linkMatcher.group(1)) + "#"
+									+ linkMatcher.group(2) + "\">" + linkMatcher.group(2) + ((linkMatcher.group(3) != null) ? "()" : "") + "</a>");
 						else
-							output.append("<a href=\"../../"
-									+ plugin
-									+ "/help/"
-									+ ModuleDoclet.createHTMLFileName(linkMatcher.group(1))
-									+ "\">"
-									+ capitalizeFirst(linkMatcher.group(1).substring(
-											linkMatcher.group(1).lastIndexOf('.') + 1)) + " module</a>");
+							output.append("<a href=\"../../" + plugin + "/help/" + ModuleDoclet.createHTMLFileName(linkMatcher.group(1)) + "\">"
+									+ capitalizeFirst(linkMatcher.group(1).substring(linkMatcher.group(1).lastIndexOf('.') + 1)) + " module</a>");
 
 					}
 				}

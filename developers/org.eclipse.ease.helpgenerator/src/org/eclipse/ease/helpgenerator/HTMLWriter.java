@@ -342,7 +342,7 @@ public class HTMLWriter {
 		final StringBuffer buffer = new StringBuffer();
 
 		addText(buffer, "		<p class=\"synopsis\">");
-		addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz)));
+		addText(buffer, escapeText(fLinkProvider.createClassText(LinkProvider.resolveClassName(method.returnType().qualifiedTypeName(), fClazz))));
 		addText(buffer, " ");
 		addText(buffer, method.name());
 		addText(buffer, "(");
@@ -351,7 +351,7 @@ public class HTMLWriter {
 			if (parameterAnnotation != null)
 				addText(buffer, "[");
 
-			addText(buffer, fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz)));
+			addText(buffer, escapeText(fLinkProvider.createClassText(LinkProvider.resolveClassName(parameter.type().qualifiedTypeName(), fClazz))));
 			addText(buffer, " ");
 			addText(buffer, parameter.name());
 			if (parameterAnnotation != null)
