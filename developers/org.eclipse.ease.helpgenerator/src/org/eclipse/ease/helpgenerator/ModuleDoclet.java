@@ -484,16 +484,19 @@ public class ModuleDoclet extends Doclet {
 					documentationErrors = true;
 
 					// print errors
-					System.out.println("ERROR: missing documentation content for " + clazz.name() + ":");
+					System.out.println((fFailOnMissingDocs ? "ERROR" : "WARNING") + ": missing documentation content for " + clazz.name() + ":");
 					for (final String errorMessage : htmlWriter.getDocumentationErrors())
 						System.out.println("\t" + errorMessage);
+
+					System.out.println("");
 				}
 
 				try {
 					verifyContent(content);
 				} catch (final Exception e) {
-					System.out.println("ERROR: invalid file content for " + clazz.name() + ":");
+					System.out.println((fFailOnHTMLErrors ? "ERROR" : "WARNING") + ": invalid file content for " + clazz.name() + ":");
 					System.out.println("\t" + e.getMessage());
+					System.out.println("");
 
 					invalidFileContent = true;
 				}
