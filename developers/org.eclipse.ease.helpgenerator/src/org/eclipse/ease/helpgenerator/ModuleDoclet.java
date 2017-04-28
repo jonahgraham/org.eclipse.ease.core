@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import java.util.jar.Manifest;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
+import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 
 public class ModuleDoclet extends Doclet {
@@ -45,11 +47,9 @@ public class ModuleDoclet extends Doclet {
 
 		final String repositoryRoot = new File(System.getProperty("user.dir")).getParentFile().getParent();
 
-		final String[] javadocargs = { "-sourcepath",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
-				"-root",
-				"/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform",
-				"-doclet", ModuleDoclet.class.getName(), "-docletpath",
+		final String[] javadocargs = { "-sourcepath", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
+				"-root", "/data/develop/workspaces/EASE/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform", "-doclet",
+				ModuleDoclet.class.getName(), "-docletpath",
 				"/data/develop/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 
 				"org.eclipse.ease.modules.platform"
@@ -71,15 +71,13 @@ public class ModuleDoclet extends Doclet {
 
 				"org.eclipse.ease.modules", "org.eclipse.ease" };
 
-		final String[] javadocargs3 = { "-sourcepath",
-				"C:/userdata/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src",
+		final String[] javadocargs3 = { "-sourcepath", "C:/userdata/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease/src",
 
 				"-root", "C:/userdata/workspaces/EASE/org.eclipse.ease.core/plugins/org.eclipse.ease",
 
 				"-doclet", ModuleDoclet.class.getName(),
 
-				"-docletpath",
-				"C:/userdata/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
+				"-docletpath", "C:/userdata/workspaces/EASE/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 
 				// "-link", "http://docs.oracle.com/javase/8/docs/api",
 				// "-linkOffline", "http://localhost",
@@ -89,16 +87,13 @@ public class ModuleDoclet extends Doclet {
 
 		final String[] javadocargs4 = {
 				// folder containing source code
-				"-sourcepath",
-				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
+				"-sourcepath", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/src",
 				// project root folder
-				"-root",
-				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/",
+				"-root", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.modules/plugins/org.eclipse.ease.modules.platform/",
 				// doclet class name
 				"-doclet", ModuleDoclet.class.getName(),
 				// doclet bin folder
-				"-docletpath",
-				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
+				"-docletpath", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 
 				// "-link", "http://docs.oracle.com/javase/8/docs/api",
 				// "-linkOffline", "http://localhost",
@@ -108,15 +103,13 @@ public class ModuleDoclet extends Doclet {
 
 		final String[] javadocargs5 = {
 				// folder containing source code
-				"-sourcepath",
-				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/tests/org.eclipse.ease.ui.test/src",
+				"-sourcepath", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/tests/org.eclipse.ease.ui.test/src",
 				// project root folder
 				"-root", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/tests/org.eclipse.ease.ui.test/",
 				// doclet class name
 				"-doclet", ModuleDoclet.class.getName(),
 				// doclet bin folder
-				"-docletpath",
-				"/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
+				"-docletpath", "/usr/local/eclipse/ease-helphovers/ws/org.eclipse.ease.core/developers/org.eclipse.ease.helpgenerator/bin",
 
 				// "-link", "http://docs.oracle.com/javase/8/docs/api",
 				// "-linkOffline", "http://localhost",
@@ -130,10 +123,16 @@ public class ModuleDoclet extends Doclet {
 	private static final String OPTION_PROJECT_ROOT = "-root";
 	private static final Object OPTION_LINK = "-link";
 	private static final Object OPTION_LINK_OFFLINE = "-linkOffline";
+	private static final Object OPTION_FAIL_ON_HTML_ERRORS = "-failOnHTMLError";
+	private static final Object OPTION_FAIL_ON_MISSING_DOCS = "-failOnMissingDocs";
 
 	public static boolean start(final RootDoc root) {
 		final ModuleDoclet doclet = new ModuleDoclet();
 		return doclet.process(root);
+	}
+
+	public static LanguageVersion languageVersion() {
+		return LanguageVersion.JAVA_1_5;
 	}
 
 	public static int optionLength(final String option) {
@@ -146,6 +145,12 @@ public class ModuleDoclet extends Doclet {
 		if (OPTION_LINK_OFFLINE.equals(option))
 			return 3;
 
+		if (OPTION_FAIL_ON_HTML_ERRORS.equals(option))
+			return 2;
+
+		if (OPTION_FAIL_ON_MISSING_DOCS.equals(option))
+			return 2;
+
 		return Doclet.optionLength(option);
 	}
 
@@ -156,9 +161,11 @@ public class ModuleDoclet extends Doclet {
 	/** Maps module.class.name to module definition XML memento. */
 	private Map<String, IMemento> fModuleNodes;
 	private File fRootFolder = null;
-	private final Collection<IMemento> fCategoryNodes = new HashSet<IMemento>();
+	private final Collection<IMemento> fCategoryNodes = new HashSet<>();
 
 	private LinkProvider fLinkProvider;
+	private boolean fFailOnHTMLErrors = true;
+	private boolean fFailOnMissingDocs = false;
 
 	private boolean process(final RootDoc root) {
 
@@ -173,8 +180,7 @@ public class ModuleDoclet extends Doclet {
 
 			else if (OPTION_LINK.equals(option[0])) {
 				try {
-					fLinkProvider.registerAddress(option[1],
-							parsePackages(new URL(option[1] + "/package-list").openStream()));
+					fLinkProvider.registerAddress(option[1], parsePackages(new URL(option[1] + "/package-list").openStream()));
 				} catch (final MalformedURLException e) {
 					System.out.println("Error: cannot parse external URL " + option[1]);
 				} catch (final IOException e) {
@@ -193,14 +199,19 @@ public class ModuleDoclet extends Doclet {
 
 					try {
 						// try to read from local file
-						fLinkProvider.registerAddress(option[1],
-								parsePackages(new FileInputStream(option[2] + File.separator + "package-list")));
+						fLinkProvider.registerAddress(option[1], parsePackages(new FileInputStream(option[2] + File.separator + "package-list")));
 					} catch (final FileNotFoundException e1) {
 						System.out.println("Error: cannot read from " + option[2]);
 					}
 				} catch (final IOException e) {
 					System.out.println("Error: cannot read from " + option[2]);
 				}
+
+			} else if (OPTION_FAIL_ON_HTML_ERRORS.equals(option[0])) {
+				fFailOnHTMLErrors = Boolean.parseBoolean(option[1]);
+
+			} else if (OPTION_FAIL_ON_MISSING_DOCS.equals(option[0])) {
+				fFailOnMissingDocs = Boolean.parseBoolean(option[1]);
 			}
 		}
 
@@ -234,10 +245,8 @@ public class ModuleDoclet extends Doclet {
 					updateBuildProperties(fRootFolder);
 				}
 			} catch (final Exception e) {
-				// TODO handle this exception (but for now, at least know it
-				// happened)
-				throw new RuntimeException(e);
-
+				e.printStackTrace();
+				return false;
 			}
 
 			return true;
@@ -247,7 +256,7 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private static Collection<String> parsePackages(final InputStream inputStream) {
-		final Collection<String> packages = new HashSet<String>();
+		final Collection<String> packages = new HashSet<>();
 
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
@@ -276,8 +285,7 @@ public class ModuleDoclet extends Doclet {
 			topicNode.putBoolean("sort", true);
 			topicNode.createChild("anchor").putString("id", "modules_anchor");
 
-			final File targetFile = getChild(getChild(fRootFolder, "help"),
-					createCategoryFileName(node.getString("id")));
+			final File targetFile = getChild(getChild(fRootFolder, "help"), createCategoryFileName(node.getString("id")));
 			writeFile(targetFile, memento.toString());
 			created = true;
 		}
@@ -363,7 +371,7 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private void updatePluginXML(final File rootFolder, final Collection<String> tocs) throws Exception {
-		final HashSet<String> toDo = new HashSet<String>(tocs);
+		final HashSet<String> toDo = new HashSet<>(tocs);
 
 		File pluginFile = getChild(rootFolder, "plugin.xml");
 		if (!pluginFile.exists())
@@ -398,7 +406,7 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private Set<String> createModuleTOCFiles() throws IOException {
-		final Map<String, IMemento> tocDefinitions = new HashMap<String, IMemento>();
+		final Map<String, IMemento> tocDefinitions = new HashMap<>();
 
 		// create categories
 		for (final IMemento categoryDefinition : fCategoryNodes) {
@@ -455,30 +463,56 @@ public class ModuleDoclet extends Doclet {
 	 * Create HTML help pages for module classes.
 	 *
 	 * @param classes
-	 * @return
-	 * @throws IOException
+	 * @return <code>true</code> when at least 1 HTML file was created
+	 * @throws Exception
+	 *             on file creation errors
 	 */
-	private boolean createHTMLFiles(final ClassDoc[] classes) throws IOException {
+	private boolean createHTMLFiles(final ClassDoc[] classes) throws Exception {
 		boolean createdFiles = false;
+		boolean documentationErrors = false;
 
 		for (final ClassDoc clazz : classes) {
 
 			// only add classes which are registered in our modules lookup table
 			if (fModuleNodes.containsKey(clazz.qualifiedName())) {
 				// class found to create help for
-				final String content = new HTMLWriter(clazz, fLinkProvider,
-						fModuleNodes.get(clazz.qualifiedName()).getChildren("dependency"))
-								.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
+				final HTMLWriter htmlWriter = new HTMLWriter(clazz, fLinkProvider, fModuleNodes.get(clazz.qualifiedName()).getChildren("dependency"));
+				final String content = htmlWriter.createContents(fModuleNodes.get(clazz.qualifiedName()).getString("name"));
+
+				if (!htmlWriter.getDocumentationErrors().isEmpty()) {
+					documentationErrors = true;
+
+					// print errors
+					System.out.println("ERROR: missing documentation content for " + clazz.name() + ":");
+					for (final String errorMessage : htmlWriter.getDocumentationErrors())
+						System.out.println("\t" + errorMessage);
+				}
+
+				if (fFailOnHTMLErrors)
+					verifyContent(content);
 
 				// write document
-				final File targetFile = getChild(getChild(fRootFolder, "help"),
-						createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
+				final File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
 				writeFile(targetFile, content);
 				createdFiles = true;
 			}
 		}
 
+		if ((fFailOnMissingDocs) && (documentationErrors))
+			throw new IOException("DOcumentation is not complete");
+
 		return createdFiles;
+	}
+
+	/**
+	 * Verifies that the HTML content is well formed and correct. This guarantees that the code can be displayed in help hovers and code completion proposals.
+	 *
+	 * @throws Exception
+	 *             when content is not well formed
+	 */
+	private void verifyContent(String content) throws Exception {
+		// try to read content into an XMLMemento
+		XMLMemento.createReadRoot(new StringReader(content));
 	}
 
 	private static void writeFile(final File file, final String data) throws IOException {
@@ -499,7 +533,7 @@ public class ModuleDoclet extends Doclet {
 	}
 
 	private void createModuleLookupTable() {
-		fModuleNodes = new HashMap<String, IMemento>();
+		fModuleNodes = new HashMap<>();
 
 		// read plugin.xml
 		File pluginXML = getChild(fRootFolder, "plugin.xml");

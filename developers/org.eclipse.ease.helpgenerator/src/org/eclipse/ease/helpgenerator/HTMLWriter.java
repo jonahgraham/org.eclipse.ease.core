@@ -51,6 +51,8 @@ public class HTMLWriter {
 	private final ClassDoc fClazz;
 	private final IMemento[] fDependencies;
 
+	private final Collection<String> fDocumentationErrors = new ArrayList<>();
+
 	public HTMLWriter(final ClassDoc clazz, final LinkProvider linkProvider, final IMemento[] dependencies) {
 		fClazz = clazz;
 		fLinkProvider = linkProvider;
@@ -78,8 +80,11 @@ public class HTMLWriter {
 		// class description
 		addText(buffer, "		<p class=\"description\">");
 		final String classComment = fClazz.commentText();
-		if (classComment != null)
+		if ((classComment != null) && (!classComment.isEmpty()))
 			addText(buffer, fLinkProvider.insertLinks(fClazz, fClazz.commentText()));
+
+		else
+			addDocumentationError("Missing class comment for " + fClazz.name());
 
 		addLine(buffer, "</p>");
 
@@ -223,8 +228,12 @@ public class HTMLWriter {
 			addText(buffer, "		<p class=\"return\">");
 
 			final Tag[] tags = method.tags("return");
-			if (tags.length > 0)
+			if (tags.length > 0) {
+				if (tags[0].text().isEmpty())
+					addDocumentationError("Missing return statement documentation for " + method.containingClass().name() + "." + method.name() + "()");
+
 				addText(buffer, fLinkProvider.insertLinks(fClazz, tags[0].text()));
+			}
 
 			addLine(buffer, "</p>");
 		}
@@ -294,11 +303,18 @@ public class HTMLWriter {
 		return buffer;
 	}
 
-	private static String findExceptionComment(MethodDoc method, Type exceptionType) {
+	private String findExceptionComment(MethodDoc method, Type exceptionType) {
 		for (final ThrowsTag tag : method.throwsTags()) {
 			if ((exceptionType.simpleTypeName().equals(tag.exceptionName())) || (exceptionType.typeName().equals(tag.exceptionName())))
-				return tag.exceptionComment();
+				if (tag.exceptionComment().isEmpty())
+					addDocumentationError("Missing exception documentation for " + method.containingClass().name() + "." + method.name() + "() - "
+							+ exceptionType.simpleTypeName());
+
+			return tag.exceptionComment();
 		}
+
+		addDocumentationError(
+				"Missing exception documentation for " + method.containingClass().name() + "." + method.name() + "() - " + exceptionType.simpleTypeName());
 
 		return "";
 	}
@@ -393,7 +409,7 @@ public class HTMLWriter {
 		return buffer;
 	}
 
-	private static String getMethodComment(ClassDoc baseClass, MethodDoc method) {
+	private String getMethodComment(ClassDoc baseClass, MethodDoc method) {
 		String comment = method.commentText();
 
 		if ((comment == null) || (comment.isEmpty())) {
@@ -414,6 +430,9 @@ public class HTMLWriter {
 				return getMethodComment(parent, method);
 		}
 
+		if (comment.isEmpty())
+			addDocumentationError("Missing comment for " + method.containingClass().name() + "." + method.name() + "()");
+
 		return comment;
 	}
 
@@ -432,6 +451,9 @@ public class HTMLWriter {
 
 			for (final FieldDoc field : fields) {
 				addLine(buffer, "\t\t<tr>");
+
+				if (field.commentText().isEmpty())
+					addDocumentationError("Field domentation missing for " + fClazz.name() + "." + field.name());
 
 				if (!isDeprecated(field)) {
 					addLine(buffer, "			<td><a id=\"" + field.name() + "\">" + field.name() + "</a></td>");
@@ -517,13 +539,15 @@ public class HTMLWriter {
 				|| (SCRIPT_PARAMETER.equals(annotation.annotationType().qualifiedName()));
 	}
 
-	private static String findComment(final MethodDoc method, final String name) {
+	private String findComment(final MethodDoc method, final String name) {
 
 		for (final ParamTag paramTags : method.paramTags()) {
 			if (name.equals(paramTags.parameterName()))
-				return paramTags.parameterComment();
+				if ((paramTags.parameterComment() != null) && (!paramTags.parameterComment().isEmpty()))
+					return paramTags.parameterComment();
 		}
 
+		addDocumentationError("Missing parameter documentation for " + method.containingClass().name() + "." + method.name() + "(" + name + ")");
 		return "";
 	}
 
@@ -611,5 +635,13 @@ public class HTMLWriter {
 
 	private static String escapeText(String text) {
 		return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	}
+
+	public Collection<String> getDocumentationErrors() {
+		return fDocumentationErrors;
+	}
+
+	private void addDocumentationError(String message) {
+		fDocumentationErrors.add(message);
 	}
 }
