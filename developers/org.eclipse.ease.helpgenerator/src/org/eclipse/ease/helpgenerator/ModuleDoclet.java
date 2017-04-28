@@ -467,9 +467,10 @@ public class ModuleDoclet extends Doclet {
 	 * @throws Exception
 	 *             on file creation errors
 	 */
-	private boolean createHTMLFiles(final ClassDoc[] classes) throws Exception {
+	private boolean createHTMLFiles(final ClassDoc[] classes) throws IOException {
 		boolean createdFiles = false;
 		boolean documentationErrors = false;
+		boolean invalidFileContent = false;
 
 		for (final ClassDoc clazz : classes) {
 
@@ -488,8 +489,14 @@ public class ModuleDoclet extends Doclet {
 						System.out.println("\t" + errorMessage);
 				}
 
-				if (fFailOnHTMLErrors)
+				try {
 					verifyContent(content);
+				} catch (final Exception e) {
+					System.out.println("ERROR: invalid file content for " + clazz.name() + ":");
+					System.out.println("\t" + e.getMessage());
+
+					invalidFileContent = true;
+				}
 
 				// write document
 				final File targetFile = getChild(getChild(fRootFolder, "help"), createHTMLFileName(fModuleNodes.get(clazz.qualifiedName()).getString("id")));
@@ -499,7 +506,10 @@ public class ModuleDoclet extends Doclet {
 		}
 
 		if ((fFailOnMissingDocs) && (documentationErrors))
-			throw new IOException("DOcumentation is not complete");
+			throw new IOException("Documentation is not complete");
+
+		if ((fFailOnHTMLErrors) && (invalidFileContent))
+			throw new IOException("Documentation invalid");
 
 		return createdFiles;
 	}
