@@ -125,7 +125,9 @@ public class ScriptArchiveExportWizard extends Wizard implements IExportWizard {
 
 				// manifest.set
 				final ByteArrayOutputStream manifestContent = new ByteArrayOutputStream();
-				properties.store(manifestContent, null);
+
+				// no resource leak as we write to a ByteArrayOutputStream. No need to flush/close
+				new ManifestOutputStream(manifestContent).writeManifest(properties.entrySet());
 
 				if (manifest.exists())
 					manifest.setContents(new ByteArrayInputStream(manifestContent.toByteArray()), false, false, new NullProgressMonitor());
