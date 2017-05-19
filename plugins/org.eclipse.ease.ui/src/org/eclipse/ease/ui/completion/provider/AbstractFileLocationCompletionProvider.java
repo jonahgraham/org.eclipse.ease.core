@@ -148,7 +148,7 @@ public abstract class AbstractFileLocationCompletionProvider extends AbstractCom
 			return ((File) candidate).getName().toLowerCase().endsWith("." + extension.toLowerCase());
 
 		else if (candidate instanceof IFile)
-			return ((IFile) candidate).getFileExtension().equalsIgnoreCase(extension);
+			return ((IFile) candidate).getName().toLowerCase().endsWith("." + extension.toLowerCase());
 
 		return false;
 	}
