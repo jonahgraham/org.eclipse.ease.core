@@ -172,17 +172,20 @@ public class ScriptArchiveExportWizard extends Wizard implements IExportWizard {
 	 * Persist wizard settings.
 	 */
 	private void saveWidgetValues() {
-		final String[] lastLocations = getDialogSettings().getArray(MainPage.DIALOG_SETTINGS_LAST_LOCATIONS);
-		if (lastLocations == null)
-			getDialogSettings().put(MainPage.DIALOG_SETTINGS_LAST_LOCATIONS, new String[] { fMainPage.getTargetFile().getAbsolutePath() });
+		final String locationEntry = fMainPage.getTargetFile().getAbsolutePath();
+		if ((locationEntry != null) && (!locationEntry.isEmpty())) {
+			final String[] lastLocations = getDialogSettings().getArray(MainPage.DIALOG_SETTINGS_LAST_LOCATIONS);
+			if (lastLocations == null)
+				getDialogSettings().put(MainPage.DIALOG_SETTINGS_LAST_LOCATIONS, new String[] { fMainPage.getTargetFile().getAbsolutePath() });
 
-		else {
-			final List<String> locations = new ArrayList<>(Arrays.asList(lastLocations));
-			if (!locations.contains(fMainPage.getTargetFile().getAbsolutePath()))
-				locations.add(0, fMainPage.getTargetFile().getAbsolutePath());
+			else {
+				final List<String> locations = new ArrayList<>(Arrays.asList(lastLocations));
+				if (!locations.contains(fMainPage.getTargetFile().getAbsolutePath()))
+					locations.add(0, fMainPage.getTargetFile().getAbsolutePath());
 
-			getDialogSettings().put(MainPage.DIALOG_SETTINGS_LAST_LOCATIONS,
-					locations.subList(0, Math.min(locations.size(), 5)).toArray(new String[locations.size()]));
+				getDialogSettings().put(MainPage.DIALOG_SETTINGS_LAST_LOCATIONS,
+						locations.subList(0, Math.min(locations.size(), 5)).toArray(new String[locations.size()]));
+			}
 		}
 	}
 
