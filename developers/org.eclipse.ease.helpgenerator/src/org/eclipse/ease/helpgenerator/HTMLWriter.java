@@ -40,6 +40,10 @@ public class HTMLWriter {
 		}
 	};
 
+	private interface CommentExtractor {
+		String extract(MethodDoc method);
+	};
+
 	private static final String WRAP_TO_SCRIPT = "WrapToScript";
 	private static final String QUALIFIED_WRAP_TO_SCRIPT = "org.eclipse.ease.modules." + WRAP_TO_SCRIPT;
 	private static final Object SCRIPT_PARAMETER = "ScriptParameter";
@@ -251,7 +255,7 @@ public class HTMLWriter {
 			for (final Parameter parameter : method.parameters()) {
 				addLine(buffer, "			<dt>" + parameter.name() + "</dt>");
 				addText(buffer, "			<dd class=\"description\" data-parameter=\"" + parameter.name() + "\">"
-						+ fLinkProvider.insertLinks(fClazz, findComment(method, parameter.name())));
+						+ fLinkProvider.insertLinks(fClazz, getParameterComment(method, parameter.name())));
 
 				final AnnotationDesc parameterAnnotation = getScriptParameterAnnotation(parameter);
 				if (parameterAnnotation != null) {
@@ -292,7 +296,7 @@ public class HTMLWriter {
 			for (final Type exceptionType : method.thrownExceptionTypes()) {
 				addLine(buffer, "			<dt>" + exceptionType.simpleTypeName() + "</dt>");
 				addText(buffer, "			<dd class=\"description\" data-exception=\"" + exceptionType.simpleTypeName() + "\">"
-						+ fLinkProvider.insertLinks(fClazz, findExceptionComment(method, exceptionType)));
+						+ fLinkProvider.insertLinks(fClazz, getExceptionComment(method, exceptionType)));
 
 				addLine(buffer, "</dd>");
 			}
@@ -303,20 +307,22 @@ public class HTMLWriter {
 		return buffer;
 	}
 
-	private String findExceptionComment(MethodDoc method, Type exceptionType) {
-		for (final ThrowsTag tag : method.throwsTags()) {
-			if ((exceptionType.simpleTypeName().equals(tag.exceptionName())) || (exceptionType.typeName().equals(tag.exceptionName())))
-				if (tag.exceptionComment().isEmpty())
-					addDocumentationError("Missing exception documentation for " + method.containingClass().name() + "." + method.name() + "() - "
-							+ exceptionType.simpleTypeName());
+	private String getExceptionComment(MethodDoc method, Type exceptionType) {
+		final String comment = extractComment(method, method1 -> {
 
-			return tag.exceptionComment();
-		}
+			for (final ThrowsTag tag : method1.throwsTags()) {
+				if ((exceptionType.simpleTypeName().equals(tag.exceptionName())) || (exceptionType.typeName().equals(tag.exceptionName())))
+					return tag.exceptionComment();
+			}
 
-		addDocumentationError(
-				"Missing exception documentation for " + method.containingClass().name() + "." + method.name() + "() - " + exceptionType.simpleTypeName());
+			return "";
+		});
 
-		return "";
+		if (comment.isEmpty())
+			addDocumentationError(
+					"Missing exception documentation for " + method.containingClass().name() + "." + method.name() + "() - " + exceptionType.simpleTypeName());
+
+		return comment;
 	}
 
 	private StringBuffer createAliases(final MethodDoc method) {
@@ -410,25 +416,7 @@ public class HTMLWriter {
 	}
 
 	private String getMethodComment(ClassDoc baseClass, MethodDoc method) {
-		String comment = method.commentText();
-
-		if ((comment == null) || (comment.isEmpty())) {
-			// try to look up interfaces
-			for (final ClassDoc iface : baseClass.interfaces()) {
-				for (final MethodDoc ifaceMethod : iface.methods()) {
-					if (method.overrides(ifaceMethod)) {
-						comment = ifaceMethod.commentText();
-						if ((comment != null) && (!comment.isEmpty()))
-							return comment;
-					}
-				}
-			}
-
-			// not found, retry with super class
-			final ClassDoc parent = baseClass.superclass();
-			if (parent != null)
-				return getMethodComment(parent, method);
-		}
+		final String comment = extractComment(method, method1 -> method1.commentText());
 
 		if (comment.isEmpty())
 			addDocumentationError("Missing comment for " + method.containingClass().name() + "." + method.name() + "()");
@@ -539,15 +527,47 @@ public class HTMLWriter {
 				|| (SCRIPT_PARAMETER.equals(annotation.annotationType().qualifiedName()));
 	}
 
-	private String findComment(final MethodDoc method, final String name) {
-
-		for (final ParamTag paramTags : method.paramTags()) {
-			if (name.equals(paramTags.parameterName()))
-				if ((paramTags.parameterComment() != null) && (!paramTags.parameterComment().isEmpty()))
+	private String getParameterComment(final MethodDoc method, final String name) {
+		final String comment = extractComment(method, method1 -> {
+			for (final ParamTag paramTags : method1.paramTags()) {
+				if (name.equals(paramTags.parameterName()))
 					return paramTags.parameterComment();
+			}
+
+			return "";
+		});
+
+		if (comment.isEmpty())
+			addDocumentationError("Missing parameter documentation for " + method.containingClass().name() + "." + method.name() + "(" + name + ")");
+
+		return comment;
+	}
+
+	private String extractComment(MethodDoc method, CommentExtractor extractor) {
+		String comment = extractor.extract(method);
+		if ((comment != null) && (!comment.isEmpty()))
+			return comment;
+
+		// try to look up interfaces
+		for (final ClassDoc iface : method.containingClass().interfaces()) {
+			for (final MethodDoc ifaceMethod : iface.methods()) {
+				if (method.overrides(ifaceMethod)) {
+					comment = ifaceMethod.commentText();
+					if ((comment != null) && (!comment.isEmpty()))
+						return comment;
+				}
+			}
 		}
 
-		addDocumentationError("Missing parameter documentation for " + method.containingClass().name() + "." + method.name() + "(" + name + ")");
+		// not found, retry with super class
+		final ClassDoc parent = method.containingClass().superclass();
+		if (parent != null) {
+			for (final MethodDoc superMethod : parent.methods()) {
+				if (method.overrides(superMethod))
+					return (extractComment(superMethod, extractor));
+			}
+		}
+
 		return "";
 	}
 
