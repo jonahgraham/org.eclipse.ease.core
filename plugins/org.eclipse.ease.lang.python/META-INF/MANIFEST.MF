@@ -21,5 +21,6 @@ Export-Package: org.eclipse.ease.lang.python,
  org.eclipse.ease.lang.python.debugger,
  org.eclipse.ease.lang.python.debugger.actions,
  org.eclipse.ease.lang.python.debugger.model,
- org.eclipse.ease.lang.python.preferences
+ org.eclipse.ease.lang.python.preferences,
+ org.eclipse.ease.lang.python.ui.completion
 Bundle-ClassPath: .
