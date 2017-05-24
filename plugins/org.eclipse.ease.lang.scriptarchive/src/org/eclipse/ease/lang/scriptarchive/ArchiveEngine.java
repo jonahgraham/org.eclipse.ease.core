@@ -130,7 +130,7 @@ public class ArchiveEngine extends AbstractScriptEngine implements IScriptEngine
 		return -1;
 	}
 
-	private static Properties getManifest(Object archive) {
+	public static Properties getManifest(Object archive) {
 		final InputStream manifestStream = getArchiveStream(archive, "/META-INF/MANIFEST.MF");
 		if (manifestStream != null) {
 
