@@ -54,19 +54,16 @@ public class PythonDebugModelPresentation implements IDebugModelPresentation {
 	@Override
 	public void addListener(final ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
-		System.out.println("New ILabelListener should be added.");
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		System.out.println("Dispose of PythonDebugModelPresentation.");
 	}
 
 	@Override
 	public boolean isLabelProperty(final Object element, final String property) {
 		// TODO Auto-generated method stub
-		System.out.println("Checking if isLabelProperty.");
 		return false;
 	}
 
