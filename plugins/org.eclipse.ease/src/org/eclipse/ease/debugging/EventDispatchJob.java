@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ease.debugging.events.EngineTerminatedEvent;
@@ -24,7 +25,8 @@ import org.eclipse.ease.debugging.events.IModelRequest;
 
 public class EventDispatchJob extends Job {
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = org.eclipse.ease.Activator.getDefault().isDebugging()
+			&& "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.ease/debug/eventDispatch"));;
 
 	/** Cached events. */
 	private final List<IDebugEvent> fEvents = new ArrayList<IDebugEvent>();
