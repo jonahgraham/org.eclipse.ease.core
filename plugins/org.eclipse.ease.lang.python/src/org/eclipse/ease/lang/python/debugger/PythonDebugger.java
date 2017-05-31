@@ -212,7 +212,21 @@ public class PythonDebugger extends AbstractScriptDebugger implements IEventProc
 	 * @return Always <code>null</code>
 	 */
 	public Object execute(final Script script) {
-		fCodeTracer.run(script, registerScript(script));
+		try {
+			fCodeTracer.run(script, registerScript(script));
+		} catch (final Exception e) {
+			/*
+			 * When terminating, #handleEvent sets resume type to STEP_END, which causes #traceDispatch to raise an ExitException. The ExitException is
+			 * propagated back to python, and eventually ends up back here at Exit method. However Py4J does not support propogating the same type of exception
+			 * across the Python/Java barrier, so what ends up being thrown is a Py4JException instead.
+			 *
+			 * Therefore we catch that case and re-raise the expected ExitException()
+			 */
+			if (getResumeType() == DebugEvent.STEP_END) {
+				throw new ExitException("Debug aborted by user");
+			}
+			throw e;
+		}
 		return null;
 	}
 
