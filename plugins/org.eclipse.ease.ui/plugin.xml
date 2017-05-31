@@ -505,4 +505,19 @@
             name="Scripting">
       </category>
    </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <themeElementCategory
+            id="org.eclipse.ease.ui.presentation"
+            label="%easePresentation.label">
+      </themeElementCategory>
+      <fontDefinition
+            categoryId="org.eclipse.ease.ui.presentation"
+            id="org.eclipse.ease.ui.moduledocfont"
+            label="%moduledocDisplayFontDefiniton.label">
+         <description>
+            %moduledocDisplayFontDefiniton.description
+         </description>
+      </fontDefinition>
+   </extension>
 </plugin>

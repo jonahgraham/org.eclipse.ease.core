@@ -25,7 +25,6 @@ import org.eclipse.ease.Logger;
 import org.eclipse.ease.tools.StringTools;
 import org.eclipse.ease.ui.Activator;
 import org.eclipse.ease.ui.help.hovers.IHoverContentProvider;
-import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
@@ -51,6 +50,12 @@ import org.eclipse.ui.PlatformUI;
  * Provides a javadoc-like hover info.
  */
 public class JavaDocLikeHover {
+
+	/**
+	 * The symbolic font name for the font used to display Module documentation (value <code>"org.eclipse.ease.ui.moduledocfont"</code>).
+	 *
+	 */
+	public final static String APPEARANCE_MODULEDOC_FONT = "org.eclipse.ease.ui.moduledocfont"; //$NON-NLS-1$
 
 	public static final String CONSTANT_VALUE_SEPARATOR = " : "; //$NON-NLS-1$
 
@@ -168,7 +173,7 @@ public class JavaDocLikeHover {
 		public IInformationControl doCreateInformationControl(Shell parent) {
 			if (BrowserInformationControl.isAvailable(parent)) {
 				final ToolBarManager tbm = new ToolBarManager(SWT.FLAT);
-				final String font = PreferenceConstants.APPEARANCE_JAVADOC_FONT;
+				final String font = APPEARANCE_MODULEDOC_FONT;
 				final BrowserInformationControl iControl = new BrowserInformationControl(parent, font, tbm);
 
 				fHoverContent.populateToolbar(iControl, tbm);
@@ -224,7 +229,7 @@ public class JavaDocLikeHover {
 		public IInformationControl doCreateInformationControl(Shell parent) {
 			final String tooltipAffordanceString = "Press 'F2' for focus";
 			if (BrowserInformationControl.isAvailable(parent)) {
-				final String font = PreferenceConstants.APPEARANCE_JAVADOC_FONT;
+				final String font = APPEARANCE_MODULEDOC_FONT;
 				return new BrowserInformationControl(parent, font, tooltipAffordanceString) {
 					/*
 					 * @see org.eclipse.jface.text.IInformationControlExtension5#getInformationPresenterControlCreator()
@@ -379,7 +384,7 @@ public class JavaDocLikeHover {
 		}
 		String css = fgStyleSheet;
 		if (css != null) {
-			final FontData fontData = JFaceResources.getFontRegistry().getFontData(PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
+			final FontData fontData = JFaceResources.getFontRegistry().getFontData(APPEARANCE_MODULEDOC_FONT)[0];
 			css = HTMLPrinter.convertTopLevelFont(css, fontData);
 		}
 
