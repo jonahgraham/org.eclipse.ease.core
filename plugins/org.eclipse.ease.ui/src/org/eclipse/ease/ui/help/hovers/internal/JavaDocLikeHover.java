@@ -66,9 +66,9 @@ public class JavaDocLikeHover {
 
 		@Override
 		public String updatePresentation(Drawable drawable, String hoverInfo, TextPresentation presentation, int maxWidth, int maxHeight) {
-			// FIXME
+			// FIXME Bug 517576
 			// final String warningInfo = JavaHoverMessages.JavadocHover_fallback_warning;
-			final String warningInfo = "JavaHoverMessages.JavadocHover_fallback_warning";
+			final String warningInfo = "NOTE: The SWT Browser widget could not be created. This fallback mode doesn't show links and misses other functionality.";
 			final String warning = super.updatePresentation(drawable, warningInfo, presentation, maxWidth, maxHeight);
 			presentation.clear();
 
@@ -87,9 +87,9 @@ public class JavaDocLikeHover {
 
 		public BackAction(BrowserInformationControl infoControl) {
 			fInfoControl = infoControl;
-			// FIXME
+			// FIXME Bug 517576
 			// setText(JavaHoverMessages.JavadocHover_back);
-			setText("JavaHoverMessages.JavadocHover_back");
+			setText("Back");
 			final ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
 			setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_BACK));
 			setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_BACK_DISABLED));
@@ -128,9 +128,9 @@ public class JavaDocLikeHover {
 
 		public ForwardAction(BrowserInformationControl infoControl) {
 			fInfoControl = infoControl;
-			// FIXME
+			// FIXME Bug 517576
 			// setText(JavaHoverMessages.JavadocHover_forward);
-			setText("JavaHoverMessages.JavadocHover_forward");
+			setText("Forward");
 			final ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
 			setImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_FORWARD));
 			setDisabledImageDescriptor(images.getImageDescriptor(ISharedImages.IMG_TOOL_FORWARD_DISABLED));
