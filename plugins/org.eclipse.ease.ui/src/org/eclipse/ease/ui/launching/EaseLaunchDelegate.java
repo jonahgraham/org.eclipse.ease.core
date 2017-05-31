@@ -72,11 +72,13 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 		public void notify(IScriptEngine engine, Script script, int status) {
 			if (IExecutionListener.ENGINE_END == status) {
 				fIsTerminated = true;
-				fireTerminate();
+				if (DebugPlugin.getDefault() != null) {
+					fireTerminate();
 
-				// remove launch when it was triggered in RUN node
-				if (ILaunchManager.RUN_MODE.equals(getLaunchMode()))
-					getLaunchManager().removeLaunch(this);
+					// remove launch when it was triggered in RUN node
+					if (ILaunchManager.RUN_MODE.equals(getLaunchMode()))
+						getLaunchManager().removeLaunch(this);
+				}
 			}
 		}
 	}

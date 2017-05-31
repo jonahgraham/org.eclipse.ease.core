@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.ease.debugging.events.EngineTerminatedEvent;
 import org.eclipse.ease.debugging.events.IDebugEvent;
 import org.eclipse.ease.debugging.events.IDebuggerEvent;
@@ -63,7 +64,8 @@ public class EventDispatchJob extends Job {
 
 		while (!fTerminated) {
 			// handle event
-			if (!monitor.isCanceled()) {
+			final boolean platformRunning = DebugPlugin.getDefault() != null;
+			if (!monitor.isCanceled() && platformRunning) {
 
 				IDebugEvent event = null;
 				synchronized (fEvents) {

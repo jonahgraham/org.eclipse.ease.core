@@ -175,12 +175,16 @@ public abstract class ScriptDebugTarget extends ScriptDebugElement implements ID
 
 		} else if (event instanceof EngineTerminatedEvent) {
 			// unsubscribe from breakpoint changes
-			DebugPlugin.getDefault().getBreakpointManager().removeBreakpointListener(this);
+			final DebugPlugin debugPlugin = DebugPlugin.getDefault();
+			if (debugPlugin != null) {
+				debugPlugin.getBreakpointManager().removeBreakpointListener(this);
 
-			fState = State.TERMINATED;
-			fireTerminateEvent();
-			for (final ScriptDebugThread thread : getThreads())
-				thread.setTerminated();
+				fState = State.TERMINATED;
+
+				fireTerminateEvent();
+				for (final ScriptDebugThread thread : getThreads())
+					thread.setTerminated();
+			}
 
 			// allow for garbage collection
 			fDispatcher = null;
