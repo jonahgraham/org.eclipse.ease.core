@@ -136,8 +136,12 @@ public class CodeCompletionAggregator implements IContentProposalProvider {
 	public void setScriptEngine(final IScriptEngine scriptEngine) {
 		fScriptEngine = scriptEngine;
 
-		if (fScriptEngine != null)
-			setScriptType(fScriptEngine.getDescription().getSupportedScriptTypes().get(0));
+		if (fScriptEngine != null) {
+			final List<ScriptType> supportedScriptTypes = fScriptEngine.getDescription().getSupportedScriptTypes();
+			if (supportedScriptTypes.size() > 0) {
+				setScriptType(supportedScriptTypes.get(0));
+			}
+		}
 	}
 
 	public void setScriptType(final ScriptType scriptType) {
