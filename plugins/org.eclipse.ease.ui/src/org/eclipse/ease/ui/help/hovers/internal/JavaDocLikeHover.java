@@ -179,12 +179,9 @@ public class JavaDocLikeHover {
 				tbm.add(forwardAction);
 				forwardAction.setEnabled(false);
 
-				final IInputChangedListener inputChangeListener = new IInputChangedListener() {
-					@Override
-					public void inputChanged(Object newInput) {
-						backAction.update();
-						forwardAction.update();
-					}
+				final IInputChangedListener inputChangeListener = newInput -> {
+					backAction.update();
+					forwardAction.update();
 				};
 				iControl.addInputChangeListener(inputChangeListener);
 
@@ -241,12 +238,7 @@ public class JavaDocLikeHover {
 				return new DefaultInformationControl(parent, tooltipAffordanceString) {
 					@Override
 					public IInformationControlCreator getInformationPresenterControlCreator() {
-						return new IInformationControlCreator() {
-							@Override
-							public IInformationControl createInformationControl(Shell parentShell) {
-								return new DefaultInformationControl(parentShell, (ToolBarManager) null, new FallbackInformationPresenter());
-							}
-						};
+						return parentShell -> new DefaultInformationControl(parentShell, (ToolBarManager) null, new FallbackInformationPresenter());
 					}
 				};
 			}
