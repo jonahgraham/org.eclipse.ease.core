@@ -182,22 +182,24 @@ public class ArchiveEngine extends AbstractScriptEngine implements IScriptEngine
 				if (mainScript != null) {
 					final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 					final ScriptType scriptType = scriptService.getScriptType(mainScript.toString());
-					final EngineDescription engineDescription = scriptService.getEngine(scriptType.getName());
-					if (engineDescription != null) {
-						fInternalEngine = engineDescription.createEngine();
+					if (scriptType != null) {
+						final EngineDescription engineDescription = scriptService.getEngine(scriptType.getName());
+						if (engineDescription != null) {
+							fInternalEngine = engineDescription.createEngine();
 
-						// setup registered jars
-						if (fRegisteredJars != null) {
-							for (final URL url : fRegisteredJars)
-								fInternalEngine.registerJar(url);
+							// setup registered jars
+							if (fRegisteredJars != null) {
+								for (final URL url : fRegisteredJars)
+									fInternalEngine.registerJar(url);
+							}
+
+							// setup streams
+							fInternalEngine.setInputStream(getInputStream());
+							fInternalEngine.setOutputStream(getOutputStream());
+							fInternalEngine.setErrorStream(getErrorStream());
+
+							fInternalEngine.setVariable("__MANIFEST", fManifest);
 						}
-
-						// setup streams
-						fInternalEngine.setInputStream(getInputStream());
-						fInternalEngine.setOutputStream(getOutputStream());
-						fInternalEngine.setErrorStream(getErrorStream());
-
-						fInternalEngine.setVariable("__MANIFEST", fManifest);
 					}
 
 				} else

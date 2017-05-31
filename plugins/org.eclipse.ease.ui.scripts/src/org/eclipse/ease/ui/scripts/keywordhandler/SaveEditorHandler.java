@@ -127,11 +127,13 @@ public class SaveEditorHandler implements EventHandler, IPartListener, IProperty
 						final IFile file = ((FileEditorInput) input).getFile();
 						final String location = ResourceTools.toAbsoluteLocation(file, null);
 
-						for (final Entry<String, Collection<IScript>> entry : fRegisteredScripts.entrySet()) {
-							if (Pattern.matches(entry.getKey(), location)) {
-								// execute registered scripts
-								for (final IScript script : entry.getValue())
-									script.run(location);
+						if (location != null) {
+							for (final Entry<String, Collection<IScript>> entry : fRegisteredScripts.entrySet()) {
+								if (Pattern.matches(entry.getKey(), location)) {
+									// execute registered scripts
+									for (final IScript script : entry.getValue())
+										script.run(location);
+								}
 							}
 						}
 					}

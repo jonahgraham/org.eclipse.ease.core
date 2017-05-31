@@ -136,18 +136,19 @@ public abstract class AbstractLaunchDelegate implements ILaunchShortcut, ILaunch
 
 		// try to find existing configurations using the same file
 		final String resourceLocation = ResourceTools.toAbsoluteLocation(resource, null);
-		try {
-			for (final ILaunchConfiguration configuration : manager.getLaunchConfigurations(type)) {
-				final String configurationUri = getFileLocation(configuration);
-				if (resourceLocation.equals(configurationUri)) {
-					// we have a candidate
-					configurations.add(configuration);
+		if (resourceLocation != null) {
+			try {
+				for (final ILaunchConfiguration configuration : manager.getLaunchConfigurations(type)) {
+					final String configurationUri = getFileLocation(configuration);
+					if (resourceLocation.equals(configurationUri)) {
+						// we have a candidate
+						configurations.add(configuration);
+					}
 				}
+			} catch (final CoreException e) {
+				// could not load configurations, ignore
 			}
-		} catch (final CoreException e) {
-			// could not load configurations, ignore
 		}
-
 		return configurations.toArray(new ILaunchConfiguration[configurations.size()]);
 	}
 

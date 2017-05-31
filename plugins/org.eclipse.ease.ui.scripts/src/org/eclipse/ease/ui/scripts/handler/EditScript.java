@@ -27,7 +27,6 @@ import org.eclipse.ease.ui.scripts.repository.IRepositoryService;
 import org.eclipse.ease.ui.scripts.repository.IScript;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -58,7 +57,12 @@ public class EditScript extends AbstractHandler implements IHandler {
 
 			} else if ((content instanceof File) && (((File) content).exists())) {
 				final ScriptType type = script.getType();
-				final IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor("foo." + type.getDefaultExtension());
+				final IEditorDescriptor descriptor;
+				if (type == null) {
+					descriptor = null;
+				} else {
+					descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor("foo." + type.getDefaultExtension());
+				}
 				if (descriptor != null) {
 					final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					try {
@@ -67,42 +71,39 @@ public class EditScript extends AbstractHandler implements IHandler {
 
 						// editor will not save external script files,
 						// we need to do this on our own
-						editor.addPropertyListener(new IPropertyListener() {
-							@Override
-							public void propertyChanged(final Object source, final int propId) {
+						editor.addPropertyListener((source, propId) -> {
 
-								// check for changes of PROP_DIRTY from
-								// true to false,
-								// meaning the editor tried to save data
-								if (IEditorPart.PROP_DIRTY == propId) {
-									if ((editor instanceof AbstractDecoratedTextEditor) && (!editor.isDirty())) {
-										final IDocumentProvider documentProvider = ((AbstractTextEditor) editor).getDocumentProvider();
-										final String newSource = documentProvider.getDocument(editorInput).get();
+							// check for changes of PROP_DIRTY from
+							// true to false,
+							// meaning the editor tried to save data
+							if (IEditorPart.PROP_DIRTY == propId) {
+								if ((editor instanceof AbstractDecoratedTextEditor) && (!editor.isDirty())) {
+									final IDocumentProvider documentProvider = ((AbstractTextEditor) editor).getDocumentProvider();
+									final String newSource = documentProvider.getDocument(editorInput).get();
 
-										FileOutputStream outputStream = null;
-										try {
-											outputStream = new FileOutputStream((File) content);
-											outputStream.write(newSource.getBytes());
+									FileOutputStream outputStream = null;
+									try {
+										outputStream = new FileOutputStream((File) content);
+										outputStream.write(newSource.getBytes());
 
-										} catch (final Exception e) {
-											Logger.error(Activator.PLUGIN_ID, "Could not store recorded script.", e);
-										} finally {
-											if (outputStream != null) {
-												try {
-													outputStream.close();
-												} catch (final IOException e) {
-													// giving up
-												}
+									} catch (final Exception e1) {
+										Logger.error(Activator.PLUGIN_ID, "Could not store recorded script.", e1);
+									} finally {
+										if (outputStream != null) {
+											try {
+												outputStream.close();
+											} catch (final IOException e2) {
+												// giving up
 											}
 										}
-
-										// refresh script in repository
-										final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
-										// FIXME we should only update
-										// this one resource instead of
-										// all scripts
-										repositoryService.update(false);
 									}
+
+									// refresh script in repository
+									final IRepositoryService repositoryService = PlatformUI.getWorkbench().getService(IRepositoryService.class);
+									// FIXME we should only update
+									// this one resource instead of
+									// all scripts
+									repositoryService.update(false);
 								}
 							}
 						});

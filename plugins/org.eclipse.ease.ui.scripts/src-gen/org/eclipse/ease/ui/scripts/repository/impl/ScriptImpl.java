@@ -554,8 +554,14 @@ public class ScriptImpl extends RawLocationImpl implements IScript {
 		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
 
 		final String engineIDs = getKeywords().get("script-engine");
-		if (engineIDs == null)
-			return scriptService.getEngine(getType().getName());
+		if (engineIDs == null) {
+			final ScriptType type = getType();
+			if (type != null) {
+				return scriptService.getEngine(type.getName());
+			} else {
+				return null;
+			}
+		}
 
 		// work through whitelist, prepare blacklist
 		final HashSet<String> blacklist = new HashSet<>();

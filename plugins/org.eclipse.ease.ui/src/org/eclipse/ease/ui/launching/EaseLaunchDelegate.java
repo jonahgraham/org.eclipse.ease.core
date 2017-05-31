@@ -11,6 +11,7 @@
 package org.eclipse.ease.ui.launching;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
@@ -100,12 +101,14 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 			// try to find an engine that supports debugging
 			final ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(resource, null));
-			final List<EngineDescription> engines = scriptService.getEngines(scriptType.getName());
-			for (final EngineDescription description : engines) {
-				if (description.supportsDebugging()) {
-					// matching debug engine found
-					engineDescription = description;
-					break;
+			if (scriptType != null) {
+				final List<EngineDescription> engines = scriptService.getEngines(scriptType.getName());
+				for (final EngineDescription description : engines) {
+					if (description.supportsDebugging()) {
+						// matching debug engine found
+						engineDescription = description;
+						break;
+					}
 				}
 			}
 
@@ -129,13 +132,8 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 			} else {
 				// giving up
-				Display.getDefault().asyncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						MessageDialog.openError(Display.getDefault().getActiveShell(), "Launch error", "No debug engine available for \"" + resource + "\"");
-					}
-				});
+				Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), "Launch error",
+						"No debug engine available for \"" + resource + "\""));
 				return;
 			}
 		}
@@ -185,7 +183,13 @@ public class EaseLaunchDelegate extends AbstractLaunchDelegate {
 
 		// find a valid engine
 		final IScriptService scriptService = PlatformUI.getWorkbench().getService(IScriptService.class);
-		final Collection<EngineDescription> engines = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(file, null)).getEngines();
+		final ScriptType scriptType = scriptService.getScriptType(ResourceTools.toAbsoluteLocation(file, null));
+		final Collection<EngineDescription> engines;
+		if (scriptType == null) {
+			engines = Collections.emptyList();
+		} else {
+			engines = scriptType.getEngines();
+		}
 		if (engines.isEmpty())
 			// TODO use a better way to bail out and use the direct file launch
 			throw new CoreException(Status.CANCEL_STATUS);

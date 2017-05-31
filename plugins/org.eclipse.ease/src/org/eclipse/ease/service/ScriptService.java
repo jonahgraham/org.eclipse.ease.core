@@ -13,7 +13,6 @@ package org.eclipse.ease.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -131,13 +130,7 @@ public class ScriptService implements IScriptService, BundleListener {
 		}
 
 		// sort by priority
-		Collections.sort(result, new Comparator<EngineDescription>() {
-
-			@Override
-			public int compare(final EngineDescription o1, final EngineDescription o2) {
-				return o2.getPriority() - o1.getPriority();
-			}
-		});
+		Collections.sort(result, (o1, o2) -> o2.getPriority() - o1.getPriority());
 
 		return result;
 	}
@@ -197,6 +190,10 @@ public class ScriptService implements IScriptService, BundleListener {
 
 	@Override
 	public ScriptType getScriptType(final String location) {
+		if (location == null) {
+			return null;
+		}
+
 		final Object resource = ResourceTools.getResource(location);
 		try {
 			if (resource instanceof IFile) {
