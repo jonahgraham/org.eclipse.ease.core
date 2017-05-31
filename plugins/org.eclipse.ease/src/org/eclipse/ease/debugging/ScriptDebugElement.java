@@ -36,7 +36,7 @@ public abstract class ScriptDebugElement extends DebugElement implements ITermin
 
 	@Override
 	public String getModelIdentifier() {
-		return "org.eclipse.ease.debugModelPresentation.rhino";
+		return getDebugTarget().getModelIdentifier();
 	}
 
 	// ************************************************************
