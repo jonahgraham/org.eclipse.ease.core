@@ -200,7 +200,11 @@ def watchdog(engine):
 def main(argv):
     port = int(argv[1])
     engine = ScriptEngineExecute()
-    gateway = ClientServer(java_parameters=JavaParameters(auto_convert=True, port=port),
+    # Bug 517528: Disable memory management until Py4J #275 is resolved
+    enable_memory_management = False
+    java_params = JavaParameters(auto_convert=True, port=port,
+                                 enable_memory_management=enable_memory_management)
+    gateway = ClientServer(java_parameters=java_params,
                           python_parameters=PythonParameters(port=0),
                           python_server_entry_point=engine)
     # retrieve the port on which the python callback server was bound to.
